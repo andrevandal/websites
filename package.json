@@ -1,0 +1,91 @@
+{
+  "name": "websites",
+  "version": "1.11.0",
+  "private": true,
+  "description": "Websites monorepo for TypeScript projects",
+  "keywords": [
+    "monorepo"
+  ],
+  "license": "MIT",
+  "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "apps/*"
+    ],
+    "catalogs": {
+      "tools": {
+        "yargs": "^18.0.0",
+        "execa": "^9.6.1",
+        "consola": "^3.4.2",
+        "destr": "^2.0.5",
+        "oxfmt": "^0.26.0",
+        "oxlint": "^1.41.0",
+        "release-please": "^17.1.3"
+      },
+      "testing": {
+        "vitest": "^4.0.17",
+        "@vitest/coverage-v8": "^4.0.17",
+        "@vitest/ui": "^4.0.17",
+        "happy-dom": "^20.3.4"
+      },
+      "vite": {
+        "vite": "^7.3.1",
+        "vite-env-only": "^3.0.3",
+        "vite-tsconfig-paths": "^6.0.4"
+      },
+      "typescript": {
+        "type-fest": "^5.3.1",
+        "tsconfig-paths": "^4.2.0",
+        "typescript": "^5.9.3"
+      },
+      "node": {
+        "ofetch": "^1.5.1",
+        "msw": "^2.12.7",
+        "valibot": "^1.2.0"
+      },
+      "styles": {
+        "tailwindcss": "^4.1.18",
+        "@tailwindcss/vite": "^4.1.18",
+        "@base-ui/react": "^1.1.0"
+      },
+      "types": {
+        "@types/node": "^25.0.9",
+        "@types/aws-lambda": "^8.10.160"
+      }
+    }
+  },
+  "type": "module",
+  "main": "index.js",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "moon": "moon --color",
+    "graph": "bun moon tg",
+    "check": "bun moon run :lintfix :formatfix :test :typecheck --no-actions",
+    "postinstall": "bun sync",
+    "sync": "bun moon sync projects",
+    "format": "oxfmt ."
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "@vitest/coverage-v8": "catalog:testing",
+    "@vitest/ui": "catalog:testing",
+    "consola": "catalog:tools",
+    "destr": "catalog:tools",
+    "execa": "catalog:tools",
+    "oxfmt": "catalog:tools",
+    "oxlint": "catalog:tools",
+    "release-please": "catalog:tools",
+    "tsconfig-paths": "catalog:typescript",
+    "type-fest": "catalog:typescript",
+    "typescript": "catalog:typescript",
+    "vitest": "catalog:testing",
+    "yargs": "catalog:tools"
+  },
+  "engines": {
+    "node": "24.12.0"
+  },
+  "packageManager": "bun@1.3.6"
+}

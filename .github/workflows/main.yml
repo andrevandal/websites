@@ -1,0 +1,33 @@
+name: Main CI
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  check-all:
+    name: Test
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup toolchain
+        uses: ./.github/actions/setup-toolchain
+
+      - name: Run CI checks
+        run: moon ci :format :lint :testci :typecheck

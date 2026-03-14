@@ -1,0 +1,24 @@
+$schema: ./cache/schemas/toolchains.json
+
+javascript:
+  packageManager: bun
+  dedupeOnLockfileChange: true
+  dependencyVersionFormat: workspace-caret
+  syncProjectWorkspaceDependencies: true
+  syncPackageManagerField: true
+
+  # Do not infer functionality from `package.json`, as we want to encourage
+  # consumers to embrace moon.
+  inferTasksFromScripts: false
+
+# https://moonrepo.dev/docs/config/workspace#typescript
+typescript:
+  createMissingConfig: true
+  routeOutDirToCache: true
+  syncProjectReferences: true
+
+# .prototools manages the version
+node: {}
+
+# .prototools manages the version
+bun: {}

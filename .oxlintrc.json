@@ -1,0 +1,62 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-unused-expressions": ["warn", { "allowShortCircuit": true }],
+    "id-length": "off",
+    "new-cap": "off",
+    "max-params": "off",
+    "max-statements": "off",
+    "capitalized-comments": "off",
+    "oxc/no-accumulating-spread": "warn",
+    "vitest/no-conditional-tests": "error",
+    "import/no-unassigned-import": "off",
+    "import/no-named-export": "off",
+    "import/prefer-default-export": "off",
+
+    "eslint/no-duplicate-imports": [
+      "warn",
+      {
+        "allowSeparateTypeImports": true
+      }
+    ],
+    "eslint/no-await-in-loop": "warn",
+    "eslint/no-magic-numbers": "off",
+    "eslint/no-ternary": "off",
+
+    // Unicorn rules
+    "unicorn/filename-case": "off",
+    "unicorn/no-empty-file": "warn",
+    "unicorn/no-null": "off",
+
+    "jest/require-hook": "off",
+
+    // Enforce function expressions over declarations for consistency
+    "eslint/func-style": ["error", "expression"],
+
+    "typescript/triple-slash-reference": "off",
+    "typescript/consistent-type-definitions": ["warn", "type"],
+    // Disabled until auto-fix support is added
+    "sort-keys": "off",
+    "eslint/sort-imports": "off"
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "style": "warn",
+    "perf": "warn"
+  },
+  "plugins": [
+    // Defaults
+    "eslint",
+    "typescript",
+    "oxc",
+    // Extras
+    // "unicorn",
+    "vitest",
+    "import",
+    "promise",
+    "node"
+  ],
+  "ignorePatterns": ["test/snapshots/**", "coverage/"]
+}

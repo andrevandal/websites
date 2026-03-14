@@ -1,0 +1,15 @@
+name: "Setup Toolchain"
+description: "Checkout code, install Node.js and bun, then install dependencies"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: "moonrepo/setup-toolchain@v0"
+      with:
+        auto-install: true
+        cache-base: develop
+        cache-version: ${{ hashFiles('.prototools') }}
+
+    - name: "Install dependencies"
+      shell: bash
+      run: "bun install"

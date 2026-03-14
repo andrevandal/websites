@@ -1,0 +1,25 @@
+{
+  "oxc.fmt.configPath": ".oxfmtrc.json",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": true,
+  "json.format.enable": true,
+
+  "remote.autoForwardPortsFallback": 0,
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "ngClass",
+    ".*Classes",
+    ".*Styles",
+    ".*Class",
+    ".*Style"
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    "(?:classes|class|Classes|Class)\\s*=\\s*`([^`]*)",
+    "(?:styles|style|Styles|Style)\\s*=\\s*`([^`]*)"
+  ]
+}
+
