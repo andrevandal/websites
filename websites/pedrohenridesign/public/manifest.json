@@ -1,0 +1,13 @@
+{
+  "name": "PedroHenri.design",
+  "short_name": "PedroHenri",
+  "icons": [
+    {
+      "src": "google-touch-icon.png",
+      "sizes": "512x512"
+    }
+  ],
+  "background_color": "#262E33",
+  "theme_color": "#262E33",
+  "display": "fullscreen"
+}

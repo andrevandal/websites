@@ -1,0 +1,47 @@
+diff --git a/dist/index.js b/dist/index.js
+index 6b9f37eac7baa92be5d3a7d6e6054886f99dcac4..bedb4020d760d187d562b925c3afbb84ab51c599 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -300,7 +300,7 @@ function getPreferredQuote(rawContent, preferredQuote) {
+ }
+ function inferParserByTypeAttribute(type) {
+     if (!type) {
+-        return 'babel-ts';
++        return 'oxc-ts';
+     }
+     switch (type) {
+         case 'module':
+@@ -309,7 +309,7 @@ function inferParserByTypeAttribute(type) {
+         case 'application/javascript':
+             return 'babel';
+         case 'application/x-typescript':
+-            return 'babel-ts';
++            return 'oxc-ts';
+         case 'text/markdown':
+             return 'markdown';
+         case 'text/html':
+@@ -320,7 +320,7 @@ function inferParserByTypeAttribute(type) {
+             if (type.endsWith('json') || type.endsWith('importmap') || type === 'speculationrules') {
+                 return 'json';
+             }
+-            return 'babel-ts';
++            return 'oxc-ts';
+     }
+ }
+ 
+@@ -621,13 +621,13 @@ const embed = ((path, options) => {
+             }
+             const frontmatterContent = await wrapParserTryCatch(textToDoc, node.value, {
+                 ...options,
+-                parser: 'babel-ts',
++                parser: 'oxc-ts',
+             });
+             return [group(['---', hardline, frontmatterContent, hardline, '---', hardline]), hardline];
+         }
+         if (node.type === 'element' && node.name === 'script' && node.children.length) {
+             const typeAttribute = node.attributes.find((attr) => attr.name === 'type')?.value;
+-            let parser = 'babel-ts';
++            let parser = 'oxc-ts';
+             if (typeAttribute) {
+                 parser = inferParserByTypeAttribute(typeAttribute);
+             }

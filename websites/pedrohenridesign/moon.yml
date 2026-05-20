@@ -1,0 +1,27 @@
+language: "javascript"
+
+project:
+  title: "pedrohenri.design"
+  description: "Personal portfolio and blog for Pedro Henri."
+
+tasks:
+  build:
+    command: astro build
+    inputs:
+      - "@globs(sources)"
+      - "public/**/*"
+      - "astro.config.mjs"
+      - "tsconfig.json"
+    outputs:
+      - dist
+
+  dev:
+    command: astro dev
+    options:
+      runInCI: false
+
+  typecheck:
+    command: astro check
+    inputs:
+      - "@globs(typescript)"
+      - "@globs(sources)"

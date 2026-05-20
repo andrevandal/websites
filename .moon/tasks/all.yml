@@ -32,6 +32,18 @@ tasks:
       - "@globs(sources)"
       - "@globs(tests)"
       - "**/*.{md,mdx,yml,yaml,json}"
+    deps:
+      - format-astro
+
+  format-astro:
+    command: prettier
+    args:
+      - --check
+      - --no-error-on-unmatched-pattern
+      - "**/*.astro"
+    inputs:
+      - /prettier.config.ts
+      - "@globs(sources)"
 
   formatfix:
     inputs:
@@ -46,6 +58,18 @@ tasks:
       - --write
       - .
     preset: server # does not run on ci
+    deps:
+      - formatfix-astro
+
+  formatfix-astro:
+    command: prettier
+    args:
+      - --write
+      - --no-error-on-unmatched-pattern
+      - "**/*.astro"
+    inputs:
+      - /prettier.config.ts
+    preset: server
 
   lint:
     command: oxlint
@@ -57,6 +81,17 @@ tasks:
       - "@globs(tests)"
       - "**/*.{md,mdx,yml,yaml,json}"
       - /.oxlintrc.json
+    deps:
+      - lint-astro
+
+  lint-astro:
+    command: eslint
+    args:
+      - --no-error-on-unmatched-pattern
+      - "**/*.astro"
+    inputs:
+      - /eslint.config.ts
+      - "@globs(sources)"
 
   lintfix:
     inputs:
@@ -69,6 +104,18 @@ tasks:
       - --fix
       - .
     preset: server # does not run on ci
+    deps:
+      - lintfix-astro
+
+  lintfix-astro:
+    command: eslint
+    args:
+      - --no-error-on-unmatched-pattern
+      - "**/*.astro"
+      - --fix
+    inputs:
+      - /eslint.config.ts
+    preset: server
 
   testci:
     command: bun

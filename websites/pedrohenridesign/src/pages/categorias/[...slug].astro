@@ -1,0 +1,76 @@
+---
+import TheHomeCategoryListing from "@components/TheHomeCategoryListing.astro"
+import BaseLayout from "@layouts/Base.astro"
+import type { ComponentProps } from "astro/types"
+import { getCollection, getEntry } from "astro:content"
+import { pick } from "radash"
+
+const { slug } = Astro.params
+
+if (slug === undefined) {
+  throw new Error("Slug is required")
+}
+
+export const prerender = true
+
+export const getStaticPaths = async () => {
+  const allCategories = await getCollection(
+    "categories",
+    category => !category.data.draft && !category.data.private
+  )
+  return allCategories.map(category => ({
+    params: { slug: category.id },
+  }))
+}
+
+const rawCategory = await getEntry("categories", slug)
+
+if (rawCategory === undefined || rawCategory.data.draft) {
+  return Astro.redirect("/404")
+}
+
+const relatedPosts = await getCollection(
+  "posts",
+  post =>
+    !post.data.draft &&
+    !post.data.private &&
+    post.data.categories.find(category => category.id === slug)
+).then(posts =>
+  posts.sort(
+    (
+      { data: { updatedAt: firstUpdatedAt, createdAt: firstCreatedAt } },
+      { data: { updatedAt: secondUpdatedAt, createdAt: secondCreatedAt } }
+    ) =>
+      new Date(secondUpdatedAt ?? firstCreatedAt ?? 0).getTime() -
+      new Date(firstUpdatedAt ?? secondCreatedAt ?? 0).getTime()
+  )
+)
+
+const category = {
+  id: rawCategory.id,
+  ...pick(rawCategory.data, [
+    "name",
+    "description",
+    "featuresTitle",
+    "features",
+    "showcase",
+    "socialImage",
+  ]),
+  posts: relatedPosts.map(({ id, data }) =>
+    Object.assign(pick(data, [`title`, `cover`, `description`]), { id })
+  ),
+}
+
+const meta = {
+  title: `${category.name} - Pedro Henri Design`,
+  description: category.description,
+  image: category.socialImage,
+  url: Astro.url,
+} satisfies ComponentProps<typeof BaseLayout>
+---
+
+<BaseLayout {...meta}>
+  <div class="container mx-auto flex flex-col pb-8 pt-6 lg:pb-12 lg:pt-10">
+    <TheHomeCategoryListing class:list={"mb-30 lg:mt-13 mt-4"} {...category} />
+  </div>
+</BaseLayout>

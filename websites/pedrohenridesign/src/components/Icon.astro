@@ -1,0 +1,15 @@
+---
+import PkgIcon from "@vandal-websites/astro/ui/Icon"
+import type { AvailableIcons } from "@/types"
+
+type Props = {
+  name: AvailableIcons
+  width?: number
+  height?: number
+  class?: string
+}
+
+const { props } = Astro
+---
+
+<PkgIcon {...props} />

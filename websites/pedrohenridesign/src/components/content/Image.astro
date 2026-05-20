@@ -1,0 +1,48 @@
+---
+import BaseImage from "@components/Image.astro"
+
+type Props = {
+  src?: string
+  width?: number
+  height?: number
+  sizes?: string
+  provider?: string
+  "rounded-b"?: string
+  "rounded-t"?: string
+  lazy?: boolean
+  alt?: string
+}
+
+const {
+  src,
+  alt = " ",
+  width = 375,
+  height = 210,
+  sizes = "375px sm:496px lg:960px",
+  lazy = true,
+} = Astro.props
+
+const roundedT =
+  typeof Astro.props["rounded-t"] === "string" ||
+  Astro.props["rounded-t"] === "true"
+const roundedB =
+  typeof Astro.props["rounded-b"] === "string" ||
+  Astro.props["rounded-b"] === "true"
+---
+
+{
+  src && (
+    <BaseImage
+      {...{ src, sizes, alt }}
+      class:list={[
+        `not-prose aspect-[${width}/${height}] my-0 h-auto w-full`,
+        {
+          "rounded-t-lg": roundedT,
+          "rounded-b-lg": roundedB,
+        },
+      ]}
+      loading={lazy ? "lazy" : "eager"}
+      decoding={lazy ? "async" : "sync"}
+    />
+  )
+}

@@ -1,0 +1,22 @@
+{
+  "extends": "astro/tsconfigs/base",
+  "compilerOptions": {
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@utils": ["./src/utils"],
+      "@utils/*": ["./src/utils/*"],
+      "@/*": ["./src/*"]
+    },
+    "types": ["@types/mdast"],
+    "strictNullChecks": true,
+    "outDir": "../../.moon/cache/types/websites/pedrohenridesign.com.br"
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "references": [
+  ]
+}

@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --breakpoint-sm: 640px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  --color-gray-50: #e7e8e8;
+  --color-gray-100: #d0d0d1;
+  --color-gray-200: #b8b9ba;
+  --color-gray-300: #a0a2a3;
+  --color-gray-400: #898b8c;
+  --color-gray-500: #717375;
+  --color-gray-600: #5a5c5e;
+  --color-gray-700: #424547;
+  --color-gray-800: #2a2d30;
+  --color-gray-900: #131619;
+  --color-gray: #131619;
+
+  --color-link: #055fc8;
+  --color-success: #009959;
+  --color-error: #d44431;
+
+  --font-stara: "Stara", "Stara Fallback";
+}
+
+@utility text-* {
+  font-size: calc(var(--spacing) * --value(integer));
+}
+
+@utility leading-* {
+  line-height: calc(var(--spacing) * --value(integer));
+}
+
+@layer components {
+  .typography-title {
+    font-size: --spacing(8);
+    line-height: --spacing(9);
+    letter-spacing: -0.1rem;
+
+    @variant sm {
+      font-size: --spacing(10);
+      line-height: --spacing(11);
+      letter-spacing: -0.125rem;
+    }
+
+    @variant lg {
+      font-size: --spacing(12);
+      line-height: --spacing(14);
+      letter-spacing: -0.15rem;
+    }
+
+    @variant xl {
+      font-size: --spacing(14);
+      line-height: --spacing(16);
+      letter-spacing: -0.175rem;
+    }
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  display: flex;
+  width: 100%;
+  max-width: 464px;
+  flex-direction: column;
+  padding-inline: --spacing(4);
+
+  @variant sm {
+    max-width: 496px;
+    padding-inline: --spacing(8);
+  }
+
+  @variant lg {
+    max-width: 960px;
+  }
+
+  @variant xl {
+    max-width: 1216px;
+  }
+}
