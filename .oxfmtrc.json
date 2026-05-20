@@ -95,6 +95,6 @@
     "CHANGELOG.md",
 
     // Bun
-    "bun.lockb",
-  ],
+    "bun.lockb"
+  ]
 }

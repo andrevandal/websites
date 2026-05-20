@@ -3,7 +3,7 @@ $schema: https://moonrepo.dev/schemas/tasks.json
 # For typechecking to run correctly, build must run first to generate
 # any necessary type declaration files.
 implicitDeps:
-- ^:build
+  - ^:build
 
 implicitInputs:
   - package.json
@@ -36,6 +36,9 @@ tasks:
   formatfix:
     inputs:
       - /.oxfmtrc.json
+      - "@globs(sources)"
+      - "@globs(tests)"
+      - "**/*.{md,mdx,yml,yaml,json}"
     command: oxfmt
     args:
       - --config
@@ -52,10 +55,14 @@ tasks:
       - "@globs(typescript)"
       - "@globs(sources)"
       - "@globs(tests)"
+      - "**/*.{md,mdx,yml,yaml,json}"
       - /.oxlintrc.json
 
   lintfix:
     inputs:
+      - "@globs(typescript)"
+      - "@globs(sources)"
+      - "@globs(tests)"
       - /.oxlintrc.json
     command: oxlint
     args:
@@ -64,28 +71,18 @@ tasks:
     preset: server # does not run on ci
 
   testci:
-    command: vitest
+    command: bun
     args:
-      - run
-      - --passWithNoTests
+      - test
       - --coverage
+      - --pass-with-no-tests
       - .
     inputs:
       - "@globs(sources)"
       - "@globs(tests)"
-      - vitest.config.ts # Local for each project
 
   test:
-    inputs:
-      - "@globs(sources)"
-      - "@globs(tests)"
-      - vitest.config.ts # Local for each project
-    command: vitest
-    args:
-      - run
-      - --passWithNoTests
-      - --coverage
-      - .
+    extends: testci
     preset: server # does not run on ci
 
   typecheck:

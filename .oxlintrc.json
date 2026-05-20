@@ -9,7 +9,6 @@
     "max-statements": "off",
     "capitalized-comments": "off",
     "oxc/no-accumulating-spread": "warn",
-    "vitest/no-conditional-tests": "error",
     "import/no-unassigned-import": "off",
     "import/no-named-export": "off",
     "import/prefer-default-export": "off",
@@ -52,11 +51,30 @@
     "typescript",
     "oxc",
     // Extras
-    // "unicorn",
-    "vitest",
+    "jest",
     "import",
     "promise",
     "node"
   ],
-  "ignorePatterns": ["test/snapshots/**", "coverage/"]
+  "ignorePatterns": ["dist/", "test/snapshots/**", "coverage/"],
+  "overrides": [
+    {
+      "files": ["**/*.tsx", "**/*.ts"],
+      "rules": {
+        "import/no-namespace": "off",
+        "import/group-exports": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.server.tsx",
+        "**/*.server.ts",
+        "scripts/**.ts",
+        "playwright.config.ts"
+      ],
+      "rules": {
+        "import/no-nodejs-modules": "off"
+      }
+    }
+  ]
 }

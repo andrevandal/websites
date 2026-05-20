@@ -40,11 +40,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-.nx/cache
-.nx/workspace-data
-.cursor/rules/nx-rules.mdc
-.github/instructions/nx.instructions.md
-
 # moon
 .moon/cache
 .moon/docker
@@ -56,3 +51,25 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 yarn.lock
 package-lock.json
+
+# Playwright
+test-results/
+playwright-report/
+.playwright-mcp/
+
+# Turso / SQLite
+*.db
+*.db-journal
+*.db-wal
+
+# Docker
+.docker/
+
+# Data
+.data/*
+!.data/.gitkeep
+
+# Environment
+.env
+.env.*
+!.env.example

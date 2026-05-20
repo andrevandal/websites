@@ -1,8 +1,15 @@
 {
   "oxc.fmt.configPath": ".oxfmtrc.json",
   "editor.defaultFormatter": "oxc.oxc-vscode",
-  "editor.formatOnSave": true,
   "json.format.enable": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+
+  // "editor.formatOnSave": false, // disable default behavior
+  // "editor.codeActionsOnSave": {
+  //   "source.format.oxc": "always", // run formatter first
+  //   "source.fixAll.oxc": "always" // run lint fixes after
+  // },
 
   "remote.autoForwardPortsFallback": 0,
   "editor.quickSuggestions": {
@@ -22,4 +29,3 @@
     "(?:styles|style|Styles|Style)\\s*=\\s*`([^`]*)"
   ]
 }
-

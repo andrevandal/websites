@@ -1,0 +1,7 @@
+version: 2
+
+secret:
+  ignored-paths:
+    - "**/e2e/**"
+  ignored-detectors:
+    - Generic Password
