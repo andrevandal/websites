@@ -32,5 +32,8 @@ jobs:
       - name: 📦 Setup toolchain
         uses: ./.github/actions/setup-toolchain
 
+      - name: Validate release config
+        run: bun scripts/validate-release-config.ts
+
       - name: Run CI checks
         run: moon ci :format :lint :testci :typecheck
