@@ -15,6 +15,9 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      affected_websites: ${{ steps.websites.outputs.matrix }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,3 +37,46 @@ jobs:
       - name: Publish Release
         if: ${{ steps.release.outputs.release_created }}
         run: bun ./scripts/release.ts
+
+      - name: Get affected websites
+        if: ${{ steps.release.outputs.release_created }}
+        id: websites
+        run: |
+          MATRIX=$(moon query projects --affected | jq -c '[.projects[] | select(any(.aliases[]; .alias | startswith("@websites/"))) | .id]')
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  deploy-websites:
+    name: Deploy ${{ matrix.website }}
+    needs: release
+    if: |
+      needs.release.outputs.release_created == 'true' &&
+      needs.release.outputs.affected_websites != '[]' &&
+      needs.release.outputs.affected_websites != ''
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        website: ${{ fromJson(needs.release.outputs.affected_websites || '[]') }}
+
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup toolchain
+        uses: ./.github/actions/setup-toolchain
+
+      - name: Build
+        run: moon run ${{ matrix.website }}:build
+
+      - name: Deploy to Cloudflare Pages
+        run: |
+          PROJECT_NAME=$(jq -r '.name' "websites/${{ matrix.website }}/wrangler.json")
+          bunx wrangler pages deploy "websites/${{ matrix.website }}/dist" \
+            --project-name "$PROJECT_NAME"
