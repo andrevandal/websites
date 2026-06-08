@@ -6,6 +6,7 @@ import TheHeader from "@components/TheHeader.astro"
 import BaseButton from "@components/BaseButton.astro"
 import Image from "@components/Image.astro"
 import { getImageUrl } from "@utils"
+import { PUBLIC_GOOGLE_ANALYTICS_ID as googleAnalyticsId } from "astro:env/client"
 
 type Props = {
   title: string
@@ -15,7 +16,6 @@ type Props = {
   schema?: Record<string, unknown>
   links?: Record<string, unknown>[]
 }
-const { PUBLIC_GOOGLE_ANALYTICS_ID: googleAnalyticsId } = import.meta.env
 const { title, description, schema, links, url } = Astro.props
 const domain = url.hostname
 
@@ -65,23 +65,16 @@ const image = chooseSocialImagem(Astro.props.image)
     />
     {
       googleAnalyticsId && (
-        <>
-          <link
-            href={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
-            rel="preload"
-            as="script"
-          />
-          <script
-            is:inline
-            set:html={`
+        <script
+          is:inline
+          set:html={`
               window.dataLayer = window.dataLayer || [];
               window.gtag = function () {
                 dataLayer.push(arguments);
               };
               window.gtag('js', new Date());
               window.gtag('config', '${googleAnalyticsId}');`}
-          />
-        </>
+        />
       )
     }
   </head>
@@ -142,7 +135,6 @@ const image = chooseSocialImagem(Astro.props.image)
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
           type="text/partytown"
-          is:inline
         />
       )
     }
