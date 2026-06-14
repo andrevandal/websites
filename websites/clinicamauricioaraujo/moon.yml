@@ -1,0 +1,47 @@
+language: "javascript"
+
+project:
+  title: "clinicamauricioaraujo.com.br"
+  description: "Website for Clinica Mauricio Araujo."
+
+tasks:
+  astro:
+    command: astro
+
+  dev:
+    command: astro dev
+    preset: server
+
+  check:
+    command: astro check
+    inputs:
+      - "@globs(typescript)"
+      - "@globs(sources)"
+
+  build:
+    command: astro build
+    inputs:
+      - "@globs(sources)"
+      - "@globs(public)"
+      - "@globs(astro)"
+      - "@globs(typescript)"
+    outputs:
+      - dist
+    dependsOn:
+      - check
+
+  preview:
+    command: astro preview
+    preset: server
+
+  preview-wrangler:
+    command: wrangler pages dev ./dist
+    preset: server
+    dependsOn:
+      - build
+
+  deploy:
+    command: wrangler deploy
+    preset: server
+    dependsOn:
+      - build

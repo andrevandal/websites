@@ -1,0 +1,149 @@
+---
+import { getImageUrl } from "@utils"
+import { mainNav as navigation, siteConfig } from "../data/site"
+import BaseButton from "./BaseButton.astro"
+import Icon from "./Icon.astro"
+
+const callToAction = {
+  name: "WhatsApp",
+  href: siteConfig.whatsAppLink,
+}
+---
+
+<header id="inicio" class="block">
+  <nav
+    class="border-brand-200/0 bg-brand-50/0 h-(--nav-h) fixed top-0 z-20 w-full border-b"
+  >
+    <div
+      class="container grid grid-cols-[1fr_40px] flex-wrap gap-x-2 py-3 pl-4 pr-3 lg:flex lg:flex-row lg:justify-between"
+    >
+      <a href="/#inicio" class="block" aria-label={siteConfig.name}>
+        <img
+          src={getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_48")}
+          srcset={`${getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_48")} 1x, 
+            ${getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_68")} 1.5x,
+            ${getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_96")} 2x,
+            ${getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_144")} 3x`}
+          alt={siteConfig.name}
+          width="135"
+          height="48"
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
+      <input class="hidden" type="checkbox" id="menu-opened" />
+      <label id="menu-button" for="menu-opened">
+        <span class="icon"></span>
+      </label>
+      <ul id="menu">
+        {
+          navigation.map(item => (
+            <li>
+              <BaseButton
+                as="a"
+                variant="white-outline"
+                size="small"
+                block
+                centered
+                href={item.href}
+              >
+                {item.name}
+              </BaseButton>
+            </li>
+          ))
+        }
+        <li>
+          <BaseButton
+            as="a"
+            href={callToAction.href}
+            variant="secondary"
+            size="small"
+            block
+            centered
+            class="track-conversion"
+            data-lead-type="whatsapp"
+            data-button-location="header"
+          >
+            {callToAction.name}
+            <Icon
+              name="streamline-logos:whatsapp-logo-solid"
+              slot="icon"
+              width={20}
+            />
+          </BaseButton>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <slot />
+</header>
+
+<script>
+  import { useHeader } from "@/hooks/useHeader"
+
+  useHeader("#inicio nav")
+</script>
+
+<style>
+  @reference "../styles/global.css";
+
+  #menu-button {
+    @apply inline-flex h-10 w-10 cursor-pointer select-none items-center justify-center justify-self-end rounded-lg border border-white/60 p-2;
+    @apply lg:hidden;
+  }
+
+  #menu-button .icon {
+    @apply relative block h-0.5 w-[21.33px] rounded-full bg-white/60 transition-colors ease-out;
+  }
+
+  #menu-button .icon:before,
+  #menu-button .icon:after {
+    @apply absolute block h-full w-full rounded-full bg-white/60 transition-all ease-out content-[''];
+  }
+
+  #menu-button .icon:before {
+    @apply top-2;
+  }
+
+  #menu-button .icon:after {
+    @apply -top-2;
+  }
+
+  #menu {
+    @apply col-span-2 clear-both box-border flex max-h-0 flex-col gap-2 overflow-hidden transition-[max-height] duration-200 ease-out will-change-auto;
+    @apply lg:max-h-fit lg:flex-row lg:items-center lg:justify-center lg:gap-x-2 lg:pt-0;
+  }
+
+  #menu li:last-of-type {
+    @apply mt-2 lg:ml-0 lg:mt-0;
+  }
+
+  #menu li :global(a[class*="outline"]) {
+    @apply border-transparent;
+  }
+
+  #menu-opened:checked ~ #menu {
+    @apply max-h-fit pb-3 pt-4 lg:p-0;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon {
+    @apply bg-transparent;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon:before {
+    @apply top-0 -rotate-45;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon:after {
+    @apply top-0 rotate-45;
+  }
+
+  #inicio nav.actived {
+    @apply bg-brand-950/95 backdrop-blur;
+  }
+
+  #inicio nav:has(#menu-opened:checked) {
+    @apply bg-brand-950/95 rounded-b-lg backdrop-blur;
+  }
+</style>

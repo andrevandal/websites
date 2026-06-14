@@ -1,0 +1,750 @@
+---
+import BaseLayout from "../layouts/Base.astro"
+import { siteConfig } from "../data/site"
+import type { ComponentProps } from "astro/types"
+import Title from "@components/Title.astro"
+import Description from "@components/Description.astro"
+import BaseButton from "@components/BaseButton.astro"
+import BaseSection from "@components/BaseSection.astro"
+import Cover from "@components/Cover.astro"
+import TheHero from "@components/TheHero.astro"
+import Icon from "@components/Icon.astro"
+import AccordionModule from "@components/ui/accordion"
+
+type ContentItem = {
+  title: string
+  paragraphs?: string[]
+  list?: string[]
+}
+
+type TreatmentSection = {
+  id: string
+  title: string
+  lead: string[]
+  items: ContentItem[]
+}
+
+const slugify = (str: string) =>
+  str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+
+const treatments: TreatmentSection[] = [
+  {
+    id: "extracao-do-siso",
+    title: "Extração do siso",
+    lead: [
+      "A extração do siso é indicada quando o dente não encontra espaço para nascer corretamente, quando há inflamações recorrentes ou quando a posição do siso compromete a higiene, a gengiva e os dentes vizinhos. Em muitos casos, o problema aparece com o siso incluso ou semi-incluso, situação em que parte do dente permanece coberta pela gengiva ou pelo osso.",
+      "Na Clínica Maurício Araújo, a cirurgia do siso é planejada com avaliação clínica e radiográfica individualizada. O foco é definir se a remoção é realmente necessária, escolher uma técnica atraumática e, quando indicado, preservar o rebordo ósseo para manter melhor arquitetura gengival e óssea no pós-operatório.",
+    ],
+    items: [
+      {
+        title: "Quando a extração do siso é necessária?",
+        paragraphs: [
+          "O siso incluso costuma ficar totalmente retido no osso ou sob a gengiva, enquanto o semi-incluso irrompe apenas parcialmente. Já o siso erupcionado pode permanecer na boca, mas ainda assim causar problema se estiver mal posicionado, dificultar a escovação ou traumatizar a bochecha.",
+          "A indicação mais comum envolve episódios de pericoronarite, que é a inflamação da gengiva ao redor do siso parcialmente erupcionado. Dor, inchaço, gosto ruim, dificuldade para abrir a boca e repetição dessas crises são sinais clássicos de que o dente precisa ser avaliado com atenção.",
+        ],
+        list: [
+          "Siso incluso com risco de cisto, dor ou reabsorção do dente ao lado.",
+          "Siso semi-incluso com pericoronarite recorrente e dificuldade de higiene.",
+          "Siso erupcionado em posição inadequada, sem função mastigatória e com acúmulo de placa.",
+        ],
+      },
+      {
+        title: "Como é feita a cirurgia de extração do siso?",
+        paragraphs: [
+          "A cirurgia começa com planejamento radiográfico, definição do acesso cirúrgico e anestesia local. Em seguida, o profissional faz a abertura controlada da área, remove o dente com o mínimo de trauma possível e realiza os cuidados necessários para proteger os tecidos ao redor.",
+          "Quando existe indicação de preservação do rebordo, a conduta pode incluir técnicas para manter melhor o contorno ósseo após a extração. Esse tema tem ligação direta com a produção científica do Dr. Maurício Araújo, reconhecida internacionalmente em preservação alveolar.",
+        ],
+      },
+      {
+        title: "Cuidados pós-operatórios: o que esperar?",
+        paragraphs: [
+          "No pós-operatório siso, algum edema, sensibilidade e limitação para mastigar nos primeiros dias são esperados. O mais importante é seguir a orientação profissional, usar a medicação prescrita corretamente, manter alimentação mais macia e evitar esforço físico logo após a cirurgia.",
+          "Também é comum orientar higiene cuidadosa, compressas frias nas primeiras horas e retorno programado. O objetivo é controlar desconforto, proteger a cicatrização e reduzir o risco de complicações como sangramento persistente ou infecção.",
+        ],
+      },
+      {
+        title: "É possível extrair os 4 sisos de uma vez?",
+        paragraphs: [
+          "Em alguns casos, sim. A decisão depende do estado geral de saúde, da posição dos dentes, do grau de complexidade e da conveniência do paciente. Quando a avaliação mostra segurança para isso, a remoção dos quatro dentes em uma única etapa pode evitar múltiplos períodos de recuperação.",
+          "Por outro lado, casos mais complexos podem se beneficiar de etapas separadas. O melhor plano é sempre o que equilibra previsibilidade cirúrgica, conforto e recuperação adequada.",
+        ],
+      },
+      {
+        title: "Siso incluso dói mais para extrair?",
+        paragraphs: [
+          "Nem sempre. O siso incluso pode exigir uma cirurgia mais técnica, mas a dor é controlada com anestesia local e manejo pós-operatório adequado.",
+        ],
+      },
+      {
+        title: "É necessária anestesia geral?",
+        paragraphs: [
+          "Na maior parte dos casos, não. A cirurgia do siso costuma ser feita com anestesia local, reservando outras abordagens apenas para situações específicas.",
+        ],
+      },
+      {
+        title: "Pode comer normalmente depois da cirurgia?",
+        paragraphs: [
+          "Nos primeiros dias, o ideal é priorizar alimentos frios ou mornos, macios e fáceis de mastigar. A dieta vai sendo ampliada conforme a recuperação.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "tratamento-de-canal",
+    title: "Tratamento de canal",
+    lead: [
+      "O tratamento de canal é o procedimento indicado quando a polpa dentária sofre inflamação ou infecção, seja por cárie profunda, trauma, fratura ou restaurações extensas. O objetivo principal é remover o tecido comprometido, desinfetar os canais e preservar o dente em boca sempre que isso ainda for possível.",
+      "Na endodontia moderna, o tratamento de canal deixou de ser sinônimo de dor. Com diagnóstico adequado, anestesia e técnica previsível, o procedimento tende a aliviar sintomas e restaurar a função do dente, evitando a progressão da infecção e a necessidade de extração.",
+    ],
+    items: [
+      {
+        title: "O que é endodontia e quando ela é indicada?",
+        paragraphs: [
+          "Endodontia é a especialidade que cuida da parte interna do dente e das estruturas ao redor da raiz. Ela costuma ser indicada diante de dor espontânea, sensibilidade intensa, escurecimento do dente, fístula, abscesso ou lesões visíveis no exame radiográfico.",
+          "Também há casos em que o paciente não sente dor, mas o dente já apresenta comprometimento pulpar. Por isso, a avaliação clínica e por imagem continua sendo decisiva para diagnosticar corretamente.",
+        ],
+      },
+      {
+        title: "Tratamento de canal dói?",
+        paragraphs: [
+          "Essa é a dúvida mais comum de quem pesquisa por canal dói, e a resposta prática é: o tratamento de canal existe justamente para tratar a dor causada pelo problema pulpar. Quando bem indicado e executado, o procedimento é feito com anestesia e tende a trazer alívio, não sofrimento.",
+          "Pode haver sensibilidade após a sessão, principalmente em dentes que já estavam inflamados ou infeccionados, mas isso costuma ser temporário e manejável com a orientação correta. O medo normalmente vem mais da condição dolorosa anterior do que do tratamento em si.",
+        ],
+      },
+      {
+        title: "Como o tratamento é realizado?",
+        paragraphs: [
+          "O passo a passo clássico envolve pulpectomia, limpeza e modelagem dos canais, desinfecção interna e, depois, obturação com materiais específicos para selar o espaço tratado. Em muitos casos, a etapa restauradora final inclui coroa ou reabilitação que devolve resistência ao dente.",
+          "Quando um tratamento antigo falha ou quando persistem sintomas e lesões, pode ser necessário um retratamento de canal. Nessa fase, o objetivo é remover o material anterior, descontaminar novamente e restabelecer um selamento adequado.",
+        ],
+      },
+      {
+        title: "Quantas sessões são necessárias?",
+        paragraphs: [
+          "O número de sessões depende do diagnóstico, da anatomia do dente, da presença de infecção e da resposta clínica. Casos simples podem ser resolvidos em uma única sessão; casos mais complexos ou com retratamento podem exigir etapas adicionais.",
+          "Mais importante do que a velocidade é a previsibilidade. O plano correto é o que remove a infecção, preserva a estrutura dentária e prepara o dente para a restauração final com segurança.",
+        ],
+      },
+      {
+        title: "O canal salva o dente?",
+        paragraphs: [
+          "Em muitos casos, sim. O tratamento de canal permite manter o dente funcional na boca quando a raiz e a estrutura remanescente ainda são aproveitáveis.",
+        ],
+      },
+      {
+        title: "Retratamento de canal é comum?",
+        paragraphs: [
+          "Pode acontecer quando o tratamento anterior não conseguiu controlar totalmente a infecção ou quando surge uma nova contaminação. Isso não é raro em endodontia.",
+        ],
+      },
+      {
+        title: "O que acontece se eu não fizer o tratamento?",
+        paragraphs: [
+          "A tendência é de progressão do quadro inflamatório ou infeccioso, com mais dor, abscesso, perda óssea e eventual necessidade de extração do dente.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "lentes-de-contato",
+    title: "Lentes de contato dental",
+    lead: [
+      "As lentes de contato dental são lâminas cerâmicas ultrafinas indicadas para corrigir forma, proporção, pequenas alterações de posição e cor dos dentes. Quando bem planejadas, elas entregam mudança estética com preservação máxima de estrutura dentária e acabamento natural.",
+      "Na Clínica Maurício Araújo, o tratamento com lentes de contato dental parte de uma análise facial e do sorriso, com apoio de software de planejamento e mockup. Isso permite discutir forma, volume, textura e expectativa estética antes da cimentação definitiva.",
+    ],
+    items: [
+      {
+        title: "Lente de contato dental ou faceta: qual a diferença?",
+        paragraphs: [
+          "A diferença principal entre lente e faceta está na espessura da peça e, em muitos casos, no nível de desgaste necessário. A lente de contato dental costuma ser mais fina e conservadora, enquanto a faceta de porcelana pode ser indicada quando a correção precisa ser mais ampla.",
+          "Muitos pacientes buscam por facetas de resina ou porcelana para cobrir imperfeições. A escolha entre faceta ou lente depende exclusivamente do diagnóstico de cada sorriso.",
+        ],
+      },
+      {
+        title: "Comparativo: Faceta vs. Lente de Contato",
+        list: [
+          "Espessura: Lentes são mais finas (0.2 a 0.5mm); Facetas são ligeiramente mais espessas.",
+          "Desgaste dental: Lentes demandam pouco ou nenhum desgaste; Facetas podem precisar de preparo maior.",
+          "Indicação: Lentes para pequenas correções; Facetas para mudanças de forma, cor e correcão de dentes mais escurecidos ou desgastados.",
+          "Resultado: Ambas entregam estética de alto nível, quando bem planejadas.",
+        ],
+      },
+      {
+        title: "Preciso desgastar o dente para colocar lente de contato?",
+        paragraphs: [
+          "Nem sempre. Em casos selecionados, o desgaste pode ser mínimo ou até dispensável. Em outros, um preparo delicado é necessário para evitar aumento excessivo de volume e garantir melhor adaptação da cerâmica.",
+          "O ponto central é não transformar um procedimento conservador em algo volumoso ou artificial. Por isso o planejamento digital e o mockup são diferenciais importantes para decidir o grau de intervenção antes de executar.",
+        ],
+      },
+      {
+        title: "Como funciona o tratamento?",
+        paragraphs: [
+          "Depois da consulta inicial, são feitos registros fotográficos, estudo do sorriso, moldagem ou escaneamento e simulações. O mockup permite que o paciente visualize o caminho estético antes da etapa laboratorial, reduzindo improviso e alinhando expectativa.",
+          "Na fase final, a cimentação é feita dente a dente, com controle de cor, adaptação e acabamento. O cuidado nessa etapa influencia diretamente longevidade, naturalidade e saúde gengival ao redor das peças.",
+        ],
+      },
+      {
+        title: "Quanto tempo duram as lentes de contato dentais?",
+        paragraphs: [
+          "A durabilidade depende de indicação correta, mordida, material, técnica de cimentação e hábitos do paciente. Com manutenção periódica e higiene adequada, as lentes de contato dentais podem ter boa longevidade clínica.",
+          "Bruxismo não controlado, trauma, higiene deficiente e escolhas estéticas exageradas aumentam o risco de falhas. Durabilidade, nesse contexto, é sempre resultado de planejamento mais comportamento.",
+        ],
+      },
+      {
+        title: "Quantas lentes normalmente são colocadas?",
+        paragraphs: [
+          "O número varia conforme a linha do sorriso, a necessidade estética e o equilíbrio com os dentes vizinhos. Não existe quantidade fixa que sirva para todos.",
+        ],
+      },
+      {
+        title: "Preciso fazer clareamento antes das lentes?",
+        paragraphs: [
+          "Muitas vezes, sim. Clarear os dentes que não receberão cerâmica ajuda a construir um resultado mais harmônico e previsível.",
+        ],
+      },
+      {
+        title: "Lente de contato dental é para qualquer pessoa?",
+        paragraphs: [
+          "Não. O tratamento exige indicação correta, boa saúde periodontal e planejamento para evitar exageros estéticos ou desgaste desnecessário.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "ortodontia",
+    title: "Ortodontia",
+    lead: [
+      "Ortodontia é a especialidade responsável por corrigir o posicionamento dos dentes e, em muitos casos, a relação entre as arcadas. O tratamento melhora estética, função mastigatória, higiene e estabilidade do sorriso ao longo do tempo.",
+      "Na clínica, o planejamento ortodôntico considera maloclusões como sobremordida, mordida aberta, mordida cruzada, diastema e apinhamento. A decisão entre aparelho convencional e Invisalign depende do tipo de movimentação necessária, da rotina do paciente e do controle esperado durante o tratamento.",
+    ],
+    items: [
+      {
+        title: "Adultos também podem fazer ortodontia?",
+        paragraphs: [
+          "Sim. O tratamento ortodôntico não é exclusivo de adolescentes. Muitos adultos procuram ortodontia para alinhar dentes, corrigir mordida, preparar reabilitações ou melhorar a saúde gengival e a facilidade de higienização.",
+          "O que muda é o planejamento. Em pacientes adultos, a avaliação costuma considerar desgastes prévios, restaurações, implantes, periodonto e expectativa estética com mais profundidade.",
+        ],
+      },
+      {
+        title: "Aparelho fixo ou Invisalign: como escolher?",
+        paragraphs: [
+          "O aparelho convencional continua sendo uma solução eficiente para muitos casos. Já o Invisalign oferece uma alternativa discreta e removível, com alto apelo para adultos que valorizam estética e praticidade.",
+          "O melhor sistema é o que entrega o movimento planejado com previsibilidade. Em casos leves e moderados, os alinhadores podem funcionar muito bem; em situações mais complexas, a escolha depende de avaliação criteriosa do ortodontista.",
+        ],
+      },
+      {
+        title: "Tempo médio estimado por complexidade",
+        list: [
+          "Leve (diastema simples): 12–18 meses",
+          "Moderado (apinhamento): 18–24 meses",
+          "Severo (mordida cruzada): 24–36 meses",
+        ],
+      },
+      {
+        title: "Tempo de tratamento é estimativa, não promessa.",
+        paragraphs: [
+          "Colaboração do paciente, uso correto de alinhadores, comparecimento às consultas e complexidade biomecânica interferem diretamente na duração final.",
+        ],
+      },
+      {
+        title: "Ortodontia tem limite de idade?",
+        paragraphs: [
+          "Não existe uma idade máxima fixa. O mais importante é haver saúde bucal e periodontal suficientes para sustentar o tratamento com segurança.",
+        ],
+      },
+      {
+        title: "Invisalign funciona para casos graves?",
+        paragraphs: [
+          "Alguns casos complexos podem ser tratados com alinhadores, mas isso depende de diagnóstico preciso, biomecânica adequada e boa colaboração do paciente.",
+        ],
+      },
+      {
+        title: "O que acontece se eu parar o tratamento?",
+        paragraphs: [
+          "Interromper a ortodontia antes do tempo pode comprometer o resultado, favorecer recidiva e prolongar ainda mais o processo depois.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "periodontia",
+    title: "Periodontia",
+    lead: [
+      "A periodontia é a área da odontologia que cuida da gengiva, do osso e dos demais tecidos de suporte dos dentes. O tratamento periodontal pode ir desde o controle de gengivite até procedimentos cirúrgicos mais avançados para recessões, sorriso gengivoso, enxertos e regeneração.",
+      "Segundo dados frequentemente citados pela SOBRAPE, cerca de 75% da população acima dos 25 anos apresenta algum nível de doença periodontal. Isso ajuda a explicar por que a periodontia é tão importante não apenas para a saúde bucal, mas também para o controle de impactos sistêmicos associados a diabetes, doenças cardiovasculares, osteoporose e até AVC.",
+    ],
+    items: [
+      {
+        title: "Quais os sinais de que preciso de um periodontista?",
+        paragraphs: [
+          "Grande parte dos problemas periodontais começa sem dor, o que retarda a busca por tratamento. Sangramento gengival ao escovar, mau hálito persistente, retração da gengiva, mobilidade dentária e alteração na cor ou no volume gengival merecem investigação.",
+        ],
+        list: [
+          "Sangramento frequente ao escovar ou usar fio dental.",
+          "Gengiva inchada, avermelhada ou escurecida.",
+          "Retração gengival e exposição de raiz.",
+          "Mau hálito persistente e sensibilidade.",
+          "Dente com mobilidade ou sensação de alongamento.",
+        ],
+      },
+      {
+        title: "Gengivite, periodontite e progressão da doença",
+        paragraphs: [
+          "A gengivite é a fase inicial e reversível da inflamação gengival. Quando não tratada, ela pode evoluir para periodontite, situação em que o suporte ósseo e ligamentar do dente passa a ser comprometido.",
+          "Esse avanço pode levar a perda de inserção, mobilidade e até perda dentária. Por isso, o tratamento periodontal não deve ser visto apenas como limpeza, mas como uma etapa central da manutenção de saúde bucal.",
+        ],
+      },
+      {
+        title: "Sorriso gengivoso, recessão e técnicas periodontais",
+        paragraphs: [
+          "O sorriso gengivoso pode estar ligado a excesso de gengiva, crescimento ósseo, contração labial ou erupção passiva alterada. O tratamento precisa respeitar a causa, podendo envolver cirurgia plástica periodontal, reposicionamento de lábio, toxina botulínica ou integração com reabilitação estética.",
+          "Nos casos de retração gengival, técnicas menos invasivas como a tunelização ajudam a recobrir raízes expostas com melhor pós-operatório e sem cicatrizes extensas. Em situações específicas, enxertos de tecido ou materiais biocompatíveis também entram no planejamento.",
+        ],
+      },
+      {
+        title: "Enxerto ósseo e saúde sistêmica",
+        paragraphs: [
+          "Quando há perda de estrutura de suporte, o enxerto ósseo pode ser indicado para reconstruir volume e preparar a região para tratamentos futuros, inclusive implantes. A escolha da técnica depende da anatomia e do objetivo funcional do caso.",
+          "Além da repercussão local, a inflamação periodontal crônica se relaciona a condições sistêmicas relevantes. Esse elo entre boca e organismo precisa ser considerado em pacientes com diabetes, doenças cardiovasculares ou histórico de AVC.",
+        ],
+      },
+      {
+        title: "Saúde gengival não é detalhe estético.",
+        paragraphs: [
+          "Doença periodontal ativa compromete dentes, implantes e reabilitações. Também pode influenciar a saúde sistêmica de pacientes suscetíveis.",
+        ],
+      },
+      {
+        title: "Gengivite tem cura?",
+        paragraphs: [
+          "Sim, em geral a gengivite pode ser controlada e revertida quando tratada precocemente com higiene correta e acompanhamento profissional.",
+        ],
+      },
+      {
+        title: "Periodontia dói?",
+        paragraphs: [
+          "Os procedimentos são planejados para conforto e variam conforme o caso. Muitas abordagens atuais são menos invasivas e mais tranquilas do que o paciente imagina.",
+        ],
+      },
+      {
+        title: "Periodontia é coberta por convênio?",
+        paragraphs: [
+          "Isso depende do plano e do procedimento. A confirmação precisa ser feita caso a caso, porque cobertura varia bastante.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "protese-dentaria",
+    title: "Prótese dentária",
+    lead: [
+      "A prótese dentária é a especialidade voltada para reconstruir ou substituir dentes perdidos, devolvendo mastigação, estética e dicção. O planejamento protético correto não considera apenas a aparência do sorriso, mas também estabilidade, conforto, higiene e integração com tecidos gengivais e implantes.",
+      "Na clínica, a indicação entre coroa, ponte, prótese removível, protocolo fixo, overdenture ou prótese sobre implante depende do número de dentes perdidos, da qualidade óssea, da saúde periodontal e da expectativa funcional de cada paciente.",
+    ],
+    items: [
+      {
+        title: "Quais tipos de prótese existem?",
+        paragraphs: [
+          "A taxonomia protética inclui soluções fixas, removíveis, totais, parciais, protocolos, overdentures, próteses sobre implante e também reabilitações estéticas indiretas, como facetas e coroas unitárias. Cada uma atende uma indicação diferente.",
+          "O erro mais comum é tentar escolher a prótese antes de compreender o caso clínico. O tipo ideal é o que atende função, estética, higienização e estabilidade no longo prazo.",
+        ],
+      },
+      {
+        title: "Qual tipo de prótese é indicado para meu caso?",
+        paragraphs: [
+          "Para perdas unitárias, uma coroa ou um implante com coroa pode ser a solução mais conservadora. Em perdas parciais, ponte fixa, prótese parcial removível ou reabilitação sobre implantes entram na análise. Já na ausência total dos dentes, dentadura, protocolo fixo e overdenture são caminhos possíveis.",
+          "Essa escolha depende de exame clínico, distribuição das perdas, volume ósseo, estabilidade desejada, rotina de higiene e orçamento. O tratamento mais indicado é o que entrega resultado estável, não o que parece mais simples no início.",
+        ],
+      },
+      {
+        title: "Comparativo de tipos de prótese",
+        list: [
+          "Coroa unitária: não removível, implante opcional — dente único danificado.",
+          "Ponte fixa: não removível, sem implante — perda de 1 dente.",
+          "Protocolo fixo: não removível, implante necessário (4–6 unidades) — perda total do arco.",
+          "Overdenture: removível, implante necessário (2–4 unidades) — alternativa à dentadura.",
+          "Prótese removível: removível, sem implante — perda parcial ou total.",
+        ],
+      },
+      {
+        title: "Quanto tempo dura uma prótese dentária?",
+        paragraphs: [
+          "A duração varia conforme material, ajuste, higiene e manutenção periódica. Próteses bem planejadas e acompanhadas tendem a ter melhor longevidade.",
+        ],
+      },
+      {
+        title: "Como higienizar corretamente?",
+        paragraphs: [
+          "A higiene muda conforme o tipo de prótese. Próteses fixas, removíveis e sobre implante exigem técnicas e acessórios específicos orientados na consulta.",
+        ],
+      },
+      {
+        title: "Convênio cobre prótese dentária?",
+        paragraphs: [
+          "Alguns planos cobrem apenas partes do tratamento ou não cobrem determinados materiais. Isso deve ser confirmado de forma individual.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "implante-dentario",
+    title: "Implante dentário",
+    lead: [
+      "O implante dentário é a solução mais previsível para substituir a raiz de um dente perdido e servir de base para a prótese definitiva. O tratamento devolve estabilidade, mastigação, segurança ao falar e estética com melhor preservação da estrutura bucal em comparação a soluções removíveis convencionais.",
+      "Na Clínica Maurício Araújo, o implante dentário no Rio de Janeiro é planejado com forte base científica e avaliação individual. A produção acadêmica do Dr. Maurício Araújo em preservação de rebordo e periodontia é uma referência internacional e reforça um diferencial real em casos que exigem controle de tecido duro e mole.",
+    ],
+    items: [
+      {
+        title: "Para quem é indicado o implante dentário?",
+        paragraphs: [
+          "O implante é indicado para pacientes que perderam um ou mais dentes e desejam uma reabilitação estável, com melhor retenção e conforto. A indicação depende da saúde geral, da condição gengival, do volume ósseo disponível e do planejamento protético final.",
+          "Em alguns casos, procedimentos complementares como enxertia ou preservação alveolar podem ser necessários para criar base adequada para o implante. Isso faz parte do planejamento, não de uma intercorrência.",
+        ],
+      },
+      {
+        title: "Como funciona o passo a passo do tratamento?",
+        paragraphs: [
+          "O processo normalmente começa com avaliação clínica, exames de imagem e definição do plano cirúrgico. Depois vem a cirurgia para instalação do implante, o período de reparo e, por fim, a fase protética, em que a coroa ou prótese é conectada.",
+          "Em casos selecionados, pode haver implante com carga imediata, quando próteses provisórias são instaladas em 24 a 48 horas. A indicação depende de estabilidade inicial, qualidade óssea e condições clínicas que permitam essa estratégia com segurança.",
+        ],
+      },
+      {
+        title: "Quanto tempo dura um implante dentário?",
+        paragraphs: [
+          "Com manutenção adequada, higiene consistente e acompanhamento periódico, um implante dentário pode ter excelente longevidade. O sucesso não depende apenas do titânio em si, mas do controle de placa, da mordida e da saúde periodontal ao redor.",
+          "Por isso o pós-operatório continua relevante mesmo depois da instalação: higiene, interrupção do cigarro quando necessário, cuidado com a alimentação e visitas regulares são partes do resultado de longo prazo.",
+        ],
+      },
+      {
+        title: "Preservação de rebordo e diferenciais do planejamento",
+        paragraphs: [
+          "Após a perda dentária ou a extração, o osso tende a sofrer reabsorção. A preservação de rebordo busca manter melhor esse contorno para facilitar futuras reabilitações e sustentar o volume do tecido.",
+          "Essa área tem conexão direta com a pesquisa do Dr. Maurício Araújo, frequentemente citada por dentistas em diferentes países. Em termos práticos, isso se traduz em maior sofisticação no planejamento de casos em que implante e preservação tecidual caminham juntos.",
+        ],
+      },
+      {
+        title: "Qual a diferença entre implante e prótese removível?",
+        paragraphs: [
+          "O implante oferece suporte fixo e maior estabilidade. Já a prótese removível pode ser uma alternativa, mas costuma entregar experiência mastigatória e retenção diferentes.",
+        ],
+      },
+      {
+        title: "Quanto tempo leva o processo completo?",
+        paragraphs: [
+          "O tempo total varia de acordo com cicatrização, necessidade de enxertos e estratégia protética. Alguns casos são mais rápidos, outros exigem fases adicionais.",
+        ],
+      },
+      {
+        title: "Implante dentário é doloroso?",
+        paragraphs: [
+          "A cirurgia é feita com anestesia e planejamento controlado. Em geral, o desconforto pós-operatório é manejável e menor do que muitos pacientes imaginam.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "clareamento-dental",
+    title: "Clareamento dental",
+    lead: [
+      "O clareamento dental é o procedimento indicado para devolver a tonalidade natural e brilhante dos dentes, removendo manchas e pigmentações acumuladas ao longo dos anos. Na Clínica Maurício Araújo, priorizamos tratamentos personalizados, com supervisão profissional para garantir eficiência e controle da sensibilidade.",
+      "A técnica pode ser realizada no consultório ou em casa, com acompanhamento, sempre após avaliação clínica que confirme a saúde das gengivas e a ausência de contraindicações.",
+    ],
+    items: [
+      {
+        title: "Como é realizado o clareamento dental?",
+        paragraphs: [
+          "O clareamento pode ser feito com moldeiras individuais para uso domiciliar ou em sessão clínica, utilizando géis clareadores de alta performance. O dentista define a concentração e o tempo de uso, equilibrando resultado estético e conforto do paciente.",
+          "Antes de iniciar, fazemos uma avaliação completa para garantir que o dente e as gengivas estejam saudáveis. Isso é essencial para evitar irritações e garantir que o clareador atue de forma segura e eficaz.",
+        ],
+      },
+      {
+        title: "O clareamento causa sensibilidade?",
+        paragraphs: [
+          "A sensibilidade é um efeito possível, mas perfeitamente manejável. Utilizamos protocolos que minimizam o desconforto, com desensibilizantes específicos e monitoramento durante todo o processo.",
+          "Em casos de pacientes com histórico de dentes sensíveis, o planejamento é ainda mais individualizado para garantir que o procedimento ocorra sem dor.",
+        ],
+      },
+      {
+        title: "Quanto tempo dura o resultado?",
+        paragraphs: [
+          "A duração depende muito dos hábitos alimentares, tabagismo e cuidados de higiene. Manutenções periódicas e bons hábitos ajudam a preservar o branco por mais tempo.",
+          "O clareamento não é permanente, mas é um tratamento seguro e previsível para quem deseja renovar o sorriso.",
+        ],
+      },
+      {
+        title: "O clareamento dental enfraquece o esmalte?",
+        paragraphs: [
+          "Não, quando realizado sob supervisão profissional e com produtos adequados, o clareamento dental não enfraquece o esmalte. O objetivo é remover pigmentos sem alterar a estrutura mineral do dente.",
+        ],
+      },
+      {
+        title: "Qual a diferença entre clareamento caseiro e de consultório?",
+        paragraphs: [
+          "O clareamento de consultório utiliza géis em maior concentração, trazendo resultados mais rápidos. O caseiro usa concentrações menores, é realizado com moldeiras personalizadas pelo paciente e oferece resultados graduais e igualmente eficazes. Em muitos casos, combinamos as duas técnicas para potencializar o efeito.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "sedacao-consciente",
+    title: "Sedação consciente",
+    lead: [
+      "A sedação consciente é a alternativa ideal para pacientes que sentem ansiedade ou medo ao visitar o dentista. Com o suporte de óxido nitroso e monitoramento contínuo, proporcionamos um atendimento relaxante, que permite a execução de procedimentos complexos com muito mais tranquilidade e conforto.",
+      "Na Clínica Maurício Araújo, a sedação é conduzida com total segurança, mantendo o paciente em estado de relaxamento profundo enquanto permanece consciente e capaz de responder a comandos, o que elimina a experiência traumática durante o atendimento.",
+    ],
+    items: [
+      {
+        title: "Como funciona a sedação com óxido nitroso?",
+        paragraphs: [
+          "O óxido nitroso é inalado através de uma máscara nasal, gerando sensação de bem-estar e relaxamento em poucos minutos. O efeito é rápido, seguro e totalmente reversível assim que o gás é interrompido.",
+          "Durante todo o tempo, a equipe monitora os sinais vitais, garantindo um ambiente controlado e seguro. O paciente permanece consciente durante todo o procedimento.",
+        ],
+      },
+      {
+        title: "A sedação é segura?",
+        paragraphs: [
+          "Sim, é um procedimento extremamente seguro e consagrado na odontologia. O óxido nitroso é o método mais utilizado no mundo para alívio de ansiedade, com pouquíssimas contraindicações e efeitos colaterais quase inexistentes.",
+          "Na nossa clínica, seguimos protocolos rigorosos de monitoramento, garantindo total controle sobre a sedação e o bem-estar do paciente.",
+        ],
+      },
+      {
+        title: "Quais procedimentos podem ser feitos com sedação?",
+        paragraphs: [
+          "A sedação consciente pode ser aplicada na maioria dos tratamentos, incluindo implantes, cirurgias, extrações complexas, tratamentos de canal e até procedimentos estéticos mais longos.",
+          "O objetivo é permitir que o paciente realize o cuidado necessário sem trauma, garantindo a saúde bucal mesmo para aqueles que normalmente evitariam o dentista.",
+        ],
+      },
+      {
+        title: "Eu vou ficar dormindo?",
+        paragraphs: [
+          "Não. A sedação consciente com óxido nitroso mantém o paciente acordado e responsivo. A sensação é de relaxamento profundo, eliminando o medo e a ansiedade, mas você continua consciente e capaz de interagir com o dentista.",
+          "Não se trata de anestesia geral, onde o paciente perde a consciência.",
+        ],
+      },
+      {
+        title: "Preciso de acompanhante?",
+        paragraphs: [
+          "Sim, é indispensável vir acompanhado. Embora o efeito do óxido nitroso passe rapidamente após a interrupção do gás, o paciente pode se sentir levemente relaxado ou sonolento após o procedimento. Recomendamos o acompanhante por segurança e conforto durante o retorno para casa.",
+        ],
+      },
+    ],
+  },
+].toSorted((a, b) => a.title.length - b.title.length)
+
+const meta = {
+  title: `Tratamentos Odontológicos - Clínica Maurício Araújo`,
+  description:
+    "Conheça os principais tratamentos odontológicos oferecidos pela Clínica Maurício Araújo, incluindo extração do siso, tratamento de canal, lentes de contato dental, ortodontia, periodontia, prótese dentária e implante dentário. Informações detalhadas sobre cada procedimento, indicações e cuidados.",
+  image: siteConfig.defaultSocialImage,
+  url: Astro.url,
+  schema: {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: treatments.flatMap(t =>
+      t.items
+        .filter(item => item.paragraphs)
+        .map(item => ({
+          "@type": "Question",
+          name: item.title,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.paragraphs!.join(" "),
+          },
+        }))
+    ),
+  },
+} satisfies ComponentProps<typeof BaseLayout>
+---
+
+<BaseLayout {...meta}>
+  <TheHero slot="header">
+    <Title
+      slot="title"
+      size="large"
+      as="h1"
+      class={"text-balance animate-hero [animation-delay:100ms]"}
+    >
+      Conheça os principais tratamentos da clínica
+    </Title>
+    <Description
+      slot="description"
+      class="animate-hero [animation-delay:250ms]"
+    >
+      Organizamos esta página para facilitar a leitura: primeiro uma visão geral
+      dos tratamentos, depois os detalhes de cada área em blocos expansíveis.
+    </Description>
+    <div
+      slot="actions"
+      class="animate-hero flex flex-col gap-2 [animation-delay:400ms]"
+    >
+      <BaseButton
+        as="a"
+        variant="brand"
+        href={siteConfig.whatsAppLink}
+        class="track-conversion"
+        data-lead-type="whatsapp"
+        data-button-location="body"
+      >
+        Agendar avaliação
+        <Icon
+          name="streamline-logos:whatsapp-logo-solid"
+          width={20}
+          slot="icon"
+        />
+      </BaseButton>
+      <BaseButton as="a" href="#tratamentos" variant="white-outline"
+        >Ver tratamentos</BaseButton
+      >
+    </div>
+    <Cover
+      slot="cover"
+      src="images/1.png"
+      alt="Foto da Clinica Maurício Araújo"
+    />
+  </TheHero>
+  <BaseSection
+    id="tratamentos"
+    class="bg-brand-950 py-2 lg:py-8"
+    contentClass="flex gap-2 flex-row sm:gap-6 overflow-x-auto py-3 flex-wrap"
+  >
+    {
+      treatments.toReversed().map(treatment => (
+        <BaseButton
+          as="a"
+          href={`#${treatment.id}`}
+          variant="white-outline"
+          size="small"
+          class="px-6"
+        >
+          {treatment.title}
+        </BaseButton>
+      ))
+    }
+  </BaseSection>
+  {
+    treatments.map((treatment, index) => (
+      <BaseSection
+        id={treatment.id}
+        class:list={[
+          "border-b border-neutral-200 py-14 sm:py-16 lg:py-20",
+          index % 2 === 0 ? "bg-white" : "bg-neutral-50/60",
+        ]}
+      >
+        <div class="mt-10 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-x-14 lg:gap-y-0">
+          <div class="space-y-8" data-animate>
+            <Title as="h2" class="text-neutral-950" size="small">
+              {treatment.title}
+            </Title>
+            <div class="space-y-5 text-lg leading-8 text-neutral-600">
+              {treatment.lead.map((paragraph, index) => (
+                <p data-animate data-delay={`${index + 1}`}>
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            <div class="mb-2 flex justify-center lg:mb-0 lg:justify-start">
+              <BaseButton
+                as="a"
+                href={siteConfig.whatsAppLink}
+                variant="brand"
+                class="track-conversion"
+                data-lead-type="whatsapp"
+                data-button-location="body"
+                data-animate
+                data-delay="1"
+              >
+                Agendar avaliação
+                <Icon
+                  name="streamline-logos:whatsapp-logo-solid"
+                  slot="icon"
+                  width={20}
+                />
+              </BaseButton>
+            </div>
+          </div>
+
+          <AccordionModule.Root class="space-y-3" data-animate>
+            {treatment.items.map(item => (
+              <AccordionModule.Item
+                data-animate
+                data-delay={`${(index + 1) / 10 + 1}`}
+                id={`${treatment.id}--${slugify(item.title)}`}
+                class="group overflow-hidden rounded-xl border border-neutral-200 bg-white"
+              >
+                <AccordionModule.Trigger>
+                  <h3 class="text-base font-semibold leading-snug text-neutral-950">
+                    {item.title}
+                  </h3>
+                  <Icon
+                    name="heroicons-outline:chevron-down"
+                    class="h-5 w-5 shrink-0 transition-transform duration-300 group-data-[state=open]:rotate-180"
+                  />
+                </AccordionModule.Trigger>
+                <AccordionModule.Content>
+                  <div class="space-y-4 border-t border-neutral-200 pt-5">
+                    {item.paragraphs?.map(paragraph => (
+                      <p class="text-sm leading-7 text-neutral-600">
+                        {paragraph}
+                      </p>
+                    ))}
+                    {item.list && (
+                      <ul class="list-inside list-disc space-y-2 text-sm text-neutral-600">
+                        {item.list.map(listItem => (
+                          <li>{listItem}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </AccordionModule.Content>
+              </AccordionModule.Item>
+            ))}
+          </AccordionModule.Root>
+        </div>
+      </BaseSection>
+    ))
+  }
+
+  <BaseSection
+    slot="footer"
+    class="bg-brand-600 py-0 text-white sm:py-0 lg:py-0"
+    containerClass="px-8 py-10 lg:px-12"
+    contentClass="gap-4 lg:mx-auto lg:items-center"
+  >
+    <Title
+      class="text-balance text-white lg:max-w-none"
+      size="small"
+      data-animate
+    >
+      Ainda com dúvidas?
+    </Title>
+    <Description
+      class="text-white/84 text-balance lg:text-center"
+      data-animate
+      data-delay="1"
+    >
+      Agende uma avaliação e receba a indicação mais adequada para o seu caso
+    </Description>
+    <BaseButton
+      as="a"
+      href={siteConfig.whatsAppLink}
+      variant="primary"
+      class="track-conversion"
+      data-lead-type="whatsapp"
+      data-button-location="body"
+      data-animate
+      data-delay="2"
+    >
+      Tire suas dúvidas
+      <Icon
+        name="streamline-logos:whatsapp-logo-solid"
+        slot="icon"
+        width={20}
+      />
+    </BaseButton>
+  </BaseSection>
+</BaseLayout>

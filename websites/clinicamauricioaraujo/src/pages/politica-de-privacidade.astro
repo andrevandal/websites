@@ -1,0 +1,210 @@
+---
+import type { ComponentProps } from "astro/types"
+import BaseLayout from "../layouts/Base.astro"
+import BaseSection from "@components/BaseSection.astro"
+import { siteConfig } from "@/data/site"
+
+const meta = {
+  title: "Política de Privacidade - Clínica Maurício Araújo",
+  description:
+    "Saiba como a Clínica Maurício Araújo coleta, usa e protege seus dados pessoais, em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018).",
+  url: Astro.url,
+} satisfies ComponentProps<typeof BaseLayout>
+---
+
+<BaseLayout {...meta}>
+  <BaseSection class="py-24" contentClass="prose block">
+    <h1>Política de Privacidade</h1>
+    <p>Última atualização: abril de 2026</p>
+    <p>
+      A <strong>Clínica Odontológica Maurício Araújo</strong>, com sede na Av.
+      das Américas, 3500, Bloco 7, Sala 521, Barra da Tijuca, Rio de Janeiro -
+      RJ, é responsável pelo site
+      <strong>clinicamauricioaraujo.com.br</strong> e atua como controladora dos dados
+      pessoais tratados neste ambiente digital, nos termos da Lei Geral de Proteção
+      de Dados Pessoais (LGPD - Lei 13.709/2018).
+    </p>
+
+    <h2>1. Dados coletados</h2>
+    <p>
+      Este site não possui formulários internos nem armazena dados pessoais em
+      banco de dados próprio. Os dados eventualmente tratados provêm de duas
+      fontes:
+    </p>
+    <ul>
+      <li>
+        <strong>Contato iniciado pelo usuário:</strong> ao entrar em contato via e-mail
+        (<a href="mailto:contato@clinicamauricioaraujo.com.br"
+          >contato@clinicamauricioaraujo.com.br</a
+        >), telefone (<a href="tel:+552130886342">(21) 3088-6342</a>) ou
+        WhatsApp (<a href="https://wa.me/5521993615337">(21) 99361-5337</a>), o
+        usuário compartilha os dados que ele próprio inclui na mensagem, como
+        nome, telefone e relato. Esses dados são tratados exclusivamente para
+        responder à solicitação e, quando aplicável, agendar atendimento.
+      </li>
+      <li>
+        <strong>Dados de navegação coletados automaticamente:</strong> utilizamos
+        tecnologias de rastreamento de terceiros que registram informações como endereço
+        IP anonimizado, tipo de dispositivo, navegador, páginas visitadas e duração
+        da sessão. Esses dados são usados para análise de desempenho, mensuração de
+        campanhas publicitárias e criação de audiências de remarketing.
+      </li>
+    </ul>
+
+    <h2>2. Finalidade do tratamento</h2>
+    <ul>
+      <li>Responder a contatos, dúvidas e solicitações de agendamento.</li>
+      <li>
+        Analisar o desempenho do site e identificar oportunidades de melhoria da
+        experiência do usuário.
+      </li>
+      <li>
+        Mensurar a eficácia de campanhas publicitárias no Google Ads e Meta Ads
+        (Facebook/Instagram).
+      </li>
+      <li>
+        Criar audiências de remarketing para exibir anúncios a visitantes do
+        site nas plataformas de publicidade.
+      </li>
+      <li>Cumprir obrigações legais e regulatórias aplicáveis.</li>
+    </ul>
+
+    <h2>3. Base legal (LGPD)</h2>
+    <p>
+      O tratamento dos dados pessoais ocorre com base nas seguintes hipóteses
+      legais previstas no art. 7.º da LGPD:
+    </p>
+    <ul>
+      <li>
+        <strong>Consentimento</strong> (art. 7.º, I): para cookies e tecnologias de
+        rastreamento utilizadas pelo Google e pela Meta para fins analíticos, de conversão
+        e de remarketing.
+      </li>
+      <li>
+        <strong>Legítimo interesse</strong> (art. 7.º, IX): para análise agregada
+        de tráfego com finalidade de melhoria do site, respeitados os direitos e liberdades
+        fundamentais do titular.
+      </li>
+      <li>
+        <strong>Execução de contrato ou procedimentos preliminares</strong>
+        (art. 7.º, V): quando o usuário entra em contato para solicitar agendamento
+        ou informações sobre tratamentos.
+      </li>
+    </ul>
+
+    <h2>4. Cookies e tecnologias de rastreamento</h2>
+    <p>
+      O site utiliza cookies e scripts de terceiros para fins analíticos, de
+      rastreamento de conversões e de remarketing publicitário:
+    </p>
+    <ul>
+      <li>
+        <strong>Google Tag Manager e Google Analytics:</strong> coleta dados de navegação
+        e comportamento no site. Também é utilizado para rastreamento de conversões
+        e audiências do Google Ads. Política de privacidade do Google:
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noopener noreferrer">policies.google.com/privacy</a
+        >.
+      </li>
+      <li>
+        <strong>Meta Pixel (Facebook/Instagram):</strong> utilizado para mensurar
+        o resultado de campanhas no Meta Ads e criar audiências personalizadas e de
+        remarketing no Facebook e Instagram. Política de privacidade da Meta:
+        <a
+          href="https://www.facebook.com/privacy/policy/"
+          target="_blank"
+          rel="noopener noreferrer">facebook.com/privacy/policy</a
+        >.
+      </li>
+    </ul>
+    <p>
+      O usuário pode gerenciar ou desativar cookies nas configurações do seu
+      navegador. Para optar por não receber anúncios personalizados do Google,
+      acesse
+      <a
+        href="https://adssettings.google.com"
+        target="_blank"
+        rel="noopener noreferrer">adssettings.google.com</a
+      >. Para a Meta, acesse as configurações de anúncios da sua conta.
+    </p>
+
+    <h2>5. Compartilhamento de dados</h2>
+    <p>
+      Os dados coletados por ferramentas de terceiros são transmitidos
+      diretamente ao Google e à Meta, conforme as políticas de cada plataforma.
+      A clínica não vende, aluga nem cede dados pessoais a terceiros para fins
+      comerciais alheios à prestação dos serviços descritos nesta política.
+    </p>
+
+    <h2>6. Retenção de dados</h2>
+    <p>
+      Dados de contato são mantidos pelo tempo necessário para atender à
+      solicitação e, quando aplicável, pelo prazo exigido por obrigação legal.
+      Dados de navegação coletados por ferramentas de analytics seguem a
+      política de retenção definida por cada plataforma (por padrão, 14 meses no
+      Google Analytics; até 180 dias no Meta Pixel).
+    </p>
+
+    <h2>7. Direitos do titular</h2>
+    <p>Nos termos do art. 18 da LGPD, o titular dos dados tem direito a:</p>
+    <ul>
+      <li>Confirmar a existência de tratamento;</li>
+      <li>Acessar os dados pessoais tratados;</li>
+      <li>Corrigir dados incompletos, inexatos ou desatualizados;</li>
+      <li>Solicitar anonimização, bloqueio ou eliminação de dados;</li>
+      <li>Revogar o consentimento a qualquer momento;</li>
+      <li>Obter informações sobre compartilhamento com terceiros;</li>
+      <li>
+        Apresentar reclamação à ANPD (Autoridade Nacional de Proteção de Dados).
+      </li>
+    </ul>
+    <p>
+      Para exercer qualquer desses direitos, entre em contato pelo e-mail
+      <a href="mailto:contato@clinicamauricioaraujo.com.br"
+        >contato@clinicamauricioaraujo.com.br</a
+      >.
+    </p>
+
+    <h2>8. Links externos</h2>
+    <p>
+      Este site contém links para plataformas externas (Instagram, Facebook,
+      YouTube, Google Maps, WhatsApp). Ao acessar esses serviços, o usuário
+      estará sujeito às políticas de privacidade das respectivas plataformas. A
+      clínica não se responsabiliza pelo tratamento de dados realizado por
+      terceiros.
+    </p>
+
+    <h2>9. Atualizações desta política</h2>
+    <p>
+      Esta política pode ser revisada a qualquer momento para refletir
+      alterações legais, técnicas ou operacionais. A data de última atualização
+      será sempre indicada no topo deste documento. O uso continuado do site
+      após alterações implica a aceitação da versão vigente.
+    </p>
+
+    <h2>10. Contato</h2>
+    <p>Dúvidas sobre esta política ou sobre o tratamento de dados pessoais:</p>
+    <ul>
+      <li>
+        <strong>Registro profissional:</strong>
+        {siteConfig.cro}
+      </li>
+      <li>
+        <strong>E-mail:</strong>
+        <a href="mailto:contato@clinicamauricioaraujo.com.br"
+          >contato@clinicamauricioaraujo.com.br</a
+        >
+      </li>
+      <li>
+        <strong>Telefone:</strong>
+        <a href="tel:+552130886342">(21) 3088-6342</a>
+      </li>
+      <li>
+        <strong>Endereço:</strong> Av. das Américas, 3500, Bloco 7, Sala 521, Barra
+        da Tijuca, Rio de Janeiro - RJ
+      </li>
+    </ul>
+  </BaseSection>
+</BaseLayout>

@@ -1,0 +1,36 @@
+---
+type Props = {
+  image: string
+  alt: string
+  aspectClass?: string
+  class?: string
+  imageClass?: string
+}
+
+const {
+  image,
+  alt,
+  aspectClass = "aspect-16/10",
+  class: className = "",
+  imageClass = "",
+  ...rest
+} = Astro.props
+---
+
+<article
+  class:list={[
+    "border-brand-200 overflow-hidden rounded-3xl border bg-white",
+    className,
+  ]}
+  {...rest}
+>
+  <img
+    src={image}
+    alt={alt}
+    class:list={[aspectClass, "w-full object-cover", imageClass]}
+    loading="lazy"
+  />
+  <div class="p-6">
+    <slot />
+  </div>
+</article>

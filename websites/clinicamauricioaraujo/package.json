@@ -1,0 +1,31 @@
+{
+  "name": "@websites/clinicamauricioaraujo.com.br",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@astro-community/astro-embed-youtube": "catalog:astro",
+    "@astrojs/check": "catalog:astro",
+    "@astrojs/cloudflare": "catalog:astro",
+    "@astrojs/mdx": "catalog:astro",
+    "@astrojs/partytown": "catalog:astro",
+    "@astrojs/sitemap": "catalog:astro",
+    "@astrojs/ts-plugin": "catalog:astro",
+    "@tailwindcss/typography": "catalog:tailwind",
+    "@tailwindcss/vite": "catalog:tailwind",
+    "astro": "catalog:astro",
+    "astro-iconset": "catalog:astro",
+    "tailwindcss": "catalog:tailwind",
+    "typescript": "catalog:typescript"
+  },
+  "devDependencies": {
+    "@iconify-json/heroicons": "catalog:icons",
+    "@iconify-json/heroicons-outline": "catalog:icons",
+    "@iconify-json/logos": "catalog:icons",
+    "@iconify-json/mdi": "catalog:icons",
+    "@iconify-json/streamline-logos": "catalog:icons",
+    "@iconify/json": "catalog:icons",
+    "clsx": "catalog:tailwind",
+    "tailwind-merge": "catalog:tailwind"
+  }
+}

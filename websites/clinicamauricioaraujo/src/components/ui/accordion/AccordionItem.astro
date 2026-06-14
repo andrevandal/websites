@@ -1,0 +1,23 @@
+﻿---
+import type { HTMLAttributes } from "astro/types"
+import { cn } from "@utils"
+
+type Props = HTMLAttributes<"div"> & {
+  /**
+   * The value of the item
+   */
+  value: string
+}
+
+const { value, class: className, ...rest } = Astro.props
+---
+
+<div
+  class={cn("accordion-item", className)}
+  data-value={value}
+  data-state="closed"
+  {...rest}
+  data-slot="accordion-item"
+>
+  <slot />
+</div>

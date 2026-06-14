@@ -1,0 +1,51 @@
+---
+type Props = {
+  title: string
+  description: string
+  href?: string
+  dark?: boolean
+  class?: string
+}
+
+const {
+  title,
+  description,
+  href,
+  dark = false,
+  class: className = "",
+  ...rest
+} = Astro.props
+
+const Tag = href ? "a" : "div"
+---
+
+<Tag
+  {...rest}
+  {...href ? { href } : {}}
+  class:list={[
+    "focus-visible:ring-brand-300 block rounded-3xl border p-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+    dark
+      ? "hover:border-brand-300 focus-visible:ring-offset-brand-950 border-white/10 bg-white/5 hover:bg-white/10"
+      : "hover:border-brand-300 border-neutral-200 bg-white focus-visible:ring-offset-white",
+    className,
+  ]}
+>
+  <p
+    class:list={[
+      "text-sm font-semibold underline-offset-4",
+      dark
+        ? "hover:text-brand-200 text-white hover:underline"
+        : "hover:text-brand-700 text-neutral-950 hover:underline",
+    ]}
+  >
+    {title}
+  </p>
+  <p
+    class:list={[
+      "mt-3 text-sm leading-7",
+      dark ? "text-white/70" : "text-neutral-600",
+    ]}
+  >
+    {description}
+  </p>
+</Tag>

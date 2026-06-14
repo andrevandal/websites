@@ -1,0 +1,32 @@
+---
+import type { HTMLAttributes } from "astro/types"
+
+import { cn } from "@/utils"
+
+type Props = HTMLAttributes<"section">
+
+const { class: className = "", slot: _, ...rest } = Astro.props
+const hasCover = Astro.slots.has("cover")
+---
+
+<div class:list={cn("bg-brand-950 grid overflow-hidden", className)} {...rest}>
+  {
+    hasCover && (
+      <div class="z-2 before:z-2 relative col-start-1 row-start-1 h-full w-full before:absolute before:inset-0 before:bg-black/70">
+        <slot name="cover" />
+      </div>
+    )
+  }
+  <div class="relative z-10 col-start-1 row-start-1 flex w-full items-stretch">
+    <div class="container h-full">
+      <div
+        class="flex h-full max-w-2xl flex-col items-start justify-center gap-6 py-32 text-white"
+      >
+        <slot name="eyebrow" />
+        <slot name="title" />
+        <slot name="description" />
+        <slot name="actions" />
+      </div>
+    </div>
+  </div>
+</div>

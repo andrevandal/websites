@@ -1,0 +1,135 @@
+---
+import type { ComponentProps } from "astro/types"
+import BaseLayout from "../layouts/Base.astro"
+import BaseSection from "@components/BaseSection.astro"
+import { siteConfig } from "@/data/site"
+
+const meta = {
+  title: "Termos e Condições - Clínica Maurício Araújo",
+  description:
+    "Leia os termos e condições de uso do site da Clínica Maurício Araújo. O conteúdo publicado tem caráter informativo e não substitui avaliação clínica individualizada ou orientação profissional.",
+  url: Astro.url,
+} satisfies ComponentProps<typeof BaseLayout>
+---
+
+<BaseLayout {...meta}>
+  <BaseSection class="py-24" contentClass="prose block">
+    <h1>Termos e Condições de Uso</h1>
+    <p>Última atualização: abril de 2026</p>
+    <p>
+      Ao acessar e utilizar o site
+      <strong>clinicamauricioaraujo.com.br</strong>, o usuário declara ter lido
+      e concordado com estes Termos e Condições de Uso. Caso não concorde com
+      qualquer disposição, recomendamos não utilizar o site.
+    </p>
+
+    <h2>1. Sobre o site</h2>
+    <p>
+      Este site tem caráter exclusivamente institucional e informativo. É
+      operado pela <strong>Clínica Odontológica Maurício Araújo</strong>, com
+      sede na Av. das Américas, 3500, Bloco 7, Sala 521, Barra da Tijuca, Rio de
+      Janeiro - RJ.
+    </p>
+
+    <h2>2. Natureza do conteúdo</h2>
+    <p>
+      As informações publicadas neste site - incluindo descrições de
+      tratamentos, procedimentos, especialidades e resultados - têm finalidade
+      educativa e informativa. Elas <strong>não constituem</strong> diagnóstico odontológico,
+      prescrição, indicação clínica ou substituição de consulta presencial com profissional
+      habilitado.
+    </p>
+    <p>
+      Cada caso é único. A adequação de qualquer tratamento somente pode ser
+      avaliada por cirurgião-dentista em consulta individualizada, mediante
+      exame clínico e análise dos dados do paciente.
+    </p>
+
+    <h2>3. Canais de contato</h2>
+    <p>
+      Os canais de contato disponibilizados no site - e-mail, telefone e
+      WhatsApp - destinam-se a esclarecimento de dúvidas gerais e solicitações
+      de agendamento. O envio de mensagem não garante atendimento imediato e
+      pode depender de confirmação pela equipe da clínica.
+    </p>
+    <p>
+      Não compartilhe informações de saúde sensíveis pelos canais de contato do
+      site. Essas informações devem ser tratadas diretamente com a equipe
+      clínica durante o atendimento.
+    </p>
+
+    <h2>4. Propriedade intelectual</h2>
+    <p>
+      Todo o conteúdo deste site - textos, imagens, logotipo, identidade visual,
+      vídeos e demais materiais - é de propriedade da Clínica Odontológica
+      Maurício Araújo ou utilizado sob licença. É vedada a reprodução,
+      distribuição, modificação ou uso comercial de qualquer elemento sem
+      autorização prévia e expressa.
+    </p>
+    <p>
+      O conteúdo pode ser consultado livremente para uso pessoal e não
+      comercial.
+    </p>
+
+    <h2>5. Links externos</h2>
+    <p>
+      Este site contém links para plataformas externas (redes sociais, mapas,
+      aplicativos de mensagem). A clínica não se responsabiliza pelo conteúdo,
+      disponibilidade ou práticas de privacidade de sites de terceiros.
+    </p>
+
+    <h2>6. Limitação de responsabilidade</h2>
+    <p>
+      A clínica não se responsabiliza por danos decorrentes do uso ou
+      impossibilidade de uso do site, erros, interrupções, vírus ou falhas de
+      terceiros. O site é fornecido no estado em que se encontra, sem garantias
+      de disponibilidade ininterrupta.
+    </p>
+
+    <h2>7. Privacidade</h2>
+    <p>
+      O tratamento de dados pessoais é regido pela nossa
+      <a href="/politica-de-privacidade/">Política de Privacidade</a>, que
+      integra estes Termos por referência.
+    </p>
+
+    <h2>8. Legislação aplicável e foro</h2>
+    <p>
+      Estes Termos são regidos pela legislação brasileira, incluindo o Código de
+      Defesa do Consumidor (Lei 8.078/1990) e a Lei Geral de Proteção de Dados
+      (Lei 13.709/2018). Fica eleito o foro da comarca do Rio de Janeiro - RJ
+      para dirimir eventuais controvérsias.
+    </p>
+
+    <h2>9. Atualizações</h2>
+    <p>
+      Estes Termos podem ser revisados a qualquer momento para refletir
+      alterações legais, técnicas ou operacionais. A data de última atualização
+      será sempre indicada no topo deste documento. O uso continuado do site
+      após alterações implica a aceitação da versão vigente.
+    </p>
+
+    <h2>10. Contato</h2>
+    <p>Dúvidas sobre estes Termos:</p>
+    <ul>
+      <li>
+        <strong>Registro profissional:</strong>
+        {siteConfig.cro}
+      </li>
+      <li>
+        <strong>E-mail:</strong>
+        <a href="mailto:contato@clinicamauricioaraujo.com.br"
+          >contato@clinicamauricioaraujo.com.br</a
+        >
+      </li>
+      <li>
+        <strong>Telefone:</strong>
+        <a href="tel:+552130886342">(21) 3088-6342</a>
+      </li>
+      <li>
+        <strong>Endereço:</strong> Av. das Américas, 3500, Bloco 7, Sala 521, Barra
+        da Tijuca, Rio de Janeiro - RJ
+      </li>
+    </ul>
+  </BaseSection>
+</BaseLayout>

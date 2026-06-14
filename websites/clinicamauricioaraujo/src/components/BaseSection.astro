@@ -1,0 +1,65 @@
+---
+import { cn } from "@utils"
+import type { HTMLTag, Polymorphic } from "astro/types"
+
+type CustomProps = {
+  direction?: "col" | "row" | "row-inverted"
+  background?: "none" | "dark"
+  wrapContent?: boolean
+  containerClass?: string
+  contentClass?: string
+  paddingLess?: boolean
+}
+
+type Props<T extends HTMLTag = "div"> = Polymorphic<{ as: T }> & CustomProps
+
+const {
+  id,
+  as = "section",
+  direction = "col",
+  background = "none",
+  wrapContent = true,
+  class: className = "",
+  containerClass = "",
+  contentClass = "",
+  paddingLess = false,
+} = Astro.props as Props
+
+const Tag = as
+
+const directionClasses = {
+  col: "flex flex-col",
+  row: "flex flex-col lg:flex-row lg:items-center",
+  "row-inverted": "flex flex-col lg:flex-row-reverse lg:items-center",
+}
+
+const backgroundClasses = {
+  none: "",
+  dark: "bg-brand-950 text-white",
+}
+---
+
+<Tag
+  id={id}
+  class:list={cn([
+    {
+      "py-16 lg:py-24": !paddingLess,
+    },
+    backgroundClasses[background],
+    className,
+  ])}
+>
+  <div class:list={cn(["container", containerClass])}>
+    {
+      wrapContent ? (
+        <div class:list={cn([directionClasses[direction], contentClass])}>
+          <slot />
+        </div>
+      ) : (
+        <slot />
+      )
+    }
+
+    <slot name="actions" />
+  </div>
+</Tag>

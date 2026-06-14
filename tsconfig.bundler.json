@@ -1,8 +1,9 @@
 {
   "extends": "./tsconfig.options.json",
   "compilerOptions": {
-    // See: https://moonrepo.dev/docs/guides/javascript/typescript-project-refs#tsconfigoptionsjson
-    "noEmit": true,
+    // // See: https://moonrepo.dev/docs/guides/javascript/typescript-project-refs#tsconfigoptionsjson
+    // "noEmit": true,
+    // "declaration": false,
 
     // Bundler mode
     "moduleResolution": "bundler",

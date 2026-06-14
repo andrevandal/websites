@@ -1,0 +1,26 @@
+---
+import type { HTMLAttributes } from "astro/types"
+import { cn } from "@utils"
+
+type Props = HTMLAttributes<"button">
+
+const { class: className, ...rest } = Astro.props
+---
+
+<button
+  type="button"
+  class={cn(
+    "accordion-trigger",
+    "flex w-full items-center justify-between gap-4 rounded-md py-4",
+    "hover:text-muted-foreground text-left font-medium transition-all",
+    "[&[data-state=open]>svg]:rotate-180",
+    "focus-visible:border-outline focus-visible:ring-outline/50 outline-none focus-visible:ring-3",
+    className
+  )}
+  aria-expanded="false"
+  {...rest}
+  data-slot="accordion-trigger"
+>
+  <slot />
+  <slot name="icon" />
+</button>

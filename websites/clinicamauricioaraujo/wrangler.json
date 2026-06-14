@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "clinicamauricioaraujo",
+  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    "directory": "./dist"
+  },
+  "vars": {
+    "ENVIRONMENT": "development"
+  },
+  "env": {
+    "staging": {
+      "vars": {
+        "ENVIRONMENT": "staging"
+      },
+      "route": "beta.clinicamauricioaraujo.com.br/*"
+    },
+    "production": {
+      "vars": {
+        "ENVIRONMENT": "production"
+      },
+      "routes": ["clinicamauricioaraujo.com.br/*"]
+    }
+  }
+}

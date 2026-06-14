@@ -44,6 +44,11 @@ package-lock.json
 test-results/
 playwright-report/
 .playwright-mcp/
+e2e/.data/
+e2e/.auth/
+
+# Wrangler / Cloudflare
+.wrangler/
 
 # Turso / SQLite
 *.db
@@ -58,6 +63,9 @@ playwright-report/
 !.data/.gitkeep
 
 # Environment
+.env
 .env.*
 !.env.example
 .superpowers/
+
+**/*:Zone.Identifier

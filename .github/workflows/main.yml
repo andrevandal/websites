@@ -17,23 +17,19 @@ concurrency:
 
 jobs:
   check-all:
-    name: Test
+    name: Check all affected apps and packages
     runs-on: ubuntu-latest
-
+    outputs:
+      affected_apps: ${{ steps.affecteds.outputs.apps_affected }}
+      env_to_deploy: ${{ steps.affecteds.outputs.env_to_deploy }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    outputs:
-      affected-websites: ${{ steps.websites.outputs.matrix }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Init
+        uses: ./.github/actions/init
         with:
           fetch-depth: 0
-
-      - name: 📦 Setup toolchain
-        uses: ./.github/actions/setup-toolchain
 
       - name: Validate release config
         run: bun scripts/validate-release-config.ts
@@ -41,85 +37,31 @@ jobs:
       - name: Run CI checks
         run: moon ci :format :lint :testci :typecheck
 
-      - name: Get affected websites
-        id: websites
+      - name: Get affected apps
+        id: affecteds
         run: |
-          MATRIX=$(moon query projects --affected | jq -c '[.projects[] | select(any(.aliases[]; .alias | startswith("@websites/"))) | .id]')
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "apps_affected=$(moon query projects --affected --downstream deep --alias "(websites|apps)/*" | jq '[.[] | sub("^apps/|^websites/"; "")]'" >> $GITHUB_OUTPUT
+          echo "env_to_deploy=${{ github.ref == 'refs/heads/main' && 'staging' || 'dev' }}" >> $GITHUB_OUTPUT
 
-  deploy-main-preview:
-    name: Preview main / ${{ matrix.website }}
+  deploy:
+    name: Deploying ${{ matrix.app }}'s preview to ${{ needs.check-all.outputs.env_to_deploy }}
     needs: check-all
     if: |
-      needs.check-all.outputs.affected-websites != '[]' &&
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
+      needs.check-all.outputs.affected_apps != '[]' &&
+      github.event_name == 'push'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        website: ${{ fromJson(needs.check-all.outputs.affected-websites) }}
+        app: ${{ fromJson(needs.check-all.outputs.affected_apps) }}
 
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Deploy
+        uses: ./.github/actions/deploy
         with:
-          fetch-depth: 0
-
-      - name: 📦 Setup toolchain
-        uses: ./.github/actions/setup-toolchain
-
-      - name: Build
-        run: moon run ${{ matrix.website }}:build
-
-      - name: Deploy to Cloudflare Pages (main preview)
-        run: |
-          PROJECT_NAME=$(jq -r '.name' "websites/${{ matrix.website }}/wrangler.json")
-          bunx wrangler pages deploy "websites/${{ matrix.website }}/dist" \
-            --project-name "$PROJECT_NAME" \
-            --branch "main"
-
-  deploy-websites:
-    name: Deploy ${{ matrix.website }}
-    needs: check-all
-    if: |
-      needs.check-all.outputs.affected-websites != '[]' &&
-      github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        website: ${{ fromJson(needs.check-all.outputs.affected-websites) }}
-
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      DEPLOY_BRANCH: ${{ github.head_ref }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: 📦 Setup toolchain
-        uses: ./.github/actions/setup-toolchain
-
-      - name: Build
-        run: moon run ${{ matrix.website }}:build
-
-      - name: Deploy to Cloudflare Pages
-        run: |
-          PROJECT_NAME=$(jq -r '.name' "websites/${{ matrix.website }}/wrangler.json")
-          DEPLOY_OUTPUT=$(bunx wrangler pages deploy "websites/${{ matrix.website }}/dist" \
-            --project-name "$PROJECT_NAME" \
-            --branch "$DEPLOY_BRANCH" 2>&1)
-          echo "$DEPLOY_OUTPUT"
-          PREVIEW_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[^ ]+\.pages\.dev')
-          gh pr comment "${{ github.event.pull_request.number }}" \
-            --body "Deploy preview (${{ matrix.website }}): $PREVIEW_URL"
+          env: ${{ needs.check-all.outputs.env_to_deploy }}
+          target: ${{ matrix.app }}

@@ -1,0 +1,132 @@
+---
+import type { HTMLTag, Polymorphic } from "astro/types"
+
+import { cn } from "@/utils"
+
+type Sizes = "small" | "medium" | "large"
+
+type CustomProps = {
+  variant?:
+    | "primary"
+    | "primary-outline"
+    | "secondary"
+    | "secondary-outline"
+    | "white-outline"
+    | "brand"
+    | "brand-outline"
+  reverse?: boolean
+  block?: boolean
+  centered?: boolean
+  size?: Sizes
+  increaseSize?: boolean
+}
+
+type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & CustomProps
+
+const {
+  as: Tag = "button",
+  class: className,
+  variant,
+  reverse,
+  size = "base",
+  block = false,
+  centered = false,
+  increaseSize,
+  ...props
+} = Astro.props
+
+const anchorAttrs =
+  Tag === "a" &&
+  "href" in props &&
+  (typeof props.href === "string" || props.href instanceof URL)
+    ? (() => {
+        const href = props?.href?.toString() ?? "#"
+        const isExternal =
+          href.startsWith("http") &&
+          !href.startsWith("/") &&
+          !href.startsWith("#")
+        return {
+          href,
+          ...(isExternal && { target: "_blank", rel: "noopener noreferrer" }),
+        }
+      })()
+    : {}
+---
+
+<Tag
+  class={cn(
+    "btn",
+    {
+      "btn-primary": variant === "primary",
+      "btn-primary-outline": variant === "primary-outline",
+      "btn-secondary": variant === "secondary",
+      "btn-secondary-outline": variant === "secondary-outline",
+      "btn-white-outline": variant === "white-outline",
+      "btn-brand": variant === "brand",
+      "btn-brand-outline": variant === "brand-outline",
+      "btn-reverse": reverse,
+      "btn-block": block,
+      "btn-center": centered,
+      "btn-small": size === "small",
+      "btn-medium": size === "medium",
+      "btn-large": size === "large",
+      "btn-increased": increaseSize,
+    },
+    className
+  )}
+  {...props}
+  {...anchorAttrs}
+>
+  <span><slot /></span>
+  <slot name="icon" />
+</Tag>
+
+<style>
+  @reference "../styles/global.css";
+
+  .btn {
+    @apply box-border flex w-fit flex-row items-center justify-center gap-x-2 whitespace-nowrap rounded-full px-6 py-4 text-base font-semibold transition-all duration-200 ease-out;
+  }
+  .btn-large {
+    @apply h-14 px-6 py-4;
+  }
+  .btn-medium {
+    @apply h-12 px-3 py-3;
+    &.btn-increased {
+      @apply lg:h-14 lg:px-6 lg:py-4;
+    }
+  }
+  .btn-small {
+    @apply h-10 px-6 py-2;
+  }
+  .btn-primary {
+    @apply bg-brand-950 text-brand-50 hover:bg-brand-800 focus:bg-brand-700 ring-4 ring-transparent disabled:opacity-60;
+  }
+  .btn-primary-outline {
+    @apply border-brand-950 text-brand-950 hover:bg-brand-950/15 border focus:border-transparent focus:bg-transparent;
+  }
+  .btn-secondary {
+    @apply text-brand-950 hover:bg-brand-200 focus:bg-brand-600 bg-white disabled:opacity-60;
+  }
+  .btn-secondary-outline {
+    @apply border-brand-950 text-brand-950 hover:bg-brand-950/15 border focus:border-transparent focus:bg-transparent;
+  }
+  .btn-white-outline {
+    @apply border border-white text-white hover:bg-white/15 focus:border-transparent focus:bg-transparent;
+  }
+  .btn-brand {
+    @apply bg-brand-500 hover:bg-brand-600 focus:bg-brand-700 text-white disabled:opacity-60;
+  }
+  .btn-brand-outline {
+    @apply border-brand-300 border text-white hover:bg-white/15 focus:border-transparent focus:bg-transparent;
+  }
+  .btn-center {
+    @apply justify-center;
+  }
+  .btn-block {
+    @apply w-full;
+  }
+  .btn-reverse {
+    @apply flex-row-reverse;
+  }
+</style>

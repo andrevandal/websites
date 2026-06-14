@@ -1,7 +1,5 @@
 $schema: https://moonrepo.dev/schemas/tasks.json
 
-# For typechecking to run correctly, build must run first to generate
-# any necessary type declaration files.
 implicitDeps:
   - ^:build
 
@@ -9,15 +7,21 @@ implicitInputs:
   - package.json
 
 fileGroups:
+  public:
+    - public/**/*
   sources:
     - src/**/*
   tests:
     - "**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}"
+  astro:
+    - "astro.config.{js,mjs,cjs,ts,mts,cts}"
   typescript:
     - tsconfig.json
     - tsconfig.*.json
     - /tsconfig.json
     - /tsconfig.*.json
+  content:
+    - "**/*.{md,mdx,yml,yaml,json}"
 
 tasks:
   format:
@@ -31,8 +35,8 @@ tasks:
       - /.oxfmtrc.json
       - "@globs(sources)"
       - "@globs(tests)"
-      - "**/*.{md,mdx,yml,yaml,json}"
-    deps:
+      - "@globs(content)"
+    dependsOn:
       - format-astro
 
   format-astro:
@@ -44,31 +48,31 @@ tasks:
     inputs:
       - /prettier.config.ts
       - "@globs(sources)"
+      - "@globs(astro)"
 
   formatfix:
-    inputs:
-      - /.oxfmtrc.json
-      - "@globs(sources)"
-      - "@globs(tests)"
-      - "**/*.{md,mdx,yml,yaml,json}"
     command: oxfmt
     args:
       - --config
       - "@in(0)"
       - --write
       - .
-    preset: server # does not run on ci
-    deps:
+    inputs:
+      - /.oxfmtrc.json
+      - "@globs(sources)"
+      - "@globs(tests)"
+      - "@globs(content)"
+    preset: server
+    dependsOn:
       - formatfix-astro
 
   formatfix-astro:
+    extends: format-astro
+    options:
+      mergeArgs: "prepend"
     command: prettier
     args:
       - --write
-      - --no-error-on-unmatched-pattern
-      - "**/*.astro"
-    inputs:
-      - /prettier.config.ts
     preset: server
 
   lint:
@@ -79,9 +83,9 @@ tasks:
       - "@globs(typescript)"
       - "@globs(sources)"
       - "@globs(tests)"
-      - "**/*.{md,mdx,yml,yaml,json}"
+      - "@globs(content)"
       - /.oxlintrc.json
-    deps:
+    dependsOn:
       - lint-astro
 
   lint-astro:
@@ -94,27 +98,21 @@ tasks:
       - "@globs(sources)"
 
   lintfix:
-    inputs:
-      - "@globs(typescript)"
-      - "@globs(sources)"
-      - "@globs(tests)"
-      - /.oxlintrc.json
-    command: oxlint
+    extends: lint
+    options:
+      mergeArgs: "prepend"
     args:
       - --fix
-      - .
-    preset: server # does not run on ci
-    deps:
+    preset: server
+    dependsOn:
       - lintfix-astro
 
   lintfix-astro:
-    command: eslint
+    extends: lint-astro
+    options:
+      mergeArgs: "prepend"
     args:
-      - --no-error-on-unmatched-pattern
-      - "**/*.astro"
       - --fix
-    inputs:
-      - /eslint.config.ts
     preset: server
 
   testci:
@@ -130,7 +128,7 @@ tasks:
 
   test:
     extends: testci
-    preset: server # does not run on ci
+    preset: server
 
   typecheck:
     command: tsc

@@ -1,0 +1,36 @@
+﻿---
+import { type AvailableIconsName } from "@/types"
+import { Icon as BaseIcon } from "astro-iconset/components"
+
+type Props = Parameters<typeof BaseIcon>[0] & {
+  name: AvailableIconsName
+}
+
+const {
+  name,
+  width = 24,
+  height,
+  class: className,
+  style: styleRaw = "",
+  slot: _,
+  ...props
+} = Astro.props
+
+const minWidth = typeof width === "number" ? `${width}px` : width
+const minHeight =
+  typeof height === "number" ? `${height}px` : (height ?? minWidth)
+
+const style =
+  styleRaw && typeof styleRaw === "object"
+    ? { minWidth, minHeight, ...styleRaw }
+    : `min-width: ${minWidth}; min-height: ${minHeight}; ${styleRaw}`.trimEnd()
+---
+
+<BaseIcon
+  name={name}
+  style={style}
+  width={width}
+  height={height ?? width}
+  class:list={["icon aspect-square shrink-0", className]}
+  {...props}
+/>

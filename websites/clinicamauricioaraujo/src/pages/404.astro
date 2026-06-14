@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../layouts/Base.astro"
+import Eyebrow from "../components/Eyebrow.astro"
+import { siteConfig } from "../data/site"
+import type { ComponentProps } from "astro/types"
+import BaseSection from "@components/BaseSection.astro"
+import Title from "@components/Title.astro"
+import Description from "@components/Description.astro"
+import BaseButton from "@components/BaseButton.astro"
+
+const meta = {
+  title: `Página não encontrada | Clínica Maurício Araújo`,
+  description:
+    "A página que você tentou acessar não foi encontrada. Volte para a home, conheça os tratamentos ou fale com a clínica.",
+  image: siteConfig.defaultSocialImage,
+  url: Astro.url,
+  footerLess: true,
+} satisfies ComponentProps<typeof BaseLayout>
+---
+
+<BaseLayout {...meta}>
+  <BaseSection
+    class="bg-brand-950 grid min-h-[calc(100vh-4.5rem)] py-0"
+    containerClass="py-16 self-center"
+    contentClass="h-full flex flex-col text-center justify-center gap-4"
+  >
+    <Eyebrow class="text-white/90">Erro 404</Eyebrow>
+    <Title class="text-brand-300/90 mx-auto max-w-none" size="large"
+      >Esta página não está disponível</Title
+    >
+    <Description class="mx-auto text-white/90"
+      >O link pode estar desatualizado, digitado incorretamente ou a página pode
+      ter sido removida durante a reorganização do site.</Description
+    >
+    <div class="mx-auto mt-4">
+      <BaseButton as="a" href="/" variant="brand">Voltar ao Ínicio</BaseButton>
+    </div>
+  </BaseSection>
+</BaseLayout>

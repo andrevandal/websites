@@ -1,0 +1,125 @@
+---
+import { siteConfig } from "../data/site"
+import Icon from "./Icon.astro"
+import BaseButton from "./BaseButton.astro"
+import { getImageUrl } from "@utils"
+
+const currentYear = new Date().getFullYear()
+---
+
+<footer class="flex flex-col">
+  <slot />
+  <div class="bg-brand-950 text-white">
+    <div class="container py-16">
+      <div
+        class="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.2fr_1fr_1fr] lg:items-start"
+      >
+        <div class="space-y-5">
+          <img
+            src={getImageUrl("images/logos/logo-dark.png", "h_48")}
+            srcset={`${getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_48")} 1x, 
+            ${getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_68")} 1.5x,
+            ${getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_96")} 2x,
+            ${getImageUrl("images/logos/logo-dark.png", "f_auto,q_90,h_144")} 3x`}
+            alt={siteConfig.name}
+            class="h-12 w-auto"
+            loading="lazy"
+          />
+          <p class="text-white/72 max-w-md text-balance text-sm leading-7">
+            Odontologia com base científica, equipe especializada e atendimento
+            na Barra da Tijuca.
+          </p>
+          <BaseButton
+            as="a"
+            href={siteConfig.whatsAppLink}
+            variant="brand"
+            size="small"
+            class="track-conversion"
+            data-lead-type="whatsapp"
+            data-button-location="footer"
+          >
+            Agendar
+            <Icon
+              name="streamline-logos:whatsapp-logo-solid"
+              width={20}
+              slot="icon"
+            />
+          </BaseButton>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold tracking-[-0.03em]">Contato</h2>
+          <ul class="text-white/72 mt-4 space-y-3 text-sm leading-7">
+            <li>
+              <a href={siteConfig.phoneLink} class="hover:text-white">
+                {siteConfig.phone}
+              </a>
+            </li>
+            <li>
+              <a
+                href={siteConfig.whatsAppLink}
+                target="_blank"
+                rel="noreferrer"
+                class="track-conversion hover:text-white"
+                data-lead-type="whatsapp"
+                data-button-location="footer"
+              >
+                {siteConfig.whatsApp}
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${siteConfig.email}`} class="hover:text-white"
+                >{siteConfig.email}</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-semibold tracking-[-0.03em]">Endereço</h2>
+          <ul
+            class="text-white/72 mt-4 space-y-3 text-balance text-sm leading-7"
+          >
+            <li>{siteConfig.address}</li>
+            <a
+              href={siteConfig.mapLink}
+              target="_blank"
+              rel="noreferrer"
+              class="hover:text-white">Ver localização</a
+            >
+          </ul>
+        </div>
+      </div>
+
+      <div
+        class="mt-6 flex flex-col gap-4 text-sm text-white/60 lg:flex-row lg:items-center lg:justify-between"
+      >
+        <div class="flex flex-col gap-x-4 gap-y-2 lg:flex-row">
+          <a href="/sobre" class="hover:text-white">Sobre</a>
+          <a href="/politica-de-privacidade" class="hover:text-white"
+            >Política de privacidade</a
+          >
+          <a href="/termos-e-condicoes" class="hover:text-white"
+            >Termos e condições</a
+          >
+          <a
+            href={siteConfig.social.instagram}
+            target="_blank"
+            rel="noreferrer"
+            class="hover:text-white">Instagram</a
+          >
+          <a
+            href={siteConfig.social.youtube}
+            target="_blank"
+            rel="noreferrer"
+            class="hover:text-white">YouTube</a
+          >
+        </div>
+        <p>
+          {siteConfig.cro} · Copyright © {currentYear}. Todos os direitos
+          reservados.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

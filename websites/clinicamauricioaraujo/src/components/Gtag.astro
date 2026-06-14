@@ -1,0 +1,66 @@
+---
+type Props = {
+  placement: "head" | "body"
+  googleAnalyticsId?: string
+  conversionId?: string
+  conversionLabel?: string
+}
+const { placement, googleAnalyticsId, conversionId, conversionLabel } =
+  Astro.props
+---
+
+{
+  placement === "head" && googleAnalyticsId && (
+    <script
+      is:inline
+      type="text/partytown"
+      set:html={`
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { dataLayer.push(arguments); };
+          window.gtag('js', new Date());
+          window.gtag('config', '${googleAnalyticsId}');
+          
+          function gtag_report_conversion(url) {
+            var callback = function () {
+              if (typeof(url) != 'undefined') {
+                window.location = url;
+              }
+            };
+            window.gtag('event', 'conversion', {
+                'send_to': '${conversionId}/${conversionLabel}',
+                'value': 1.0,
+                'currency': 'BRL',
+                'event_callback': callback
+            });
+            return false;
+          }
+
+          document.addEventListener('click', (e) => {
+            const target = e.target.closest('.track-conversion');
+            if (target) {
+              // GA4
+              window.gtag('event', 'generate_lead', {
+                'lead_type': target.dataset.leadType || 'whatsapp',
+                'link_url': target.href || target.querySelector('a')?.href || '',
+                'link_text': target.innerText || '',
+                'button_location': target.dataset.buttonLocation || 'unknown'
+              });
+              
+              // GAds
+              ${conversionId && conversionLabel ? `gtag_report_conversion(target.href || target.querySelector('a')?.href);` : ""}
+            }
+          });
+
+      `}
+    />
+  )
+}
+{
+  placement === "body" && googleAnalyticsId && (
+    <script
+      is:inline
+      src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+      type="text/partytown"
+    />
+  )
+}

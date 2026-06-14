@@ -1,0 +1,254 @@
+---
+import BaseSection from "@components/BaseSection.astro"
+import TextCard from "@components/TextCard.astro"
+import VideoCard from "@components/VideoCard.astro"
+import BaseLayout from "../layouts/Base.astro"
+import { siteConfig, videoTestimonials } from "../data/site"
+import { specialties } from "../data/specialties"
+import type { ComponentProps } from "astro/types"
+import TheHero from "@components/TheHero.astro"
+import Eyebrow from "@components/Eyebrow.astro"
+import Title from "@components/Title.astro"
+import Cover from "@components/Cover.astro"
+import Description from "@components/Description.astro"
+import { cn } from "@utils"
+import BaseButton from "@components/BaseButton.astro"
+import Icon from "@components/Icon.astro"
+
+const meta = {
+  title: `Dentista na Barra da Tijuca - Clínica Maurício Araújo`,
+  description: siteConfig.description,
+  image: siteConfig.defaultSocialImage,
+  url: Astro.url,
+} satisfies ComponentProps<typeof BaseLayout>
+
+const isSpecialitiesOdd = specialties.length % 2 === 1
+---
+
+<BaseLayout {...meta}>
+  <TheHero slot="header">
+    <Eyebrow class="text-brand-500" slot="eyebrow" pill
+      >REFERÊNCIA MUNDIAL NO BRASIL</Eyebrow
+    >
+    <Title
+      slot="title"
+      size="large"
+      as="h1"
+      class="animate-hero [animation-delay:100ms]"
+    >
+      Odontologia de alto padrão,<br />baseada em evidência
+    </Title>
+    <Description
+      slot="description"
+      class="animate-hero [animation-delay:250ms]"
+    >
+      Na Barra da Tijuca, a Clínica Maurício Araújo reúne equipe especializada,
+      planejamento individual e atendimento acolhedor para tratamentos mais
+      previsíveis e tranquilos.
+    </Description>
+    <div
+      slot="actions"
+      class="animate-hero flex flex-col gap-2 [animation-delay:400ms]"
+    >
+      <BaseButton
+        as="a"
+        variant="brand"
+        href={siteConfig.whatsAppLink}
+        class="track-conversion px-6"
+        data-lead-type="whatsapp"
+        data-button-location="body"
+      >
+        Agendar consulta
+
+        <Icon
+          name="streamline-logos:whatsapp-logo-solid"
+          width={20}
+          slot="icon"
+        />
+      </BaseButton>
+      <BaseButton
+        as="a"
+        variant="white-outline"
+        href="/#tratamentos"
+        class="track-conversion border border-neutral-300 px-6"
+        data-lead-type="contact"
+        data-button-location="body"
+      >
+        Tratamentos
+        <Icon name="heroicons:arrow-down" width={20} slot="icon" />
+      </BaseButton>
+    </div>
+    <Cover slot="cover" src="images/2.png" alt="" />
+  </TheHero>
+  <BaseSection id="sobre" as="section" contentClass="gap-4">
+    <header class="flex flex-col gap-2" data-animate>
+      <Eyebrow class="text-brand-500 mx-auto text-balance text-center"
+        >Sobre</Eyebrow
+      >
+      <Title
+        size="medium"
+        class="text-brand-800 mx-auto text-balance text-center"
+        as="h2"
+      >
+        Conheça a clínica, o Dr. Maurício Araújo e a equipe
+      </Title>
+      <Description
+        class="mx-auto mt-2 text-balance text-center text-neutral-700"
+      >
+        Referência em odontologia de alto padrão na Barra da Tijuca, Recreio e
+        Jacarepaguá. Conheça a estrutura da clínica, a trajetória do Dr.
+        Maurício e o trabalho integrado da equipe.
+      </Description>
+    </header>
+    <div class="flex flex-col gap-4 py-4 lg:flex-row">
+      <article class="mx-auto flex flex-col gap-x-4 gap-y-8 lg:flex-row">
+        <TextCard
+          title="A clínica"
+          description="Estrutura, proposta de atendimento e a forma como a clínica recebe e acompanha cada paciente."
+          href="/sobre/#clinica"
+          class="lg:max-w-xs"
+          data-animate
+          data-delay="1"
+        />
+        <TextCard
+          title="Dr. Maurício"
+          description="Trajetória acadêmica e relevância científica que ajudam a sustentar a identidade da clínica."
+          href="/sobre/#dr-mauricio"
+          class="lg:max-w-xs"
+          data-animate
+          data-delay="2"
+        />
+        <TextCard
+          title="Equipe"
+          description="Cinco profissionais em áreas complementares, com atuação integrada no planejamento dos tratamentos."
+          href="/sobre/#equipe"
+          class="lg:max-w-xs"
+          data-animate
+          data-delay="3"
+        />
+      </article>
+    </div>
+
+    <BaseButton
+      as="a"
+      href="/sobre/"
+      variant="brand"
+      class="track-conversion mx-auto mt-8 max-w-md"
+      block
+      slot="actions"
+      data-animate
+      data-lead-type="contact"
+      data-button-location="body"
+    >
+      Saiba mais
+    </BaseButton>
+  </BaseSection>
+
+  <BaseSection id="tratamentos" as="section" background="dark">
+    <header class="flex flex-col gap-2" data-animate>
+      <Eyebrow class="text-brand-200 mx-auto text-balance text-center"
+        >Tratamentos</Eyebrow
+      >
+      <Title
+        size="medium"
+        class="mx-auto text-balance text-center text-white"
+        as="h2"
+      >
+        Conheça os principais tratamentos da clínica
+      </Title>
+    </header>
+    <div
+      class="mt-14 grid gap-x-6 gap-y-6 lg:mx-auto lg:max-w-fit lg:grid-cols-2 lg:justify-items-center"
+    >
+      {
+        specialties.map((specialty, index) => (
+          <TextCard
+            title={specialty.shortTitle}
+            description={specialty.description}
+            href={`/tratamentos/#${specialty.slug}`}
+            dark={true}
+            class="lg:max-w-109 h-full"
+            data-animate=""
+            data-delay={String((index % 4) + 1)}
+          />
+        ))
+      }
+
+      <div
+        class:list={cn(
+          "mt-6 flex flex-wrap items-center justify-center gap-4",
+          {
+            "lg:col-span-2 lg:grid lg:grid-cols-2": isSpecialitiesOdd,
+          }
+        )}
+      >
+        <BaseButton
+          as="a"
+          href="/tratamentos/"
+          variant="brand"
+          block
+          class:list={cn(
+            { "lg:max-w-xs": isSpecialitiesOdd },
+            "track-conversion"
+          )}
+          data-lead-type="contact"
+          data-button-location="body"
+        >
+          Ver todos
+        </BaseButton>
+        <BaseButton
+          as="a"
+          href={siteConfig.whatsAppLink}
+          variant="white-outline"
+          class:list={cn(
+            { "lg:max-w-xs": isSpecialitiesOdd },
+            "track-conversion"
+          )}
+          block
+          data-lead-type="whatsapp"
+          data-button-location="body"
+        >
+          Agendar avaliação
+        </BaseButton>
+      </div>
+    </div>
+  </BaseSection>
+
+  <BaseSection id="depoimentos" as="section">
+    <header class="flex flex-col gap-2" data-animate>
+      <Eyebrow class="text-brand-500 mx-auto text-balance text-center"
+        >Depoimentos</Eyebrow
+      >
+      <Title
+        size="medium"
+        class="text-brand-800 mx-auto text-balance text-center"
+        as="h2"
+      >
+        Histórias de quem já passou pela clínica
+      </Title>
+    </header>
+    <div
+      class="mt-12 flex flex-col gap-6 lg:grid lg:grid-cols-2"
+      data-testimonial-grid
+    >
+      {
+        videoTestimonials
+          .map(item => ({
+            ...item,
+            thumbnail: `https://img.youtube.com/vi/${item.videoId}/hqdefault.jpg`,
+            embedUrl: `https://www.youtube-nocookie.com/embed/${item.videoId}?autoplay=1&rel=0&modestbranding=1`,
+          }))
+          .map((item, index) => (
+            <VideoCard
+              author={item.author}
+              context={item.context}
+              videoId={item.videoId}
+              embedUrl={item.embedUrl}
+              data-animate=""
+              data-delay={String((index % 2) + 1)}
+            />
+          ))
+      }
+    </div>
+  </BaseSection>
+</BaseLayout>

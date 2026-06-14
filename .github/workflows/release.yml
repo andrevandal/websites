@@ -16,13 +16,13 @@ jobs:
   release:
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      affected_websites: ${{ steps.websites.outputs.matrix }}
+      affected_apps: ${{ steps.release.outputs.affected_apps }}
+      affected_packages: ${{ steps.release.outputs.affected_packages }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Init
+        uses: ./.github/actions/init
         with:
-          fetch-depth: 0 # Fetch all history for generating new release notes
+          fetch-depth: 0
 
       - name: Create Release
         uses: googleapis/release-please-action@v4
@@ -30,33 +30,21 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📦 Setup toolchain
-        uses: ./.github/actions/setup-toolchain
-
-      # Any publish command or script for packages should be run from the script file
-      - name: Publish Release
-        if: ${{ steps.release.outputs.release_created }}
-        run: bun ./scripts/release.ts
-
-      - name: Get affected websites
-        if: ${{ steps.release.outputs.release_created }}
-        id: websites
+      - name: Get affected apps and packages
+        if: steps.release.outputs.release_created == 'true'
         run: |
-          MATRIX=$(moon query projects --affected | jq -c '[.projects[] | select(any(.aliases[]; .alias | startswith("@websites/"))) | .id]')
-          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "affected_apps=$(echo '${{ steps.release.outputs.paths_released }}' | jq '[.[] | select(startswith("apps/") or startswith("websites/")) | sub("^apps/|^websites/"; "")]'" >> $GITHUB_OUTPUT
+          echo "affected_packages=$(echo '${{ steps.release.outputs.paths_released }}' | jq '[.[] | select(startswith("packages/")) | sub("^packages/"; "")]'" >> $GITHUB_OUTPUT
 
-  deploy-websites:
-    name: Deploy ${{ matrix.website }}
+  deploy:
+    name: Deploy to Production
     needs: release
-    if: |
-      needs.release.outputs.release_created == 'true' &&
-      needs.release.outputs.affected_websites != '[]' &&
-      needs.release.outputs.affected_websites != ''
+    if: ${{ needs.release.outputs.affected_apps != null }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        website: ${{ fromJson(needs.release.outputs.affected_websites || '[]') }}
+        app: ${{ fromJson(needs.release.outputs.affected_apps) }}
 
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -64,19 +52,8 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Deploy
+        uses: ./.github/actions/deploy
         with:
-          fetch-depth: 0
-
-      - name: 📦 Setup toolchain
-        uses: ./.github/actions/setup-toolchain
-
-      - name: Build
-        run: moon run ${{ matrix.website }}:build
-
-      - name: Deploy to Cloudflare Pages
-        run: |
-          PROJECT_NAME=$(jq -r '.name' "websites/${{ matrix.website }}/wrangler.json")
-          bunx wrangler pages deploy "websites/${{ matrix.website }}/dist" \
-            --project-name "$PROJECT_NAME"
+          env: production
+          target: ${{ matrix.app }}

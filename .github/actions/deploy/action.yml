@@ -1,0 +1,24 @@
+﻿name: "Deploy"
+description: "Checkout code, install Node.js and bun, then install dependencies"
+
+inputs:
+  env:
+    description: "The environment to deploy to (ex: preview [default], beta, production)"
+    required: false
+  target:
+    description: "The app or website to deploy (ex: clinicamauricioaraujo.com.br)"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Init
+      uses: ./.github/actions/init
+
+    - name: Build
+      shell: bash
+      run: moon run ${{ inputs.target }}:build
+
+    - name: Deploy
+      shell: bash
+      run: bun run deploy --env ${{ inputs.env }} --target ${{ inputs.target }}

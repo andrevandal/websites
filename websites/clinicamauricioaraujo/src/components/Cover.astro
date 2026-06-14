@@ -1,0 +1,39 @@
+---
+import { getImageUrl, cn } from "@utils"
+
+type Props = {
+  src: string
+  alt?: string
+  width?: number
+  height?: number
+  class?: string
+}
+
+const { src, alt = "", width, height, class: className } = Astro.props
+---
+
+<picture class={cn("block w-full h-full", className)}>
+  <source
+    media="(min-width: 1024px)"
+    srcset={`
+        ${getImageUrl(src, "w_1280,h_560,fit_cover")} 1280w,
+        ${getImageUrl(src, "w_1920,h_840,fit_cover")} 1920w
+      `}
+    sizes="100vw"
+  />
+  <source
+    srcset={`
+        ${getImageUrl(src, "w_430,h_269,fit_cover")} 430w,
+        ${getImageUrl(src, "w_768,h_480,fit_cover")} 768w
+      `}
+    sizes="100vw"
+  />
+  <img
+    src={getImageUrl(src, "w_1280,h_560,fit_cover")}
+    alt={alt}
+    width={width}
+    height={height}
+    class:list={["lg:max-h-190 h-full w-full object-cover", className]}
+    loading="eager"
+  />
+</picture>

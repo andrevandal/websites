@@ -17,71 +17,98 @@
         "execa": "^9.6.1",
         "consola": "^3.4.2",
         "destr": "^2.0.5",
-        "release-please": "^17.1.3",
-        "lefthook": "^1.11.13",
-        "@commitlint/cli": "^19.8.0",
-        "@commitlint/config-conventional": "^19.8.0",
-        "tsdown": "^0.15.12"
+        "release-please": "^17.9.0",
+        "lefthook": "^1.13.6",
+        "@commitlint/cli": "^19.8.1",
+        "@commitlint/config-conventional": "^19.8.1",
+        "tsdown": "^0.22.2",
+        "wrangler": "^4.99.0",
+        "msw": "^2.14.6"
+      },
+      "utils": {
+        "valibot": "^1.4.1"
       },
       "linting": {
-        "oxfmt": "^0.26.0",
-        "oxlint": "^1.66.0",
-        "eslint": "^9.0.0",
-        "eslint-plugin-astro": "^1.0.0",
-        "eslint-plugin-oxlint": "^1.66.0",
-        "@typescript-eslint/parser": "^8.59.4",
-        "typescript-eslint": "^8.59.4",
-        "prettier": "^3.6.0",
+        "oxfmt": "^0.54.0",
+        "oxlint": "^1.69.0",
+        "eslint": "^9.39.4",
+        "eslint-plugin-astro": "^1.7.0",
+        "eslint-plugin-oxlint": "^1.69.0",
+        "@typescript-eslint/parser": "^8.61.0",
+        "typescript-eslint": "^8.61.0",
+        "prettier": "^3.8.4",
         "@prettier/plugin-oxc": "0.1.4",
-        "prettier-plugin-astro": "^0.14.0",
-        "prettier-plugin-tailwindcss": "^0.6.0",
+        "prettier-plugin-astro": "^0.14.1",
+        "prettier-plugin-tailwindcss": "^0.6.14",
         "@svgr/plugin-prettier": "^8.1.0"
       },
       "testing": {
-        "@happy-dom/global-registrator": "^20.3.4",
-        "happy-dom": "^20.3.4"
+        "@happy-dom/global-registrator": "^20.10.2",
+        "happy-dom": "^20.10.2"
       },
       "vite": {
-        "vite": "^7.3.1",
+        "vite": "^7.3.5",
         "vite-env-only": "^3.0.3",
-        "vite-tsconfig-paths": "^6.0.4",
-        "@vitejs/plugin-react": "^4.6.0"
+        "vite-tsconfig-paths": "^6.1.1",
+        "@vitejs/plugin-react": "^4.7.0"
       },
       "typescript": {
-        "type-fest": "^5.3.1",
+        "type-fest": "^5.7.0",
         "tsconfig-paths": "^4.2.0",
-        "typescript": "^5.9.3"
+        "typescript": "^6.0.3"
       },
       "node": {
-        "ofetch": "^1.5.1",
-        "msw": "^2.12.7",
-        "valibot": "^1.2.0"
+        "ofetch": "^1.5.1"
       },
-      "styles": {
-        "tailwindcss": "^4.1.18",
-        "@tailwindcss/vite": "^4.1.18"
+      "tailwind": {
+        "tailwindcss": "^4.3.0",
+        "tailwind-merge": "^3.6.0",
+        "@tailwindcss/vite": "^4.3.0",
+        "@tailwindcss/typography": "^0.5.20",
+        "clsx": "^2.1.1"
+      },
+      "astro": {
+        "astro": "^6.4.6",
+        "@astrojs/cloudflare": "^13.7.0",
+        "@astrojs/check": "^0.9.9",
+        "@astro-community/astro-embed-youtube": "^0.5.10",
+        "@astrojs/mdx": "^5.0.6",
+        "@astrojs/partytown": "^2.1.7",
+        "@astrojs/sitemap": "^3.7.3",
+        "@astrojs/ts-plugin": "^1.10.9",
+        "astro-iconset": "^0.0.5"
       },
       "ui": {
-        "@base-ui/react": "^1.1.0"
+        "@base-ui/react": "^1.5.0"
       },
       "types": {
-        "@types/node": "^25.0.9",
-        "@types/react": "^19.1.8",
-        "@types/react-dom": "^19.1.6",
-        "@types/bun": "^1.3.14"
+        "@types/node": "^25.9.3",
+        "@types/react": "^19.2.17",
+        "@types/react-dom": "^19.2.3",
+        "@types/bun": "^1.3.14",
+        "@types/yargs": "^17.0.35"
+      },
+      "icons": {
+        "@iconify-json/heroicons": "^1.2.3",
+        "@iconify-json/heroicons-outline": "^1.2.1",
+        "@iconify-json/logos": "^1.2.11",
+        "@iconify-json/mdi": "^1.2.3",
+        "@iconify-json/streamline-logos": "^1.2.0",
+        "@iconify/json": "^2.2.485"
       }
     }
   },
   "type": "module",
   "scripts": {
     "moon": "moon --color",
-    "graph": "bun moon tg",
-    "check": "bun moon run :lintfix :formatfix :test :typecheck --no-actions",
+    "graph": "moon tg",
+    "check": "moon run :lintfix :formatfix :test :typecheck --no-actions",
     "postinstall": "bun sync",
-    "sync": "bun moon sync projects",
+    "sync": "moon sync projects",
     "format": "oxfmt .",
+    "deploy": "bun scripts/deploy.ts",
     "dev": "bun scripts/dev.ts",
-    "lint:fix": "bun moon run :lintfix"
+    "lint:fix": "moon run :lintfix"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:tools",
@@ -90,7 +117,7 @@
     "@svgr/plugin-prettier": "catalog:linting",
     "@types/bun": "catalog:types",
     "@types/node": "catalog:types",
-    "@types/yargs": "^17.0.35",
+    "@types/yargs": "catalog:types",
     "@typescript-eslint/parser": "catalog:linting",
     "consola": "catalog:tools",
     "destr": "catalog:tools",
@@ -109,10 +136,11 @@
     "type-fest": "catalog:typescript",
     "typescript": "catalog:typescript",
     "typescript-eslint": "catalog:linting",
+    "valibot": "catalog:utils",
     "yargs": "catalog:tools"
   },
   "engines": {
     "node": "24.12.0"
   },
-  "packageManager": "bun@1.3.6"
+  "packageManager": "bun@1.3.14"
 }

@@ -1,0 +1,31 @@
+---
+import { getImageUrl } from "@utils"
+import type { TeamMember } from "../data/team"
+import ImageCard from "./ImageCard.astro"
+
+type Props = {
+  member: TeamMember
+}
+
+const { member, ...rest } = Astro.props
+---
+
+<ImageCard
+  image={getImageUrl(member.image, "w_430,h_400,fit_cover")}
+  alt={member.name}
+  aspectClass="aspect-[4/4.3]"
+  {...rest}
+>
+  <p class="text-brand-700 text-xs font-semibold uppercase tracking-widest">
+    {member.role}
+  </p>
+  <h3
+    class="mt-3 text-3xl font-semibold leading-none tracking-tight text-neutral-950"
+  >
+    {member.name}
+  </h3>
+  <p class="mt-4 text-sm leading-7 text-neutral-600">{member.summary}</p>
+  <ul class="mt-5 space-y-2 text-sm leading-6 text-neutral-600">
+    {member.credentials.slice(0, 3).map(item => <li>• {item}</li>)}
+  </ul>
+</ImageCard>

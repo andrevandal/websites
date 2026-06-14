@@ -1,27 +1,47 @@
 language: "javascript"
 
 project:
-  title: "pedrohenri.design"
+  title: "pedrohenridesign.com.br"
   description: "Personal portfolio and blog for Pedro Henri."
 
 tasks:
-  build:
-    command: astro build
-    inputs:
-      - "@globs(sources)"
-      - "public/**/*"
-      - "astro.config.mjs"
-      - "tsconfig.json"
-    outputs:
-      - dist
+  astro:
+    command: astro
 
   dev:
     command: astro dev
-    options:
-      runInCI: false
+    preset: server
 
-  typecheck:
+  check:
     command: astro check
     inputs:
       - "@globs(typescript)"
       - "@globs(sources)"
+
+  build:
+    command: astro build
+    inputs:
+      - "@globs(sources)"
+      - "@globs(public)"
+      - "@globs(astro)"
+      - "@globs(typescript)"
+    outputs:
+      - dist
+    dependsOn:
+      - check
+
+  preview:
+    command: astro preview
+    preset: server
+
+  preview-wrangler:
+    command: wrangler pages dev ./dist
+    preset: server
+    dependsOn:
+      - build
+
+  deploy:
+    command: wrangler deploy
+    preset: server
+    dependsOn:
+      - build

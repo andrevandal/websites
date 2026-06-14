@@ -1,0 +1,23 @@
+{
+  "extends": ["astro/tsconfigs/strict", "../../tsconfig.bundler.json"],
+  "compilerOptions": {
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@utils": ["./src/utils"],
+      "@utils/*": ["./src/utils/*"],
+      "@/*": ["./src/*"]
+    },
+    "outDir": "../../.moon/cache/types/websites/clinicamauricioaraujo.com.br"
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "plugins": [
+    {
+      "name": "@astrojs/ts-plugin"
+    }
+  ]
+}

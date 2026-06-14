@@ -13,7 +13,8 @@
     },
     "types": ["@types/mdast"],
     "strictNullChecks": true,
-    "outDir": "../../.moon/cache/types/websites/pedrohenridesign.com.br"
+    "outDir": "../../.moon/cache/types/websites/pedrohenridesign.com.br",
+    "allowJs": true
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"],
