@@ -3,6 +3,10 @@ import { readFileSync } from "node:fs"
 
 export const repoRoot = resolve(import.meta.dirname, "..")
 
+export const loadAndResolveEnv = (_: string) => ({
+  PLATFORM_DB_URL: "",
+})
+
 export const parseEnvFileKeys = (filepath: string) => {
   try {
     return readFileSync(filepath, "utf-8")

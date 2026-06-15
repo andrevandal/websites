@@ -26,25 +26,29 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - name: Init
-        uses: ./.github/actions/init
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Init
+        uses: ./.github/actions/init
 
       - name: Validate release config
         run: bun scripts/validate-release-config.ts
 
       - name: Run CI checks
-        run: moon ci :format :lint :testci :typecheck
+        run: bun run check
 
       - name: Get affected apps
         id: affecteds
         run: |
-          echo "apps_affected=$(moon query projects --affected --downstream deep --alias "(websites|apps)/*" | jq '[.[] | sub("^apps/|^websites/"; "")]'" >> $GITHUB_OUTPUT
+          apps=$(moon query projects --affected --downstream deep --alias "(websites|apps)/*" | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; "")) | tojson')
+          echo "apps_affected=$apps" >> $GITHUB_OUTPUT
           echo "env_to_deploy=${{ github.ref == 'refs/heads/main' && 'staging' || 'dev' }}" >> $GITHUB_OUTPUT
 
   deploy:
-    name: Deploying ${{ matrix.app }}'s preview to ${{ needs.check-all.outputs.env_to_deploy }}
+    name: Deploying preview
     needs: check-all
     if: |
       needs.check-all.outputs.affected_apps != '[]' &&

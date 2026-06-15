@@ -69,3 +69,4 @@ e2e/.auth/
 .superpowers/
 
 **/*:Zone.Identifier
+tsconfig.tsbuildinfo

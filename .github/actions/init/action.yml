@@ -1,20 +1,9 @@
 name: "Init CI/CD environment"
-description: "Checkout code, install Node.js and bun, then install dependencies"
-
-inputs:
-  fetch-depth:
-    description: "Number of commits to fetch during checkout (0 for full history)"
-    required: false
-    default: "1"
+description: "Install Node.js and bun, then install dependencies"
 
 runs:
   using: "composite"
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: ${{ inputs.fetch-depth }}
-
     - uses: "moonrepo/setup-toolchain@v0"
       with:
         auto-install: true

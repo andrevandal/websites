@@ -19,10 +19,13 @@ jobs:
       affected_apps: ${{ steps.release.outputs.affected_apps }}
       affected_packages: ${{ steps.release.outputs.affected_packages }}
     steps:
-      - name: Init
-        uses: ./.github/actions/init
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Init
+        uses: ./.github/actions/init
 
       - name: Create Release
         uses: googleapis/release-please-action@v4
@@ -33,8 +36,10 @@ jobs:
       - name: Get affected apps and packages
         if: steps.release.outputs.release_created == 'true'
         run: |
-          echo "affected_apps=$(echo '${{ steps.release.outputs.paths_released }}' | jq '[.[] | select(startswith("apps/") or startswith("websites/")) | sub("^apps/|^websites/"; "")]'" >> $GITHUB_OUTPUT
-          echo "affected_packages=$(echo '${{ steps.release.outputs.paths_released }}' | jq '[.[] | select(startswith("packages/")) | sub("^packages/"; "")]'" >> $GITHUB_OUTPUT
+          apps=$(echo '${{ steps.release.outputs.paths_released }}' | jq -r 'map(select(startswith("apps/") or startswith("websites/")) | sub("^apps/|^websites/"; "")) | tojson')
+          echo "affected_apps=$apps" >> $GITHUB_OUTPUT
+          pkgs=$(echo '${{ steps.release.outputs.paths_released }}' | jq -r 'map(select(startswith("packages/")) | sub("^packages/"; "")) | tojson')
+          echo "affected_packages=$pkgs" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploy to Production

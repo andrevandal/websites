@@ -102,13 +102,17 @@
   "scripts": {
     "moon": "moon --color",
     "graph": "moon tg",
-    "check": "moon run :lintfix :formatfix :test :typecheck --no-actions",
+    "check": "bun run format && bun run lint && bun run typecheck && bun run test",
     "postinstall": "bun sync",
     "sync": "moon sync projects",
-    "format": "oxfmt .",
     "deploy": "bun scripts/deploy.ts",
     "dev": "bun scripts/dev.ts",
-    "lint:fix": "moon run :lintfix"
+    "typecheck": "tsc --noEmit --pretty",
+    "test": "bun test --coverage --pass-with-no-tests .",
+    "lint": "oxlint . && eslint --no-error-on-unmatched-pattern **/*.astro",
+    "lint:fix": "oxlint --fix . && eslint --no-error-on-unmatched-pattern --fix **/*.astro",
+    "format": "oxfmt . --check && prettier --check --no-error-on-unmatched-pattern **/*.astro",
+    "format:fix": "oxfmt . --write && prettier --write --no-error-on-unmatched-pattern **/*.astro"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:tools",

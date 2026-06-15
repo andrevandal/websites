@@ -17,14 +17,16 @@ tasks:
     inputs:
       - "@globs(typescript)"
       - "@globs(sources)"
+      - "@globs(typescript)"
+      - "/astro.config.js"
 
   build:
     command: astro build
     inputs:
       - "@globs(sources)"
       - "@globs(public)"
-      - "@globs(astro)"
       - "@globs(typescript)"
+      - "/astro.config.js"
     outputs:
       - dist
     dependsOn:
