@@ -36,7 +36,7 @@ const parseArgs = (argv: string[]) =>
     })
     .option("dry-run", {
       type: "boolean",
-      default: true,
+      default: false,
       describe: "Print commands without executing.",
     })
     .option("debug", {
@@ -73,21 +73,24 @@ try {
 
   const envVarsFilePath = resolve(repoRoot, ...project.location, ".env.example")
   const ENV_VARS_KEYS = parseEnvFileKeys(envVarsFilePath)
-  const ENV_VARS_VALUES_RAW =
-    process.env[`ENV_VARS_${project.id.toUpperCase().split(/[.-]/)[0]}`]
+  const envVarName = `ENV_VARS_${project.id.toUpperCase().split(/[.-]/)[0]}`
+  const ENV_VARS_VALUES_RAW = process.env[envVarName]
 
   if (!ENV_VARS_VALUES_RAW) {
-    throw new Error(`Missing environment variable: ${ENV_VARS_VALUES_RAW}`)
+    consola.warn(`${envVarName} not set — deploying with no custom env vars`)
   }
 
-  const envVars = v.parse(
-    v.pipe(
-      v.string(),
-      v.parseJson(),
-      v.record(v.picklist(ENV_VARS_KEYS), v.string())
-    ),
-    ENV_VARS_VALUES_RAW.replaceAll("\\", "")
-  )
+  const envVars =
+    ENV_VARS_KEYS.length > 0 && ENV_VARS_VALUES_RAW
+      ? v.parse(
+          v.pipe(
+            v.string(),
+            v.parseJson(),
+            v.record(v.picklist(ENV_VARS_KEYS), v.string())
+          ),
+          ENV_VARS_VALUES_RAW.replaceAll("\\", "")
+        )
+      : {}
 
   if (dryRun) {
     consola.info(
@@ -96,10 +99,23 @@ try {
     )
     console.debug("With environment variables:", envVars)
   } else {
-    await execa("moon", ["run", `${project.id}:deploy`, "--", `--env=${env}`], {
-      stdio: "inherit",
-      env: { ...process.env, ...envVars },
-    })
+    const proc = execa(
+      "moon",
+      ["run", `${project.id}:deploy`, "--", `--env=${env}`],
+      {
+        env: { ...process.env, ...envVars },
+        all: true,
+      }
+    )
+
+    proc.all?.pipe(process.stdout)
+
+    const { all: output } = await proc
+
+    const url = output?.match(/https:\/\/\S+/)?.[0]
+    if (url) {
+      consola.success(`Deployed to: ${url}`)
+    }
   }
 } catch (err) {
   consola.error((err as Error).message)

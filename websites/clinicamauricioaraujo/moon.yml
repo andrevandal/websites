@@ -1,4 +1,5 @@
-language: "javascript"
+layer: "application"
+language: "astro"
 
 project:
   title: "clinicamauricioaraujo.com.br"
@@ -43,7 +44,6 @@ tasks:
       - build
 
   deploy:
-    command: wrangler deploy
-    preset: server
+    command: bunx wrangler deploy
     dependsOn:
       - build

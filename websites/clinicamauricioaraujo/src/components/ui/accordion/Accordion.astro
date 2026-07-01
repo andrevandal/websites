@@ -7,19 +7,14 @@ type Props = HTMLAttributes<"div"> & {
    * The type of accordion.  If "single", only one item can be open at a time.
    */
   type?: "single" | "multiple"
-  /**
-   * The value of the item that should be open by default
-   */
-  defaultValue?: string
 }
 
-const { type = "single", defaultValue, class: className, ...rest } = Astro.props
+const { type = "single", class: className, ...rest } = Astro.props
 ---
 
 <div
   class={cn("accordion", className)}
   data-type={type}
-  data-value={defaultValue}
   {...rest}
   data-slot="accordion"
 >
@@ -78,18 +73,17 @@ const { type = "single", defaultValue, class: className, ...rest } = Astro.props
       return Array.from(
         this.accordion.querySelectorAll<HTMLElement>(".accordion-item")
       )
-        .map((element, idx) => {
+        .map(element => {
           const trigger =
             element.querySelector<HTMLElement>(".accordion-trigger")
           const content =
             element.querySelector<HTMLElement>(".accordion-content")
-          const value = element.getAttribute("data-value") || String(idx)
 
           if (!trigger || !content) {
             return null
           }
 
-          return { element, trigger, content, value }
+          return { element, trigger, content }
         })
         .filter((item): item is AccordionItem => item !== null)
     }

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@plugin '@tailwindcss/typography';
+@plugin "@tailwindcss/typography";
 
 @theme {
   --color-brand-50: oklch(0.97 0.03 172.82);
@@ -94,17 +94,6 @@ html {
 
 body {
   @apply text-neutral-600 bg-white font-sans antialiased;
-  /* background-image:
-    radial-gradient(
-      circle at top left,
-      color-mix(in oklab, var(--color-brand-200) 24%, transparent),
-      transparent 35%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, white 45%, transparent),
-      transparent
-    ); */
 }
 
 ::selection {

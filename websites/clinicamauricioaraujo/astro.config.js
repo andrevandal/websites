@@ -74,6 +74,7 @@ export default defineConfig({
     }),
     icon({
       include: {
+        "heroicons-outline": ["chevron-down"],
         heroicons: ["arrow-down", "chevron-down", "check"],
         "streamline-logos": [
           "whatsapp-logo",

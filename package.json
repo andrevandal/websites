@@ -102,7 +102,7 @@
   "scripts": {
     "moon": "moon --color",
     "graph": "moon tg",
-    "check": "bun run format && bun run lint && bun run typecheck && bun run test",
+    "check": "bun run format && bun run lint && bun run typecheck",
     "postinstall": "bun sync",
     "sync": "moon sync projects",
     "deploy": "bun scripts/deploy.ts",

@@ -10,6 +10,11 @@
     "ENVIRONMENT": "development"
   },
   "env": {
+    "preview": {
+      "vars": {
+        "ENVIRONMENT": "preview"
+      }
+    },
     "staging": {
       "vars": {
         "ENVIRONMENT": "staging"

@@ -61,6 +61,7 @@
         "@iconify/json": "catalog:icons",
         "clsx": "catalog:tailwind",
         "tailwind-merge": "catalog:tailwind",
+        "vite": "catalog:vite",
       },
     },
   },
