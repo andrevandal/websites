@@ -34,9 +34,7 @@ export const queryTargets = async () => {
         location: alias.slice(1).split("/"), // "@websites/clinicamauricioaraujo.com.br" -> ["websites", "clinicamauricioaraujo.com.br"]
       }
 
-      if (normalizedId) {
-        acc[`${normalizedId}`] = value
-      }
+      if (normalizedId) acc[`${normalizedId}`] = value
 
       acc[`${id}`] = value
 

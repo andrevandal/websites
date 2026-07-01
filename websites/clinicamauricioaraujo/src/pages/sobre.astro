@@ -87,12 +87,12 @@ const meta = {
           data-delay="1"
         >
           <p
-            class="text-brand-700 text-xs font-semibold uppercase tracking-widest"
+            class="text-brand-700 text-xs font-semibold tracking-widest uppercase"
           >
             Base científica
           </p>
           <h3
-            class="mt-4 text-3xl font-semibold leading-tight tracking-tight text-neutral-950"
+            class="mt-4 text-3xl leading-tight font-semibold tracking-tight text-neutral-950"
           >
             Decisão clínica com critério
           </h3>
@@ -107,12 +107,12 @@ const meta = {
           data-delay="2"
         >
           <p
-            class="text-brand-700 text-xs font-semibold uppercase tracking-widest"
+            class="text-brand-700 text-xs font-semibold tracking-widest uppercase"
           >
             Experiência
           </p>
           <h3
-            class="mt-4 text-3xl font-semibold leading-tight tracking-tight text-neutral-950"
+            class="mt-4 text-3xl leading-tight font-semibold tracking-tight text-neutral-950"
           >
             Atendimento claro e humano
           </h3>
@@ -127,12 +127,12 @@ const meta = {
           data-delay="3"
         >
           <p
-            class="text-brand-700 text-xs font-semibold uppercase tracking-widest"
+            class="text-brand-700 text-xs font-semibold tracking-widest uppercase"
           >
             Integração
           </p>
           <h3
-            class="mt-4 text-3xl font-semibold leading-tight tracking-tight text-neutral-950"
+            class="mt-4 text-3xl leading-tight font-semibold tracking-tight text-neutral-950"
           >
             Especialidades que conversam
           </h3>
@@ -147,17 +147,17 @@ const meta = {
 
   <BaseSection id="dr-mauricio" background="dark">
     <div class="flex flex-col gap-4" data-animate>
-      <Eyebrow class="text-brand-200 mx-auto text-balance text-center"
+      <Eyebrow class="text-brand-200 mx-auto text-center text-balance"
         >Dr. Maurício Araújo</Eyebrow
       >
       <p
-        class="mx-auto text-center text-xs uppercase tracking-widest text-white/50"
+        class="mx-auto text-center text-xs tracking-widest text-white/50 uppercase"
       >
         {siteConfig.cro}
       </p>
       <Title
         size="medium"
-        class="mx-auto max-w-none text-balance text-center text-white"
+        class="mx-auto max-w-none text-center text-balance text-white"
         as="h2"
       >
         O nome da clínica também carrega responsabilidade técnica
@@ -165,7 +165,7 @@ const meta = {
     </div>
     <div class="grid gap-10 py-12 lg:grid-cols-[0.90fr_1.10fr] lg:items-start">
       <div
-        class="lg:top-18 overflow-hidden rounded-3xl bg-neutral-950 lg:sticky"
+        class="overflow-hidden rounded-3xl bg-neutral-950 lg:sticky lg:top-18"
         data-animate
         data-delay="1"
       >
@@ -177,39 +177,39 @@ const meta = {
         />
       </div>
       <div
-        class="text-white/78 space-y-4 text-lg leading-8"
+        class="space-y-4 text-lg leading-8 text-white/78"
         data-animate
         data-delay="2"
       >
         {doctorProfile.intro.map(paragraph => <p>{paragraph}</p>)}
         <p
-          class="text-brand-200 text-xs font-semibold uppercase tracking-widest"
+          class="text-brand-200 text-xs font-semibold tracking-widest uppercase"
         >
           Destaques
         </p>
-        <ul class="text-white/76 mt-4 space-y-3 text-sm leading-7">
+        <ul class="mt-4 space-y-3 text-sm leading-7 text-white/76">
           {doctorProfile.highlights.map(item => <li>• {item}</li>)}
         </ul>
         <p
-          class="text-brand-200 text-xs font-semibold uppercase tracking-widest"
+          class="text-brand-200 text-xs font-semibold tracking-widest uppercase"
         >
           Trajetória acadêmica e profissional
         </p>
-        <ul class="text-white/76 mt-4 space-y-3 text-sm leading-7">
+        <ul class="mt-4 space-y-3 text-sm leading-7 text-white/76">
           {doctorProfile.trajectory.map(item => <li>• {item}</li>)}
         </ul>
       </div>
     </div>
 
     <div class="grid gap-8 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-      <div class="text-white/78 space-y-5 text-lg leading-8" data-animate>
+      <div class="space-y-5 text-lg leading-8 text-white/78" data-animate>
         <div class="flex flex-col gap-2">
           <Eyebrow class="text-brand-200 text-balance">Atuação</Eyebrow>
           <Title size="small" class="text-balance text-white" as="h3">
             Reconhecimento internacional sem perder a lógica de atendimento
             próximo
           </Title>
-          <Description class="text-white/78 text-balance">
+          <Description class="text-balance text-white/78">
             A autoridade científica do Dr. Maurício só faz sentido porque se
             traduz em planejamento mais qualificado, decisões mais seguras e
             maior previsibilidade clínica no dia a dia.
@@ -217,7 +217,7 @@ const meta = {
         </div>
         {
           doctorProfile.clinic.map(paragraph => (
-            <Description class="text-white/78 text-balance">
+            <Description class="text-balance text-white/78">
               {paragraph}
             </Description>
           ))
@@ -240,18 +240,18 @@ const meta = {
 
   <BaseSection id="equipe">
     <header class="flex flex-col gap-2" data-animate>
-      <Eyebrow class="text-brand-500 mx-auto text-balance text-center"
+      <Eyebrow class="text-brand-500 mx-auto text-center text-balance"
         >Equipe</Eyebrow
       >
       <Title
         size="medium"
-        class="text-brand-800 mx-auto text-balance text-center"
+        class="text-brand-800 mx-auto text-center text-balance"
         as="h2"
       >
         Cinco profissionais com atuação complementar
       </Title>
       <Description
-        class="mx-auto mt-2 text-balance text-center text-neutral-700"
+        class="mx-auto mt-2 text-center text-balance text-neutral-700"
       >
         A equipe reúne áreas estratégicas para diagnóstico, cirurgia,
         reabilitação e manutenção com visão integrada.

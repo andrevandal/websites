@@ -1,0 +1,54 @@
+---
+import { SunCarousel } from "@vandal-websites/sun-ui/astro"
+import Heading from "@components/Heading.astro"
+
+import type { Testimonial } from "@/types"
+
+type Props = {
+  testimonials: Testimonial[]
+}
+
+const { testimonials } = Astro.props
+---
+
+<section class="flex flex-col overflow-clip bg-white px-0 pt-14 pb-18">
+  <div class="container mb-8 flex flex-col gap-y-6">
+    <Heading
+      as="h2"
+      class="text-tobago text-center font-serif text-[2rem] leading-[110%] font-bold"
+    >
+      Depoimentos
+    </Heading>
+    <p class="text-brown-leather text-center text-[.875rem] leading-[140%]">
+      Veja os depoimentos dos meus alunos
+    </p>
+  </div>
+  <SunCarousel>
+    {
+      testimonials.map(({ image, author, content }) => {
+        return (
+          <article class="bg-white-chocolate/25 border-tobago/15 flex w-full min-w-[min(calc(100%-2rem),18.125rem)] snap-center flex-col items-start border p-6 first:ml-4 last:mr-4 first:lg:ml-8 last:lg:mr-8">
+            <span class="text-light-mushroom font-serif text-[2rem] leading-normal font-bold select-none">
+              “
+            </span>
+            <blockquote class="border-b-tobago/15 text-brown-leather mt-1 border-b pb-4 font-serif text-[.875rem] text-balance italic select-none">
+              {content}
+            </blockquote>
+            <div class="mt-4 flex w-full flex-row items-center-safe justify-items-start gap-x-4">
+              <img
+                {...image}
+                class="border-tobago/10 pointer-events-none size-10 rounded-full border"
+              />
+              <Heading
+                as="h3"
+                class="text-tobago overflow-hidden text-[.875rem] leading-[110%] font-semibold text-ellipsis select-none"
+              >
+                {author}
+              </Heading>
+            </div>
+          </article>
+        )
+      })
+    }
+  </SunCarousel>
+</section>

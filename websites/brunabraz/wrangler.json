@@ -1,0 +1,31 @@
+﻿{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "brunabraz",
+  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    "directory": "./dist"
+  },
+  "vars": {
+    "ENVIRONMENT": "development"
+  },
+  "env": {
+    "preview": {
+      "vars": {
+        "ENVIRONMENT": "preview"
+      }
+    },
+    "staging": {
+      "vars": {
+        "ENVIRONMENT": "staging"
+      },
+      "route": "beta.brunabraz.com.br/*"
+    },
+    "production": {
+      "vars": {
+        "ENVIRONMENT": "production"
+      },
+      "routes": ["brunabraz.com.br/*"]
+    }
+  }
+}

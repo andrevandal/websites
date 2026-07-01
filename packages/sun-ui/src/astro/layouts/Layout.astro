@@ -1,0 +1,82 @@
+﻿---
+import type { LayoutProps as Props } from "./Layout.props.ts"
+import Gtag from "../components/Gtag.astro"
+import { cn } from "../../index"
+
+const {
+  title,
+  description,
+  schema,
+  links,
+  url,
+  gtag,
+  themeColor,
+  sitemap = "/sitemap-index.xml",
+  lang = "pt-br",
+  class: className,
+  image: rawImage,
+  ...props
+} = Astro.props
+const domain = url.hostname
+
+const chooseSocialImagem = (
+  image?: string,
+  processor?: (image: string, params?: string) => string
+) => {
+  if (!image?.length) {
+    return ""
+  }
+  if (/^(?<protocol>https?:)?\/\//.test(image) || !processor) {
+    return image
+  }
+
+  return processor(
+    image.startsWith("/") ? image : `/${image}`,
+    "f_auto,q_90,w_1200,h_630"
+  )
+}
+
+const image = chooseSocialImagem(rawImage)
+---
+
+<html class={cn("h-full scroll-smooth", className)} {...props}>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    {themeColor && <meta name="theme-color" content={themeColor} />}
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+    <link rel="canonical" href={url} />
+    <link rel="sitemap" href={sitemap} />
+    {links?.map(link => <link {...link} />)}
+    <meta name="description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="twitter:domain" content={domain} />
+    <meta property="twitter:url" content={url} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <Gtag placement="head" {...gtag} />
+    <slot name="close-head" />
+  </head>
+  <body class="h-full">
+    <slot />
+    {
+      schema && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(schema)}
+        />
+      )
+    }
+    <Gtag placement="body" {...gtag} />
+    <slot name="close-body" />
+  </body>
+</html>

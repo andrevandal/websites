@@ -3,5 +3,11 @@
   "include": ["scripts/**/*.ts", "./*.config.ts"],
   "files": [],
   "references": [
+    {
+      "path": "./packages/sun-ui"
+    },
+    {
+      "path": "./websites/brunabraz"
+    }
   ]
 }

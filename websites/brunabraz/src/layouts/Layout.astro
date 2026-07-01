@@ -1,0 +1,23 @@
+---
+import "@styles/global.css"
+
+import { SunLayout } from "@vandal-websites/sun-ui/astro"
+import TheFooter from "@/components/TheFooter.astro"
+
+import { Font } from "astro:assets"
+import type { ComponentProps } from "astro/types"
+
+type Props = ComponentProps<typeof SunLayout>
+
+const { image = "", ...props } = Astro.props
+---
+
+<SunLayout image={image} lang="pt-BR" {...props}>
+  <Fragment slot="close-head">
+    <Font cssVariable="--font-dm-sans" preload />
+    <Font cssVariable="--font-averia" preload />
+    <slot name="head" />
+  </Fragment>
+  <slot />
+  <TheFooter />
+</SunLayout>

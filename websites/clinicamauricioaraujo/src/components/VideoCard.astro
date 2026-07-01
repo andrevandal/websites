@@ -22,7 +22,7 @@ const {
 <article class:list={cn("w-full", className)} data-video-card {...props}>
   <button
     type="button"
-    class="focus-visible:ring-brand-300 group relative block w-full cursor-pointer overflow-hidden rounded-3xl bg-neutral-950 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+    class="focus-visible:ring-brand-300 group relative block w-full cursor-pointer overflow-hidden rounded-3xl bg-neutral-950 text-left focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset"
     data-video-play
     data-embed={embedUrl}
     aria-label={`Reproduzir depoimento de ${author}`}
@@ -32,11 +32,11 @@ const {
       srcset={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg 320w, https://img.youtube.com/vi/${videoId}/hqdefault.jpg 480w, https://img.youtube.com/vi/${videoId}/maxresdefault.jpg 1280w`}
       sizes="(max-width: 640px) 320px, (max-width: 1024px) 480px, 1280px"
       alt={`Miniatura do depoimento de ${author}`}
-      class="opacity-92 aspect-video w-full object-cover"
+      class="aspect-video w-full object-cover opacity-92"
       loading="lazy"
     />
     <div
-      class="bg-linear-to-t absolute inset-0 from-neutral-950 via-neutral-950/30 to-transparent"
+      class="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/30 to-transparent"
     >
     </div>
     <div
@@ -44,11 +44,11 @@ const {
     >
       <div class="max-w-[75%]">
         <p
-          class="text-brand-100 inline-flex w-fit rounded-full bg-neutral-950/70 px-3 py-2 text-xs font-semibold uppercase tracking-widest backdrop-blur-sm"
+          class="text-brand-100 inline-flex w-fit rounded-full bg-neutral-950/70 px-3 py-2 text-xs font-semibold tracking-widest uppercase backdrop-blur-sm"
         >
           {author}
         </p>
-        <p class="text-white/76 mt-2 text-sm leading-6">{context}</p>
+        <p class="mt-2 text-sm leading-6 text-white/76">{context}</p>
       </div>
       <div
         class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-neutral-950 transition-transform group-hover:scale-105"
@@ -62,9 +62,7 @@ const {
 <script>
   document.querySelectorAll("[data-video-card]").forEach(card => {
     const playButton = card.querySelector("[data-video-play]")
-    if (!(playButton instanceof HTMLButtonElement)) {
-      return
-    }
+    if (!(playButton instanceof HTMLButtonElement)) return
 
     playButton.addEventListener("click", () => {
       const iframe = document.createElement("iframe")

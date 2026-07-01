@@ -79,9 +79,7 @@ const { type = "single", class: className, ...rest } = Astro.props
           const content =
             element.querySelector<HTMLElement>(".accordion-content")
 
-          if (!trigger || !content) {
-            return null
-          }
+          if (!trigger || !content) return null
 
           return { element, trigger, content }
         })
@@ -136,9 +134,7 @@ const { type = "single", class: className, ...rest } = Astro.props
       const defaultValue = this.accordion.dataset.value
       if (defaultValue) {
         const item = this.itemsByValue.get(defaultValue)
-        if (item) {
-          this.setItemState(item, true)
-        }
+        if (item) this.setItemState(item, true)
       }
     }
 
@@ -203,9 +199,8 @@ const { type = "single", class: className, ...rest } = Astro.props
           if (
             otherItem !== item &&
             otherItem.element.getAttribute("data-state") === "open"
-          ) {
+          )
             this.setItemState(otherItem, false)
-          }
         })
       }
 
@@ -221,11 +216,9 @@ const { type = "single", class: className, ...rest } = Astro.props
       const state: AccordionState = isOpen ? "open" : "closed"
 
       // Skip animation during initial setup, enable for subsequent toggles
-      if (!this.isInitialized) {
+      if (!this.isInitialized)
         item.content.style.setProperty("animation", "none")
-      } else {
-        item.content.style.removeProperty("animation")
-      }
+      else item.content.style.removeProperty("animation")
 
       // Set content height variable for animations
       this.setContentHeight(item.content)
@@ -235,9 +228,8 @@ const { type = "single", class: className, ...rest } = Astro.props
       item.trigger.setAttribute("data-state", state)
       item.trigger.setAttribute("aria-expanded", isOpen.toString())
 
-      if (this.isInitialized && isOpen && item.element.id) {
+      if (this.isInitialized && isOpen && item.element.id)
         history.replaceState(null, "", `#${item.element.id}`)
-      }
     }
   }
 
@@ -258,27 +250,17 @@ const { type = "single", class: className, ...rest } = Astro.props
 
   const openAccordionFromHash = (scroll = false) => {
     const hash = location.hash.slice(1)
-    if (!hash) {
-      return
-    }
+    if (!hash) return
 
     const el = document.getElementById(hash)
-    if (!el?.matches(".accordion-item")) {
-      return
-    }
+    if (!el?.matches(".accordion-item")) return
 
     const trigger = el.querySelector<HTMLElement>(".accordion-trigger")
-    if (!trigger) {
-      return
-    }
+    if (!trigger) return
 
-    if (el.getAttribute("data-state") !== "open") {
-      trigger.click()
-    }
+    if (el.getAttribute("data-state") !== "open") trigger.click()
 
-    if (scroll) {
-      el.scrollIntoView({ behavior: "smooth", block: "nearest" })
-    }
+    if (scroll) el.scrollIntoView({ behavior: "smooth", block: "nearest" })
   }
 
   setupAccordions()

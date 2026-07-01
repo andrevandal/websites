@@ -1,0 +1,11 @@
+---
+import { createImageUtils } from "../../index"
+import type { ImageProps as Props } from "./Image.props.ts"
+
+const { src, sizes, alt, imageConfig, ...props } = Astro.props
+
+const { generateImageProps } = createImageUtils(imageConfig)
+const imageProps = generateImageProps(src, sizes)
+---
+
+<img {...imageProps} alt={alt || " "} {...props} />

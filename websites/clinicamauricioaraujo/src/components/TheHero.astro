@@ -12,7 +12,7 @@ const hasCover = Astro.slots.has("cover")
 <div class:list={cn("bg-brand-950 grid overflow-hidden", className)} {...rest}>
   {
     hasCover && (
-      <div class="z-2 before:z-2 relative col-start-1 row-start-1 h-full w-full before:absolute before:inset-0 before:bg-black/70">
+      <div class="relative z-2 col-start-1 row-start-1 h-full w-full before:absolute before:inset-0 before:z-2 before:bg-black/70">
         <slot name="cover" />
       </div>
     )

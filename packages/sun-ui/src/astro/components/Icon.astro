@@ -1,0 +1,72 @@
+---
+import type { IconProps as Props } from "./Icon.props.ts"
+import { Icon as RawIcon } from "astro-iconset/components"
+import { cn } from "../../index"
+
+const {
+  name,
+  width: rawWidth,
+  height: rawHeight,
+  class: className,
+  style: styleRaw = "",
+  slot: _,
+  ...props
+} = Astro.props
+
+const isFuild = !rawWidth && !rawHeight
+
+const toPx = (value?: string | number) => {
+  if (!value) return
+
+  return typeof value === "number" ? `${value}px` : `${value}`
+}
+
+const width = toPx(rawWidth)
+const height = toPx(rawHeight)
+
+const fixedStyle =
+  styleRaw && typeof styleRaw === "object"
+    ? { minWidth: width, minHeight: height, ...styleRaw }
+    : [
+        ["min-width", width],
+        ["min-height", height],
+      ]
+        .filter(([__, value]) => Boolean(value))
+        .map(([key, value]) => `${key}: ${value}`)
+        .join("; ")
+        .concat(styleRaw)
+        .trimEnd()
+
+const attrs = !isFuild
+  ? {
+      style: fixedStyle,
+      width,
+      height,
+    }
+  : {}
+---
+
+<RawIcon
+  name={name}
+  {...attrs}
+  class={cn(
+    "icon",
+    {
+      fluid: isFuild,
+    },
+    className
+  )}
+  {...props}
+/>
+
+<style>
+  @reference "tailwindcss";
+
+  .icon {
+    @apply aspect-square shrink-0 fill-current;
+
+    &.fluid {
+      @apply aspect-auto size-[inherit];
+    }
+  }
+</style>

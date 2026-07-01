@@ -1,0 +1,119 @@
+﻿---
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import LogoHorizontal from "./LogoHorizontal.astro"
+import { defaultConfig } from "@/data/site"
+import Button from "@components/Button.astro"
+
+const year = new Date().getFullYear()
+
+type Props = {
+  noCallToAction?: boolean
+}
+
+const socialWidget = [
+  {
+    name: "instagram",
+    href: defaultConfig.links.instagram,
+    label: "Siga-me no Instagram",
+  },
+  {
+    name: "youtube",
+    href: defaultConfig.links.youtube,
+    label: "Siga-me no Youtube",
+  },
+  {
+    name: "twitch",
+    href: defaultConfig.links.twitch,
+    label: "Siga-me na Twitch",
+  },
+  {
+    name: "discord",
+    href: defaultConfig.links.discord,
+    label: "Seja parte da minha comunidade",
+  },
+]
+---
+
+<Fragment>
+  {
+    !Astro.props.noCallToAction && (
+      <section class="bg-cambridge">
+        <div class="container flex flex-col items-center-safe gap-y-10 py-12 lg:pt-20 lg:pb-14">
+          <blockquote class="text-white-chocolate flex w-full max-w-[55ch] flex-col gap-y-8 text-center font-serif text-[32px] leading-[120%] font-bold italic">
+            <p>
+              Aprender inglês não precisa significar caber em ideias prontas de
+              desbloqueio, sucesso e perfeição.
+            </p>
+            <p>Essa experiência pode ser exatamente o contrário!</p>
+            <p>
+              Pode ser uma forma de entender melhor o mundo, acessar outras
+              vozes e fazer a sua própria voz circular com mais força.
+            </p>
+          </blockquote>
+          <Button iconName="whatsapp" variant="secondary">
+            Quero estudar com você!
+          </Button>
+        </div>
+      </section>
+    )
+  }
+  <footer class="bg-tobago py-10 lg:py-12">
+    <div class="divide-ruddy-brown container flex flex-col divide-y">
+      <div
+        class="flex flex-col items-start gap-6 pb-6 lg:flex-row lg:items-end-safe lg:justify-between"
+      >
+        <a href="/" class="text-white-chocolate block">
+          <img src="/images/logo-horizontal.png" width="250" alt="" />
+        </a>
+        <div class="flex flex-col gap-y-2">
+          <p
+            class="text-light-mushroom font-serif leading-[140%] font-bold italic"
+          >
+            Minhas Redes
+          </p>
+          <ul class="text-white-chocolate flex gap-x-4">
+            {
+              socialWidget.map(({ name, label, href }) => {
+                return (
+                  <li>
+                    <a
+                      href={href}
+                      aria-label={label}
+                      class="transition-opacity duration-200 hover:opacity-80"
+                    >
+                      <SunIcon name={name} width={24} />
+                    </a>
+                  </li>
+                )
+              })
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div
+        class="text-white-chocolate flex flex-col gap-6 pt-6 font-sans text-sm leading-none lg:flex-row lg:items-end-safe lg:justify-between"
+      >
+        <p>
+          Bruna Braz @ {year}. Todos os direitos reservados.
+        </p>
+        <p>
+          Feito por{" "}
+          <a
+            href="https://pedrohenridesign.com.br"
+            target="_blank"
+            rel="noopener"
+            class="text-light-mushroom font-serif font-bold">Pedro Henri</a
+          >{" "}
+          &amp;{" "}
+          <a
+            href="https://andrevandal.dev"
+            target="_blank"
+            rel="noopener"
+            class="text-light-mushroom font-serif font-bold">André Vandal</a
+          >{" "}
+        </p>
+      </div>
+    </div>
+  </footer>
+</Fragment>

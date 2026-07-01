@@ -4,9 +4,7 @@ export const useHeader = (selector: string | Element) => {
       ? document.querySelector<HTMLElement>(selector)
       : (selector as HTMLElement)
 
-  if (!nav) {
-    return
-  }
+  if (!nav) return
 
   const toggle =
     nav.querySelector<HTMLInputElement>("[data-header-toggle]") ??
@@ -17,18 +15,14 @@ export const useHeader = (selector: string | Element) => {
     nav.querySelector<HTMLElement>("ul")
 
   const closeMenu = () => {
-    if (toggle) {
-      toggle.checked = false
-    }
+    if (toggle) toggle.checked = false
   }
 
   window.addEventListener("scroll", () => {
     nav.classList.toggle("actived", window.scrollY > 0)
   })
 
-  if (!toggle || !menu) {
-    return
-  }
+  if (!toggle || !menu) return
 
   menu?.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", closeMenu)
@@ -38,9 +32,7 @@ export const useHeader = (selector: string | Element) => {
     "click",
     event => {
       const target = event.target as HTMLElement
-      if (!nav.contains(target) && toggle?.checked) {
-        closeMenu()
-      }
+      if (!nav.contains(target) && toggle?.checked) closeMenu()
     },
     false
   )

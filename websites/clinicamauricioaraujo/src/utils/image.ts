@@ -27,9 +27,8 @@ export const parseSizes = (sizes: string) => {
       ? sizePair.split(":")
       : ["default", sizePair]
 
-    if (!breakpoint || !size) {
+    if (!breakpoint || !size)
       throw new Error("Invalid image breakpoint or size")
-    }
 
     result[breakpoint] = size
   })
@@ -41,9 +40,8 @@ export const parseSizes = (sizes: string) => {
         const [, size] = el
         const sizeNumber = parseInt(size.replace("px", ""))
 
-        if (sizeNumber > biggest) {
-          return sizeNumber
-        }
+        if (sizeNumber > biggest) return sizeNumber
+
         return biggest
       },
       0
@@ -79,9 +77,7 @@ export const generateSizesString = (sizes: Record<string, string>) => {
       const mediaQuery = screens[size]
       const newSize = sizes[size]
 
-      if (mediaQuery && newSize) {
-        sizesParts.push({ mediaQuery, size: newSize })
-      }
+      if (mediaQuery && newSize) sizesParts.push({ mediaQuery, size: newSize })
     }
   }
 
@@ -92,9 +88,7 @@ export const generateSizesString = (sizes: Record<string, string>) => {
     part => `(min-width: ${part.mediaQuery}) ${part.size}`
   )
 
-  if (defaultSize) {
-    sizesStringParts.push(`${defaultSize}`)
-  }
+  if (defaultSize) sizesStringParts.push(`${defaultSize}`)
 
   return sizesStringParts.join(", ")
 }

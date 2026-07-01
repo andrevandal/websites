@@ -1,0 +1,115 @@
+---
+import type { CarouselProps } from "./Carousel.props.ts"
+import { cn } from "../../index"
+
+type Props = CarouselProps
+
+const { className = "" } = Astro.props
+---
+
+<div data-carousel="container">
+  <div
+    data-carousel="track"
+    tabindex="0"
+    class={cn(
+      "flex cursor-grab snap-x snap-mandatory scrollbar-none flex-row flex-nowrap gap-x-6 overflow-x-auto select-none active:cursor-grabbing",
+      className
+    )}
+  >
+    <slot />
+  </div>
+</div>
+
+<script>
+  const init = (container: HTMLElement | null, track: HTMLElement | null) => {
+    if (!container || !track) {
+      console.error("Carousel: container or track element not found")
+      return
+    }
+    let isDown = false
+    let startX = 0
+    let scrollLeft = 0
+    let snapEnabled = true
+
+    const getGap = () =>
+      Number(
+        getComputedStyle(track).getPropertyValue("column-gap").replace("px", "")
+      )
+
+    const getContentWidth = () => {
+      const children = [...track.children]
+      return (
+        children.reduce((acc, el) => acc + el.clientWidth, 0) +
+        getGap() * (children.length - 1)
+      )
+    }
+
+    const updateSnapState = () => {
+      if (container.clientWidth >= getContentWidth()) {
+        snapEnabled = false
+        track.style.scrollSnapType = "none"
+        track.classList.add("mx-auto", "w-fit")
+      } else {
+        snapEnabled = true
+        track.style.scrollSnapType = ""
+        track.classList.remove("mx-auto", "w-fit")
+      }
+    }
+
+    new ResizeObserver(updateSnapState).observe(container)
+    updateSnapState()
+
+    track.addEventListener("mousedown", e => {
+      if (!snapEnabled) return
+      isDown = true
+      startX = e.pageX - track.offsetLeft
+      // oxlint-disable-next-line prefer-destructuring
+      scrollLeft = track.scrollLeft
+      track.style.scrollSnapType = "none"
+    })
+
+    track.addEventListener("mouseleave", () => {
+      if (!isDown) return
+      isDown = false
+      if (snapEnabled) track.style.scrollSnapType = "x mandatory"
+    })
+
+    track.addEventListener("mouseup", () => {
+      if (!isDown) return
+      isDown = false
+      if (snapEnabled) track.style.scrollSnapType = "x mandatory"
+    })
+
+    track.addEventListener("mousemove", e => {
+      if (!isDown) return
+      e.preventDefault()
+      const x = e.pageX - track.offsetLeft
+      track.scrollLeft = scrollLeft - (x - startX) * 1.5
+    })
+
+    track.addEventListener("keydown", e => {
+      if (!snapEnabled) return
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return
+      e.preventDefault()
+      const slide = track.firstElementChild as HTMLElement | null
+      if (!slide) return
+      const delta =
+        (e.key === "ArrowRight" ? 1 : -1) * (slide.offsetWidth + getGap())
+      track.scrollBy({ left: delta, behavior: "smooth" })
+    })
+  }
+
+  const containers = document.querySelectorAll<HTMLElement>(
+    '[data-carousel="container"]'
+  )
+
+  containers.forEach(container => {
+    const track = container?.querySelector<HTMLElement>(
+      '[data-carousel="track"]'
+    )
+    init(container, track)
+  })
+</script>
+<style>
+  @reference "tailwindcss";
+</style>

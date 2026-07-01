@@ -82,18 +82,18 @@ const isSpecialitiesOdd = specialties.length % 2 === 1
   </TheHero>
   <BaseSection id="sobre" as="section" contentClass="gap-4">
     <header class="flex flex-col gap-2" data-animate>
-      <Eyebrow class="text-brand-500 mx-auto text-balance text-center"
+      <Eyebrow class="text-brand-500 mx-auto text-center text-balance"
         >Sobre</Eyebrow
       >
       <Title
         size="medium"
-        class="text-brand-800 mx-auto text-balance text-center"
+        class="text-brand-800 mx-auto text-center text-balance"
         as="h2"
       >
         Conheça a clínica, o Dr. Maurício Araújo e a equipe
       </Title>
       <Description
-        class="mx-auto mt-2 text-balance text-center text-neutral-700"
+        class="mx-auto mt-2 text-center text-balance text-neutral-700"
       >
         Referência em odontologia de alto padrão na Barra da Tijuca, Recreio e
         Jacarepaguá. Conheça a estrutura da clínica, a trajetória do Dr.
@@ -146,12 +146,12 @@ const isSpecialitiesOdd = specialties.length % 2 === 1
 
   <BaseSection id="tratamentos" as="section" background="dark">
     <header class="flex flex-col gap-2" data-animate>
-      <Eyebrow class="text-brand-200 mx-auto text-balance text-center"
+      <Eyebrow class="text-brand-200 mx-auto text-center text-balance"
         >Tratamentos</Eyebrow
       >
       <Title
         size="medium"
-        class="mx-auto text-balance text-center text-white"
+        class="mx-auto text-center text-balance text-white"
         as="h2"
       >
         Conheça os principais tratamentos da clínica
@@ -167,7 +167,7 @@ const isSpecialitiesOdd = specialties.length % 2 === 1
             description={specialty.description}
             href={`/tratamentos/#${specialty.slug}`}
             dark={true}
-            class="lg:max-w-109 h-full"
+            class="h-full lg:max-w-109"
             data-animate=""
             data-delay={String((index % 4) + 1)}
           />
@@ -216,12 +216,12 @@ const isSpecialitiesOdd = specialties.length % 2 === 1
 
   <BaseSection id="depoimentos" as="section">
     <header class="flex flex-col gap-2" data-animate>
-      <Eyebrow class="text-brand-500 mx-auto text-balance text-center"
+      <Eyebrow class="text-brand-500 mx-auto text-center text-balance"
         >Depoimentos</Eyebrow
       >
       <Title
         size="medium"
-        class="text-brand-800 mx-auto text-balance text-center"
+        class="text-brand-800 mx-auto text-center text-balance"
         as="h2"
       >
         Histórias de quem já passou pela clínica

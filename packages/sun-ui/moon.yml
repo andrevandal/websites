@@ -1,0 +1,29 @@
+layer: "library"
+language: "typescript"
+
+project:
+  title: "Sun UI"
+  description: "A shared UI components package"
+  channel: ""
+  owner: ""
+  maintainers: []
+
+tasks:
+  check:
+    command: astro check
+    inputs:
+      - "src/**/*.astro"
+      - "src/**/*.ts"
+      - "tsconfig.json"
+
+  build:
+    command: "tsdown"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.astro"
+      - "tsconfig.json"
+      - "tsdown.config.ts"
+    outputs:
+      - dist
+    dependsOn:
+      - check

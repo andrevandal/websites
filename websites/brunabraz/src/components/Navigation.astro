@@ -1,0 +1,169 @@
+---
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import Button from "./Button.astro"
+
+export const navigation = [
+  { href: "/#sobre-min", name: "Sobre Mim" },
+  { href: "/#minhas-aulas", name: "Minhas Aulas" },
+  { href: "/blog/", name: "Blog" },
+]
+---
+
+<nav
+  id="navigation"
+  class="bg-tobago border-b-ruddy-brown fixed top-0 z-20 w-full border-b"
+>
+  <div
+    class="container grid grid-cols-[1fr_40px] flex-wrap gap-x-2 px-4 py-4 lg:flex lg:flex-row lg:justify-between"
+  >
+    <a href="/" class="block">
+      <img
+        src="/images/logo-horizontal-only-text.png"
+        width="183"
+        alt=""
+        loading="eager"
+      />
+    </a>
+    <input class="hidden" type="checkbox" id="menu-opened" />
+    <label id="menu-button" for="menu-opened">
+      <span class="icon"></span>
+    </label>
+    <ul id="menu">
+      {
+        navigation.map(item => (
+          <li>
+            <Button
+              as="a"
+              variant="secondary-inverted"
+              block
+              href={item.href}
+              class="text-left lg:h-10"
+            >
+              {item.name}
+            </Button>
+          </li>
+        ))
+      }
+      <li>
+        <Button
+          as="a"
+          href={"/#"}
+          block
+          centered
+          class="track-conversion lg:h-10"
+          data-lead-type="whatsapp"
+          data-button-location="header"
+          iconName="whatsapp"
+        >
+          Seja Aluno!
+          <SunIcon name="whatsapp" slot="icon" width={20} />
+        </Button>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<style>
+  @reference "../styles/global.css";
+
+  #menu-button {
+    @apply border-white-chocolate/15 inline-flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end border p-2 select-none;
+    @apply lg:hidden;
+  }
+
+  #menu-button .icon {
+    @apply bg-white-chocolate relative block h-0.5 w-[21.33px] rounded-full transition-colors ease-out;
+  }
+
+  #menu-button .icon:before,
+  #menu-button .icon:after {
+    @apply bg-white-chocolate absolute block h-full w-full rounded-full transition-all ease-out content-[''];
+  }
+
+  #menu-button .icon:before {
+    @apply top-2;
+  }
+
+  #menu-button .icon:after {
+    @apply -top-2;
+  }
+
+  #menu {
+    @apply col-span-2 clear-both box-border flex max-h-0 flex-col gap-2 overflow-hidden transition-[max-height] duration-200 ease-out will-change-auto;
+    @apply lg:mt-0 lg:max-h-fit lg:flex-row lg:items-center lg:justify-center lg:gap-x-2 lg:pt-0;
+  }
+
+  #menu li:last-of-type {
+    @apply mt-2 lg:mt-0 lg:ml-0;
+  }
+
+  #menu li :global(a[class*="outline"]) {
+    @apply border-transparent;
+  }
+
+  #menu-opened:checked ~ #menu {
+    @apply mt-4 max-h-fit pt-4 pb-3 lg:p-0;
+    max-height: 282px;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon {
+    @apply bg-transparent;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon:before {
+    @apply top-0 -rotate-45;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon:after {
+    @apply top-0 rotate-45;
+  }
+
+  #navigation.actived #menu,
+  #navigation:has(#menu-opened:checked) #menu {
+    /* @apply bg-ruddy-brown; */
+  }
+</style>
+
+<script>
+  const useHeader = (selector: string | Element) => {
+    const nav =
+      typeof selector === "string"
+        ? document.querySelector<HTMLElement>(selector)
+        : (selector as HTMLElement)
+
+    if (!nav) return
+
+    const toggle =
+      nav.querySelector<HTMLInputElement>("[data-header-toggle]") ??
+      nav.querySelector<HTMLInputElement>('input[type="checkbox"]')
+
+    const menu =
+      nav.querySelector<HTMLElement>("[data-header-menu]") ??
+      nav.querySelector<HTMLElement>("ul")
+
+    const closeMenu = () => {
+      if (toggle) toggle.checked = false
+    }
+
+    window.addEventListener("scroll", () => {
+      nav.classList.toggle("actived", window.scrollY > 0)
+    })
+
+    if (!toggle || !menu) return
+
+    menu?.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", closeMenu)
+    })
+
+    document.addEventListener(
+      "click",
+      event => {
+        const target = event.target as HTMLElement
+        if (!nav.contains(target) && toggle?.checked) closeMenu()
+      },
+      false
+    )
+  }
+
+  useHeader("#inicio nav")
+</script>

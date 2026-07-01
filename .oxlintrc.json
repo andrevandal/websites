@@ -37,7 +37,8 @@
     "typescript/consistent-type-definitions": ["warn", "type"],
     // Disabled until auto-fix support is added
     "sort-keys": "off",
-    "eslint/sort-imports": "off"
+    "eslint/sort-imports": "off",
+    "curly": ["warn", "multi-or-nest"]
   },
   "categories": {
     "correctness": "error",

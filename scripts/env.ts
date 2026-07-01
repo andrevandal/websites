@@ -9,6 +9,7 @@ export const loadAndResolveEnv = (_: string) => ({
 
 export const parseEnvFileKeys = (filepath: string) => {
   try {
+    // oxlint-disable-next-line node/no-sync
     return readFileSync(filepath, "utf-8")
       .split("\n")
       .map(l => l.trim())
@@ -16,9 +17,7 @@ export const parseEnvFileKeys = (filepath: string) => {
       .map(l => {
         const eq = l.indexOf("=")
 
-        if (eq === -1) {
-          return null
-        }
+        if (eq === -1) return null
 
         const key = l.slice(0, eq).trim()
 
@@ -32,9 +31,8 @@ export const parseEnvFileKeys = (filepath: string) => {
 }
 
 export const resolveDbUrl = (url: string | undefined): string | undefined => {
-  if (!url) {
-    return undefined
-  }
+  if (!url) return undefined
+
   if (url.startsWith("file:") && !url.startsWith("file:/")) {
     const relativePath = url.slice("file:".length)
     return `file:${resolve(repoRoot, relativePath)}`

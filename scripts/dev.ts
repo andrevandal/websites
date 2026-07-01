@@ -1,4 +1,4 @@
-﻿import yargs from "yargs"
+import yargs from "yargs"
 import { queryTargets } from "./utils"
 import { hideBin } from "yargs/helpers"
 import consola from "consola"
@@ -39,18 +39,15 @@ try {
   const args = await parseArgs(process.argv)
   const { target, isDebug } = args
 
-  if (isDebug) {
-    consola.level = 5
-  }
+  if (isDebug) consola.level = 5
 
   const project = availableTargets[`${target}`]
 
-  if (!project) {
-    throw new Error(`Target not found.`)
-  }
+  if (!project) throw new Error(`Target not found.`)
 
   await execa("moon", ["run", `${project.id}:dev`], {
     stdio: "inherit",
+    env: { ...process.env, CI: undefined },
   })
 } catch (err) {
   consola.error((err as Error).message)

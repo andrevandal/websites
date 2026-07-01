@@ -1,0 +1,34 @@
+﻿---
+import { YouTube } from "@astro-community/astro-embed-youtube"
+import type { YoutubeProps as Props } from "./Youtube.props"
+
+const {
+  id,
+  poster,
+  posterQuality,
+  params,
+  playlabel = "Play",
+  title,
+} = Astro.props
+---
+
+<style>
+  lite-youtube {
+    max-width: unset;
+  }
+</style>
+
+{
+  id && (
+    <div class="not-prose w-full">
+      <YouTube
+        id={id}
+        poster={poster}
+        posterQuality={posterQuality}
+        params={params}
+        playlabel={playlabel}
+        title={title}
+      />
+    </div>
+  )
+}

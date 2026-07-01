@@ -12,13 +12,9 @@ const { CF_PAGES_URL, CF_PAGES, CF_PAGES_BRANCH, SITE_URL } = loadEnv(
   ""
 )
 const getSite = () => {
-  if (SITE_URL) {
-    return SITE_URL
-  }
+  if (SITE_URL) return SITE_URL
 
-  if (CF_PAGES && CF_PAGES_BRANCH !== "main") {
-    return CF_PAGES_URL
-  }
+  if (CF_PAGES && CF_PAGES_BRANCH !== "main") return CF_PAGES_URL
 
   return "http://localhost:4321"
 }

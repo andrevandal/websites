@@ -61,24 +61,19 @@ try {
   const args = await parseArgs(process.argv)
   const { env, debug: isDebug, target, dryRun } = args
 
-  if (isDebug) {
-    consola.level = 5
-  }
+  if (isDebug) consola.level = 5
 
   const project = availableTargets[`${target}`]
 
-  if (!project) {
-    throw new Error(`Target not found.`)
-  }
+  if (!project) throw new Error(`Target not found.`)
 
   const envVarsFilePath = resolve(repoRoot, ...project.location, ".env.example")
   const ENV_VARS_KEYS = parseEnvFileKeys(envVarsFilePath)
   const envVarName = `ENV_VARS_${project.id.toUpperCase().split(/[.-]/)[0]}`
   const ENV_VARS_VALUES_RAW = process.env[envVarName]
 
-  if (!ENV_VARS_VALUES_RAW) {
+  if (!ENV_VARS_VALUES_RAW)
     consola.warn(`${envVarName} not set — deploying with no custom env vars`)
-  }
 
   const envVars =
     ENV_VARS_KEYS.length > 0 && ENV_VARS_VALUES_RAW

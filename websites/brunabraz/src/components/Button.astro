@@ -1,0 +1,55 @@
+﻿---
+import { SunButton, SunIcon } from "@vandal-websites/sun-ui/astro"
+import { cn } from "@vandal-websites/sun-ui"
+import type { Polymorphic } from "astro/types"
+
+type AllowedTags = "button" | "a"
+type Variant = "primary" | "secondary" | "secondary-inverted"
+type AllowedIcons = "globe-outline" | "whatsapp"
+
+type Props<Tag extends AllowedTags = AllowedTags> = Polymorphic<{ as: Tag }> & {
+  variant?: Variant
+  reverse?: boolean
+  block?: boolean
+  centered?: boolean
+  iconName?: AllowedIcons
+}
+
+const {
+  variant = "primary",
+  class: className = "",
+  iconName,
+  ...props
+} = Astro.props
+---
+
+<SunButton className={cn("btn", variant, className)} {...props}>
+  <slot />
+  {iconName && <SunIcon name={iconName} slot="icon" width={20} />}
+</SunButton>
+
+<style>
+  @reference "../styles/global.css";
+
+  .btn {
+    @apply text-white-chocolate cursor-pointer gap-x-3 px-5 py-3.5 font-sans text-base font-medium transition-colors duration-200;
+  }
+
+  .btn.primary {
+    @apply bg-cambridge;
+  }
+
+  .btn.primary:not(:disabled):hover {
+    @apply bg-dark-green text-light-mushroom;
+  }
+
+  .btn.secondary,
+  .btn.secondary-inverted:not(:disabled):hover {
+    @apply bg-ruddy-brown;
+  }
+
+  .btn.secondary-inverted,
+  .btn.secondary:not(:disabled):hover {
+    @apply bg-tobago;
+  }
+</style>

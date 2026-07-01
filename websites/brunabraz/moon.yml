@@ -1,0 +1,49 @@
+﻿layer: "application"
+language: "astro"
+
+project:
+  title: "brunabraz"
+  description: "Website for Bruna Braz"
+
+tasks:
+  astro:
+    command: astro
+
+  dev:
+    command: astro dev
+    preset: server
+
+  check:
+    command: astro check
+    inputs:
+      - "@globs(typescript)"
+      - "@globs(sources)"
+      - "@globs(typescript)"
+      - "/astro.config.js"
+
+  build:
+    command: astro build
+    inputs:
+      - "@globs(sources)"
+      - "@globs(public)"
+      - "@globs(typescript)"
+      - "/astro.config.js"
+    outputs:
+      - dist
+    dependsOn:
+      - check
+
+  preview:
+    command: astro preview
+    preset: server
+
+  preview-wrangler:
+    command: wrangler pages dev ./dist
+    preset: server
+    dependsOn:
+      - build
+
+  deploy:
+    command: bunx wrangler deploy
+    dependsOn:
+      - build

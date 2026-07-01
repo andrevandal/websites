@@ -38,12 +38,10 @@ const {
 const domain = url.hostname
 
 const chooseSocialImagem = (image?: string) => {
-  if (!image || !image.length) {
-    return ""
-  }
-  if (/^(?<protocol>https?:)?\/\//.test(image)) {
-    return image
-  }
+  if (!image || !image.length) return ""
+
+  if (/^(?<protocol>https?:)?\/\//.test(image)) return image
+
   return getImageUrl(
     image.startsWith("/") ? image : `/${image}`,
     "f_auto,q_90,w_1200,h_630"
@@ -55,7 +53,7 @@ const image = chooseSocialImagem(
 )
 ---
 
-<html class="scroll-p-20.5 h-full scroll-smooth" lang="pt-br">
+<html class="h-full scroll-p-20.5 scroll-smooth" lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

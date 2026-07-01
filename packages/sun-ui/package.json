@@ -1,0 +1,37 @@
+{
+  "name": "@vandal-websites/sun-ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A shared UI components package",
+  "license": "UNLICENSED",
+  "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./astro": "./dist/astro/index.mjs",
+    "./astro-integration": "./dist/astro-integration.mjs",
+    "./package.json": "./package.json",
+    "./astro/layouts/*": "./dist/astro/layouts/*.astro",
+    "./astro/components/*": "./dist/astro/components/*.astro"
+  },
+  "dependencies": {
+    "astro-iconset": "catalog:astro",
+    "cnfast": "catalog:tailwind",
+    "tailwindcss": "catalog:tailwind"
+  },
+  "devDependencies": {
+    "@astro-community/astro-embed-youtube": "catalog:astro",
+    "@astrojs/check": "catalog:astro",
+    "@astrojs/ts-plugin": "catalog:astro",
+    "@types/bun": "catalog:types",
+    "@types/node": "catalog:types",
+    "astro": "catalog:astro",
+    "publint": "catalog:tools",
+    "tsdown": "catalog:tools",
+    "typescript": "catalog:typescript"
+  },
+  "packageManager": "bun@1.3.6"
+}

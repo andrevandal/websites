@@ -1,0 +1,28 @@
+{
+  "extends": ["astro/tsconfigs/strict", "../../tsconfig.bundler.json"],
+  "compilerOptions": {
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@utils": ["./src/utils"],
+      "@utils/*": ["./src/utils/*"],
+      "@/*": ["./src/*"]
+    },
+    "outDir": "../../.moon/cache/types/websites/brunabraz",
+    "plugins": [
+      {
+        "name": "@astrojs/ts-plugin"
+      }
+    ]
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "astro.config.js"],
+  "references": [
+    {
+      "path": "../../packages/sun-ui"
+    }
+  ]
+}

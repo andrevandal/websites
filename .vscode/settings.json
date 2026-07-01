@@ -20,5 +20,11 @@
   "tailwindCSS.experimental.classRegex": [
     "(?:classes|class|Classes|Class)\\s*=\\s*`([^`]*)",
     "(?:styles|style|Styles|Style)\\s*=\\s*`([^`]*)"
-  ]
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
+  }
 }

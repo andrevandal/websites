@@ -1,0 +1,63 @@
+---
+import type { ButtonProps, AllowedTags } from "./Button.props.ts"
+import { cn } from "../../index"
+
+type Props<Tag extends AllowedTags> = ButtonProps<Tag>
+
+const {
+  as: Tag = "button",
+  href,
+  reverse,
+  block = false,
+  centered = false,
+  className = "",
+  ...props
+} = Astro.props
+
+const isLink = Tag === "a"
+
+const isExternalLink =
+  href?.startsWith("http") && !href?.startsWith("/") && !href?.startsWith("#")
+
+const customProps = {
+  ...(isLink && {
+    href,
+    target: isExternalLink ? "_blank" : undefined,
+    rel: isExternalLink ? "noopener noreferrer" : undefined,
+  }),
+  ...props,
+}
+---
+
+<Tag
+  class:list={cn(
+    "btn",
+    {
+      "btn-reverse": reverse,
+      "btn-block": block,
+      "btn-center": centered,
+    },
+    className
+  )}
+  {...customProps}
+>
+  <span><slot /></span>
+  <slot name="icon" />
+
+  <style>
+    @reference "tailwindcss";
+
+    .btn {
+      @apply box-border flex w-fit flex-row items-center justify-center;
+    }
+    .btn-center {
+      @apply justify-center;
+    }
+    .btn-block {
+      @apply w-full;
+    }
+    .btn-reverse {
+      @apply flex-row-reverse;
+    }
+  </style>
+</Tag>
