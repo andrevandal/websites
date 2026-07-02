@@ -23,12 +23,8 @@ const chooseSocialImagem = (
   image?: string,
   processor?: (image: string, params?: string) => string
 ) => {
-  if (!image?.length) {
-    return ""
-  }
-  if (/^(?<protocol>https?:)?\/\//.test(image) || !processor) {
-    return image
-  }
+  if (!image?.length) return ""
+  if (/^(?<protocol>https?:)?\/\//.test(image) || !processor) return image
 
   return processor(
     image.startsWith("/") ? image : `/${image}`,
@@ -66,6 +62,8 @@ const image = chooseSocialImagem(rawImage)
     <slot name="close-head" />
   </head>
   <body class="h-full">
+    <Gtag placement="body" {...gtag} />
+    <slot name="open-body" />
     <slot />
     {
       schema && (
@@ -76,7 +74,6 @@ const image = chooseSocialImagem(rawImage)
         />
       )
     }
-    <Gtag placement="body" {...gtag} />
     <slot name="close-body" />
   </body>
 </html>

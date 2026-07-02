@@ -145,6 +145,7 @@
     "typescript": "catalog:typescript",
     "typescript-eslint": "catalog:linting",
     "valibot": "catalog:utils",
+    "wrangler": "catalog:tools",
     "yargs": "catalog:tools"
   },
   "engines": {

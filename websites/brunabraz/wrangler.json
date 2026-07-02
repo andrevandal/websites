@@ -13,18 +13,33 @@
     "preview": {
       "vars": {
         "ENVIRONMENT": "preview"
-      }
+      },
+      "kv_namespaces": [
+        {
+          "binding": "SESSION_PREVIEW"
+        }
+      ]
     },
     "staging": {
       "vars": {
         "ENVIRONMENT": "staging"
       },
+      "kv_namespaces": [
+        {
+          "binding": "SESSION_STAGING"
+        }
+      ],
       "route": "beta.brunabraz.com.br/*"
     },
     "production": {
       "vars": {
         "ENVIRONMENT": "production"
       },
+      "kv_namespaces": [
+        {
+          "binding": "SESSION_PRODUCTION"
+        }
+      ],
       "routes": ["brunabraz.com.br/*"]
     }
   }

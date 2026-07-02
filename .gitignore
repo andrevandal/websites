@@ -49,6 +49,7 @@ e2e/.auth/
 
 # Wrangler / Cloudflare
 .wrangler/
+worker-configuration.d.ts
 
 # Turso / SQLite
 *.db

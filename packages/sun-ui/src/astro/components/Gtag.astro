@@ -1,68 +1,55 @@
 ---
-import type { GtagProps as Props } from "./Gtag.props.ts"
+import type { GtagProps as Props } from "./Gtag.props"
 
-const {
-  placement,
-  googleAnalyticsId,
-  conversionId,
-  conversionLabel,
-  partytown = false,
-  gtagBaseUrl = "https://www.googletagmanager.com/gtag",
-} = Astro.props
+const { placement, gtagId } = Astro.props
+
+const ENABLE_PARTYTOWN = placement === "head" && Boolean(Astro.props.partytown)
+
+const baseUrl = "https://www.googletagmanager.com"
+const attrs = ENABLE_PARTYTOWN ? { type: "text/partytown" } : {}
+
+const gtagDataLayerInit = `window.dataLayer=window.dataLayer||[],window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};`
 ---
 
 {
-  placement === "head" && googleAnalyticsId && (
-    <script
-      is:inline
-      type={partytown ? "text/partytown" : ""}
-      set:html={`
-          window.dataLayer = window.dataLayer || [];
-          window.gtag = function () { dataLayer.push(arguments); };
-          window.gtag('js', new Date());
-          window.gtag('config', '${googleAnalyticsId}');
-          
-          function gtag_report_conversion(url) {
-            var callback = function () {
-              if (typeof(url) != 'undefined') {
-                window.location = url;
-              }
-            };
-            window.gtag('event', 'conversion', {
-                'send_to': '${conversionId}/${conversionLabel}',
-                'value': 1.0,
-                'currency': 'BRL',
-                'event_callback': callback
-            });
-            return false;
-          }
-
-          document.addEventListener('click', (e) => {
-            const target = e.target.closest('.track-conversion');
-            if (target) {
-              // GA4
-              window.gtag('event', 'generate_lead', {
-                'lead_type': target.dataset.leadType || 'whatsapp',
-                'link_url': target.href || target.querySelector('a')?.href || '',
-                'link_text': target.innerText || '',
-                'button_location': target.dataset.buttonLocation || 'unknown'
-              });
-              
-              // GAds
-              ${conversionId && conversionLabel ? 'gtag_report_conversion(target.href || target.querySelector("a")?.href);' : ""}
-            }
-          });
-
-      `}
-    />
+  placement === "head" && gtagId && (
+    <Fragment>
+      <script
+        is:inline
+        async
+        src={`${baseUrl}/gtag/js?id=${gtagId}`}
+        {...attrs}
+      />
+      <script is:inline {...attrs} set:html={gtagDataLayerInit} />
+      {ENABLE_PARTYTOWN && <script is:inline set:html={gtagDataLayerInit} />}
+      {Astro.props.placement === "head" &&
+        Astro.props.conversionId &&
+        Astro.props.conversionLabel && (
+          <script
+            is:inline
+            set:html={`window.gtag_report_conversion=function(){window.gtag("event","conversion",{send_to:'${Astro.props.conversionId}/${Astro.props.conversionLabel}',value:1,currency:"BRL"})};`}
+          />
+        )}
+      <script
+        is:inline
+        set:html={`window.gtagInit=function(){gtag("js",new Date),gtag("config","${gtagId}"),gtag("consent","default",{ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",analytics_storage:"denied"})},window.gtagInit(),window.__ga_after_swap_added||(window.__ga_after_swap_added=!0,document.addEventListener("astro:after-swap",function(){window.gtagInit()}));`}
+      />
+      <script
+        is:inline
+        set:html='document.addEventListener("click",function(e){if(!(e.target instanceof HTMLElement))return;const t=e.target?.closest(".track-conversion");t&&t instanceof HTMLAnchorElement&&(window.gtag?.("event","generate_lead",{lead_type:t.dataset.leadType||"whatsapp",link_url:t.href||t.querySelector("a")?.href||"",link_text:t.innerText||"",button_location:t.dataset.buttonLocation||"unknown"}),window.gtag_report_conversion?.())});'
+      />
+    </Fragment>
   )
 }
 {
-  placement === "body" && googleAnalyticsId && (
-    <script
-      is:inline
-      src={`${gtagBaseUrl}/js?id=${googleAnalyticsId}`}
-      type={partytown ? "text/partytown" : ""}
-    />
+  placement === "body" && gtagId && (
+    <noscript>
+      <iframe
+        src={`${baseUrl}/gtag/js?id=${gtagId}`}
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      />
+    </noscript>
   )
 }

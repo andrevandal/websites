@@ -1,10 +1,15 @@
-type GtagProps = {
-  placement: "head" | "body"
-  googleAnalyticsId?: string
+type GtagConfig = {
+  gtagId?: string
   conversionId?: string
   conversionLabel?: string
   partytown?: boolean
-  gtagBaseUrl?: string
 }
 
-export type { GtagProps }
+type GtagProps =
+  | ({ placement: "head" } & GtagConfig)
+  | {
+      placement: "body"
+      gtagId?: string
+    }
+
+export type { GtagProps, GtagConfig }

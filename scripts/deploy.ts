@@ -89,11 +89,16 @@ try {
 
   if (dryRun) {
     consola.info(
-      "Deploying in dry-run mode.",
+      "[DRY-MODE] Deploying...",
       `moon run ${project.id}:deploy -- --env=${env}`
     )
     console.debug("With environment variables:", envVars)
   } else {
+    consola.info(
+      "Deploying...",
+      `moon run ${project.id}:deploy -- --env=${env}`
+    )
+    console.debug("With environment variables:", envVars)
     const proc = execa(
       "moon",
       ["run", `${project.id}:deploy`, "--", `--env=${env}`],
@@ -107,10 +112,8 @@ try {
 
     const { all: output } = await proc
 
-    const url = output?.match(/https:\/\/\S+/)?.[0]
-    if (url) {
-      consola.success(`Deployed to: ${url}`)
-    }
+    const url = output?.match(/https:\/\/\S+/g)?.at(-1)
+    if (url) consola.success(`Deployed to: ${url}`)
   }
 } catch (err) {
   consola.error((err as Error).message)

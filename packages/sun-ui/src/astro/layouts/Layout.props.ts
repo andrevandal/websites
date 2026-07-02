@@ -1,10 +1,5 @@
 import type { HTMLAttributes } from "astro/types"
-
-type GtagConfig = {
-  googleAnalyticsId?: string
-  conversionId?: string
-  conversionLabel?: string
-}
+import type { GtagConfig } from "../components/Gtag.props"
 
 type LayoutProps = {
   title: string

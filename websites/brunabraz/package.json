@@ -12,7 +12,8 @@
     "@iconify/json": "catalog:icons",
     "@vandal-websites/sun-ui": "workspace:*",
     "@tailwindcss/typography": "catalog:tailwind",
-    "astro-iconset": "catalog:astro"
+    "astro-iconset": "catalog:astro",
+    "valibot": "catalog:utils"
   },
   "devDependencies": {
     "@astro-community/astro-embed-youtube": "catalog:astro",
@@ -25,6 +26,7 @@
     "astro": "catalog:astro",
     "tailwindcss": "catalog:tailwind",
     "typescript": "catalog:typescript",
-    "vite": "catalog:vite"
+    "vite": "catalog:vite",
+    "wrangler": "catalog:tools"
   }
 }

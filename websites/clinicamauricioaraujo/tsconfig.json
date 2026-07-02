@@ -14,10 +14,15 @@
     "outDir": "../../.moon/cache/types/websites/clinicamauricioaraujo.com.br"
   },
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "astro.config.js"],
   "plugins": [
     {
       "name": "@astrojs/ts-plugin"
+    }
+  ],
+  "references": [
+    {
+      "path": "../../packages/sun-ui"
     }
   ]
 }

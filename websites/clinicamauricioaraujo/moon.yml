@@ -6,12 +6,18 @@ project:
   description: "Website for Clinica Mauricio Araujo."
 
 tasks:
+  typegen:
+    command: wrangler types
+    preset: server
+
   astro:
     command: astro
 
   dev:
     command: astro dev
     preset: server
+    dependsOn:
+      - typegen
 
   check:
     command: astro check
@@ -19,7 +25,7 @@ tasks:
       - "@globs(typescript)"
       - "@globs(sources)"
       - "@globs(typescript)"
-      - "/astro.config.js"
+      - "./astro.config.js"
 
   build:
     command: astro build
@@ -27,7 +33,13 @@ tasks:
       - "@globs(sources)"
       - "@globs(public)"
       - "@globs(typescript)"
-      - "/astro.config.js"
+      - "./astro.config.js"
+      - "$SITE_URL"
+      - "$ENABLE_PARTYTOWN"
+      - "$PUBLIC_GOOGLE_ANALYTICS_ID"
+      - "$PUBLIC_GOOGLE_ADS_CONVERSION_ID"
+      - "$PUBLIC_GOOGLE_ADS_CONVERSION_LABEL"
+      - "$DEPLOY_ENV"
     outputs:
       - dist
     dependsOn:

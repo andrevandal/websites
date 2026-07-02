@@ -2,20 +2,22 @@
 import "../styles/global.css"
 
 import { Font } from "astro:assets"
-
-import TheHeader from "@components/TheHeader.astro"
-import TheFooter from "@components/TheFooter.astro"
-import Gtag from "@components/Gtag.astro"
-import AnimateOnScroll from "@components/AnimateOnScroll.astro"
-import { getImageUrl } from "@utils"
-import { siteConfig } from "@/data/site"
-
+import { ENABLE_PARTYTOWN } from "astro:env/server"
 import {
   PUBLIC_GOOGLE_ANALYTICS_ID as googleAnalyticsId,
   PUBLIC_GOOGLE_ADS_CONVERSION_ID as conversionId,
   PUBLIC_GOOGLE_ADS_CONVERSION_LABEL as conversionLabel,
 } from "astro:env/client"
 import type { HTMLAttributes } from "astro/types"
+
+import {
+  SunAnimateOnScroll as AnimateOnScroll,
+  SunLayout as Layout,
+} from "@vandal-websites/sun-ui/astro"
+import TheHeader from "@components/TheHeader.astro"
+import TheFooter from "@components/TheFooter.astro"
+import { getImageUrl } from "@utils"
+import { siteConfig } from "@/data/site"
 
 type Props = {
   title: string
@@ -35,84 +37,48 @@ const {
   url,
   footerLess,
 } = Astro.props
-const domain = url.hostname
 
-const chooseSocialImagem = (image?: string) => {
+const processImage = (image?: string) => {
   if (!image || !image.length) return ""
-
   if (/^(?<protocol>https?:)?\/\//.test(image)) return image
-
   return getImageUrl(
     image.startsWith("/") ? image : `/${image}`,
     "f_auto,q_90,w_1200,h_630"
   )
 }
 
-const image = chooseSocialImagem(
-  Astro.props.image ?? siteConfig.defaultSocialImage
-)
+const image = processImage(Astro.props.image ?? siteConfig.defaultSocialImage)
 ---
 
-<html class="h-full scroll-p-20.5 scroll-smooth" lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="theme-color" content="#152329" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
-    <link rel="canonical" href={url} />
-    <link rel="sitemap" href="/sitemap-index.xml" />
-    {links?.map(link => <link {...link} />)}
-    <meta name="description" content={description} />
-    <meta property="og:url" content={url} />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
-    <meta property="twitter:domain" content={domain} />
-    <meta property="twitter:url" content={url} />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={image} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <Gtag
-      placement="head"
-      googleAnalyticsId={googleAnalyticsId}
-      conversionId={conversionId}
-      conversionLabel={conversionLabel}
-    />
-    <Font cssVariable="--font-inter" preload />
-  </head>
-  <body class="h-full">
-    <TheHeader>
-      <slot name="header" slot="default">
-        <div class="h-18 w-full bg-gray-900"></div>
-      </slot>
-    </TheHeader>
-    <slot />
-    {
-      !footerLess && (
-        <TheFooter>
-          <slot name="footer" />
-        </TheFooter>
-      )
-    }
-    <AnimateOnScroll />
-    {
-      schema && (
-        <script
-          type="application/ld+json"
-          is:inline
-          set:html={JSON.stringify(schema)}
-        />
-      )
-    }
-    <Gtag
-      placement="body"
-      googleAnalyticsId={googleAnalyticsId}
-      conversionId={conversionId}
-      conversionLabel={conversionLabel}
-    />
-  </body>
-</html>
+<Layout
+  title={title}
+  description={description}
+  image={image}
+  url={url}
+  schema={schema}
+  links={links}
+  themeColor="#152329"
+  class="scroll-p-20.5"
+  gtag={{
+    gtagId: googleAnalyticsId,
+    conversionId,
+    conversionLabel,
+    partytown: ENABLE_PARTYTOWN,
+  }}
+>
+  <Font cssVariable="--font-inter" preload slot="close-head" />
+  <TheHeader>
+    <slot name="header" slot="default">
+      <div class="h-18 w-full bg-gray-900"></div>
+    </slot>
+  </TheHeader>
+  <slot />
+  {
+    !footerLess && (
+      <TheFooter>
+        <slot name="footer" />
+      </TheFooter>
+    )
+  }
+  <AnimateOnScroll slot="close-body" />
+</Layout>
