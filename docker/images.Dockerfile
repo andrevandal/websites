@@ -30,6 +30,7 @@ ENV KV_PATH=/data/kv/kv.db
 WORKDIR /app/apps/images
 RUN mkdir -p /data/cache /data/queue /data/images /data/kv
 COPY --from=builder /app/apps/images/dist ./dist
+COPY --from=builder /app/apps/images/public ./public
 COPY --from=builder /app/apps/images/package.json ./package.json
 COPY --from=sharp-deps /sharp/node_modules ./node_modules
 EXPOSE 3000
