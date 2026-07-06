@@ -23,7 +23,7 @@ const { testimonials } = Astro.props
       Veja os depoimentos dos meus alunos
     </p>
   </div>
-  <SunCarousel>
+  <SunCarousel direction="left-to-right">
     {
       testimonials.map(({ image, author, content }) => {
         return (

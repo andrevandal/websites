@@ -364,7 +364,11 @@ const meta = {
                   as="h4"
                   class="text-light-mushroom col-start-3 row-start-2 font-serif text-[.875rem] leading-[140%] font-bold"
                 >
-                  {prefix}
+                  {prefix === "∞" ? (
+                    <SunIcon name="infinity" width={16} height={16} />
+                  ) : (
+                    prefix
+                  )}
                 </Heading>
                 <div class="border-cambridge from-cambridge/40 to-cambridge/70 text-light-mushroom group-hover:text-white-chocolate group-hover:border-ruddy-brown group-hover:from-ruddy-brown/60 group-hover:to-ruddy-brown/90 col-start-1 row-span-5 flex h-20 w-20 items-center justify-center rounded-full border bg-linear-to-b transition-colors">
                   <SunIcon name={icon} width={40} height={40} />

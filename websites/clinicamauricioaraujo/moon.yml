@@ -26,6 +26,8 @@ tasks:
       - "@globs(sources)"
       - "@globs(typescript)"
       - "./astro.config.js"
+    dependsOn:
+      - ^:build
 
   build:
     command: astro build
