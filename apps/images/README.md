@@ -239,21 +239,33 @@ Runtime paths:
 | `/data/images`         | optional read-only filesystem source images          |
 | `/data/kv/kv.db`       | hot cache + ban list + rate-limiter SQLite store     |
 
-GitHub secrets:
+`COOLIFY_TOKEN` is a repo-level secret (shared across environments):
 
 ```txt
-COOLIFY_PREVIEW_WEBHOOK
-COOLIFY_STAGING_WEBHOOK
-COOLIFY_PRODUCTION_WEBHOOK
-COOLIFY_PREVIEW_CLEANUP_WEBHOOK
 COOLIFY_TOKEN
 ```
 
+`COOLIFY_IMAGES_WEBHOOK` is an **environment-scoped** secret — configure it
+separately under the GitHub `staging` and `production` Environments (repo
+Settings → Environments), each with that environment's own Coolify deploy
+webhook URL. The `deploy` job sets `environment: name: <staging|production>`,
+so `secrets.COOLIFY_IMAGES_WEBHOOK` resolves to the right URL automatically —
+no per-environment branching needed in the workflow.
+
+`CLOUDFLARE_DEPLOY_BYPASS_SECRET` is a repo-level secret (shared across
+environments and apps — the Coolify webhook host sits behind a Cloudflare
+WAF/bot challenge that a plain `curl` from a CI runner can never solve). Its
+value must match a Cloudflare WAF Custom Rule on the Coolify zone: match
+`http.request.uri.path eq "/api/v1/deploy"` AND request header
+`X-Coolify-Deploy-Bypass` equals this secret's value, action **Skip** ->
+security level / bot fight mode / managed challenge for that request only.
+Everything else on the host keeps Cloudflare's normal protection.
+
 Coolify must be able to pull from GHCR through a GitHub App or a registry credential with `read:packages`.
 
-Staging and preview builds run automatically as part of `Main CI`
-(`.github/workflows/main.yml`): after the shared checks pass, the `images-container`
-job calls the `Images Container` workflow only when `apps/images` (or a package it
-depends on) is affected. Production deploy — and any manual staging/production
-rebuild — is triggered directly through the `Images Container` workflow's
-`workflow_dispatch` event.
+Preview PRs build and push an image to GHCR for inspection, but never trigger a
+Coolify deploy — only `staging` (push to `main`) and `production` (manual
+`workflow_dispatch`) do. `Main CI` (`.github/workflows/main.yml`) calls the
+`Images Container` workflow whenever `apps/images` (or a package it depends on)
+is affected; the `deploy` job inside it is skipped whenever the resolved
+environment is `preview`.

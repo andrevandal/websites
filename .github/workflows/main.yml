@@ -23,6 +23,7 @@ jobs:
     outputs:
       affected_apps: ${{ steps.affecteds.outputs.apps_affected }}
       images_affected: ${{ steps.affecteds.outputs.images_affected }}
+      web_affected: ${{ steps.affecteds.outputs.web_affected }}
       env_to_deploy: ${{ steps.affecteds.outputs.env_to_deploy }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -51,14 +52,17 @@ jobs:
       - name: Get affected apps
         id: affecteds
         run: |
-          # "images" is deployed via its own dedicated workflow
-          # (.github/workflows/images-container.yml, Docker/GHCR/Coolify), not
+          # "images" and "web" are each deployed via their own dedicated
+          # workflow (.github/workflows/images-container.yml,
+          # .github/workflows/web-container.yml — Docker/GHCR/Coolify), not
           # this generic Cloudflare deploy job — always excluded here.
           affected="$(moon query projects "projectLayer=application" --affected --downstream deep | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; ""))')"
-          apps=$(echo "$affected" | jq -c 'map(select(. != "images"))')
+          apps=$(echo "$affected" | jq -c 'map(select(. != "images" and . != "web"))')
           images_affected=$(echo "$affected" | jq 'any(. == "images")')
+          web_affected=$(echo "$affected" | jq 'any(. == "web")')
           echo "apps_affected=$apps" >> $GITHUB_OUTPUT
           echo "images_affected=$images_affected" >> $GITHUB_OUTPUT
+          echo "web_affected=$web_affected" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploying preview
@@ -103,6 +107,18 @@ jobs:
       contents: read
       packages: write
     uses: ./.github/workflows/images-container.yml
+    secrets: inherit
+    with:
+      environment: ${{ github.event_name == 'pull_request' && 'preview' || (github.ref == 'refs/heads/main' && 'staging' || 'preview') }}
+
+  web-container:
+    name: Web container
+    needs: check-all
+    if: needs.check-all.outputs.web_affected == 'true'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/web-container.yml
     secrets: inherit
     with:
       environment: ${{ github.event_name == 'pull_request' && 'preview' || (github.ref == 'refs/heads/main' && 'staging' || 'preview') }}

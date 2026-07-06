@@ -176,6 +176,10 @@
     "node": {
       "ofetch": "^1.5.1",
     },
+    "react": {
+      "react": "^19.1.0",
+      "react-dom": "^19.1.0",
+    },
     "server": {
       "@hono/valibot-validator": "^0.6.1",
       "bunqueue": "^2.8.26",

@@ -19,6 +19,7 @@ Websites for Vandal clients. TypeScript monorepo managed with moonrepo and bun.
 
 - **`packages/sun-ui`** — Shared UI components (used by the Astro websites).
 - **`packages/tailwind-config`** — Shared Tailwind CSS v4 theme tokens.
+- **`packages/ui`** — UI component library built on Base UI.
 
 ## Deploy environments
 
@@ -26,9 +27,6 @@ CI (`.github/workflows/main.yml`) builds and tests everything on every push/PR,
 
 - `main` branch → **staging**
 - pull requests → **preview**
-- `apps/images` has its own workflow (`images-container.yml`) that builds a
-  Docker image, pushes it to GHCR, and triggers a Coolify webhook
-  (preview/staging/production).
 - The websites deploy straight to Cloudflare Workers via `wrangler deploy`.
 
 ## Setup

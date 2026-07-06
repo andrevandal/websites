@@ -84,6 +84,10 @@
         "@astrojs/ts-plugin": "^1.10.9",
         "astro-iconset": "^0.0.6"
       },
+      "react": {
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0"
+      },
       "ui": {
         "@base-ui/react": "^1.6.0"
       },
