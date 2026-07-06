@@ -4,7 +4,7 @@ description: "Install Node.js and bun, then install dependencies"
 runs:
   using: "composite"
   steps:
-    - uses: "moonrepo/setup-toolchain@v0"
+    - uses: "moonrepo/setup-toolchain@v0.6.4"
       with:
         auto-install: true
         cache-base: main

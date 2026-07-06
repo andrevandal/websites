@@ -1,0 +1,73 @@
+name: Deploy Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: App or website to deploy
+        type: choice
+        options: [images, brunabraz, clinicamauricioaraujo.com.br]
+        required: true
+      environment:
+        description: Target environment
+        type: choice
+        options: [preview, staging, production]
+        default: preview
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-manual-${{ inputs.target }}-${{ inputs.environment }}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject unsupported images environment
+        if: inputs.target == 'images' && inputs.environment == 'preview'
+        run: |
+          echo "images does not support preview via manual trigger; use staging or production." >&2
+          exit 1
+
+  deploy-images:
+    name: Deploy images
+    needs: validate
+    if: inputs.target == 'images'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/images-container.yml
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+
+  deploy-website:
+    name: Deploy website
+    needs: validate
+    if: inputs.target != 'images'
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      DEPLOY_ENV: ${{ inputs.environment }}
+      ENV_VARS_BRUNABRAZ: ${{ vars.ENV_VARS_BRUNABRAZ }}
+      ENV_VARS_CLINICAMAURICIOARAUJO: ${{ vars.ENV_VARS_CLINICAMAURICIOARAUJO }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Init
+        uses: ./.github/actions/init
+
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          env: ${{ inputs.environment }}
+          target: ${{ inputs.target }}
