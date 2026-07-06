@@ -11,6 +11,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  packages: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       affected_apps: ${{ steps.affecteds.outputs.apps_affected }}
+      images_affected: ${{ steps.affecteds.outputs.images_affected }}
       env_to_deploy: ${{ steps.affecteds.outputs.env_to_deploy }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,8 +51,14 @@ jobs:
       - name: Get affected apps
         id: affecteds
         run: |
-          apps=$(moon query projects "projectLayer=application" --affected --downstream deep | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; "")) | tojson')
+          # "images" is deployed via its own dedicated workflow
+          # (.github/workflows/images-container.yml, Docker/GHCR/Coolify), not
+          # this generic Cloudflare deploy job — always excluded here.
+          affected="$(moon query projects "projectLayer=application" --affected --downstream deep | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; ""))')"
+          apps=$(echo "$affected" | jq -c 'map(select(. != "images"))')
+          images_affected=$(echo "$affected" | jq 'any(. == "images")')
           echo "apps_affected=$apps" >> $GITHUB_OUTPUT
+          echo "images_affected=$images_affected" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploying preview
@@ -86,3 +94,15 @@ jobs:
         with:
           env: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
           target: ${{ matrix.app }}
+
+  images-container:
+    name: Images container
+    needs: check-all
+    if: needs.check-all.outputs.images_affected == 'true'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/images-container.yml
+    secrets: inherit
+    with:
+      environment: ${{ github.event_name == 'pull_request' && 'preview' || (github.ref == 'refs/heads/main' && 'staging' || 'preview') }}

@@ -1,8 +1,5 @@
 $schema: https://moonrepo.dev/schemas/tasks.json
 
-implicitDeps:
-  - ^:build
-
 implicitInputs:
   - package.json
 
@@ -20,3 +17,19 @@ fileGroups:
     - /tsconfig.*.json
   content:
     - "**/*.{md,mdx,yml,yaml,json}"
+
+tasks:
+  typecheck:
+    command: "bun x tsc --noEmit --pretty"
+    inputs:
+      - "@globs(typescript)"
+      - "@globs(sources)"
+    dependsOn:
+      - ^:build
+
+  test:
+    command: "bun test --pass-with-no-tests"
+    inputs:
+      - "@globs(tests)"
+      - "@globs(typescript)"
+      - "@globs(sources)"

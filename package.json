@@ -58,6 +58,12 @@
         "tsconfig-paths": "^4.2.0",
         "typescript": "^6.0.3"
       },
+      "server": {
+        "hono": "^4.12.27",
+        "@hono/valibot-validator": "^0.6.1",
+        "bunqueue": "^2.8.26",
+        "hono-rate-limiter": "^0.5.3"
+      },
       "node": {
         "ofetch": "^1.5.1"
       },
@@ -107,8 +113,8 @@
     "sync": "moon sync projects",
     "deploy": "bun scripts/deploy.ts",
     "dev": "bun scripts/dev.ts",
-    "typecheck": "tsc --noEmit --pretty",
-    "test": "bun test --coverage --pass-with-no-tests .",
+    "typecheck": "moon run *:typecheck",
+    "test": "moon run *:test",
     "lint": "oxlint . && eslint --no-error-on-unmatched-pattern **/*.astro",
     "lint:fix": "oxlint --fix . && eslint --no-error-on-unmatched-pattern --fix **/*.astro",
     "format": "oxfmt . --check && prettier --check --no-error-on-unmatched-pattern **/*.astro",

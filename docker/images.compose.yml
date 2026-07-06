@@ -1,0 +1,49 @@
+services:
+  images:
+    image: ${IMAGE:-ghcr.io/OWNER/REPO/images-app:latest}
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HTTP_DOMAINS: ${HTTP_DOMAINS:-}
+      HTTP_MAX_AGE: ${HTTP_MAX_AGE:-0}
+      FS_DIR: /data/images
+      FS_MAX_AGE: ${FS_MAX_AGE:-0}
+      LOCAL_CACHE_DIR: /data/cache
+      QUEUE_DB: /data/queue/queue.db
+      MAX_CONCURRENT: ${MAX_CONCURRENT:-3}
+      S3_ENDPOINT: ${S3_ENDPOINT:-https://s3.amazonaws.com}
+      S3_PORT: ${S3_PORT:-9000}
+      S3_USE_SSL: ${S3_USE_SSL:-true}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+      S3_BUCKET: ${S3_BUCKET:-}
+      CONSOLA_LEVEL: ${CONSOLA_LEVEL:-3}
+      AVIF_ENABLED: ${AVIF_ENABLED:-true}
+      KV_PATH: /data/kv/kv.db
+      KV_MAX_BYTES: ${KV_MAX_BYTES:-52428800}
+      BAN_STRIKE_THRESHOLD: ${BAN_STRIKE_THRESHOLD:-5}
+      BAN_STRIKE_WINDOW_MS: ${BAN_STRIKE_WINDOW_MS:-3600000}
+      BAN_DURATION_MS: ${BAN_DURATION_MS:-86400000}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-300000}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-300}
+      TRUST_CLOUDFLARE_IPS: ${TRUST_CLOUDFLARE_IPS:-true}
+    volumes:
+      - images-cache:/data/cache
+      - images-queue:/data/queue
+      - images-source:/data/images:ro
+      - images-kv:/data/kv
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  images-cache:
+  images-queue:
+  images-source:
+  images-kv:

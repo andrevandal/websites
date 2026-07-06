@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.bundler.json",
+  "include": ["src/**/*", "tests/**/*", "*.ts"],
+  "references": [],
+  "compilerOptions": {
+    "outDir": "../../.moon/cache/types/apps/images",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

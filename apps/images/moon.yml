@@ -1,0 +1,23 @@
+layer: "application"
+language: "typescript"
+
+project:
+  title: "Images"
+  description: "websites images service."
+  channel: ""
+  owner: ""
+  maintainers: []
+
+tasks:
+  dev:
+    command: "bun --hot src/index.ts"
+    preset: server
+    options:
+      persistent: true
+
+  build:
+    command: "bun build src/index.ts --outdir dist --target bun"
+    inputs:
+      - "src/**/*"
+    outputs:
+      - "dist"

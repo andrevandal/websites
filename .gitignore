@@ -60,14 +60,16 @@ worker-configuration.d.ts
 .docker/
 
 # Data
-.data/*
+**/.data/**
 !.data/.gitkeep
 
 # Environment
 .env
 .env.*
 !.env.example
+!**/.env.test
 .superpowers/
+docs/superpowers/
 
 **/*:Zone.Identifier
 tsconfig.tsbuildinfo

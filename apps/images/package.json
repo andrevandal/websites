@@ -1,0 +1,29 @@
+{
+  "name": "@vandal-websites/images-app",
+  "version": "0.0.0",
+  "private": true,
+  "description": "websites images service",
+  "license": "UNLICENSED",
+  "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "start": "bun dist/index.js"
+  },
+  "dependencies": {
+    "@hono/valibot-validator": "catalog:server",
+    "bunqueue": "catalog:server",
+    "consola": "catalog:tools",
+    "hono": "catalog:server",
+    "hono-rate-limiter": "catalog:server",
+    "sharp": "^0.35.2",
+    "valibot": "catalog:utils"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:types",
+    "@types/node": "catalog:types",
+    "typescript": "catalog:typescript"
+  },
+  "packageManager": "bun@1.3.14"
+}

@@ -113,6 +113,7 @@ try {
     const { all: output } = await proc
 
     const url = output?.match(/https:\/\/\S+/g)?.at(-1)
+
     if (url) consola.success(`Deployed to: ${url}`)
   }
 } catch (err) {
