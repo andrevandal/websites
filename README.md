@@ -1,6 +1,35 @@
 # websites
 
-A moonrepo-based TypeScript monorepo managed with bun.
+Websites for Vandal clients. TypeScript monorepo managed with moonrepo and bun.
+
+## What's in here
+
+### Apps
+
+- **`apps/images`** — Image optimization/transform service (Hono on Bun).
+  Built and pushed to GHCR as a container, deployed via Coolify.
+
+### Websites
+
+- **`websites/brunabraz`** — Astro site, deployed to Cloudflare Workers.
+- **`websites/clinicamauricioaraujo.com.br`** — Astro site, deployed to
+  Cloudflare Workers.
+
+### Packages
+
+- **`packages/sun-ui`** — Shared UI components (used by the Astro websites).
+- **`packages/tailwind-config`** — Shared Tailwind CSS v4 theme tokens.
+
+## Deploy environments
+
+CI (`.github/workflows/main.yml`) builds and tests everything on every push/PR,
+
+- `main` branch → **staging**
+- pull requests → **preview**
+- `apps/images` has its own workflow (`images-container.yml`) that builds a
+  Docker image, pushes it to GHCR, and triggers a Coolify webhook
+  (preview/staging/production).
+- The websites deploy straight to Cloudflare Workers via `wrangler deploy`.
 
 ## Setup
 
@@ -8,12 +37,13 @@ This project uses moonrepo to manage multiple packages and proto to manage tool 
 
 For MCP setup, see: https://moonrepo.dev/docs/guides/mcp#setup
 
-### Architecture Overview
+### Architecture overview
 
 ```mermaid
 graph TB
     subgraph Workspace["Monorepo Workspace"]
         Apps["apps/*"]
+        Websites["websites/*"]
         Packages["packages/*"]
     end
 
@@ -48,12 +78,13 @@ Make sure you have the AWS CLI installed and configured with the necessary crede
 ## Common commands
 
 - `bun moon sync projects` or `bun sync` - Sync all project dependencies and configurations. Specially typescript references.
+- `bun run deploy <target> --env <preview|staging|production>` - Deploy a single app/website target manually.
 
 ## Package Management
 
 ### Adding Dependencies to Workspaces
 
-To add dependencies to a workspace project (apps/_ or packages/_), use the `--cwd` flag with catalog references:
+To add dependencies to a workspace project (apps/_, packages/_, or websites/\_), use the `--cwd` flag with catalog references:
 
 ```sh
 bun add typescript@catalog:typescript --cwd packages/your-package
@@ -64,7 +95,7 @@ This references versions defined in the root `package.json` catalogs, ensuring c
 
 ### Managing the Root Catalog
 
-The root `package.json` defines version catalogs organized by category (tools, testing, typescript, node, styles, types, vite). To add a new dependency to the catalog:
+The root `package.json` defines version catalogs organized by category (tools, testing, typescript, node, styles, types, vite, and more). To add a new dependency to the catalog:
 
 1. Add it to the appropriate catalog in `package.json`:
 
@@ -177,13 +208,3 @@ jobs:
       !startsWith(github.event.head_commit.message, 'chore(main): release') &&
       !contains(github.event.head_commit.message, 'release-please')
 ```
-
-## Available packages
-
-The monorepo comes the following general packages out of the box:
-
-- `consola` - A fancy console logger for Node.js and browsers. Specially good for CLI applications, scripts and local development.
-- `type-fest` - A collection of essential TypeScript types for enhanced type safety and developer experience.
-- `execa` - A modern alternative to Node.js's child_process methods, providing a better interface for executing shell commands.
-- `destr` - A utility for safely parsing JSON and other data formats, with support for various input types and error handling.
-- `yargs` - A powerful command-line argument parser for Node.js, enabling easy creation of interactive CLI applications.
