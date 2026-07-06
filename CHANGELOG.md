@@ -1,0 +1,114 @@
+# Changelog
+
+## 1.0.0 (2026-07-06)
+
+
+### Features
+
+* add clinicamauricioaraujo
+* add clinicamauricioaraujo astro's example
+* add deploy and init actions for CI/CD workflow
+* add website brunabraz
+* add wrangler
+* **astro:** add shared Astro components (Figure, Icon, Image, BaseButton)
+* **astro:** implement cn and createImageUtils in @vandal-websites/astro
+* **astro:** scaffold @vandal-websites/astro package
+* **brunabraz:** add bruna braz website
+* **brunabraz:** add carousel autoscroll and timeline icon
+* **brunabraz:** enable Cloudflare SSR adapter with sitemap and session KV
+* **brunabraz:** render infinity icon in timeline
+* **brunabraz:** scroll testimonials carousel left-to-right
+* **clinicamauricioaraujo:** sync upstream changes
+* **clinicamauricioaraujo:** sync upstream changes
+* **clinic:** validate env vars with valibot and add session KV binding
+* **deploy:** add centralized cloudflare pages orchestrator
+* **deploy:** log deployment URL after successful deploy
+* **images:** add bot-defense blocklist, ban tracker, and rate limiter
+* **images:** add generic SQLite KV store
+* **images:** add home page route
+* **images:** add hot cache layer in front of local/s3 backends
+* **images:** add websites images service
+* **images:** auto-fire production deploy after release-please release
+* **images:** configure queue database path
+* **images:** isolate test queue database from dev queue database
+* **images:** migrate images-app from ipx-server to Bun.Image/Bun.S3Client/bunqueue
+* **images:** route gif sources to animation-safe formats
+* **images:** tag container images with semver from package.json
+* **images:** transform animated gifs with sharp
+* **images:** wire bot defense and robots.txt into the app
+* **images:** wire consolaLevel and add tagged structured logging
+* **pedrohenridesign:** consume @vandal-websites/astro for shared utils and components
+* **pedrohenridesign:** copy and adapt source files from standalone site
+* **pedrohenridesign:** integrate pedrohenri.design into monorepo
+* streamline CI/CD initialization by adding code checkout step
+* **sun-ui:** add animate-on-scroll component
+* **sun-ui:** add autoscroll with infinite loop to carousel
+* **sun-ui:** add open-body slot and run Gtag before body content
+* **sun-ui:** add UI component library
+* **sun-ui:** support shared gtag config
+* **website:** initialize clinicamauricioaraujo.com.br
+* **websites:** track brunabraz in release-please, auto-fire production deploy
+
+
+### Bug Fixes
+
+* action init
+* add vite as a dependency in package.json
+* add vite dependency and fix astro:check issues
+* **astro:** add bun:test explicit imports and bun-types devDep to fix typecheck
+* **astro:** fix noUncheckedIndexedAccess errors in image utils
+* **astro:** replace bun-types with @types/bun in catalog reference
+* **ci:** add statuses write permission to PR title workflow
+* **ci:** expose site env var secrets in deploy job
+* **ci:** remove push-only gate and stale astro tsconfig ref
+* **ci:** remove push-only gate from deploy step
+* **ci:** use bunx wrangler and handle null CF API response
+* **ci:** use vars context for site env vars (not secrets)
+* **cleanup-pr-previews:** handle null result from Cloudflare API
+* **clinicamauricioaraujo:** fix astro check errors
+* **clinicamauricioaraujo:** update cn import to sun-ui
+* correct argument order in deploy command in action.yml
+* **deploy:** add preview environment to wrangler.json
+* **deploy:** add preview environment to wrangler.json
+* **deploy:** default dry-run to false
+* **deploy:** default dry-run to false, enforce --no-dry-run in CI
+* **deploy:** default to empty env vars when secret not set
+* **deploy:** default to empty env vars when secret not set
+* **deploy:** remove server preset from deploy tasks
+* **deploy:** skip env var check when .env.example has no keys
+* **deploy:** use bunx wrangler instead of wrangler directly
+* **deploy:** use bunx wrangler instead of wrangler directly
+* **deploy:** warn with env var name when secret not set
+* **docker:** add healthcheck to docker-compose
+* **docker:** remove broken COPY globs in builder stage
+* **docker:** use proto and moon for builder stage
+* **images:** copy per-workspace node_modules into builder stage
+* **images:** copy per-workspace node_modules into builder stage
+* **images:** correct S3 credential env var names, drop OMR_IMAGES_ prefix
+* **images:** disable fs source when configured directory is missing
+* **images:** keep sharp external, install its native deps at runtime
+* **images:** remove hardcoded GHCR owner from compose default image
+* **images:** resolve sharp type-namespace and format-narrowing errors
+* **images:** sharp fails to load in production container
+* jq ci issue
+* **moon:** add --no-error-on-unmatched-pattern to format-astro tasks
+* **moon:** add --pass-with-no-tests to bun test tasks
+* **moon:** build sun-ui before website astro checks
+* **moon:** deduplicate test task via extends
+* **moon:** limit lint-astro to only astro files to avoid ts parse errors
+* **pedrohenridesign:** add vite as direct dependency for astro.config.mjs
+* **pedrohenridesign:** convert getStaticPaths to function expressions
+* **pedrohenridesign:** restore Google Analytics via partytown
+* **pedrohenridesign:** restore Google Analytics via partytown
+* remove commented-out background gradients from body styles
+* remove deployment steps from release workflow
+* **scripts:** improve deploy log messages and pick last deploy URL
+* standardize quotation marks for plugin import in global.css
+* **sun-ui:** add tailwindcss as explicit dependency
+* update cache-base to main in CI/CD action
+* update deployment environment logic in main.yml
+* **websites:** coerce ENABLE_PARTYTOWN env string to boolean
+* **websites:** correct ENABLE_PARTYTOWN boolean coercion
+* **websites:** invalidate build cache on public env var change
+
+

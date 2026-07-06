@@ -41,7 +41,7 @@
     },
     "apps/images": {
       "name": "@vandal-websites/images-app",
-      "version": "0.0.0",
+      "version": "1.0.0",
       "dependencies": {
         "@hono/valibot-validator": "catalog:server",
         "bunqueue": "catalog:server",
@@ -79,7 +79,7 @@
     },
     "websites/brunabraz": {
       "name": "@websites/brunabraz",
-      "version": "0.0.1",
+      "version": "1.0.0",
       "dependencies": {
         "@iconify-json/heroicons": "catalog:icons",
         "@iconify-json/heroicons-outline": "catalog:icons",
@@ -109,7 +109,7 @@
     },
     "websites/clinicamauricioaraujo": {
       "name": "@websites/clinicamauricioaraujo.com.br",
-      "version": "0.0.1",
+      "version": "1.0.0",
       "dependencies": {
         "@astro-community/astro-embed-youtube": "catalog:astro",
         "@astrojs/check": "catalog:astro",
