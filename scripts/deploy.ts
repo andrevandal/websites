@@ -8,6 +8,7 @@ import { consola } from "consola"
 import { execa } from "execa"
 import { parseEnvFileKeys, repoRoot } from "./env"
 import { queryTargets } from "./utils"
+import { prepareWranglerDeployConfig } from "./deploy-kv"
 
 const envChoices = ["production", "staging", "preview"] as const
 
@@ -83,9 +84,12 @@ try {
             v.parseJson(),
             v.record(v.picklist(ENV_VARS_KEYS), v.string())
           ),
-          ENV_VARS_VALUES_RAW.replaceAll("\\", "")
+          ENV_VARS_VALUES_RAW.replaceAll("\\", "").replace(/^\uFEFF/, "")
         )
       : {}
+
+  const deployEnv = { ...process.env, ...envVars }
+  const projectRoot = resolve(repoRoot, ...project.location)
 
   if (dryRun) {
     consola.info(
@@ -94,19 +98,26 @@ try {
     )
     console.debug("With environment variables:", envVars)
   } else {
-    consola.info(
-      "Deploying...",
-      `moon run ${project.id}:deploy -- --env=${env}`
-    )
+    const wranglerConfigPath = await prepareWranglerDeployConfig({
+      env,
+      envVars: deployEnv,
+      projectId: project.id,
+      projectRoot,
+    })
+    const deployArgs = [
+      "run",
+      `${project.id}:deploy`,
+      "--",
+      `--env=${env}`,
+      `--config=${wranglerConfigPath}`,
+    ]
+
+    consola.info("Deploying...", `moon ${deployArgs.join(" ")}`)
     console.debug("With environment variables:", envVars)
-    const proc = execa(
-      "moon",
-      ["run", `${project.id}:deploy`, "--", `--env=${env}`],
-      {
-        env: { ...process.env, ...envVars },
-        all: true,
-      }
-    )
+    const proc = execa("moon", deployArgs, {
+      env: deployEnv,
+      all: true,
+    })
 
     proc.all?.pipe(process.stdout)
 

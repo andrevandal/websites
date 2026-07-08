@@ -202,23 +202,19 @@ const meta = {
   <!-- Hero -->
   <header class="bg-tobago mt-18">
     <div
-      class="container flex flex-col items-center gap-8 py-10 lg:flex-row lg:flex-nowrap lg:justify-between lg:py-14"
+      class="container flex flex-col items-center gap-8 py-10 pb-0 lg:flex-row lg:flex-nowrap lg:justify-between lg:pt-14"
     >
       <div
-        class="grid-cols isolate grid aspect-344/324 w-full items-center justify-center sm:w-97.5 lg:order-2 lg:shrink-0"
+        class="order-2 -mx-4 aspect-[375/361] w-full sm:mx-0 sm:w-[375px] lg:order-2 lg:aspect-[472/460] lg:w-[472px] lg:shrink-0 lg:self-end xl:aspect-[493/481] xl:w-[493px]"
       >
-        <SunIcon
-          name="sketch-frame"
-          class="text-ruddy-brown z-3 col-start-1 row-start-1 size-[calc(100%+0.5rem)]! h-full -translate-x-1"
-        />
         <img
-          src="https://placehold.co/390x368"
-          alt=""
-          class="image-mask z-2 col-start-1 row-start-1"
+          src="https://infra.example.invalid/f_auto,q_90/https://files.vandal.services/brunabraz/images/hero-oficial.png"
+          alt="Bruna Braz, professora de inglês"
+          class="size-full object-cover"
         />
       </div>
       <div
-        class="flex flex-col items-center gap-4 lg:order-1 lg:items-start lg:py-12"
+        class="order-1 flex flex-col items-center gap-4 lg:order-1 lg:items-start lg:py-12"
       >
         <Heading
           as="h1"
@@ -318,7 +314,7 @@ const meta = {
     </SunCarousel>
   </section>
   <!-- Minha trajetória + video -->
-  <section class="bg-cambridge pt-14 pb-12 lg:pt-20 lg:pb-14">
+  <section class="bg-cambridge bg-pattern-wave pt-14 pb-12 lg:pt-20 lg:pb-14">
     <div class="container flex flex-col gap-10 lg:max-w-200.5">
       <div class="flex flex-col gap-4">
         <Heading
@@ -355,23 +351,32 @@ const meta = {
   <!-- Timeline -->
   <section class="bg-dark-green">
     <div class="container py-10">
-      <ul class="flex flex-col gap-8 lg:flex-row lg:flex-nowrap lg:gap-[unset]">
+      <ul
+        class="relative isolate mx-auto flex w-full max-w-113 flex-col gap-8 lg:mx-[unset] lg:max-w-[unset] lg:flex-row lg:flex-nowrap lg:gap-[unset]"
+      >
+        <div
+          aria-hidden="true"
+          class="text-light-mushroom pointer-events-none absolute top-10 bottom-10 left-10 z-0 w-px bg-[repeating-linear-gradient(to_bottom,currentColor_0_4px,transparent_4px_8px)] lg:top-[4.225rem] lg:right-[calc(100%/12)] lg:bottom-auto lg:left-[calc(100%/12)] lg:h-px lg:w-auto lg:bg-[repeating-linear-gradient(to_right,currentColor_0_4px,transparent_4px_8px)]"
+        >
+        </div>
         {
           timeline.map(({ icon, prefix, name, description }) => (
-            <li class="mx-auto w-full max-w-113 lg:mx-[unset] lg:max-w-[unset]">
+            <li class="relative z-10 w-full max-w-113 lg:max-w-[unset]">
               <article class="group grid grid-cols-[5rem_1.25rem_1fr] grid-rows-[1fr_auto_auto_auto_1fr] items-center lg:flex lg:flex-col lg:gap-2">
                 <Heading
                   as="h4"
                   class="text-light-mushroom col-start-3 row-start-2 font-serif text-[.875rem] leading-[140%] font-bold"
                 >
                   {prefix === "∞" ? (
-                    <SunIcon name="infinity" width={16} height={16} />
+                    <SunIcon name="infinity" width={20} height={20} />
                   ) : (
                     prefix
                   )}
                 </Heading>
-                <div class="border-cambridge from-cambridge/40 to-cambridge/70 text-light-mushroom group-hover:text-white-chocolate group-hover:border-ruddy-brown group-hover:from-ruddy-brown/60 group-hover:to-ruddy-brown/90 col-start-1 row-span-5 flex h-20 w-20 items-center justify-center rounded-full border bg-linear-to-b transition-colors">
-                  <SunIcon name={icon} width={40} height={40} />
+                <div class="bg-dark-green col-start-1 row-span-5">
+                  <div class="border-cambridge from-cambridge/40 to-cambridge/70 text-light-mushroom group-hover:text-white-chocolate group-hover:border-ruddy-brown group-hover:from-ruddy-brown/60 group-hover:to-ruddy-brown/90 flex h-20 w-20 items-center justify-center rounded-full border bg-linear-to-b transition-colors">
+                    <SunIcon name={icon} width={40} height={40} />
+                  </div>
                 </div>
                 <Heading
                   as="h3"
