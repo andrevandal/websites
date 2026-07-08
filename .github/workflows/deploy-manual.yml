@@ -6,13 +6,13 @@ on:
       target:
         description: App or website to deploy
         type: choice
-        options: [images, brunabraz, clinicamauricioaraujo.com.br]
+        options: [images, brunabraz, clinicamauricioaraujo.com.br, vandallabs]
         required: true
       environment:
         description: Target environment
         type: choice
-        options: [preview, staging, production]
-        default: preview
+        options: [staging, production]
+        default: staging
         required: true
 
 permissions:
@@ -23,18 +23,8 @@ concurrency:
   group: deploy-manual-${{ inputs.target }}-${{ inputs.environment }}
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Reject unsupported images environment
-        if: inputs.target == 'images' && inputs.environment == 'preview'
-        run: |
-          echo "images does not support preview via manual trigger; use staging or production." >&2
-          exit 1
-
   deploy-images:
     name: Deploy images
-    needs: validate
     if: inputs.target == 'images'
     permissions:
       contents: read
@@ -46,7 +36,6 @@ jobs:
 
   deploy-website:
     name: Deploy website
-    needs: validate
     if: inputs.target != 'images'
     runs-on: ubuntu-latest
     environment:
@@ -54,9 +43,9 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      DEPLOY_ENV: ${{ inputs.environment }}
       ENV_VARS_BRUNABRAZ: ${{ vars.ENV_VARS_BRUNABRAZ }}
       ENV_VARS_CLINICAMAURICIOARAUJO: ${{ vars.ENV_VARS_CLINICAMAURICIOARAUJO }}
+      ENV_VARS_VANDALLABS: ${{ vars.ENV_VARS_VANDALLABS }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

@@ -1,0 +1,62 @@
+layer: "application"
+language: "astro"
+
+project:
+  title: "vandallabs"
+  description: "Website for Vandal Labs"
+
+tasks:
+  typegen:
+    command: wrangler types
+    preset: server
+
+  astro:
+    command: astro
+
+  dev:
+    command: astro dev
+    preset: server
+    dependsOn:
+      - typegen
+
+  check:
+    command: astro check
+    inputs:
+      - "@globs(typescript)"
+      - "@globs(sources)"
+      - "@globs(typescript)"
+      - "./astro.config.js"
+    dependsOn:
+      - ^:build
+
+  build:
+    command: astro build
+    inputs:
+      - "@globs(sources)"
+      - "@globs(public)"
+      - "@globs(typescript)"
+      - "./astro.config.js"
+      - "$SITE_URL"
+      - "$ENABLE_PARTYTOWN"
+      - "$PUBLIC_GOOGLE_ANALYTICS_ID"
+      - "$PUBLIC_GOOGLE_ADS_CONVERSION_ID"
+      - "$PUBLIC_GOOGLE_ADS_CONVERSION_LABEL"
+    outputs:
+      - dist
+    dependsOn:
+      - check
+
+  preview:
+    command: astro preview
+    preset: server
+
+  preview-wrangler:
+    command: wrangler pages dev ./dist
+    preset: server
+    dependsOn:
+      - build
+
+  deploy:
+    command: bunx wrangler deploy
+    dependsOn:
+      - build

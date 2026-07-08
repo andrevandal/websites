@@ -1,0 +1,72 @@
+---
+import type { Dict } from "@lib/i18n"
+
+type Props = {
+  dict: Dict
+}
+
+const { dict } = Astro.props
+---
+
+<header class="pt-10 pb-8">
+  <div
+    class="text-graphite-400 mt-4 flex items-center gap-3 font-mono text-[11px] tracking-[0.1em] uppercase"
+  >
+    <span class="border-ink-900 bg-signal h-[7px] w-[7px] border"></span>
+    <span>{dict.stamp_est}</span>
+  </div>
+
+  <h1
+    class="font-display text-ink-900 mt-8 text-[clamp(34px,9.2vw,50px)] leading-none font-extrabold tracking-[-0.03em] uppercase"
+  >
+    <span class="block">{dict.head_static}</span>
+    <span class="mt-[0.16em] block">
+      <mark
+        id="lb-rot"
+        class="lb-rot bg-signal text-ink-900 inline-block px-[0.16em] py-[0.02em] whitespace-nowrap shadow-[3px_3px_0_var(--color-ink-900)] duration-[260ms] ease-out"
+        >{dict.head_rotating[0]}</mark
+      >
+    </span>
+  </h1>
+
+  <p
+    class="text-ink-800 mt-8 max-w-[30ch] font-serif text-[clamp(17px,4.6vw,20px)] leading-normal"
+  >
+    {dict.lead}
+  </p>
+</header>
+
+<script define:vars={{ phrases: dict.head_rotating }}>
+  const rot = document.getElementById("lb-rot")
+  const reduce =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+  let rotIndex = 0
+  const cycle = () => {
+    if (!rot || phrases.length < 2) return
+    rot.classList.add("is-out")
+    setTimeout(() => {
+      rotIndex = (rotIndex + 1) % phrases.length
+      rot.textContent = phrases[rotIndex]
+      rot.classList.remove("is-out")
+    }, 280)
+  }
+  if (!reduce) setInterval(cycle, 2900)
+</script>
+
+<style>
+  .lb-rot {
+    transform: rotate(-1.4deg);
+    transform-origin: left center;
+  }
+  .lb-rot.is-out {
+    opacity: 0;
+    transform: rotate(-1.4deg) translateY(10px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lb-rot {
+      transition: none;
+    }
+  }
+</style>

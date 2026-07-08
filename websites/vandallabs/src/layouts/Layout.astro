@@ -1,0 +1,41 @@
+---
+import "@/styles/global.css"
+import { SunLayout } from "@vandal-websites/sun-ui/astro"
+import { getAbsoluteLocaleUrl } from "astro:i18n"
+import { Font } from "astro:assets"
+import type { Lang } from "@lib/i18n"
+
+type Props = {
+  lang: Lang
+  title: string
+  description?: string
+  url: URL
+  image?: string
+}
+
+const { lang, title, description, url, image = "/og-image.png" } = Astro.props
+
+const htmlLang = lang === "pt" ? "pt-BR" : "en"
+const links = [
+  { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+  { rel: "alternate", hreflang: "en", href: getAbsoluteLocaleUrl("en") },
+  { rel: "alternate", hreflang: "pt-BR", href: getAbsoluteLocaleUrl("pt") },
+]
+---
+
+<SunLayout
+  lang={htmlLang}
+  title={title}
+  description={description}
+  url={url}
+  image={new URL(image, url).toString()}
+  links={links}
+>
+  <Fragment slot="close-head">
+    <Font cssVariable="--font-archivo" preload />
+    <Font cssVariable="--font-archivo-expanded" preload />
+    <Font cssVariable="--font-newsreader" preload />
+    <Font cssVariable="--font-jetbrains-mono" preload />
+  </Fragment>
+  <slot />
+</SunLayout>

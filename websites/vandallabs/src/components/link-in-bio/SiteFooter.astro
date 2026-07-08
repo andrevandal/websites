@@ -1,0 +1,43 @@
+---
+import type { Dict } from "@lib/i18n"
+import BrandMark from "./BrandMark.astro"
+
+type Props = {
+  dict: Dict
+}
+
+const { dict } = Astro.props
+---
+
+<footer class="mt-auto flex flex-col gap-5 pt-12">
+  <div class="flex items-center gap-4">
+    <span class="h-8 w-8 flex-none" aria-hidden="true">
+      <BrandMark id="footer" />
+    </span>
+    <span class="text-ink-800 font-serif text-[15px] leading-snug"
+      >{dict.foot_since}</span
+    >
+  </div>
+  <div
+    class="border-line text-graphite-400 flex flex-col gap-[3px] border-t pt-5 font-mono text-[11px] leading-relaxed tracking-[0.03em]"
+  >
+    <span class="text-ink-900">{dict.foot_name}</span>
+    <span>{dict.foot_cnpj}</span>
+    <span>{dict.foot_addr}</span>
+    <span>{dict.foot_email}</span>
+  </div>
+  <div
+    class="text-graphite-300 flex flex-col gap-[5px] pt-4 font-mono text-[10px] tracking-[0.06em] uppercase"
+  >
+    <span>{dict.foot_copy}</span>
+    <span class="tracking-[0.02em] normal-case">
+      Built with ❤️ &amp; ☕ by <a
+        href="https://andrevandal.dev"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-graphite-400 hover:text-ink-900 no-underline duration-[180ms] ease-out"
+        >André Vandal</a
+      >
+    </span>
+  </div>
+</footer>

@@ -1,0 +1,27 @@
+{
+  "extends": ["astro/tsconfigs/strict", "../../tsconfig.bundler.json"],
+  "compilerOptions": {
+    "paths": {
+      "@components/*": ["./src/components/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@/*": ["./src/*"]
+    },
+    "outDir": "../../.moon/cache/types/websites/vandallabs",
+    "plugins": [
+      {
+        "name": "@astrojs/ts-plugin"
+      }
+    ]
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "astro.config.js"],
+  "references": [
+    {
+      "path": "../../packages/sun-ui"
+    }
+  ]
+}

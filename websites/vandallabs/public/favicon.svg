@@ -1,0 +1,91 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vandal Labs">
+  <style>
+    :root {
+      --brand-ink: #15130e;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --brand-ink: #ede9de;
+      }
+    }
+  </style>
+  <defs>
+  <filter id="spray" x="-25%" y="-25%" width="150%" height="150%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.6 0.82" numOctaves="2" seed="7" result="n"></feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.3" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+  </filter>
+    <mask id="sever">
+      <rect x="0" y="0" width="100" height="100" fill="#fff"></rect>
+      <path d="M2 92 L98 8" stroke="#000" stroke-width="21"></path>
+    </mask>
+  </defs>
+  <rect x="11" y="11" width="78" height="78" stroke="var(--brand-ink)" stroke-width="7" mask="url(#sever)"></rect>
+  <g filter="url(#spray)">
+    <path d="M2 92 L98 8" stroke="#CBF23C" stroke-width="13" stroke-linecap="butt"></path>
+  </g>
+    <circle cx="24.0" cy="77.0" r="0.71" fill="#CBF23C" opacity="0.54"></circle>
+    <circle cx="38.3" cy="58.9" r="0.74" fill="#CBF23C" opacity="0.58"></circle>
+    <circle cx="69.9" cy="25.5" r="1.91" fill="#CBF23C" opacity="0.40"></circle>
+    <circle cx="5.1" cy="82.4" r="2.06" fill="#CBF23C" opacity="0.63"></circle>
+    <circle cx="82.6" cy="16.8" r="2.73" fill="#CBF23C" opacity="0.66"></circle>
+    <circle cx="88.5" cy="9.7" r="1.04" fill="#CBF23C" opacity="0.46"></circle>
+    <circle cx="3.0" cy="80.0" r="0.88" fill="#CBF23C" opacity="0.41"></circle>
+    <circle cx="47.4" cy="57.1" r="2.02" fill="#CBF23C" opacity="0.44"></circle>
+    <circle cx="75.7" cy="22.9" r="0.80" fill="#CBF23C" opacity="0.42"></circle>
+    <circle cx="79.2" cy="15.7" r="0.78" fill="#CBF23C" opacity="0.51"></circle>
+    <circle cx="89.0" cy="12.6" r="1.76" fill="#CBF23C" opacity="0.70"></circle>
+    <circle cx="50.5" cy="48.8" r="3.16" fill="#CBF23C" opacity="0.56"></circle>
+    <circle cx="64.3" cy="32.4" r="2.39" fill="#CBF23C" opacity="0.43"></circle>
+    <circle cx="70.6" cy="27.7" r="0.88" fill="#CBF23C" opacity="0.47"></circle>
+    <circle cx="77.2" cy="24.9" r="3.21" fill="#CBF23C" opacity="0.56"></circle>
+    <circle cx="97.2" cy="12.8" r="1.49" fill="#CBF23C" opacity="0.63"></circle>
+    <circle cx="8.9" cy="89.9" r="0.97" fill="#CBF23C" opacity="0.41"></circle>
+    <circle cx="94.6" cy="12.0" r="2.91" fill="#CBF23C" opacity="0.55"></circle>
+    <circle cx="11.9" cy="82.5" r="2.09" fill="#CBF23C" opacity="0.57"></circle>
+    <circle cx="84.5" cy="19.8" r="1.05" fill="#CBF23C" opacity="0.57"></circle>
+    <circle cx="23.5" cy="68.9" r="2.18" fill="#CBF23C" opacity="0.41"></circle>
+    <circle cx="19.6" cy="76.8" r="2.03" fill="#CBF23C" opacity="0.64"></circle>
+    <circle cx="95.0" cy="12.6" r="0.78" fill="#CBF23C" opacity="0.74"></circle>
+    <circle cx="34.0" cy="64.5" r="1.96" fill="#CBF23C" opacity="0.82"></circle>
+    <circle cx="25.8" cy="64.1" r="0.79" fill="#CBF23C" opacity="0.51"></circle>
+    <circle cx="68.2" cy="39.6" r="0.88" fill="#CBF23C" opacity="0.62"></circle>
+    <circle cx="29.4" cy="74.4" r="0.55" fill="#CBF23C" opacity="0.44"></circle>
+    <circle cx="6.7" cy="92.0" r="1.24" fill="#CBF23C" opacity="0.73"></circle>
+    <circle cx="0.0" cy="82.8" r="0.92" fill="#CBF23C" opacity="0.55"></circle>
+    <circle cx="65.3" cy="33.3" r="0.97" fill="#CBF23C" opacity="0.53"></circle>
+    <circle cx="10.3" cy="80.3" r="1.27" fill="#CBF23C" opacity="0.63"></circle>
+    <circle cx="20.0" cy="69.2" r="0.55" fill="#CBF23C" opacity="0.58"></circle>
+    <circle cx="82.2" cy="10.5" r="0.62" fill="#CBF23C" opacity="0.51"></circle>
+    <circle cx="23.4" cy="81.4" r="0.60" fill="#CBF23C" opacity="0.44"></circle>
+    <circle cx="10.5" cy="70.7" r="0.79" fill="#CBF23C" opacity="0.48"></circle>
+    <circle cx="77.0" cy="18.3" r="0.60" fill="#CBF23C" opacity="0.42"></circle>
+    <circle cx="99.1" cy="19.7" r="0.75" fill="#CBF23C" opacity="0.45"></circle>
+    <circle cx="79.6" cy="22.9" r="1.50" fill="#CBF23C" opacity="0.63"></circle>
+    <circle cx="86.1" cy="26.1" r="0.56" fill="#CBF23C" opacity="0.42"></circle>
+    <circle cx="87.7" cy="14.3" r="1.29" fill="#CBF23C" opacity="0.76"></circle>
+    <circle cx="77.9" cy="26.1" r="1.21" fill="#CBF23C" opacity="0.52"></circle>
+    <circle cx="79.0" cy="26.9" r="1.65" fill="#CBF23C" opacity="0.60"></circle>
+    <circle cx="15.9" cy="81.2" r="1.34" fill="#CBF23C" opacity="0.74"></circle>
+    <circle cx="67.6" cy="25.8" r="1.99" fill="#CBF23C" opacity="0.46"></circle>
+    <circle cx="59.2" cy="34.2" r="0.62" fill="#CBF23C" opacity="0.51"></circle>
+    <circle cx="79.7" cy="28.0" r="0.64" fill="#CBF23C" opacity="0.48"></circle>
+    <circle cx="10.7" cy="88.9" r="0.65" fill="#CBF23C" opacity="0.70"></circle>
+    <circle cx="69.9" cy="25.0" r="0.65" fill="#CBF23C" opacity="0.44"></circle>
+    <circle cx="52.7" cy="52.2" r="2.51" fill="#CBF23C" opacity="0.59"></circle>
+    <circle cx="14.5" cy="86.7" r="2.73" fill="#CBF23C" opacity="0.53"></circle>
+    <circle cx="62.1" cy="39.6" r="2.95" fill="#CBF23C" opacity="0.77"></circle>
+    <circle cx="89.4" cy="9.4" r="1.16" fill="#CBF23C" opacity="0.47"></circle>
+    <circle cx="56.9" cy="46.8" r="0.85" fill="#CBF23C" opacity="0.42"></circle>
+    <circle cx="92.5" cy="18.9" r="0.72" fill="#CBF23C" opacity="0.62"></circle>
+    <circle cx="19.9" cy="83.5" r="0.66" fill="#CBF23C" opacity="0.51"></circle>
+    <circle cx="83.9" cy="19.8" r="2.07" fill="#CBF23C" opacity="0.59"></circle>
+    <circle cx="96.0" cy="15.4" r="1.09" fill="#CBF23C" opacity="0.41"></circle>
+    <circle cx="37.5" cy="59.9" r="3.09" fill="#CBF23C" opacity="0.43"></circle>
+    <circle cx="60.0" cy="42.2" r="1.36" fill="#CBF23C" opacity="0.62"></circle>
+    <circle cx="16.7" cy="77.6" r="0.51" fill="#CBF23C" opacity="0.77"></circle>
+    <circle cx="9.8" cy="90.2" r="1.69" fill="#CBF23C" opacity="0.58"></circle>
+    <circle cx="94.9" cy="10.5" r="0.73" fill="#CBF23C" opacity="0.79"></circle>
+    <circle cx="81.2" cy="25.7" r="0.55" fill="#CBF23C" opacity="0.53"></circle>
+    <circle cx="85.0" cy="21.1" r="2.30" fill="#CBF23C" opacity="0.92"></circle>
+</svg>

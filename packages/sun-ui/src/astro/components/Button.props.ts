@@ -5,7 +5,6 @@ type AllowedTags = "button" | "a"
 type ButtonProps<Tag extends AllowedTags = AllowedTags> = Polymorphic<{
   as: Tag
 }> & {
-  reverse?: boolean
   block?: boolean
   centered?: boolean
   className?: string

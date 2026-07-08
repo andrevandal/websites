@@ -7,7 +7,6 @@ type Props<Tag extends AllowedTags> = ButtonProps<Tag>
 const {
   as: Tag = "button",
   href,
-  reverse,
   block = false,
   centered = false,
   className = "",
@@ -33,7 +32,6 @@ const customProps = {
   class:list={cn(
     "btn",
     {
-      "btn-reverse": reverse,
       "btn-block": block,
       "btn-center": centered,
     },
@@ -41,8 +39,9 @@ const customProps = {
   )}
   {...customProps}
 >
+  <slot name="prefix" />
   <span><slot /></span>
-  <slot name="icon" />
+  <slot name="suffix" />
 
   <style>
     @reference "tailwindcss";
@@ -55,9 +54,6 @@ const customProps = {
     }
     .btn-block {
       @apply w-full;
-    }
-    .btn-reverse {
-      @apply flex-row-reverse;
     }
   </style>
 </Tag>

@@ -3,11 +3,14 @@ description: "Checkout code, install Node.js and bun, then install dependencies"
 
 inputs:
   env:
-    description: "The environment to deploy to (ex: preview [default], beta, production)"
+    description: "The environment to deploy to (ex: preview [default], staging, production)"
     required: false
   target:
     description: "The app or website to deploy (ex: clinicamauricioaraujo.com.br)"
     required: true
+  pr:
+    description: "Pull request number (required when env=preview)"
+    required: false
 
 runs:
   using: "composite"
@@ -18,4 +21,4 @@ runs:
 
     - name: Deploy
       shell: bash
-      run: bun run deploy ${{ inputs.target }} --env ${{ inputs.env }} --no-dry-run
+      run: bun run deploy ${{ inputs.target }} --env ${{ inputs.env }} ${{ inputs.pr && format('--pr {0}', inputs.pr) || '' }} --no-dry-run

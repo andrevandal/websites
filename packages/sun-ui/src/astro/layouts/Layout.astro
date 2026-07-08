@@ -12,11 +12,11 @@ const {
   gtag,
   themeColor,
   sitemap = "/sitemap-index.xml",
-  lang = "pt-br",
   class: className,
   image: rawImage,
   ...props
 } = Astro.props
+const htmlProps = { lang: "pt-br", ...props }
 const domain = url.hostname
 
 const chooseSocialImagem = (
@@ -35,7 +35,7 @@ const chooseSocialImagem = (
 const image = chooseSocialImagem(rawImage)
 ---
 
-<html class={cn("h-full scroll-smooth", className)} {...props}>
+<html class={cn("h-full scroll-smooth", className)} {...htmlProps}>
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

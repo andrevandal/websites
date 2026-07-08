@@ -1,0 +1,74 @@
+---
+import Layout from "@layouts/Layout.astro"
+import BackgroundGrid from "./BackgroundGrid.astro"
+import SiteHeader from "./SiteHeader.astro"
+import Hero from "./Hero.astro"
+import WhatsAppCta from "./WhatsAppCta.astro"
+import Modes from "./Modes.astro"
+import SiteFooter from "./SiteFooter.astro"
+import { dictionaries } from "@lib/i18n"
+import type { Lang } from "@lib/i18n"
+
+type Props = {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const dict = dictionaries[lang]
+---
+
+<Layout
+  lang={lang}
+  title="Vandal Labs — Think deep. Unlock more."
+  description={dict.lead}
+  url={Astro.url}
+>
+  <BackgroundGrid />
+  <main
+    class="relative z-1 mx-auto flex min-h-screen max-w-120 flex-col px-6 pt-6 pb-12"
+  >
+    <SiteHeader lang={lang} />
+    <Hero dict={dict} />
+    <WhatsAppCta dict={dict} />
+    <Modes dict={dict} />
+    <SiteFooter dict={dict} />
+  </main>
+</Layout>
+
+<script>
+  const toggleBtn = document.getElementById("theme-toggle")
+  const html = document.documentElement
+
+  const applyTheme = (theme: "light" | "dark") => {
+    html.setAttribute("data-theme", theme)
+    if (toggleBtn) {
+      toggleBtn.setAttribute(
+        "aria-label",
+        theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+      )
+    }
+    try {
+      localStorage.setItem("vl_theme", theme)
+    } catch {
+      // localStorage unavailable (private browsing, etc.) — non-fatal
+    }
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      applyTheme(html.getAttribute("data-theme") === "dark" ? "light" : "dark")
+    })
+  }
+
+  let savedTheme: string | null = null
+  try {
+    savedTheme = localStorage.getItem("vl_theme")
+  } catch {
+    // localStorage unavailable — fall through to system preference
+  }
+  let initialTheme: "light" | "dark" = "light"
+  if (savedTheme === "dark" || savedTheme === "light") initialTheme = savedTheme
+  else if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+    initialTheme = "dark"
+  applyTheme(initialTheme)
+</script>

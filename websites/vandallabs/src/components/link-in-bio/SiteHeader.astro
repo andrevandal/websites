@@ -1,0 +1,56 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n"
+import type { Lang } from "@lib/i18n"
+import BrandMark from "./BrandMark.astro"
+
+type Props = {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+
+const enUrl = getRelativeLocaleUrl("en")
+const ptUrl = getRelativeLocaleUrl("pt")
+---
+
+<div class="flex min-h-13 items-center justify-between">
+  <div class="flex items-center gap-3.5">
+    <div class="h-13.5 w-13.5 flex-none">
+      <BrandMark id="header" distort label="Vandal Labs" />
+    </div>
+    <div class="flex flex-col gap-0.75 leading-none">
+      <span
+        class="font-display text-ink-900 text-[27px] leading-none font-extrabold tracking-[-0.01em] uppercase"
+        >Vandal</span
+      >
+      <span
+        class="text-graphite-400 font-mono text-[11px] font-medium tracking-[0.34em] uppercase"
+        >Labs</span
+      >
+    </div>
+  </div>
+  <div class="flex items-center gap-3">
+    <button
+      id="theme-toggle"
+      type="button"
+      class="text-graphite-400 hover:text-ink-900 inline-flex h-7.5 w-7.5 cursor-pointer items-center justify-center border-0 bg-none p-0 text-[15px] leading-none duration-180 ease-out"
+      aria-label="Toggle dark mode"
+    >
+      ◑
+    </button>
+    <div class="border-ink-900 bg-paper-raise inline-flex items-stretch border">
+      <a
+        href={enUrl}
+        aria-pressed={lang === "en"}
+        class="text-graphite-400 hover:text-ink-900 aria-pressed:bg-ink-900 aria-pressed:text-paper px-3 py-1.5 font-mono text-[11px] tracking-[0.14em] uppercase duration-180 ease-out"
+        >EN</a
+      >
+      <a
+        href={ptUrl}
+        aria-pressed={lang === "pt"}
+        class="border-ink-900 text-graphite-400 hover:text-ink-900 aria-pressed:bg-ink-900 aria-pressed:text-paper border-l px-3 py-1.5 font-mono text-[11px] tracking-[0.14em] uppercase duration-180 ease-out"
+        >PT</a
+      >
+    </div>
+  </div>
+</div>

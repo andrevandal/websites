@@ -9,7 +9,6 @@ type AllowedIcons = "globe-outline" | "whatsapp"
 
 type Props<Tag extends AllowedTags = AllowedTags> = Polymorphic<{ as: Tag }> & {
   variant?: Variant
-  reverse?: boolean
   block?: boolean
   centered?: boolean
   iconName?: AllowedIcons
@@ -25,7 +24,7 @@ const {
 
 <SunButton className={cn("btn", variant, className)} {...props}>
   <slot />
-  {iconName && <SunIcon name={iconName} slot="icon" width={20} />}
+  {iconName && <SunIcon name={iconName} slot="suffix" width={20} />}
 </SunButton>
 
 <style>

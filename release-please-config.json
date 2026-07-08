@@ -14,6 +14,11 @@
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
       "include-component-in-tag": true
+    },
+    "websites/vandallabs": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "include-component-in-tag": true
     }
   },
   "always-update": true,

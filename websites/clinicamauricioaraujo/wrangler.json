@@ -5,42 +5,5 @@
   "compatibility_date": "2025-01-01",
   "assets": {
     "directory": "./dist"
-  },
-  "vars": {
-    "ENVIRONMENT": "development"
-  },
-  "env": {
-    "preview": {
-      "vars": {
-        "ENVIRONMENT": "preview"
-      },
-      "kv_namespaces": [
-        {
-          "binding": "SESSION_PREVIEW"
-        }
-      ]
-    },
-    "staging": {
-      "vars": {
-        "ENVIRONMENT": "staging"
-      },
-      "kv_namespaces": [
-        {
-          "binding": "SESSION_STAGING"
-        }
-      ],
-      "route": "beta.clinicamauricioaraujo.com.br/*"
-    },
-    "production": {
-      "vars": {
-        "ENVIRONMENT": "production"
-      },
-      "kv_namespaces": [
-        {
-          "binding": "SESSION_PRODUCTION"
-        }
-      ],
-      "routes": ["clinicamauricioaraujo.com.br/*"]
-    }
   }
 }

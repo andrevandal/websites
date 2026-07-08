@@ -1,0 +1,32 @@
+{
+  "name": "@websites/vandallabs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@iconify-json/heroicons": "catalog:icons",
+    "@iconify-json/heroicons-outline": "catalog:icons",
+    "@iconify-json/logos": "catalog:icons",
+    "@iconify-json/mdi": "catalog:icons",
+    "@iconify-json/streamline-logos": "catalog:icons",
+    "@iconify/json": "catalog:icons",
+    "@vandal-websites/sun-ui": "workspace:*",
+    "@tailwindcss/typography": "catalog:tailwind",
+    "astro-iconset": "catalog:astro",
+    "valibot": "catalog:utils"
+  },
+  "devDependencies": {
+    "@astro-community/astro-embed-youtube": "catalog:astro",
+    "@astrojs/check": "catalog:astro",
+    "@astrojs/cloudflare": "catalog:astro",
+    "@astrojs/partytown": "catalog:astro",
+    "@astrojs/sitemap": "catalog:astro",
+    "@astrojs/ts-plugin": "catalog:astro",
+    "@tailwindcss/vite": "catalog:tailwind",
+    "astro": "catalog:astro",
+    "tailwindcss": "catalog:tailwind",
+    "typescript": "catalog:typescript",
+    "vite": "catalog:vite",
+    "wrangler": "catalog:tools"
+  }
+}

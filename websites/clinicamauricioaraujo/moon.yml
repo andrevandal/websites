@@ -41,7 +41,6 @@ tasks:
       - "$PUBLIC_GOOGLE_ANALYTICS_ID"
       - "$PUBLIC_GOOGLE_ADS_CONVERSION_ID"
       - "$PUBLIC_GOOGLE_ADS_CONVERSION_LABEL"
-      - "$DEPLOY_ENV"
     outputs:
       - dist
     dependsOn:

@@ -41,7 +41,8 @@ jobs:
           json=$(jq -nc \
             --argjson br "$([ "${{ steps.release.outputs['websites/brunabraz--release_created'] }}" = "true" ] && echo true || echo false)" \
             --argjson cl "$([ "${{ steps.release.outputs['websites/clinicamauricioaraujo.com.br--release_created'] }}" = "true" ] && echo true || echo false)" \
-            '[if $br then "brunabraz" else empty end, if $cl then "clinicamauricioaraujo.com.br" else empty end]')
+            --argjson vl "$([ "${{ steps.release.outputs['websites/vandallabs--release_created'] }}" = "true" ] && echo true || echo false)" \
+            '[if $br then "brunabraz" else empty end, if $cl then "clinicamauricioaraujo.com.br" else empty end, if $vl then "vandallabs" else empty end]')
           echo "released=$json" >> "$GITHUB_OUTPUT"
 
   deploy-images-production:
@@ -71,9 +72,9 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      DEPLOY_ENV: production
       ENV_VARS_BRUNABRAZ: ${{ vars.ENV_VARS_BRUNABRAZ }}
       ENV_VARS_CLINICAMAURICIOARAUJO: ${{ vars.ENV_VARS_CLINICAMAURICIOARAUJO }}
+      ENV_VARS_VANDALLABS: ${{ vars.ENV_VARS_VANDALLABS }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7

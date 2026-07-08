@@ -1,5 +1,6 @@
 {
   ".": "1.0.1",
   "apps/images": "1.0.0",
-  "websites/brunabraz": "1.0.0"
+  "websites/brunabraz": "1.0.0",
+  "websites/vandallabs": "1.0.0"
 }

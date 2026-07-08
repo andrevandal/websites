@@ -138,6 +138,36 @@
         "wrangler": "catalog:tools",
       },
     },
+    "websites/vandallabs": {
+      "name": "@websites/vandallabs",
+      "version": "1.0.0",
+      "dependencies": {
+        "@iconify-json/heroicons": "catalog:icons",
+        "@iconify-json/heroicons-outline": "catalog:icons",
+        "@iconify-json/logos": "catalog:icons",
+        "@iconify-json/mdi": "catalog:icons",
+        "@iconify-json/streamline-logos": "catalog:icons",
+        "@iconify/json": "catalog:icons",
+        "@tailwindcss/typography": "catalog:tailwind",
+        "@vandal-websites/sun-ui": "workspace:*",
+        "astro-iconset": "catalog:astro",
+        "valibot": "catalog:utils",
+      },
+      "devDependencies": {
+        "@astro-community/astro-embed-youtube": "catalog:astro",
+        "@astrojs/check": "catalog:astro",
+        "@astrojs/cloudflare": "catalog:astro",
+        "@astrojs/partytown": "catalog:astro",
+        "@astrojs/sitemap": "catalog:astro",
+        "@astrojs/ts-plugin": "catalog:astro",
+        "@tailwindcss/vite": "catalog:tailwind",
+        "astro": "catalog:astro",
+        "tailwindcss": "catalog:tailwind",
+        "typescript": "catalog:typescript",
+        "vite": "catalog:vite",
+        "wrangler": "catalog:tools",
+      },
+    },
   },
   "catalogs": {
     "astro": {
@@ -979,6 +1009,8 @@
     "@websites/brunabraz": ["@websites/brunabraz@workspace:websites/brunabraz"],
 
     "@websites/clinicamauricioaraujo.com.br": ["@websites/clinicamauricioaraujo.com.br@workspace:websites/clinicamauricioaraujo"],
+
+    "@websites/vandallabs": ["@websites/vandallabs@workspace:websites/vandallabs"],
 
     "@xmldom/xmldom": ["@xmldom/xmldom@0.8.13", "", {}, "sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw=="],
 

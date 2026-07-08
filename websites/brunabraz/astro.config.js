@@ -9,11 +9,7 @@ import { loadEnv } from "vite"
 // oxlint-disable-next-line import/no-namespace
 import * as v from "valibot"
 
-const {
-  SITE_URL,
-  ENABLE_PARTYTOWN: isPartytownEnabled,
-  DEPLOY_ENV,
-} = v.parse(
+const { SITE_URL, ENABLE_PARTYTOWN: isPartytownEnabled } = v.parse(
   v.pipe(
     v.object({
       SITE_URL: v.pipe(
@@ -22,10 +18,6 @@ const {
       ENABLE_PARTYTOWN: v.pipe(
         v.optional(v.string(), "false"),
         v.transform(value => value === "true")
-      ),
-      DEPLOY_ENV: v.optional(
-        v.picklist(["staging", "preview", "production"]),
-        "preview"
       ),
     })
   ),
@@ -39,7 +31,7 @@ export default defineConfig({
   output: "server",
 
   adapter: cloudflare({
-    sessionKVBindingName: `SESSION_${DEPLOY_ENV.toLocaleUpperCase()}`,
+    sessionKVBindingName: "SESSION",
     imageService: "passthrough",
     prerenderEnvironment: "node",
   }),
@@ -70,13 +62,6 @@ export default defineConfig({
       PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: envField.string({
         context: "client",
         access: "public",
-        optional: true,
-      }),
-      DEPLOY_ENV: envField.enum({
-        context: "server",
-        access: "secret",
-        values: ["staging", "preview", "production"],
-        default: "preview",
         optional: true,
       }),
     },
