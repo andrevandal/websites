@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.0.0...clinicamauricioaraujo-v1.1.0) (2026-07-08)
+
+
+### Features
+
+* add Vandal Labs link-in-bio site
+
 ## 1.0.0 (2026-07-06)
 
 

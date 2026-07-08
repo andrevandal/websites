@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.1.0](https://github.com/andrevandal/websites/compare/v1.0.1...v1.1.0) (2026-07-08)
+
+
+### Features
+
+* add Bruna Braz section patterns
+* add Vandal Labs link-in-bio site
+* **brunabraz:** add dashed timeline spine
+* **brunabraz:** add dashed timeline spine
+* **brunabraz:** add section patterns
+* **brunabraz:** sync hero image with Figma design
+* **brunabraz:** sync hero image with Figma design
+* **sun-ui:** replace icon/reverse with prefix/suffix slots on Button
+* **vandallabs:** add brand social images (OG, cover, WhatsApp avatar)
+* **vandallabs:** add vandallabs link-in-bio website
+* **vandallabs:** componentize icons and brand mark, animate CTA arrow
+
+
+### Bug Fixes
+
+* **brunabraz:** move typography plugin import before tailwindcss
+* **deploy:** reuse shared KV namespace
+* **deploy:** reuse shared KV namespace
+* **deploy:** strip BOM before parsing wrangler config and env secrets
+* **sun-ui:** apply lang attribute to html element in Layout
+* **sun-ui:** let Layout spread lang through html props
+* **vandallabs:** improve dark mode contrast
+* **vandallabs:** improve dark mode contrast and favicon
+
 ## [1.0.1](https://github.com/andrevandal/websites/compare/v1.0.0...v1.0.1) (2026-07-06)
 
 

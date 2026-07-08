@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.0.0...brunabraz-v1.1.0) (2026-07-08)
+
+
+### Features
+
+* add Bruna Braz section patterns
+* add Vandal Labs link-in-bio site
+* **brunabraz:** add dashed timeline spine
+* **brunabraz:** add dashed timeline spine
+* **brunabraz:** add section patterns
+* **brunabraz:** sync hero image with Figma design
+* **brunabraz:** sync hero image with Figma design
+* **sun-ui:** replace icon/reverse with prefix/suffix slots on Button
+
+
+### Bug Fixes
+
+* **brunabraz:** move typography plugin import before tailwindcss
+* **deploy:** strip BOM before parsing wrangler config and env secrets
+
 ## 1.0.0 (2026-07-06)
 
 
