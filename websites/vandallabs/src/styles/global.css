@@ -15,9 +15,9 @@
   --color-ink-700: #2a2720;
   --color-ink-600: #3a362c;
   --color-ink-500: #524c3f;
-  --color-graphite-400: #6e6757;
-  --color-graphite-300: #8e8674;
-  --color-graphite-200: #b5ad98;
+  --color-graphite-400: #635d50;
+  --color-graphite-300: #6e6757;
+  --color-graphite-200: #746c5c;
 
   --color-line-strong: #cfc8b6;
   --color-line: #ded7c6;
@@ -132,9 +132,9 @@
   --color-paper-sink: #090807;
   --color-ink-900: #ede9de;
   --color-ink-800: #c8c3b5;
-  --color-graphite-400: #857f74;
-  --color-graphite-300: #625d55;
-  --color-graphite-200: #413d38;
+  --color-graphite-400: #aaa292;
+  --color-graphite-300: #b8b09f;
+  --color-graphite-200: #c8c0ae;
   --color-line: rgba(237, 233, 222, 0.07);
   --color-line-strong: rgba(237, 233, 222, 0.16);
   --color-signal-ink: #0f0e0b;

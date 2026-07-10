@@ -81,5 +81,29 @@ const dictionaries: Record<Lang, Dict> = {
   },
 }
 
+const getPreferredLang = (acceptLanguage: string | null): Lang => {
+  if (!acceptLanguage) return "en"
+
+  const languages = acceptLanguage
+    .split(",")
+    .map(value => {
+      const [language, ...parameters] = value.trim().split(";")
+      const quality = parameters
+        .map(parameter => parameter.trim())
+        .find(parameter => parameter.startsWith("q="))
+
+      return {
+        language: language?.toLowerCase(),
+        quality: quality ? Number(quality.slice(2)) : 1,
+      }
+    })
+    .sort((a, b) => b.quality - a.quality)
+
+  return languages[0]?.language === "pt" ||
+    languages[0]?.language?.startsWith("pt-")
+    ? "pt"
+    : "en"
+}
+
 export type { Lang, Dict }
-export { dictionaries }
+export { dictionaries, getPreferredLang }

@@ -1,7 +1,6 @@
 ---
 import "@/styles/global.css"
 import { SunLayout } from "@vandal-websites/sun-ui/astro"
-import { getAbsoluteLocaleUrl } from "astro:i18n"
 import { Font } from "astro:assets"
 import type { Lang } from "@lib/i18n"
 
@@ -18,8 +17,17 @@ const { lang, title, description, url, image = "/og-image.png" } = Astro.props
 const htmlLang = lang === "pt" ? "pt-BR" : "en"
 const links = [
   { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-  { rel: "alternate", hreflang: "en", href: getAbsoluteLocaleUrl("en") },
-  { rel: "alternate", hreflang: "pt-BR", href: getAbsoluteLocaleUrl("pt") },
+  { rel: "alternate", hreflang: "en", href: new URL("/en/", url).toString() },
+  {
+    rel: "alternate",
+    hreflang: "pt-BR",
+    href: new URL("/pt/", url).toString(),
+  },
+  {
+    rel: "alternate",
+    hreflang: "x-default",
+    href: new URL("/", url).toString(),
+  },
 ]
 ---
 

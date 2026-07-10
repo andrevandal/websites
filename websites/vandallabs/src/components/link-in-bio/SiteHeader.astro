@@ -1,5 +1,4 @@
 ---
-import { getRelativeLocaleUrl } from "astro:i18n"
 import type { Lang } from "@lib/i18n"
 import BrandMark from "./BrandMark.astro"
 
@@ -9,8 +8,8 @@ type Props = {
 
 const { lang } = Astro.props
 
-const enUrl = getRelativeLocaleUrl("en")
-const ptUrl = getRelativeLocaleUrl("pt")
+const enUrl = "/en"
+const ptUrl = "/pt"
 ---
 
 <div class="flex min-h-13 items-center justify-between">
@@ -41,14 +40,16 @@ const ptUrl = getRelativeLocaleUrl("pt")
     <div class="border-ink-900 bg-paper-raise inline-flex items-stretch border">
       <a
         href={enUrl}
-        aria-pressed={lang === "en"}
-        class="text-graphite-400 hover:text-ink-900 aria-pressed:bg-ink-900 aria-pressed:text-paper px-3 py-1.5 font-mono text-[11px] tracking-[0.14em] uppercase duration-180 ease-out"
+        aria-current={lang === "en" ? "page" : undefined}
+        data-current={lang === "en" ? "true" : "false"}
+        class="text-graphite-400 hover:text-ink-900 data-[current=true]:bg-ink-900 data-[current=true]:text-paper px-3 py-1.5 font-mono text-[11px] tracking-[0.14em] uppercase duration-180 ease-out"
         >EN</a
       >
       <a
         href={ptUrl}
-        aria-pressed={lang === "pt"}
-        class="border-ink-900 text-graphite-400 hover:text-ink-900 aria-pressed:bg-ink-900 aria-pressed:text-paper border-l px-3 py-1.5 font-mono text-[11px] tracking-[0.14em] uppercase duration-180 ease-out"
+        aria-current={lang === "pt" ? "page" : undefined}
+        data-current={lang === "pt" ? "true" : "false"}
+        class="border-ink-900 text-graphite-400 hover:text-ink-900 data-[current=true]:bg-ink-900 data-[current=true]:text-paper border-l px-3 py-1.5 font-mono text-[11px] tracking-[0.14em] uppercase duration-180 ease-out"
         >PT</a
       >
     </div>
