@@ -1,0 +1,159 @@
+---
+import { Image } from "astro:assets"
+import type { SunPictureProps } from "./Picture.props.ts"
+import { getPlaceholderUrl } from "../../astro-image-service"
+import {
+  computeResponsiveImageProps,
+  getPlaceholderModeAttribute,
+} from "./Picture.utils"
+import { cn } from "../../index"
+
+type Props = SunPictureProps
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  quality,
+  format,
+  fit,
+  densities,
+  breakpoints,
+  imagesBaseUrl,
+  placeholder = true,
+  placeholderMode,
+  class: className,
+  wrapperClass,
+  loading,
+  decoding,
+  ...rest
+} = Astro.props
+
+const placeholderUrl =
+  placeholder && imagesBaseUrl
+    ? getPlaceholderUrl(imagesBaseUrl, src)
+    : undefined
+const placeholderModeAttribute = placeholderUrl
+  ? getPlaceholderModeAttribute(placeholderMode)
+  : undefined
+
+const { responsiveWidths, sizes } = computeResponsiveImageProps({
+  width,
+  densities,
+  breakpoints,
+})
+---
+
+<div
+  class={cn("sun-picture", wrapperClass)}
+  data-sun-picture-placeholder={placeholderUrl ? "" : undefined}
+  data-sun-picture-placeholder-mode={placeholderModeAttribute}
+  style={placeholderUrl
+    ? { "--sun-picture-placeholder-url": `url("${placeholderUrl}")` }
+    : undefined}
+>
+  {
+    responsiveWidths ? (
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        quality={quality}
+        format={format}
+        fit={fit}
+        widths={responsiveWidths}
+        sizes={sizes}
+        loading={loading}
+        decoding={decoding}
+        class={cn("sun-picture__image", className)}
+        {...rest}
+      />
+    ) : (
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        quality={quality}
+        format={format}
+        fit={fit}
+        densities={densities}
+        loading={loading}
+        decoding={decoding}
+        class={cn("sun-picture__image", className)}
+        {...rest}
+      />
+    )
+  }
+</div>
+
+{
+  placeholderUrl && (
+    <noscript
+      set:html={`<style>.sun-picture[data-sun-picture-placeholder]::before{display:none!important}</style>`}
+    />
+  )
+}
+
+<style>
+  .sun-picture {
+    position: relative;
+    display: block;
+    overflow: hidden;
+  }
+
+  .sun-picture[data-sun-picture-placeholder]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image: var(--sun-picture-placeholder-url);
+    background-size: cover;
+    background-position: center;
+    filter: blur(20px);
+    transform: scale(1.1);
+    opacity: 1;
+    pointer-events: none;
+    transition: opacity 300ms ease-out;
+  }
+
+  .sun-picture[data-sun-picture-placeholder-mode="circle"]::before {
+    -webkit-mask-image: radial-gradient(circle, #000 25%, #0000 60%);
+    mask-image: radial-gradient(circle, #000 25%, #0000 60%);
+  }
+
+  .sun-picture[data-placeholder-loaded]::before {
+    opacity: 0;
+  }
+
+  .sun-picture :global(img) {
+    position: relative;
+    z-index: 2;
+    display: block;
+  }
+</style>
+
+<script>
+  const revealImage = (wrapper: HTMLElement) => {
+    wrapper.setAttribute("data-placeholder-loaded", "")
+  }
+
+  document
+    .querySelectorAll<HTMLElement>("[data-sun-picture-placeholder]")
+    .forEach(wrapper => {
+      const image = wrapper.querySelector("img")
+      if (!image) return
+
+      if (image.complete) revealImage(wrapper)
+      else {
+        image.addEventListener("load", () => revealImage(wrapper), {
+          once: true,
+        })
+        image.addEventListener("error", () => revealImage(wrapper), {
+          once: true,
+        })
+      }
+    })
+</script>

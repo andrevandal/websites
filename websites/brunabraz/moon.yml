@@ -38,6 +38,7 @@ tasks:
       - "@globs(typescript)"
       - "./astro.config.js"
       - "$SITE_URL"
+      - "$IMAGES_BASE_URL"
       - "$ENABLE_PARTYTOWN"
       - "$PUBLIC_GOOGLE_ANALYTICS_ID"
       - "$PUBLIC_GOOGLE_ADS_CONVERSION_ID"

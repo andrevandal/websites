@@ -9,10 +9,20 @@ import { loadEnv } from "vite"
 // oxlint-disable-next-line import/no-namespace
 import * as v from "valibot"
 
-const { SITE_URL, ENABLE_PARTYTOWN: isPartytownEnabled } = v.parse(
+const env = loadEnv(import.meta.env.MODE, process.cwd(), "")
+if (env.IMAGES_BASE_URL === "") delete env.IMAGES_BASE_URL
+
+const {
+  SITE_URL,
+  IMAGES_BASE_URL,
+  ENABLE_PARTYTOWN: isPartytownEnabled,
+} = v.parse(
   v.pipe(
     v.object({
       SITE_URL: v.pipe(
+        v.optional(v.pipe(v.string(), v.url("The url is badly formatted.")))
+      ),
+      IMAGES_BASE_URL: v.pipe(
         v.optional(v.pipe(v.string(), v.url("The url is badly formatted.")))
       ),
       ENABLE_PARTYTOWN: v.pipe(
@@ -21,7 +31,7 @@ const { SITE_URL, ENABLE_PARTYTOWN: isPartytownEnabled } = v.parse(
       ),
     })
   ),
-  loadEnv(import.meta.env.MODE, process.cwd(), "")
+  env
 )
 console.log(
   `[ASTRO] Partytown is ${isPartytownEnabled ? "enabled" : "disabled"}.`
@@ -32,7 +42,7 @@ export default defineConfig({
 
   adapter: cloudflare({
     sessionKVBindingName: "SESSION",
-    imageService: "passthrough",
+    imageService: IMAGES_BASE_URL ? "custom" : "passthrough",
     prerenderEnvironment: "node",
   }),
 
@@ -48,6 +58,11 @@ export default defineConfig({
         access: "secret",
         optional: true,
         default: false,
+      }),
+      IMAGES_BASE_URL: envField.string({
+        context: "server",
+        access: "secret",
+        optional: true,
       }),
       PUBLIC_GOOGLE_ANALYTICS_ID: envField.string({
         context: "client",
@@ -69,7 +84,7 @@ export default defineConfig({
   },
 
   integrations: [
-    sunUIAstroIntegration(),
+    sunUIAstroIntegration({ imageServiceBaseUrl: IMAGES_BASE_URL }),
     sitemap(),
     isPartytownEnabled &&
       partytown({
