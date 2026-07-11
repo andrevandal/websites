@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.1.0...vandallabs-v1.2.0) (2026-07-10)
+
+
+### Features
+
+* improve Vandallabs locale routing and accessibility
+* **vandallabs:** redirect root by browser locale
+
+
+### Bug Fixes
+
+* **vandallabs:** pass accessibility audits
+
 ## [1.1.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.0.0...vandallabs-v1.1.0) (2026-07-08)
 
 

@@ -79,7 +79,7 @@
     },
     "websites/brunabraz": {
       "name": "@websites/brunabraz",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "dependencies": {
         "@iconify-json/heroicons": "catalog:icons",
         "@iconify-json/heroicons-outline": "catalog:icons",
@@ -140,7 +140,7 @@
     },
     "websites/vandallabs": {
       "name": "@websites/vandallabs",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "dependencies": {
         "@iconify-json/heroicons": "catalog:icons",
         "@iconify-json/heroicons-outline": "catalog:icons",

@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.2.0](https://github.com/andrevandal/websites/compare/v1.1.0...v1.2.0) (2026-07-10)
+
+
+### Features
+
+* **brunabraz:** hero image via Astro Image with placeholder and DPR densities
+* **brunabraz:** route astro images through sun image service
+* **brunabraz:** use circle hero placeholder
+* improve Vandallabs locale routing and accessibility
+* **sun-ui:** add astro-image-service external image service
+* **sun-ui:** add circle placeholder mode
+* **sun-ui:** add density srcset and placeholder URL helper to image service
+* **sun-ui:** add RIAPI modifier-string builder
+* **sun-ui:** add SunPicture component wrapping Astro Image + placeholder
+* **sun-ui:** astro external image service via apps/images (+ brunabraz wiring)
+* **sun-ui:** configure image service through astro integration
+* **sun-ui:** serve correct image size per breakpoint plus densities
+* **vandallabs:** redirect root by browser locale
+
+
+### Bug Fixes
+
+* **brunabraz:** hide hero placeholder once real image loads
+* **deploy:** ignore unused env vars not declared by target site
+* **deploy:** remove invalid wrangler cleanup flag
+* **deploy:** remove invalid wrangler cleanup flag
+* **sun-ui:** copy *.utils.ts alongside astro components in build output
+* **sun-ui:** harden image service option validation
+* **sun-ui:** reject non-remote astro image sources and strip layout attribute
+* **sun-ui:** type astro integration image config payload
+* **vandallabs:** pass accessibility audits
+
 ## [1.1.0](https://github.com/andrevandal/websites/compare/v1.0.1...v1.1.0) (2026-07-08)
 
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.1.0...brunabraz-v1.2.0) (2026-07-10)
+
+
+### Features
+
+* **brunabraz:** hero image via Astro Image with placeholder and DPR densities
+* **brunabraz:** route astro images through sun image service
+* **brunabraz:** use circle hero placeholder
+* **sun-ui:** add SunPicture component wrapping Astro Image + placeholder
+* **sun-ui:** astro external image service via apps/images (+ brunabraz wiring)
+* **sun-ui:** serve correct image size per breakpoint plus densities
+
+
+### Bug Fixes
+
+* **brunabraz:** hide hero placeholder once real image loads
+* **sun-ui:** harden image service option validation
+
 ## [1.1.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.0.0...brunabraz-v1.1.0) (2026-07-08)
 
 
