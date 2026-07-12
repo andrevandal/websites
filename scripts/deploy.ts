@@ -22,6 +22,7 @@ type WranglerConfig = {
   compatibility_flags?: string[]
   assets?: { directory: string }
   kv_namespaces?: { binding: string; id?: string }[]
+  vars?: Record<string, string>
 }
 
 const workerName = (baseName: string, env: string, pr?: number) => {
@@ -38,6 +39,31 @@ const workerName = (baseName: string, env: string, pr?: number) => {
   if (env === "staging") return `${baseName}-staging`
 
   return baseName
+}
+
+// Only production workers can have a Cloudflare Custom Domain bound in the
+// dashboard (see websites/vandallabs/README.md) — PR-preview and staging
+// workers are always plain `*.workers.dev`. Keyed by the worker's base name
+// (wrangler.json's `name` field), not the CLI target string.
+const CUSTOM_DOMAINS: Record<string, string> = {
+  vandallabs: "https://vandallabs.com.br",
+}
+
+// wrangler's combined stdout/stderr contains its own deploy-confirmation
+// line (`https://<name>.<subdomain>.workers.dev`) but may also print other
+// https:// URLs (docs links, warnings, etc.) before or after it. Anchor
+// specifically on the `.workers.dev` suffix instead of grabbing the last
+// https:// token in the whole output, and prefer a match containing the
+// deployed worker name so an unrelated workers.dev URL can't be picked up.
+const resolvePreviewUrl = (
+  output: string | undefined,
+  workerNameDeployed: string
+): string | undefined => {
+  const matches = output?.match(/https:\/\/\S+\.workers\.dev\S*/g) ?? []
+  return (
+    matches.find(url => url.includes(`${workerNameDeployed}.`)) ??
+    matches.at(-1)
+  )
 }
 const filterEnvVars = (
   rawJson: string,
@@ -215,6 +241,7 @@ if (import.meta.main) {
     }
 
     generatedConfig.kv_namespaces[0]!.id = namespace.id
+    generatedConfig.vars = { ...generatedConfig.vars, ...envVars }
     await writeFile(
       generatedConfigPath,
       JSON.stringify(generatedConfig, null, 2)
@@ -233,13 +260,48 @@ if (import.meta.main) {
 
     const { all: output } = await proc
 
-    const url = output?.match(/https:\/\/\S+/g)?.at(-1)
+    const url = resolvePreviewUrl(output, name)
+    const customDomain =
+      env === "production" ? CUSTOM_DOMAINS[wranglerConfig.name] : undefined
 
-    if (url) consola.success(`Deployed to: ${url}`)
+    if (url) {
+      consola.success(`Deployed to: ${url}`)
+      if (customDomain) {
+        consola.info(
+          `Production custom domain (dashboard-managed): ${customDomain}`
+        )
+      }
+
+      if (process.env["GITHUB_OUTPUT"]) {
+        await writeFile(
+          process.env["GITHUB_OUTPUT"]!,
+          `deploy-url=${url}\n${customDomain ? `custom-domain=${customDomain}\n` : ""}`,
+          { flag: "a" }
+        )
+      }
+
+      if (process.env["GITHUB_STEP_SUMMARY"]) {
+        const summaryLines = [
+          `### Deploy: \`${name}\``,
+          `- Preview URL: ${url}`,
+          ...(customDomain ? [`- Production domain: ${customDomain}`] : []),
+          "",
+        ]
+        await writeFile(
+          process.env["GITHUB_STEP_SUMMARY"]!,
+          `${summaryLines.join("\n")}\n`,
+          { flag: "a" }
+        )
+      }
+    } else {
+      consola.warn(
+        "Could not find a workers.dev deploy URL in wrangler's output."
+      )
+    }
   } catch (err) {
     consola.error((err as Error).message)
     process.exit(1)
   }
 }
 
-export { filterEnvVars }
+export { filterEnvVars, resolvePreviewUrl }

@@ -94,11 +94,34 @@ jobs:
         uses: ./.github/actions/init
 
       - name: Deploy
+        id: deploy
         uses: ./.github/actions/deploy
         with:
           env: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
           target: ${{ matrix.app }}
           pr: ${{ github.event.pull_request.number }}
+
+      - name: Lighthouse CI against the preview deploy
+        id: lhci
+        if: github.event_name == 'pull_request' && steps.deploy.outputs.url != ''
+        run: |
+          bunx @lhci/cli@0.14.x autorun \
+            --collect.url="${{ steps.deploy.outputs.url }}" \
+            --upload.target=temporary-public-storage \
+            --outputDir=.lighthouseci | tee lhci-output.txt
+          report_url=$(grep -oE 'https://storage\.googleapis\.com/lighthouse[^ ]+\.html' lhci-output.txt | tail -1)
+          echo "report-url=${report_url}" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview URL on the PR
+        if: github.event_name == 'pull_request' && steps.deploy.outputs.url != ''
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: preview-url-${{ matrix.app }}
+          message: |
+            ### Preview deploy: `${{ matrix.app }}`
+            :rocket: ${{ steps.deploy.outputs.url }}
+            ${{ steps.deploy.outputs['custom-domain'] && format('Production custom domain: {0}', steps.deploy.outputs['custom-domain']) || '' }}
+            ${{ steps.lhci.outputs['report-url'] && format('Lighthouse report: {0}', steps.lhci.outputs['report-url']) || '' }}
 
   images-container:
     name: Images container

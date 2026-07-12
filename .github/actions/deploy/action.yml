@@ -12,6 +12,14 @@ inputs:
     description: "Pull request number (required when env=preview)"
     required: false
 
+outputs:
+  url:
+    description: "The deployed worker's URL (workers.dev, or its production custom domain when one is configured)"
+    value: ${{ steps.deploy.outputs.deploy-url }}
+  custom-domain:
+    description: "The worker's production custom domain, when one is configured (production env only)"
+    value: ${{ steps.deploy.outputs.custom-domain }}
+
 runs:
   using: "composite"
   steps:
@@ -20,5 +28,6 @@ runs:
       run: moon run ${{ inputs.target }}:build
 
     - name: Deploy
+      id: deploy
       shell: bash
       run: bun run deploy ${{ inputs.target }} --env ${{ inputs.env }} ${{ inputs.pr && format('--pr {0}', inputs.pr) || '' }} --no-dry-run
