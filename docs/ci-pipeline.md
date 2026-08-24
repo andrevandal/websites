@@ -173,6 +173,26 @@ guarding the Coolify webhook endpoint and the `CF_BYPASS_SECRET` value
 it expects — this is Cloudflare/Coolify account configuration, outside
 this repo's CI code and outside this session's access.
 
+- **2026-08-24 regression + remediation:** main CI run
+  https://github.com/andrevandal/websites/actions/runs/32742403768's
+  `Container (web) / build-and-push` job failed after 9m45s with the
+  GitHub-hosted runner's own `System.IO.IOException: No space left on
+device` while Docker Buildx was still in `Build and push`; this was
+  neither an application build error nor the Coolify problem above.
+  Commit `0477df3` adds `jlumbroso/free-disk-space@v1.3.1` before
+  checkout in `container.yml`'s `build-and-push` job. It removes unused
+  Android/.NET/Haskell/large-package toolchains, preinstalled Docker
+  images, and swap, but preserves `AGENT_TOOLSDIRECTORY`; the job only
+  invokes Docker Buildx, so none of the removed tooling is required.
+  Manual staging dispatch
+  https://github.com/andrevandal/websites/actions/runs/32748773311
+  verified the new path: `verify` ✓, `Free disk space` ✓,
+  `build-and-push` ✓ in 15m33s (image pushed), conclusively clearing the
+  previous storage failure. That dispatch's `deploy` job then hit the
+  same external Cloudflare bot-challenge `HTTP 403` documented above;
+  it is a distinct post-push WAF configuration blocker, not a regression
+  in the disk-space remediation.
+
 ### Phase 5 verification (2026-08-22, job summary)
 
 **Real CI run (success path):** https://github.com/andrevandal/websites/actions/runs/32542888025 —

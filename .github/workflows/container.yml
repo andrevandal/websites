@@ -76,6 +76,19 @@ jobs:
     outputs:
       environment: ${{ steps.env.outputs.environment }}
     steps:
+      # GitHub-hosted ubuntu-latest runners have preinstalled toolchains
+      # (Android SDK, .NET, Haskell, etc.) consuming a large chunk of the
+      # ~14GB nominally free disk. This monorepo's multi-stage Docker build
+      # plus `cache-to: type=gha,mode=max` (which materializes every layer
+      # of every stage locally before exporting) has exhausted that budget
+      # in production ("No space left on device" mid-build) -- none of the
+      # removed toolchains are used by this job (it only runs Docker Buildx,
+      # no local Bun/Node build step).
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+
       - name: Checkout code
         uses: actions/checkout@v7
 
