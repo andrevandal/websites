@@ -1,6 +1,7 @@
 ---
 import { siteConfig } from "../data/site"
 import Icon from "./Icon.astro"
+import GoogleRatingBadge from "./GoogleRatingBadge.astro"
 import BaseButton from "./BaseButton.astro"
 import { getImageUrl } from "@utils"
 
@@ -29,6 +30,7 @@ const currentYear = new Date().getFullYear()
             Odontologia com base científica, equipe especializada e atendimento
             na Barra da Tijuca.
           </p>
+          <GoogleRatingBadge />
           <BaseButton
             as="a"
             href={siteConfig.whatsAppLink}

@@ -89,12 +89,13 @@ export default defineConfig({
       }),
     icon({
       include: {
-        heroicons: ["arrow-down", "chevron-down", "check"],
+        heroicons: ["arrow-down", "chevron-down", "check", "star-solid"],
         "streamline-logos": [
           "whatsapp-logo",
           "youtube-logo-block",
           "whatsapp-logo-solid",
         ],
+        logos: ["google-icon"],
       },
       svgoOptions: {
         plugins: [

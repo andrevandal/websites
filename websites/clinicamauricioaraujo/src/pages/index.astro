@@ -14,6 +14,7 @@ import Description from "@components/Description.astro"
 import { cn } from "@utils"
 import BaseButton from "@components/BaseButton.astro"
 import Icon from "@components/Icon.astro"
+import GoogleRatingBadge from "@components/GoogleRatingBadge.astro"
 
 const meta = {
   title: `Dentista na Barra da Tijuca - Clínica Maurício Araújo`,
@@ -50,6 +51,7 @@ const isSpecialitiesOdd = specialties.length % 2 === 1
       slot="actions"
       class="animate-hero flex flex-col gap-2 [animation-delay:400ms]"
     >
+      <GoogleRatingBadge class="mb-2" />
       <BaseButton
         as="a"
         variant="brand"

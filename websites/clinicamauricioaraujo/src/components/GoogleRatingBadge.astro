@@ -1,0 +1,34 @@
+---
+import type { HTMLAttributes } from "astro/types"
+
+import { cn } from "@/utils"
+import { siteConfig } from "@/data/site"
+import Icon from "./Icon.astro"
+
+type Props = HTMLAttributes<"a">
+
+const { class: className = "", slot: _, ...rest } = Astro.props
+const score = siteConfig.googleRating.toFixed(1).replace(".", ",")
+---
+
+<a
+  href={siteConfig.googleReviewsUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={cn(
+    "flex items-center gap-2 transition-opacity hover:opacity-80",
+    className
+  )}
+  aria-label={`Avaliação ${score} de 5 no Google`}
+  {...rest}
+>
+  <span class="font-semibold text-white">{score}</span>
+  <span class="flex text-amber-400" aria-hidden="true">
+    {
+      Array.from({ length: 5 }).map(() => (
+        <Icon name="heroicons:star-solid" width={16} />
+      ))
+    }
+  </span>
+  <Icon name="logos:google-icon" width={18} />
+</a>

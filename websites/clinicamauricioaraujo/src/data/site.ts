@@ -20,6 +20,8 @@ export const siteConfig = {
     facebook: "https://www.facebook.com/clinicamauricioaraujo/",
     youtube: "https://www.youtube.com/channel/UCmB7weIbAbgrEsJph9Y91UQ",
   },
+  googleRating: 5,
+  googleReviewsUrl: "https://maps.app.goo.gl/SFD7TAMZ5G85zFuh9",
 }
 
 export const mainNav = [
