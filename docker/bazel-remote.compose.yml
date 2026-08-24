@@ -1,0 +1,39 @@
+# Self-hosted moon remote cache (Bazel Remote Execution API v2).
+# Already deployed and operated directly on the Coolify VPS at
+# https://infra.example.invalid/ (HTTP REST API on container port
+# 8080, routed through Coolify's own reverse proxy/TLS termination via
+# `expose:` + Coolify's domain-to-container-port routing configured in its
+# UI, not visible in this file). This file documents the running
+# service's real shape for reproducibility — it is not (re-)applied by
+# CI; the service was created directly in Coolify.
+#
+# Port 9092 (gRPC) is also published directly on the host but unused:
+# moon is configured with `api: http` against the HTTPS domain above, not
+# the gRPC listener.
+#
+# `.htpasswd` is a Coolify-managed file mount on the VPS, not committed
+# here — created directly on the host, not derived from this repo.
+#
+# GitHub Actions secrets (BAZEL_REMOTE_BASIC_AUTH_USERNAME/PASSWORD) and
+# the MOON_REMOTE_HOST repository variable matching this htpasswd entry
+# are set directly in CI.
+services:
+  bazel-cache:
+    container_name: bazel-remote-cache
+    image: "buchgr/bazel-remote-cache:latest"
+    restart: always
+    expose:
+      - 8080
+    ports:
+      - "9092:9092"
+    command: "--max_size=5 --htpasswd_file=/etc/bazel-remote/.htpasswd"
+    volumes:
+      - "bazel_cache_data:/data"
+      - "./.htpasswd:/etc/bazel-remote/.htpasswd"
+    environment:
+      BAZEL_REMOTE_GRPC_PORT: 9092
+    labels:
+      - coolify.managed=true
+volumes:
+  bazel_cache_data:
+    driver: local

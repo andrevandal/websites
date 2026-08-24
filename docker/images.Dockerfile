@@ -6,6 +6,7 @@ COPY package.json bun.lock ./
 COPY apps/images/package.json ./apps/images/package.json
 COPY packages/sun-ui/package.json ./packages/sun-ui/package.json
 COPY websites/brunabraz/package.json ./websites/brunabraz/package.json
+COPY websites/vandallabs/package.json ./websites/vandallabs/package.json
 RUN bun install --frozen-lockfile --ignore-scripts
 
 FROM base AS sharp-deps

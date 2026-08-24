@@ -94,6 +94,9 @@
     // Documentation
     "CHANGELOG.md",
 
+    // Vendored OpenCode skills (commit exactly as upstream generates them)
+    ".agents/skills/**",
+
     // Bun
     "bun.lockb"
   ]

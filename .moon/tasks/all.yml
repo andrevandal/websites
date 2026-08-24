@@ -9,7 +9,7 @@ fileGroups:
   sources:
     - src/**/*
   tests:
-    - "**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}"
+    - "**/*.{test,spec}.{js,mjs,cjs,jsx,ts,mts,cts,tsx}"
   typescript:
     - tsconfig.json
     - tsconfig.*.json
@@ -19,13 +19,39 @@ fileGroups:
     - "**/*.{md,mdx,yml,yaml,json}"
 
 tasks:
+  # oxlint covers every language in this repo except .astro, which needs
+  # eslint's astro parser (same split as the root `lint` script). The
+  # `--no-error-on-unmatched-pattern` flag makes the astro half a no-op in
+  # projects that have no .astro files, so one shared task fits all 10
+  # projects with no per-project override.
+  lint:
+    script: 'bun x oxlint . && bun x eslint --no-error-on-unmatched-pattern "**/*.astro"'
+    inputs:
+      - "**/*"
+      - "/.oxlintrc.json"
+      - "/eslint.config.ts"
+    options:
+      runInCI: true
+
+  format:
+    script: 'bun x oxfmt . --check && bun x prettier --check --no-error-on-unmatched-pattern "**/*.astro"'
+    inputs:
+      - "**/*"
+      - "/.oxfmtrc.json"
+      - "/prettier.config.ts"
+    options:
+      runInCI: true
+
   typecheck:
     command: "bun x tsc --noEmit --pretty"
     inputs:
       - "@globs(typescript)"
       - "@globs(sources)"
+      - "@globs(tests)"
     dependsOn:
       - ^:build
+    options:
+      runInCI: true
 
   test:
     command: "bun test --pass-with-no-tests"
@@ -33,3 +59,8 @@ tasks:
       - "@globs(tests)"
       - "@globs(typescript)"
       - "@globs(sources)"
+      - "bunfig.toml"
+      - "/bunfig.toml"
+      - "/happydom.ts"
+    options:
+      runInCI: true

@@ -22,8 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       affected_apps: ${{ steps.affecteds.outputs.apps_affected }}
-      images_affected: ${{ steps.affecteds.outputs.images_affected }}
-      web_affected: ${{ steps.affecteds.outputs.web_affected }}
+      container_apps_affected: ${{ steps.affecteds.outputs.container_apps_affected }}
       env_to_deploy: ${{ steps.affecteds.outputs.env_to_deploy }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,29 +39,56 @@ jobs:
       - name: Validate release config
         run: bun scripts/validate-release-config.ts
 
-      - name: Run CI checks
-        run: bun run check
+      - name: Check root files
+        run: |
+          bunx oxlint scripts *.ts
+          bunx oxfmt --check \
+            scripts docs docker .agents .github .moon .vscode \
+            *.ts *.md *.json *.yml \
+            .gitguardian.yml .oxfmtrc.json .oxlintrc.json \
+            .release-please-manifest.json
+          bun run test:scripts
 
-      - name: Build packages
-        run: moon run :build --query "projectLayer=library"
+      # Writes moon's `remote:` block into this runner's ephemeral checkout.
+      # Never committed - see ADR 0024. Fork PRs can read repository variables
+      # but do not receive repository secrets, so test all three values before
+      # invoking the strict config writer; missing credentials degrade to local
+      # execution instead of breaking the PR.
+      - name: Configure remote cache
+        env:
+          MOON_REMOTE_HOST: ${{ vars.MOON_REMOTE_HOST }}
+          BAZEL_REMOTE_BASIC_AUTH_USERNAME: ${{ secrets.BAZEL_REMOTE_BASIC_AUTH_USERNAME }}
+          BAZEL_REMOTE_BASIC_AUTH_PASSWORD: ${{ secrets.BAZEL_REMOTE_BASIC_AUTH_PASSWORD }}
+        run: |
+          if [ -z "$MOON_REMOTE_HOST" ] || \
+             [ -z "$BAZEL_REMOTE_BASIC_AUTH_USERNAME" ] || \
+             [ -z "$BAZEL_REMOTE_BASIC_AUTH_PASSWORD" ]; then
+            echo "Remote cache credentials unavailable - continuing without remote cache"
+            exit 0
+          fi
+          bun scripts/ci/write-remote-cache-config.ts
 
-      - name: Test
-        run: bun run test
+      - name: Run affected checks
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: moon ci :lint :format :typecheck :test
+
+      - name: CI report summary
+        if: always()
+        run: bun scripts/ci/ci-report-summary.ts
 
       - name: Get affected apps
         id: affecteds
         run: |
-          # "images" and "web" are each deployed via their own dedicated
-          # workflow (.github/workflows/images-container.yml,
-          # .github/workflows/web-container.yml — Docker/GHCR/Coolify), not
-          # this generic Cloudflare deploy job — always excluded here.
+          # "images" and "web" deploy via the reusable container workflow
+          # (.github/workflows/container.yml — Docker/GHCR/Coolify), not this
+          # generic Cloudflare deploy job — always excluded from `apps`, and
+          # listed separately in `container_apps_affected` for the matrix.
           affected="$(moon query projects "projectLayer=application" --affected --downstream deep | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; ""))')"
           apps=$(echo "$affected" | jq -c 'map(select(. != "images" and . != "web"))')
-          images_affected=$(echo "$affected" | jq 'any(. == "images")')
-          web_affected=$(echo "$affected" | jq 'any(. == "web")')
+          container_apps=$(echo "$affected" | jq -c 'map(select(. == "web" or . == "images"))')
           echo "apps_affected=$apps" >> $GITHUB_OUTPUT
-          echo "images_affected=$images_affected" >> $GITHUB_OUTPUT
-          echo "web_affected=$web_affected" >> $GITHUB_OUTPUT
+          echo "container_apps_affected=$container_apps" >> $GITHUB_OUTPUT
 
   deploy:
     name: Deploying preview
@@ -123,26 +149,22 @@ jobs:
             ${{ steps.deploy.outputs['custom-domain'] && format('Production custom domain: {0}', steps.deploy.outputs['custom-domain']) || '' }}
             ${{ steps.lhci.outputs['report-url'] && format('Lighthouse report: {0}', steps.lhci.outputs['report-url']) || '' }}
 
-  images-container:
-    name: Images container
+  container:
+    name: Container (${{ matrix.app }})
     needs: check-all
-    if: needs.check-all.outputs.images_affected == 'true'
+    # Containers (web/images) get staging (push to main) and production
+    # (release.yml's manual dispatch) deploys only -- no PR preview build,
+    # unlike the Cloudflare Pages `deploy` job above.
+    if: needs.check-all.outputs.container_apps_affected != '[]' && github.event_name != 'pull_request'
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/images-container.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.check-all.outputs.container_apps_affected) }}
+    uses: ./.github/workflows/container.yml
     secrets: inherit
     with:
-      environment: ${{ github.event_name == 'pull_request' && 'preview' || (github.ref == 'refs/heads/main' && 'staging' || 'preview') }}
-
-  web-container:
-    name: Web container
-    needs: check-all
-    if: needs.check-all.outputs.web_affected == 'true'
-    permissions:
-      contents: read
-      packages: write
-    uses: ./.github/workflows/web-container.yml
-    secrets: inherit
-    with:
-      environment: ${{ github.event_name == 'pull_request' && 'preview' || (github.ref == 'refs/heads/main' && 'staging' || 'preview') }}
+      app: ${{ matrix.app }}
+      environment: staging

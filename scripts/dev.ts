@@ -1,10 +1,10 @@
 import yargs from "yargs"
-import { queryTargets } from "./utils"
+import { queryDevTargets } from "./utils"
 import { hideBin } from "yargs/helpers"
 import consola from "consola"
 import { execa } from "execa"
 
-const availableTargets = await queryTargets()
+const availableTargets = await queryDevTargets()
 
 const parseArgs = (argv: string[]) =>
   yargs(hideBin(argv))

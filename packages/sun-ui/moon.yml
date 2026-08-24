@@ -15,6 +15,9 @@ tasks:
       - "src/**/*.astro"
       - "src/**/*.ts"
       - "tsconfig.json"
+      - "/tsconfig.json"
+      - "/tsconfig.options.json"
+      - "/tsconfig.packages.json"
 
   build:
     command: "tsdown"
@@ -23,6 +26,9 @@ tasks:
       - "src/**/*.astro"
       - "tsconfig.json"
       - "tsdown.config.ts"
+      - "/tsconfig.json"
+      - "/tsconfig.options.json"
+      - "/tsconfig.packages.json"
     outputs:
       - dist
     dependsOn:

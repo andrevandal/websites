@@ -23,10 +23,16 @@ Websites for Vandal clients. TypeScript monorepo managed with moonrepo and bun.
 
 ## Deploy environments
 
-CI (`.github/workflows/main.yml`) builds and tests everything on every push/PR,
+CI (`.github/workflows/main.yml`) runs `moon ci` on every push/PR — only the
+projects a change actually affects are linted, typechecked, and tested — then
 
 - `main` branch → **staging**
 - pull requests → **preview**
+- `apps/images` uses one reusable workflow
+  (`container.yml`, invoked once per affected app from a matrix) that builds
+  a Docker image, pushes it to GHCR, and triggers a Coolify webhook
+  (staging on push to `main`, production via `release.yml`'s dispatch —
+  pull requests never trigger a container build, unlike the websites below).
 - The websites deploy straight to Cloudflare Workers via `wrangler deploy`.
 
 ## Setup

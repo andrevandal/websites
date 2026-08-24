@@ -6,7 +6,8 @@ on:
       target:
         description: App or website to deploy
         type: choice
-        options: [images, brunabraz, clinicamauricioaraujo.com.br, vandallabs]
+        options:
+          [images, web, brunabraz, clinicamauricioaraujo.com.br, vandallabs]
         required: true
       environment:
         description: Target environment
@@ -23,20 +24,21 @@ concurrency:
   group: deploy-manual-${{ inputs.target }}-${{ inputs.environment }}
 
 jobs:
-  deploy-images:
-    name: Deploy images
-    if: inputs.target == 'images'
+  deploy-container:
+    name: Deploy container
+    if: inputs.target == 'images' || inputs.target == 'web'
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/images-container.yml
+    uses: ./.github/workflows/container.yml
     secrets: inherit
     with:
+      app: ${{ inputs.target }}
       environment: ${{ inputs.environment }}
 
   deploy-website:
     name: Deploy website
-    if: inputs.target != 'images'
+    if: inputs.target != 'images' && inputs.target != 'web'
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}

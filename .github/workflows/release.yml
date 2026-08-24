@@ -54,9 +54,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh workflow run images-container.yml \
+          gh workflow run container.yml \
             --repo "${{ github.repository }}" \
             --ref main \
+            -f app=images \
             -f environment=production
 
   deploy-websites-production:

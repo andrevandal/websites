@@ -45,7 +45,7 @@ test-results/
 playwright-report/
 .playwright-mcp/
 e2e/.data/
-e2e/.auth/
+**/e2e/.auth/
 
 # Wrangler / Cloudflare
 .wrangler/
@@ -74,3 +74,19 @@ docs/superpowers/
 **/*:Zone.Identifier
 tsconfig.tsbuildinfo
 *.log
+
+# Knowledge management (personal, per-worktree, never committed)
+.docs/knowledge/
+
+# Git worktrees (task-scoped, per using-git-worktrees skill / ADR 0007)
+.worktrees/
+
+# subagent-driven-development scratch (briefs/reports/diffs), never committed
+/sdd/
+
+# Goal worktree scratch (personal, per-worktree, never committed --
+# managing-goal-hub convention). This is the real, shared enforcement;
+# .git/info/exclude is local-only and does not stop `git add -A` on a
+# fresh clone/worktree from re-tracking it, which is how it kept leaking
+# into commit history and causing rebase conflicts across goal branches.
+/GOAL.md

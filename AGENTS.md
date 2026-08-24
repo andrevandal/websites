@@ -1,65 +1,16 @@
-# AGENTS.md
+@../AGENTS.md
 
-## Approach
+# AGENTS.md (main worktree)
 
-- Think before acting. Read existing files before writing code.
-- Concise output, thorough reasoning.
-- Prefer edit over rewrite.
-- Don't re-read files unless changed.
-- Test before declaring done.
-- No sycophantic openers or closing fluff.
-- Simple, direct solutions.
-- User instructions override this file.
-
-## Output
-
-- Code first. Explanation after, only if non-obvious.
-- No inline prose. Comments only where logic unclear.
-- No boilerplate unless requested.
-
-## Code Rules
-
-- Simplest working solution. No over-engineering.
-- No abstractions for single-use ops.
-- No speculative features.
-- Read file before modifying. Never edit blind.
-- No docstrings or type annotations on unchanged code.
-- No error handling for impossible scenarios.
-- Three similar lines beats premature abstraction.
-
-## Review Rules
-
-- State bug. Show fix. Stop.
-- No out-of-scope suggestions.
-- No compliments.
-
-## Debugging Rules
-
-- Never speculate without reading relevant code first.
-- State: what, where, fix. One pass.
-- If cause unclear: say so. Don't guess.
-
-## Simple Formatting
-
-- No em dashes, smart quotes, decorative Unicode.
-- Plain hyphens and straight quotes only.
-- Natural language chars (accented, CJK, etc.) OK when content needs them.
-- Code output must be copy-paste safe.
-
-## General AI guidelines
-
-- Devs know they're right. Don't tell them.
-- BE concise.
-- BE neutral. No praise or criticism. Facts only.
-- BE clear. Simple language, no jargon.
-- Act like PAIR programming partner.
-- Always check available skills before answering.
+Repo-specific mechanics only. Shared workflow, coding rules, and the
+goal-hub/spec-driven/TDD conventions live in the imported hub-level
+file above (`~/www/websites/AGENTS.md`) — don't re-add them here.
 
 ## Toolchain
 
-- **Package Manager**: bun 1.3.6
-- **Node.js**: 24.12.0 (managed via proto)
-- **Build System**: moonrepo (moon CLI)
+- **Package Manager**: bun 1.3.14
+- **Node.js**: 24.16.0 (managed via proto)
+- **Build System**: moonrepo 2.3.4 (moon CLI)
 - **TypeScript**: 5.9.3
 - **Formatter**: oxfmt
 - **Linter**: oxlint
@@ -78,8 +29,7 @@
 │   └── tasks/all.yml      # Shared task definitions
 ├── apps/
 ├── packages/
-│   ├── tailwind-config/   # @vandal-websites/tailwind-config — Shared Tailwind v4 theme (CSS)
-│   ├── ui/                # @vandal-websites/ui — Base UI component library
+│   ├── sun-ui/             # @vandal-websites/sun-ui — Astro UI components for marketing sites
 ├── docker/                # Dockerfile and docker-compose
 ├── scripts/               # Kickstart and utility scripts
 ├── tsconfig.json          # Root config (project references, auto-managed by moon)
@@ -104,7 +54,6 @@
 ### Package Dependency Graph
 
 ```
-packages/ui → @vandal-websites/tailwind-config
 ```
 
 ### Moonrepo Tasks
@@ -142,6 +91,11 @@ Project references for incremental builds:
 
 ## CI/CD
 
-- Runs `moon ci` on pushes to main
-- Uses moonrepo/setup-toolchain action
-- Caches bun store and proto tools
+- `main.yml`'s `check-all` job runs `moon ci` — affected-scoped
+  `lint`/`format`/`typecheck`/`test` (all four are `runInCI` tasks in
+  `.moon/tasks/all.yml`), on pull requests and pushes to `main`.
+- Repo-root files that no moon project owns (`scripts/**`, root `*.ts`,
+  `*.md`, `*.json`, `*.yml`, `docs/`, `.github/`, `.moon/`) are checked by an
+  explicit always-run oxlint/oxfmt step in the same job.
+- Uses moonrepo/setup-toolchain; caches the bun store and proto tools.
+- Full pipeline documentation: `docs/ci-pipeline.md`.
