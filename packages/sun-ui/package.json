@@ -14,13 +14,16 @@
     "./astro": "./dist/astro/index.mjs",
     "./astro-image-service": "./dist/astro-image-service.mjs",
     "./astro-integration": "./dist/astro-integration.mjs",
+    "./svelte": "./dist/svelte/index.mjs",
     "./package.json": "./package.json",
     "./astro/layouts/*": "./dist/astro/layouts/*.astro",
     "./astro/components/*": "./dist/astro/components/*.astro"
   },
   "dependencies": {
+    "@astrojs/svelte": "catalog:svelte",
     "astro-iconset": "catalog:astro",
     "cnfast": "catalog:tailwind",
+    "svelte": "catalog:svelte",
     "tailwindcss": "catalog:tailwind"
   },
   "devDependencies": {

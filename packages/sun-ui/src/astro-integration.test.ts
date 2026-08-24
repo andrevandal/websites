@@ -34,4 +34,30 @@ describe("SunUIAstroIntegration", () => {
     )
     expect(call.image.service.config.baseUrl).toBe("https://images.example.com")
   })
+
+  it("does not register svelte when the svelte option is omitted", () => {
+    const updateConfig = mock()
+    const integration = SunUIAstroIntegration()
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    integration.hooks["astro:config:setup"]?.({
+      updateConfig,
+    } as unknown as any)
+
+    const [call] = updateConfig.mock.calls[0]!
+    expect(call.integrations.length).toBe(1)
+  })
+
+  it("registers the svelte integration when svelte: true is passed", () => {
+    const updateConfig = mock()
+    const integration = SunUIAstroIntegration({ svelte: true })
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    integration.hooks["astro:config:setup"]?.({
+      updateConfig,
+    } as unknown as any)
+
+    const [call] = updateConfig.mock.calls[0]!
+    expect(call.integrations.length).toBe(2)
+  })
 })

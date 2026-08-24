@@ -1,5 +1,5 @@
 ---
-import { SunCarousel } from "@vandal-websites/sun-ui/astro"
+import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
 import Heading from "@components/Heading.astro"
 
 import type { Testimonial } from "@/types"
@@ -23,7 +23,7 @@ const { testimonials } = Astro.props
       Veja os depoimentos dos meus alunos
     </p>
   </div>
-  <SunCarousel direction="left-to-right">
+  <SunCarousel client:load direction="left-to-right">
     {
       testimonials.map(({ image, author, content }) => {
         return (

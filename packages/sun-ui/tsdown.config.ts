@@ -22,6 +22,7 @@ export default defineConfig({
   entry: [
     "./src/index.ts",
     "./src/astro/index.ts",
+    "./src/svelte/index.ts",
     "./src/astro-integration.ts",
     "./src/astro-image-service.ts",
   ],
@@ -33,6 +34,9 @@ export default defineConfig({
       "astro",
       "@astro-community/astro-embed-youtube",
       /\.astro$/,
+      /\.svelte$/,
+      "svelte",
+      "@astrojs/svelte",
     ],
   },
   copy: [
@@ -42,6 +46,8 @@ export default defineConfig({
         "src/astro/**/*.astro.d.ts",
         "src/astro/**/*.props.ts",
         "src/astro/**/*.utils.ts",
+        "src/astro/**/*.svelte",
+        "src/astro/**/*.svelte.d.ts",
       ],
       flatten: false,
     },

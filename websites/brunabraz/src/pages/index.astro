@@ -6,7 +6,8 @@ import Heading from "@components/Heading.astro"
 import TrajectoryVideo from "@components/TrajectoryVideo.astro"
 import type { ComponentProps } from "astro/types"
 import { defaultConfig } from "@/data/site"
-import { SunCarousel, SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
 import Button from "@components/Button.astro"
 import WidgetReadMore from "@components/widgets/ReadMore.astro"
 import WidgetTestimonials from "@components/widgets/Testimonials.astro"
@@ -301,7 +302,7 @@ const meta = {
         sua forma de viver, mas também amplifica o poder da sua voz.
       </p>
     </div>
-    <SunCarousel className="mt-10">
+    <SunCarousel client:load className="mt-10">
       {
         [
           "https://placehold.co/290x340",

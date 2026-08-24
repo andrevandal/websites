@@ -84,7 +84,10 @@ export default defineConfig({
   },
 
   integrations: [
-    sunUIAstroIntegration({ imageServiceBaseUrl: IMAGES_BASE_URL }),
+    sunUIAstroIntegration({
+      imageServiceBaseUrl: IMAGES_BASE_URL,
+      svelte: true,
+    }),
     sitemap(),
     isPartytownEnabled &&
       partytown({
