@@ -192,6 +192,20 @@ device` while Docker Buildx was still in `Build and push`; this was
   same external Cloudflare bot-challenge `HTTP 403` documented above;
   it is a distinct post-push WAF configuration blocker, not a regression
   in the disk-space remediation.
+  Follow-up staging dispatch
+  https://github.com/andrevandal/websites/actions/runs/32757456866
+  proved the disk cleanup works again (`Free disk space` ✓), but surfaced
+  a distinct build-context defect before any image build: PR #48's
+  `@volar/kit` `patchedDependencies` registration made frozen Bun
+  installs require `patches/@volar__kit@2.4.28.patch`; both Dockerfiles'
+  dependency stages copied `package.json` and `bun.lock` but not
+  `patches/`, so `bun install --frozen-lockfile --ignore-scripts` failed
+  with `Couldn't find patch file`. Both `docker/web.Dockerfile` and
+  `docker/images.Dockerfile` now `COPY patches ./patches` before that
+  install. Local `--target deps` builds verified the exact frozen install
+  command succeeds for both images. The next staging dispatch is required
+  to prove the complete build/push/deploy path against the corrected
+  context.
 
 ### Phase 5 verification (2026-08-22, job summary)
 

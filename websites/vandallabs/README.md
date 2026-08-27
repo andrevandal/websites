@@ -72,7 +72,12 @@ Configured in `.env.example`:
 | `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional Google Ads conversion label.                       |
 | `ENABLE_PARTYTOWN`                   | Enables Partytown when set to `true`. Defaults to `false`.  |
 
-CI passes environment-specific values through `ENV_VARS_VANDALLABS`.
+CI resolves `ENV_VARS_VANDALLABS` twice: once before the build step (each
+declared key above is exported into the build's own environment, since
+`astro.config.js` reads several of them directly via `loadEnv`/`import.meta.env`
+at build time), and once more after the build, when the same values are
+written into the deployed Worker's `wrangler.json` `vars` for any key still
+needed at request time.
 
 ## Icons
 

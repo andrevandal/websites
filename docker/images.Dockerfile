@@ -3,6 +3,7 @@ WORKDIR /app
 
 FROM base AS deps
 COPY package.json bun.lock ./
+COPY patches ./patches
 COPY apps/images/package.json ./apps/images/package.json
 COPY packages/sun-ui/package.json ./packages/sun-ui/package.json
 COPY websites/brunabraz/package.json ./websites/brunabraz/package.json

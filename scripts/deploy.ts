@@ -7,7 +7,7 @@ import { hideBin } from "yargs/helpers"
 
 import { consola } from "consola"
 import { execa } from "execa"
-import { parseEnvFileKeys, repoRoot } from "./env"
+import { envVarNameForTarget, repoRoot, resolveTargetEnvVars } from "./env"
 import { queryTargets } from "./utils"
 import {
   deleteKvNamespaceByTitle,
@@ -26,140 +26,120 @@ type WranglerConfig = {
 }
 
 const workerName = (baseName: string, env: string, pr?: number) => {
-  if (env === "preview") {
-    if (!pr) {
-      throw new Error(
-        "Preview deploys require --pr <N> (the pull request number)."
-      )
+    if (env === "preview") {
+      if (!pr) {
+        throw new Error(
+          "Preview deploys require --pr <N> (the pull request number)."
+        )
+      }
+
+      return `${baseName}-pr-${pr}`
     }
 
-    return `${baseName}-pr-${pr}`
+    if (env === "staging") return `${baseName}-staging`
+
+    return baseName
+  },
+  // Only production workers can have a Cloudflare Custom Domain bound in the
+  // dashboard (see websites/vandallabs/README.md) — PR-preview and staging
+  // workers are always plain `*.workers.dev`. Keyed by the worker's base name
+  // (wrangler.json's `name` field), not the CLI target string.
+  CUSTOM_DOMAINS: Record<string, string> = {
+    vandallabs: "https://vandallabs.com.br",
+  },
+  // wrangler's combined stdout/stderr contains its own deploy-confirmation
+  // line (`https://<name>.<subdomain>.workers.dev`) but may also print other
+  // https:// URLs (docs links, warnings, etc.) before or after it. Anchor
+  // specifically on the `.workers.dev` suffix instead of grabbing the last
+  // https:// token in the whole output, and prefer a match containing the
+  // deployed worker name so an unrelated workers.dev URL can't be picked up.
+  resolvePreviewUrl = (
+    output: string | undefined,
+    workerNameDeployed: string
+  ): string | undefined => {
+    const matches = output?.match(/https:\/\/\S+\.workers\.dev\S*/g) ?? []
+    return (
+      matches.find(url => url.includes(`${workerNameDeployed}.`)) ??
+      matches.at(-1)
+    )
   }
 
-  if (env === "staging") return `${baseName}-staging`
-
-  return baseName
-}
-
-// Only production workers can have a Cloudflare Custom Domain bound in the
-// dashboard (see websites/vandallabs/README.md) — PR-preview and staging
-// workers are always plain `*.workers.dev`. Keyed by the worker's base name
-// (wrangler.json's `name` field), not the CLI target string.
-const CUSTOM_DOMAINS: Record<string, string> = {
-  vandallabs: "https://vandallabs.com.br",
-}
-
-// wrangler's combined stdout/stderr contains its own deploy-confirmation
-// line (`https://<name>.<subdomain>.workers.dev`) but may also print other
-// https:// URLs (docs links, warnings, etc.) before or after it. Anchor
-// specifically on the `.workers.dev` suffix instead of grabbing the last
-// https:// token in the whole output, and prefer a match containing the
-// deployed worker name so an unrelated workers.dev URL can't be picked up.
-const resolvePreviewUrl = (
-  output: string | undefined,
-  workerNameDeployed: string
-): string | undefined => {
-  const matches = output?.match(/https:\/\/\S+\.workers\.dev\S*/g) ?? []
-  return (
-    matches.find(url => url.includes(`${workerNameDeployed}.`)) ??
-    matches.at(-1)
-  )
-}
-const filterEnvVars = (
-  rawJson: string,
-  allowedKeys: string[]
-): Record<string, string> => {
-  const parsed = v.parse(
-    v.pipe(v.string(), v.parseJson(), v.record(v.string(), v.string())),
-    rawJson.replaceAll("\\", "").replace(/^\uFEFF/, "")
-  )
-  return Object.fromEntries(
-    Object.entries(parsed).filter(([key]) => allowedKeys.includes(key))
-  )
-}
-
 if (import.meta.main) {
-  const availableTargets = await queryTargets()
-
-  const parseArgs = (argv: string[]) =>
-    yargs(hideBin(argv))
-      .scriptName("deploy")
-      .version("1.0.0")
-      .command("$0 <target>", "Deploy a target", builder =>
-        builder.positional("target", {
-          describe: "The command target name",
-          type: "string",
-          choices: Object.keys(availableTargets),
-          required: true,
-        })
-      )
-      .command(
-        "cleanup <target>",
-        "Tear down a PR preview deployment",
-        builder =>
+  const availableTargets = await queryTargets(),
+    parseArgs = (argv: string[]) =>
+      yargs(hideBin(argv))
+        .scriptName("deploy")
+        .version("1.0.0")
+        .command("$0 <target>", "Deploy a target", builder =>
           builder.positional("target", {
             describe: "The command target name",
             type: "string",
             choices: Object.keys(availableTargets),
             required: true,
           })
-      )
-      .option("env", {
-        type: "string",
-        alias: "e",
-        default: "preview",
-        describe: "Deploy environment",
-        coerce: input => v.parse(v.picklist(envChoices), input),
-        choices: envChoices,
-        required: false,
-      })
-      .option("pr", {
-        type: "number",
-        describe: "Pull request number (required for preview deploys/cleanup)",
-        required: false,
-      })
-      .option("dry-run", {
-        type: "boolean",
-        default: false,
-        describe: "Print commands without executing.",
-      })
-      .option("debug", {
-        type: "boolean",
-        default: false,
-        describe: "Enable verbose debug logging",
-      })
-      .usage("Usage: $0 <target> [options]")
-      .example("$0 <target> --env preview --pr 123", "Deploy a PR preview")
-      .example("$0 <target> --env staging", "Deploy staging")
-      .example("$0 <target> --env production", "Deploy production")
-      .example("$0 cleanup <target> --pr 123", "Tear down a PR preview")
-      .help()
-      .demandCommand(1, "You must provide a <target> argument.")
-      .parse()
+        )
+        .command(
+          "cleanup <target>",
+          "Tear down a PR preview deployment",
+          builder =>
+            builder.positional("target", {
+              describe: "The command target name",
+              type: "string",
+              choices: Object.keys(availableTargets),
+              required: true,
+            })
+        )
+        .option("env", {
+          type: "string",
+          alias: "e",
+          default: "preview",
+          describe: "Deploy environment",
+          coerce: input => v.parse(v.picklist(envChoices), input),
+          choices: envChoices,
+          required: false,
+        })
+        .option("pr", {
+          type: "number",
+          describe:
+            "Pull request number (required for preview deploys/cleanup)",
+          required: false,
+        })
+        .option("dry-run", {
+          type: "boolean",
+          default: false,
+          describe: "Print commands without executing.",
+        })
+        .option("debug", {
+          type: "boolean",
+          default: false,
+          describe: "Enable verbose debug logging",
+        })
+        .usage("Usage: $0 <target> [options]")
+        .example("$0 <target> --env preview --pr 123", "Deploy a PR preview")
+        .example("$0 <target> --env staging", "Deploy staging")
+        .example("$0 <target> --env production", "Deploy production")
+        .example("$0 cleanup <target> --pr 123", "Tear down a PR preview")
+        .help()
+        .demandCommand(1, "You must provide a <target> argument.")
+        .parse()
 
   try {
-    const args = await parseArgs(process.argv)
-    const { env, pr, debug: isDebug, target, dryRun, _: command } = args
+    const args = await parseArgs(process.argv),
+      { env, pr, debug: isDebug, target, dryRun, _: command } = args
 
     if (isDebug) consola.level = 5
 
-    const isCleanup = command[0] === "cleanup"
-
-    const project = availableTargets[`${target}`]
+    const isCleanup = command[0] === "cleanup",
+      project = availableTargets[`${target}`]
 
     if (!project) throw new Error(`Target not found.`)
 
-    const siteDir = resolve(repoRoot, ...project.location)
-    const wranglerConfigPath = resolve(siteDir, "wrangler.json")
-    const wranglerConfig = JSON.parse(
-      await readFile(wranglerConfigPath, "utf-8")
-    ) as WranglerConfig
-
-    const name = workerName(
-      wranglerConfig.name,
-      isCleanup ? "preview" : env,
-      pr
-    )
+    const siteDir = resolve(repoRoot, ...project.location),
+      wranglerConfigPath = resolve(siteDir, "wrangler.json"),
+      wranglerConfig = JSON.parse(
+        await readFile(wranglerConfigPath, "utf-8")
+      ) as WranglerConfig,
+      name = workerName(wranglerConfig.name, isCleanup ? "preview" : env, pr)
 
     if (isCleanup) {
       if (!pr)
@@ -190,22 +170,12 @@ if (import.meta.main) {
       process.exit(0)
     }
 
-    const envVarsFilePath = resolve(
-      repoRoot,
-      ...project.location,
-      ".env.example"
-    )
-    const ENV_VARS_KEYS = parseEnvFileKeys(envVarsFilePath)
-    const envVarName = `ENV_VARS_${project.id.toUpperCase().split(/[.-]/)[0]}`
-    const ENV_VARS_VALUES_RAW = process.env[envVarName]
+    const envVarName = envVarNameForTarget(project.id)
 
-    if (!ENV_VARS_VALUES_RAW)
+    if (!process.env[envVarName])
       consola.warn(`${envVarName} not set — deploying with no custom env vars`)
 
-    const envVars =
-      ENV_VARS_KEYS.length > 0 && ENV_VARS_VALUES_RAW
-        ? filterEnvVars(ENV_VARS_VALUES_RAW, ENV_VARS_KEYS)
-        : {}
+    const envVars = resolveTargetEnvVars(project.location, envVarName)
 
     if (dryRun) {
       consola.info(
@@ -226,13 +196,13 @@ if (import.meta.main) {
     )
 
     const generatedConfigPath = resolve(
-      repoRoot,
-      ...project.location,
-      "dist/server/wrangler.json"
-    )
-    const generatedConfig = JSON.parse(
-      await readFile(generatedConfigPath, "utf-8")
-    ) as WranglerConfig
+        repoRoot,
+        ...project.location,
+        "dist/server/wrangler.json"
+      ),
+      generatedConfig = JSON.parse(
+        await readFile(generatedConfigPath, "utf-8")
+      ) as WranglerConfig
 
     if (!generatedConfig.kv_namespaces?.length) {
       throw new Error(
@@ -258,11 +228,10 @@ if (import.meta.main) {
 
     proc.all?.pipe(process.stdout)
 
-    const { all: output } = await proc
-
-    const url = resolvePreviewUrl(output, name)
-    const customDomain =
-      env === "production" ? CUSTOM_DOMAINS[wranglerConfig.name] : undefined
+    const { all: output } = await proc,
+      url = resolvePreviewUrl(output, name),
+      customDomain =
+        env === "production" ? CUSTOM_DOMAINS[wranglerConfig.name] : undefined
 
     if (url) {
       consola.success(`Deployed to: ${url}`)
@@ -304,4 +273,4 @@ if (import.meta.main) {
   }
 }
 
-export { filterEnvVars, resolvePreviewUrl }
+export { resolvePreviewUrl }

@@ -23,6 +23,10 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Prepare build environment
+      shell: bash
+      run: bun run prepare-build-env ${{ inputs.target }}
+
     - name: Build
       shell: bash
       run: moon run ${{ inputs.target }}:build
