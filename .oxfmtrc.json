@@ -27,6 +27,8 @@
   // Embedded language formatting
   "embeddedLanguageFormatting": "auto",
 
+  "svelte": true,
+
   "ignorePatterns": [
     // Dependencies
     "node_modules/",

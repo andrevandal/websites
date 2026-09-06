@@ -1,0 +1,542 @@
+---
+import BaseLayout from "../layouts/Base.astro"
+import Button from "@components/ui/Button.astro"
+import MapBrazil from "@components/MapBrazil.astro"
+import RouteCalculator from "@components/RouteCalculator.svelte"
+import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { siteConfig } from "@/data/site"
+import { ALLOWED_LOCATIONS } from "@/data/allowed-locations"
+import {
+  ABOUT_SRC,
+  differentiators,
+  HERO_SRC,
+  HERO_SRC_MOBILE,
+  insurances,
+  PARTNERS_SRC,
+  qualityIndicators,
+  segments,
+  services,
+} from "@/data/home"
+import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
+import Eyebrown from "@components/Eyebrown.astro"
+import Heading from "@components/Heading.astro"
+
+const meta = {
+  title: "Transportugal - Transporte de cargas SP e Espírito Santo",
+  description: siteConfig.description,
+  image: siteConfig.defaultSocialImage,
+  url: Astro.url,
+}
+---
+
+<BaseLayout {...meta}>
+  <section
+    class="relative flex min-h-dvh w-full flex-col items-center bg-gray-900 pb-12 sm:h-full sm:max-h-168 sm:pb-0"
+  >
+    <div class="sm:absolute sm:inset-0 sm:z-0" aria-hidden="true">
+      <SunPicture
+        src={HERO_SRC_MOBILE}
+        alt=""
+        width={375}
+        height={382}
+        quality={90}
+        densities={[1, 1.5, 2]}
+        loading="eager"
+        wrapperClass="relative size-auto sm:hidden object-cover after:content-[''] after:absolute after:inset-0 after:z-10 after:pointer-events-none sm:after:shadow-[inset_0_-32px_16px_rgba(31,30,30,1)] opacity-60"
+        class="h-auto w-full"
+      />
+      <SunPicture
+        src={HERO_SRC}
+        alt=""
+        width={1440}
+        height={675}
+        quality={90}
+        densities={[1, 1.5, 2]}
+        breakpoints={[{ minWidth: 1024, width: 1440 }]}
+        loading="eager"
+        wrapperClass="hidden size-full sm:block"
+        class="size-full object-cover opacity-60"
+      />
+    </div>
+    <div
+      class="container flex h-full flex-1 items-center justify-center gap-4 text-center text-balance sm:relative sm:z-10 sm:mt-18 sm:items-start sm:text-left xl:gap-8"
+    >
+      <div class="flex flex-col gap-4">
+        <h1
+          class="text-2xl leading-[120%] font-medium tracking-[-0.72px] text-white sm:max-w-120 sm:text-[2.5rem] sm:tracking-[-1.2px]"
+        >
+          Transportando cargas entre São Paulo e Espírito Santo, com segurança
+        </h1>
+        <p class="text-base leading-[150%] text-gray-200 sm:max-w-[40ch]">
+          Transporte de cargas fracionadas e fechadas entre São Paulo e o
+          Espírito Santo, com informação clara em cada etapa da operação.
+        </p>
+      </div>
+      <Button
+        as="a"
+        href="#contato"
+        icon="arrow-up-right"
+        class="mt-2 w-fit sm:mt-4 sm:w-auto sm:text-xl xl:self-start"
+      >
+        Solicitar cotação
+      </Button>
+    </div>
+  </section>
+
+  <section id="sobre" class="flex w-full flex-col bg-gray-50">
+    <div
+      class="container flex flex-col items-center gap-8 py-14 xl:flex-row xl:justify-between xl:gap-6 xl:py-20"
+    >
+      <SunPicture
+        src={ABOUT_SRC}
+        alt="Frota Transportugal"
+        width={343}
+        height={275}
+        quality={85}
+        densities={[1, 1.5, 2]}
+        breakpoints={[
+          {
+            minWidth: 640,
+            width: 596,
+          },
+        ]}
+        wrapperClass="rounded-lg xl:flex-1"
+        class="w-full"
+      />
+      <div
+        class="flex w-full flex-col items-center gap-6 text-center text-balance xl:flex-1 xl:items-start xl:text-left"
+      >
+        <div class="flex flex-col gap-2">
+          <Eyebrown>A Transportugal</Eyebrown>
+          <Heading>
+            14 anos de estrada entre São Paulo e o Espírito Santo.
+          </Heading>
+        </div>
+        <div class="flex flex-col gap-4">
+          <p class="text-base leading-relaxed text-gray-500">
+            A Transportugal não é uma transportadora nova. É uma operação com 14
+            anos de estrada que passou a assinar com o próprio nome.
+          </p>
+          <p class="text-base leading-relaxed text-gray-500">
+            Transportamos cargas fracionadas e fechadas entre São Paulo e o
+            Espírito Santo, com duas unidades próprias, matriz em Guarulhos e
+            filial em Cariacica, e toda carga segurada em até R$ 500 mil.
+          </p>
+          <p class="text-base leading-relaxed text-gray-500">
+            Num setor em que o cliente costuma descobrir o atraso por último,
+            cada operação aqui tem responsável e retorno.
+          </p>
+          <hr class="w-full border-t border-gray-200" />
+          <p class="text-base leading-relaxed text-gray-900">
+            Se atrasar, você fica sabendo antes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="servicos" class="flex w-full flex-col">
+    <div class="container flex flex-col items-center gap-10 py-16">
+      <div
+        class="flex max-w-149 flex-col items-center justify-center gap-2 text-center text-balance"
+      >
+        <Eyebrown>SERVIÇOS</Eyebrown>
+        <Heading>Uma operação completa para mover seu negócio</Heading>
+      </div>
+      <div
+        class="flex w-full flex-col items-center gap-4 rounded-lg bg-gray-50 p-4 lg:gap-6 lg:p-6"
+      >
+        <div
+          class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6 xl:grid-cols-3"
+        >
+          {
+            services.map(service => (
+              <div
+                class:list={[
+                  "flex flex-col items-start gap-3 rounded-lg border border-[#e6e3e3] bg-white p-4 sm:order-none lg:p-6",
+                  service.mobileOrder,
+                ]}
+              >
+                <div class="flex items-center justify-center rounded bg-[#af3741]/10 p-3">
+                  <SunIcon
+                    name={service.icon}
+                    width={32}
+                    height={32}
+                    class="text-[#af3741]"
+                  />
+                </div>
+                <p class="text-2xl font-medium text-[#1f1e1e]">
+                  {service.title}
+                </p>
+                <p class="text-base leading-relaxed text-[#6f6a6a]">
+                  {service.description}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+        <Button
+          as="a"
+          href="#contato"
+          variant="primary"
+          icon="arrow-up-right"
+          class="w-full text-base sm:w-fit"
+        >
+          Montar minha operação
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <section id="prazos" class="flex w-full flex-col bg-gray-50">
+    <div class="container flex flex-col items-start gap-6 py-16 xl:flex-row">
+      <div class="flex flex-1 flex-col gap-6">
+        <div class="flex flex-col gap-4 text-center text-balance xl:text-left">
+          <div class="flex flex-col gap-2">
+            <Eyebrown>COBERTURA E PRAZOS</Eyebrown>
+            <Heading>
+              De São Paulo ao Espírito Santo, com prazo declarado.
+            </Heading>
+          </div>
+          <p class="text-base leading-relaxed text-[#5c5852]">
+            A Transportugal atende a Grande São Paulo, Campinas, Sorocaba e todo
+            o estado do Espírito Santo, capital e interior.
+          </p>
+        </div>
+        <MapBrazil />
+      </div>
+
+      <RouteCalculator client:visible destinations={ALLOWED_LOCATIONS}>
+        <SunIcon
+          slot="pinIcon"
+          name="route-pin"
+          width={32}
+          height={32}
+          class="text-[#af3741]"
+        />
+        <SunIcon
+          slot="clockIcon"
+          name="clock"
+          width={32}
+          height={32}
+          class="text-[#af3741]"
+        />
+        <SunIcon
+          slot="checkIcon"
+          name="check"
+          width={20}
+          height={20}
+          class="text-[#34c759]"
+        />
+        <SunIcon
+          slot="closeIcon"
+          name="close"
+          width={20}
+          height={20}
+          class="text-[#af3741]"
+        />
+        <Button
+          as="a"
+          href="#contato"
+          variant="primary"
+          icon="arrow-up-right"
+          class="text-base"
+          slot="cta"
+        >
+          Consultar valores
+        </Button>
+      </RouteCalculator>
+    </div>
+  </section>
+
+  <section id="seguro-de-carga" class="flex w-full flex-col bg-gray-900">
+    <div class="container flex flex-col items-center gap-8 px-4 py-14 xl:py-20">
+      <div
+        class="flex max-w-149 flex-col items-center gap-4 text-center text-balance"
+      >
+        <div class="flex flex-col gap-2">
+          <Eyebrown> SEGURO DE CARGA </Eyebrown>
+          <Heading variant="dark">
+            Sua carga sai segurada.<br />E a apólice está aqui.
+          </Heading>
+        </div>
+        <p class="text-base leading-relaxed text-gray-300">
+          Toda mercadoria transportada pela Transportugal é coberta por apólice
+          da Sura Seguros, com limite de R$ 500 mil na cobertura básica.
+        </p>
+      </div>
+
+      <div
+        class="grid w-full max-w-[1009px] grid-cols-1 items-start gap-6 xl:grid-cols-2"
+      >
+        {
+          insurances.map(insurance => (
+            <div class="flex flex-col gap-2 rounded-lg bg-[#2c2a2a] p-6 xl:h-full">
+              <p class="text-base tracking-[1.6px] text-[#e0636e]">
+                {insurance.label}
+              </p>
+              <p class="text-2xl font-medium text-white">{insurance.title}</p>
+              <p class="text-base leading-relaxed text-[#b6b1b1]">
+                {insurance.description}
+              </p>
+            </div>
+          ))
+        }
+        <div
+          class="flex flex-col items-start gap-6 rounded-lg bg-white p-6 xl:col-span-2 xl:flex-row xl:items-center"
+        >
+          <div class="flex flex-1 flex-col gap-2 text-base">
+            <p class="tracking-[1.6px] text-[#af3741]">NA PRÁTICA</p>
+            <p class="leading-relaxed text-[#1f1e1e]">
+              Se a sua carga for danificada ou desaparecer no caminho, existe
+              apólice, número e seguradora para acionar. A cobertura não depende
+              da boa vontade da transportadora, está contratada.
+            </p>
+          </div>
+          <div
+            class="flex w-full flex-col border-t border-[#d9d5d5] pt-6 text-base text-[#6f6a6a] xl:w-fit xl:border-t-0 xl:border-l xl:pt-0 xl:pl-8"
+          >
+            <p>Apólice nº 5400043065</p>
+            <p>Sura Seguros</p>
+            <p>Vigente até 30 de abril de 2027</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="diferencial">
+    <div
+      class="container flex flex-col items-start gap-6 py-14 xl:grid xl:grid-cols-2 xl:grid-rows-2 xl:flex-row xl:gap-10 xl:gap-y-6 xl:py-20"
+    >
+      <div
+        class="flex flex-1 flex-col gap-6 text-center text-balance xl:col-start-1 xl:text-left"
+      >
+        <div class="flex flex-col gap-2">
+          <Eyebrown>Nosso diferencial</Eyebrown>
+          <Heading>Confiança não se promete.<br />Se entrega.</Heading>
+        </div>
+        <p class="text-base leading-relaxed text-pretty text-[#6f6a6a]">
+          No nosso ramo, a confiança é o que sustenta tudo. Tratamos cada
+          operação com verdade e transparência. Sem desculpas.
+        </p>
+      </div>
+      <div class="flex flex-1 flex-col gap-2 xl:col-start-2 xl:row-span-2">
+        {
+          differentiators.map(item => (
+            <div class="flex flex-col gap-y-1.5 rounded-lg bg-[#f7f6f5] p-6 xl:flex-row xl:gap-x-6 xl:gap-y-0">
+              <div class="flex size-14 items-center justify-center rounded bg-[#af3741]/10 p-3">
+                <SunIcon
+                  name={item.icon}
+                  width={32}
+                  height={32}
+                  class="text-[#af3741]"
+                />
+              </div>
+              <div class="flex flex-1 flex-col gap-2">
+                <p class="text-2xl font-medium text-[#1f1e1e]">{item.title}</p>
+                <p class="text-base leading-relaxed text-[#6f6a6a]">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <Button
+        as="a"
+        href="#contato"
+        variant="primary"
+        class="mt-4 w-full self-start text-base sm:mx-auto sm:w-fit xl:col-start-1 xl:mx-[unset] xl:mt-0"
+      >
+        Entrar em contato
+      </Button>
+    </div>
+  </section>
+
+  <section class="bg-gray-50" id="qualidade">
+    <div
+      class="container flex flex-col items-start gap-6 py-16 xl:flex-row xl:justify-between"
+    >
+      <div class="flex w-full max-w-[389px] flex-col gap-6 self-center">
+        <div class="flex flex-col gap-2 text-center text-balance xl:text-left">
+          <Eyebrown>GESTÃO DA QUALIDADE</Eyebrown>
+          <Heading>O que analisamos mensalmente</Heading>
+        </div>
+        <p
+          class="text-center text-base leading-relaxed text-balance text-[#6f6a6a] xl:text-left"
+        >
+          Medir é o primeiro passo para melhorar. O segundo é contar o resultado
+          para quem pagou pelo serviço.
+        </p>
+      </div>
+      <div
+        class="flex w-full max-w-fit flex-wrap items-start justify-between xl:grid xl:grid-cols-2 xl:gap-x-6"
+      >
+        {
+          qualityIndicators.map(item => (
+            <div class="flex w-full items-center gap-3 border-t border-[#d9d5d5] py-4 last:border-b xl:nth-[5]:border-b">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+                fill="none"
+              >
+                <path
+                  opacity="0.99"
+                  d="M13.7507 21.4585C13.5754 21.4586 13.4018 21.4242 13.2398 21.3572C13.0778 21.2901 12.9307 21.1918 12.8067 21.0678L9.05739 17.3172C8.81451 17.0657 8.68012 16.7289 8.68316 16.3793C8.68619 16.0297 8.82642 15.6953 9.07363 15.4481C9.32084 15.2009 9.65526 15.0606 10.0049 15.0576C10.3544 15.0546 10.6913 15.1889 10.9427 15.4318L13.7494 18.2398L21.0574 10.9332C21.3098 10.6961 21.6446 10.5666 21.9908 10.5719C22.3371 10.5773 22.6676 10.7172 22.9126 10.962C23.1575 11.2067 23.2977 11.5372 23.3033 11.8835C23.3089 12.2297 23.1796 12.5646 22.9427 12.8172L14.6921 21.0678C14.4421 21.3179 14.1043 21.4584 13.7507 21.4585Z"
+                  fill="#1F1E1E"
+                />
+                <path
+                  opacity="0.25"
+                  d="M16 2.6665C13.3629 2.6665 10.785 3.44849 8.59236 4.91358C6.39971 6.37866 4.69074 8.46104 3.68157 10.8974C2.6724 13.3337 2.40836 16.0146 2.92283 18.601C3.4373 21.1875 4.70717 23.5632 6.57188 25.4279C8.43658 27.2926 10.8123 28.5625 13.3988 29.077C15.9852 29.5914 18.6661 29.3274 21.1024 28.3182C23.5388 27.3091 25.6211 25.6001 27.0862 23.4074C28.5513 21.2148 29.3333 18.6369 29.3333 15.9998C29.3298 12.4647 27.9239 9.07537 25.4242 6.57565C22.9244 4.07593 19.5351 2.67003 16 2.6665ZM22.9426 12.8172L14.692 21.0678C14.4419 21.3178 14.1029 21.4582 13.7493 21.4582C13.3957 21.4582 13.0567 21.3178 12.8066 21.0678L9.0573 17.3172C8.81442 17.0657 8.68003 16.7289 8.68307 16.3793C8.6861 16.0297 8.82633 15.6953 9.07354 15.4481C9.32075 15.2009 9.65517 15.0606 10.0048 15.0576C10.3544 15.0546 10.6912 15.189 10.9426 15.4318L13.7493 18.2398L21.0573 10.9332C21.3097 10.6961 21.6445 10.5666 21.9907 10.572C22.337 10.5773 22.6676 10.7172 22.9125 10.962C23.1575 11.2068 23.2976 11.5372 23.3032 11.8835C23.3088 12.2297 23.1795 12.5646 22.9426 12.8172Z"
+                  fill="#34C759"
+                />
+              </svg>
+              <p class="flex-1 text-base leading-relaxed text-gray-900">
+                {item}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="flex w-full flex-col bg-white">
+    <div class="flex flex-col items-center gap-8 py-16">
+      <div class="container flex flex-col items-center gap-2 text-center">
+        <Eyebrown>SEGMENTOS ATENDIDOS</Eyebrown>
+        <Heading>Quem já confia a carga à Transportugal.</Heading>
+      </div>
+      <div class="flex w-full flex-col gap-4">
+        <SunCarousel
+          client:load
+          ariaLabel="Segmentos atendidos"
+          className="gap-4"
+        >
+          {
+            segments.map(segment => (
+              <div class="max-w-fit rounded-full border border-[#d9d5d5] px-[18px] py-[11px]">
+                <p class="text-base whitespace-nowrap text-[#1f1e1e]">
+                  {segment}
+                </p>
+              </div>
+            ))
+          }
+        </SunCarousel>
+        <SunCarousel
+          client:load
+          ariaLabel="Logos de clientes"
+          className="gap-4"
+          direction="left-to-right"
+        >
+          {
+            Array.from({ length: 10 }).map(() => (
+              <div class="flex h-14 w-[191px] shrink-0 items-center justify-center rounded-lg border border-dashed border-[#d6d1ca] bg-[#faf9f7]">
+                <p class="text-[8px] font-bold tracking-[0.96px] text-[#b8b2a9]">
+                  LOGO
+                </p>
+              </div>
+            ))
+          }
+        </SunCarousel>
+      </div>
+    </div>
+  </section>
+
+  <section class="flex w-full flex-col bg-[#1f1e1e]">
+    <div
+      class="container flex flex-col items-start gap-6 py-14 lg:flex-row xl:py-20"
+    >
+      <div
+        class="flex flex-1 flex-col justify-center gap-6 text-center text-balance xl:text-left"
+      >
+        <div class="flex flex-col gap-2">
+          <p class="text-base tracking-[3.2px] text-[#af3741]">
+            PARA TRANSPORTADORAS PARCEIRAS
+          </p>
+          <h2
+            class="text-2xl leading-tight font-medium tracking-[-0.72px] text-white lg:text-[40px] lg:tracking-[-1.2px]"
+          >
+            Sua transportadora não tem filial em São Paulo ou no Espírito Santo?
+          </h2>
+        </div>
+        <div class="flex flex-col gap-4 text-base text-[#b6b1b1]">
+          <p class="leading-relaxed">
+            A Transportugal funciona como armazém logístico e ponto de apoio
+            para outras transportadoras. Recebemos, armazenamos e distribuímos a
+            carga da sua empresa nas duas pontas, sem que você precise abrir uma
+            unidade.
+          </p>
+          <p class="leading-relaxed font-semibold">
+            Você mantém o cliente e o contrato. A gente resolve a operação em
+            campo.
+          </p>
+        </div>
+        <Button
+          as="a"
+          href="#contato"
+          variant="light"
+          icon="arrow-up-right"
+          class="w-full lg:w-auto lg:self-start lg:text-xl"
+        >
+          Quero ser parceiro
+        </Button>
+      </div>
+      <div class="flex flex-1 items-center justify-center self-stretch">
+        <div
+          class="relative h-[300px] w-full overflow-hidden rounded-lg lg:h-[477px] lg:w-[596px]"
+        >
+          <div class="absolute inset-0 bg-[#2c2a2a]"></div>
+          <SunPicture
+            src={PARTNERS_SRC}
+            alt="Equipe Transportugal"
+            width={596}
+            height={477}
+            quality={85}
+            densities={[1, 1.5, 2]}
+            wrapperClass="size-full"
+            class="size-full object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contato" class="flex w-full flex-col bg-gray-50">
+    <div
+      class="container flex flex-col items-center gap-6 px-4 py-14 xl:px-8 xl:py-20"
+    >
+      <div
+        class="flex flex-col text-center text-2xl leading-tight font-medium tracking-[-0.72px] text-gray-900 lg:text-[40px] lg:tracking-[-1.2px]"
+      >
+        <p>Sua carga em boas mãos,</p>
+        <p class="text-red">da coleta à entrega.</p>
+      </div>
+      <p
+        class="max-w-[390px] text-center text-base leading-relaxed text-pretty text-gray-500"
+      >
+        Fale com nosso time comercial e receba uma cotação sob medida para a sua
+        rota.
+      </p>
+      <div class="flex flex-col items-center gap-4">
+        <Button
+          as="a"
+          href={`https://wa.me/${siteConfig.whatsapp}`}
+          variant="primary"
+          class="text-base"
+        >
+          Solicitar cotação
+        </Button>
+        <p class="text-center text-base text-gray-500">
+          Prefere e-mail?{" "}
+          <a href={`mailto:${siteConfig.email}`} class="text-red underline">
+            {siteConfig.email}
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

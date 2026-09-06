@@ -1,0 +1,60 @@
+---
+import "../styles/global.css"
+
+import { Font } from "astro:assets"
+import { ENABLE_PARTYTOWN } from "astro:env/server"
+import {
+  PUBLIC_GOOGLE_ANALYTICS_ID as googleAnalyticsId,
+  PUBLIC_GOOGLE_ADS_CONVERSION_ID as conversionId,
+  PUBLIC_GOOGLE_ADS_CONVERSION_LABEL as conversionLabel,
+} from "astro:env/client"
+import type { HTMLAttributes } from "astro/types"
+
+import {
+  SunAnimateOnScroll as AnimateOnScroll,
+  SunLayout as Layout,
+} from "@vandal-websites/sun-ui/astro"
+import Navigation from "@components/Navigation.astro"
+import TheFooter from "@components/TheFooter.astro"
+import { siteConfig } from "@/data/site"
+
+type Props = {
+  title: string
+  description?: string
+  image?: string
+  url: URL
+  schema?: Record<string, unknown>
+  links?: HTMLAttributes<"link">[]
+}
+
+const {
+  title,
+  description = siteConfig.description,
+  schema,
+  links,
+  url,
+  image = siteConfig.defaultSocialImage,
+} = Astro.props
+---
+
+<Layout
+  title={title}
+  description={description}
+  image={image}
+  url={url}
+  schema={schema}
+  links={links}
+  themeColor="#1f1e1e"
+  gtag={{
+    gtagId: googleAnalyticsId,
+    conversionId,
+    conversionLabel,
+    partytown: ENABLE_PARTYTOWN,
+  }}
+>
+  <Font cssVariable="--font-lexend" preload slot="close-head" />
+  <Navigation />
+  <slot />
+  <TheFooter />
+  <AnimateOnScroll slot="close-body" />
+</Layout>

@@ -9,9 +9,22 @@ const RESUME_DELAY_MS = 500,
   shouldDisableSnap = (containerWidth: number, contentWidth: number): boolean =>
     containerWidth >= contentWidth
 
+const getRequiredCloneCycles = (
+  viewportWidth: number,
+  scrollWidth: number,
+  loopWidth: number
+): number =>
+  loopWidth > 0
+    ? Math.max(
+        0,
+        Math.ceil((viewportWidth + loopWidth - scrollWidth) / loopWidth)
+      )
+    : 0
+
 export {
   RESUME_DELAY_MS,
   wrapLoopPosition,
   getKeyboardScrollDelta,
   shouldDisableSnap,
+  getRequiredCloneCycles,
 }

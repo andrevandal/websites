@@ -1,15 +1,13 @@
 layer: "application"
 language: "astro"
+tags:
+  - "cloudflare"
 
 project:
   title: "clinicamauricioaraujo.com.br"
   description: "Website for Clinica Mauricio Araujo."
 
 tasks:
-  typegen:
-    command: wrangler types
-    preset: server
-
   astro:
     command: astro
 
@@ -36,6 +34,7 @@ tasks:
       - "@globs(sources)"
       - "@globs(public)"
       - "@globs(typescript)"
+      - "/packages/sun-ui/src/**/*"
       - "./astro.config.js"
       - "$SITE_URL"
       - "$ENABLE_PARTYTOWN"

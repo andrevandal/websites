@@ -48,6 +48,7 @@ const attrs = !isFuild
 
 <RawIcon
   name={name}
+  is:inline
   {...attrs}
   class={cn(
     "icon",
@@ -63,7 +64,7 @@ const attrs = !isFuild
   @reference "tailwindcss";
 
   .icon {
-    @apply aspect-square shrink-0 fill-current;
+    @apply aspect-square shrink-0;
 
     &.fluid {
       @apply aspect-auto size-[inherit];

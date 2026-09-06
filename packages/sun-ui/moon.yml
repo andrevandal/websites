@@ -13,6 +13,7 @@ tasks:
     command: astro check
     inputs:
       - "src/**/*.astro"
+      - "src/**/*.svelte"
       - "src/**/*.ts"
       - "tsconfig.json"
       - "/tsconfig.json"
@@ -24,6 +25,7 @@ tasks:
     inputs:
       - "src/**/*.ts"
       - "src/**/*.astro"
+      - "src/**/*.svelte"
       - "tsconfig.json"
       - "tsdown.config.ts"
       - "/tsconfig.json"

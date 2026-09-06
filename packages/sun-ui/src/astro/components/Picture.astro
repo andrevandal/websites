@@ -46,12 +46,15 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
 ---
 
 <div
-  class={cn("sun-picture", wrapperClass)}
+  class={cn("relative block overflow-hidden", wrapperClass)}
   data-sun-picture-placeholder={placeholderUrl ? "" : undefined}
   data-sun-picture-placeholder-mode={placeholderModeAttribute}
-  style={placeholderUrl
-    ? { "--sun-picture-placeholder-url": `url("${placeholderUrl}")` }
-    : undefined}
+  style={{
+    ...(placeholderUrl
+      ? { "--sun-picture-placeholder-url": `url("${placeholderUrl}")` }
+      : undefined),
+    "--ratio": [width, height].join("/"),
+  }}
 >
   {
     responsiveWidths ? (
@@ -67,7 +70,7 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
         sizes={sizes}
         loading={loading}
         decoding={decoding}
-        class={cn("sun-picture__image", className)}
+        class={cn("aspect-(--ratio)", className)}
         {...rest}
       />
     ) : (
@@ -82,7 +85,7 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
         densities={densities}
         loading={loading}
         decoding={decoding}
-        class={cn("sun-picture__image", className)}
+        class={cn("aspect-[--ratio]", className)}
         {...rest}
       />
     )

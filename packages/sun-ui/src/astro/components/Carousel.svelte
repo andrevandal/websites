@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { onMount, type Snippet } from "svelte"
+  import { onMount } from "svelte"
+  import type { Snippet } from "svelte"
   import type { CarouselProps } from "./Carousel.props.ts"
   import { cn } from "../../index"
   import {
@@ -7,11 +8,13 @@
     wrapLoopPosition,
     getKeyboardScrollDelta,
     shouldDisableSnap,
+    getRequiredCloneCycles,
   } from "./Carousel.svelte.utils.ts"
 
   type Props = CarouselProps & { children?: Snippet }
 
   let {
+    ariaLabel = "Carousel",
     className = "",
     autoScroll = true,
     direction = "right-to-left",
@@ -46,6 +49,7 @@
   let lastTime: number | undefined
   let rafId: number | undefined
   let resumeTimer: ReturnType<typeof setTimeout> | undefined
+  // eslint-disable-next-line svelte/prefer-svelte-reactivity
   const pauseReasons = new Set<string>()
 
   let firstOriginal: HTMLElement | undefined
@@ -97,8 +101,9 @@
   const stopDrag = () => {
     if (!isDown) return
     isDown = false
-    if (snapEnabled && !autoScroll)
+    if (snapEnabled)
       (trackEl as HTMLElement).style.scrollSnapType = "x mandatory"
+    scheduleResume("pointer")
   }
 
   const onTrackMouseMove = (event: MouseEvent) => {
@@ -169,47 +174,59 @@
     }
 
     if (autoScroll && track.children.length > 0) {
-      track.style.scrollSnapType = "none"
-
       const originalSlides = [...track.children] as HTMLElement[]
-      originalSlides.forEach(slide => {
-        // Infinite loop needs a perfectly uniform, periodic layout: strip
-        // the edge-only breathing margins (first/last child) so the
-        // cloned set lines up exactly with the original set.
-        slide.style.marginLeft = "0px"
-        slide.style.marginRight = "0px"
-        const clone = slide.cloneNode(true) as HTMLElement
-        clone.setAttribute("aria-hidden", "true")
-        clone.setAttribute("inert", "")
-        track.append(clone)
-      })
+      const appendCloneCycle = () => {
+        originalSlides.forEach(slide => {
+          // Infinite loop needs a perfectly uniform, periodic layout: strip
+          // the edge-only breathing margins (first/last child) so the
+          // cloned set lines up exactly with the original set.
+          slide.style.marginLeft = "0px"
+          slide.style.marginRight = "0px"
+          const clone = slide.cloneNode(true) as HTMLElement
+          clone.setAttribute("aria-hidden", "true")
+          clone.setAttribute("inert", "")
+          track.append(clone)
+        })
+      }
+
+      appendCloneCycle()
       firstOriginal = originalSlides[0]
       firstClone = track.children[originalSlides.length] as HTMLElement
+      const getLoopWidth = () =>
+        (firstClone as HTMLElement).offsetLeft -
+        (firstOriginal as HTMLElement).offsetLeft
+
+      const ensureLoopIsReachable = () => {
+        const cloneCycles = getRequiredCloneCycles(
+          track.clientWidth,
+          track.scrollWidth,
+          getLoopWidth()
+        )
+        for (let index = 0; index < cloneCycles; index++) appendCloneCycle()
+      }
+
+      ensureLoopIsReachable()
+      resizeObserver = new ResizeObserver(ensureLoopIsReachable)
+      resizeObserver.observe(container)
+
       const directionSign = direction === "left-to-right" ? -1 : 1
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
       ).matches
 
       pos = track.scrollLeft
-
-      const getLoopWidth = () =>
-        (firstClone as HTMLElement).offsetLeft -
-        (firstOriginal as HTMLElement).offsetLeft
-
       const step = (time: number) => {
         if (lastTime === undefined) lastTime = time
         const dt = (time - lastTime) / 1000
         lastTime = time
-        pos = wrapLoopPosition(
-          pos + directionSign * speed * dt,
-          getLoopWidth()
-        )
+        pos = wrapLoopPosition(pos + directionSign * speed * dt, getLoopWidth())
         track.scrollLeft = pos
         rafId = requestAnimationFrame(step)
       }
 
       startAutoScroll = () => {
         if (rafId !== undefined || reduceMotion) return
+        track.style.scrollSnapType = "none"
         pos = track.scrollLeft
         lastTime = undefined
         rafId = requestAnimationFrame(step)
@@ -219,6 +236,7 @@
         if (rafId === undefined) return
         cancelAnimationFrame(rafId)
         rafId = undefined
+        track.style.scrollSnapType = "x mandatory"
       }
 
       startAutoScroll()
@@ -245,12 +263,18 @@
   })
 </script>
 
-<!-- svelte-ignore a11y_no_static_element_interactions -- hover only pauses/resumes the decorative autoscroll; it gates no content or functionality, so no interactive role/keyboard equivalent is required. -->
-<div bind:this={containerEl} onmouseenter={() => pause("hover")} onmouseleave={() => scheduleResume("hover")}>
-  <!-- svelte-ignore a11y_no_static_element_interactions -- custom drag-to-scroll region; no single ARIA widget role fits a horizontally draggable strip of externally-supplied children, and it already exposes an equivalent keyboard interaction below. -->
-  <!-- svelte-ignore a11y_no_noninteractive_tabindex -- tabindex is required so onkeydown can drive keyboard scrolling (see getKeyboardScrollDelta), the deliberate keyboard equivalent to mouse drag. -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+  bind:this={containerEl}
+  class="w-full overflow-hidden"
+  onmouseenter={() => pause("hover")}
+  onmouseleave={() => scheduleResume("hover")}
+>
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
     bind:this={trackEl}
+    aria-label={ariaLabel}
+    role="region"
     tabindex="0"
     class={trackClass}
     onmousedown={onTrackMouseDown}

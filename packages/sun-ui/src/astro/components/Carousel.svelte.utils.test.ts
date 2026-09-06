@@ -3,6 +3,7 @@ import {
   wrapLoopPosition,
   getKeyboardScrollDelta,
   shouldDisableSnap,
+  getRequiredCloneCycles,
 } from "./Carousel.svelte.utils"
 
 describe("wrapLoopPosition", () => {
@@ -48,5 +49,19 @@ describe("shouldDisableSnap", () => {
 
   it("keeps snap enabled when content overflows the container", () => {
     expect(shouldDisableSnap(600, 800)).toBe(false)
+  })
+})
+
+describe("getRequiredCloneCycles", () => {
+  it("adds a cycle when the viewport leaves less than one loop-width scrollable", () => {
+    expect(getRequiredCloneCycles(1425, 2488, 1256)).toBe(1)
+  })
+
+  it("adds no cycles when one loop-width is already reachable", () => {
+    expect(getRequiredCloneCycles(1425, 3744, 1256)).toBe(0)
+  })
+
+  it("returns zero for a zero-width loop", () => {
+    expect(getRequiredCloneCycles(1425, 2488, 0)).toBe(0)
   })
 })

@@ -121,5 +121,22 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // Pre-bundle deps that were being discovered mid-request in the "ssr"
+    // (workerd) environment. Late discovery triggers a Vite optimizer
+    // reload while a request is in flight; the Cloudflare runner can then
+    // reference an already-invalidated `.vite/deps_ssr` chunk and crash
+    // with "The file does not exist at ... deps_ssr/*.js". Listing them
+    // here gets them into the first scan pass instead.
+    // See @astrojs/cloudflare/dist/index.js configEnvironment(), which
+    // merges this array into the "ssr" environment's optimizeDeps.include.
+    optimizeDeps: {
+      include: [
+        "astro/app/manifest",
+        "astro/assets/services/noop",
+        "@astrojs/svelte/server.js",
+        "astro-iconset/components",
+        "@astro-community/astro-embed-youtube",
+      ],
+    },
   },
 })

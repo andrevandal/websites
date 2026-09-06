@@ -15,7 +15,10 @@
     "./astro-image-service": "./dist/astro-image-service.mjs",
     "./astro-integration": "./dist/astro-integration.mjs",
     "./config": "./dist/config.mjs",
-    "./svelte": "./dist/svelte/index.mjs",
+    "./svelte": {
+      "types": "./dist/svelte/index.d.mts",
+      "default": "./dist/svelte/index.mjs"
+    },
     "./package.json": "./package.json",
     "./astro/layouts/*": "./dist/astro/layouts/*.astro",
     "./astro/components/*": "./dist/astro/components/*.astro"
@@ -23,6 +26,7 @@
   "dependencies": {
     "@astrojs/svelte": "catalog:svelte",
     "astro-iconset": "catalog:astro",
+    "bits-ui": "catalog:svelte",
     "cnfast": "catalog:tailwind",
     "svelte": "catalog:svelte",
     "tailwindcss": "catalog:tailwind"
@@ -31,6 +35,8 @@
     "@astro-community/astro-embed-youtube": "catalog:astro",
     "@astrojs/check": "catalog:astro",
     "@astrojs/ts-plugin": "catalog:astro",
+    "@testing-library/svelte": "catalog:testing",
+    "@testing-library/user-event": "catalog:testing",
     "@types/bun": "catalog:types",
     "@types/node": "catalog:types",
     "astro": "catalog:astro",

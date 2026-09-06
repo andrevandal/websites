@@ -1,0 +1,28 @@
+{
+  "name": "@websites/transportugal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@astrojs/check": "catalog:astro",
+    "@astrojs/cloudflare": "catalog:astro",
+    "@astrojs/partytown": "catalog:astro",
+    "@astrojs/sitemap": "catalog:astro",
+    "@astrojs/ts-plugin": "catalog:astro",
+    "@vandal-websites/sun-ui": "workspace:*",
+    "@tailwindcss/vite": "catalog:tailwind",
+    "astro": "catalog:astro",
+    "astro-iconset": "catalog:astro",
+    "fuse.js": "catalog:utils",
+    "tailwindcss": "catalog:tailwind",
+    "typescript": "catalog:typescript",
+    "valibot": "catalog:utils"
+  },
+  "devDependencies": {
+    "@astrojs/svelte": "catalog:svelte",
+    "cnfast": "catalog:tailwind",
+    "svelte": "catalog:svelte",
+    "vite": "catalog:vite",
+    "wrangler": "catalog:tools"
+  }
+}

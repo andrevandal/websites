@@ -1,0 +1,284 @@
+---
+import desktopMap from "../assets/map-brazil-desktop.svg?raw"
+import desktopGlow from "../assets/map-brazil-desktop-sp-glow.svg?raw"
+import desktopTrace from "../assets/map-brazil-desktop-route-trace.svg?raw"
+import mobileMap from "../assets/map-brazil-mobile.svg?raw"
+import mobileGlow from "../assets/map-brazil-mobile-sp-glow.svg?raw"
+import mobileTrace from "../assets/map-brazil-mobile-route-trace.svg?raw"
+
+const label = "Mapa da rota de São Paulo ao Espírito Santo"
+
+const firstTagClass = (svg: string, className: string) =>
+  svg.replace(/<(g|path)(?=[\s>])/, `<$1 class="${className}"`)
+
+const svgContents = (svg: string) =>
+  svg.replace(/^<svg\b[^>]*>/, "").replace(/<\/svg>\s*$/, "")
+
+const composeMap = (
+  map: string,
+  glow: string,
+  trace: string,
+  dimensions: {
+    glow: [number, number, number, number]
+    trace: [number, number, number, number]
+    spId: string
+    routeId: string
+  }
+) => {
+  const glowMarkup = firstTagClass(svgContents(glow), "map-sp-glow").replace(
+    /<path(?=[\s>])/,
+    '<path class="map-sp-glow-path"'
+  )
+  const traceMarkup = firstTagClass(svgContents(trace), "map-route-trace")
+  const [glowX, glowY, glowWidth, glowHeight] = dimensions.glow
+  const [traceX, traceY, traceWidth, traceHeight] = dimensions.trace
+  const glowFrame = `<svg class="map-sp-glow-frame" x="${glowX}" y="${glowY}" width="${glowWidth}" height="${glowHeight}" viewBox="0 0 ${glowWidth} ${glowHeight}" overflow="visible" aria-hidden="true">${glowMarkup}</svg>`
+  const traceFrame = `<svg class="map-route-trace-frame" x="${traceX}" y="${traceY}" width="${traceWidth}" height="${traceHeight}" viewBox="0 0 ${traceWidth} ${traceHeight}" overflow="visible" aria-hidden="true">${traceMarkup}</svg>`
+  return map
+    .replace("<svg ", `<svg class="map-root" role="img" aria-label="${label}" `)
+    .replace(
+      new RegExp(`(<path[^>]*id="${dimensions.spId}"[^>]*/>)`),
+      `$1${glowFrame}`
+    )
+    .replace(
+      new RegExp(`(<path[^>]*id="${dimensions.routeId}"[^>]*/>)`),
+      `$1${traceFrame}`
+    )
+}
+
+const desktopMarkup = composeMap(desktopMap, desktopGlow, desktopTrace, {
+  glow: [17.97, 88.9795, 369.51, 272.949],
+  trace: [215, 137, 239.071, 107.168],
+  spId: "desktop-BR-SP",
+  routeId: "desktop-Vector 1",
+})
+const mobileMarkup = composeMap(mobileMap, mobileGlow, mobileTrace, {
+  glow: [11.2254, 54.777, 230.824, 170.505],
+  trace: [134.35, 84.87, 148.742, 65.1406],
+  spId: "mobile-BR-SP",
+  routeId: "mobile-Vector 1",
+})
+---
+
+<div class="map-brazil">
+  <div class="block w-full xl:hidden" set:html={mobileMarkup} />
+  <div class="hidden xl:block xl:w-[596px]" set:html={desktopMarkup} />
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>(".map-brazil").forEach(el => {
+    const observer = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          entry.target.classList.toggle("is-visible", entry.isIntersecting)
+        }
+      },
+      { threshold: 0 }
+    )
+    observer.observe(el)
+  })
+</script>
+
+<style>
+  :global(.map-root) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  :global(.map-sp-glow) {
+    transform-box: view-box;
+    transform-origin: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.map-sp-glow) {
+      animation:
+        kf_8991_411_translate_0 5s linear infinite alternate,
+        kf_8991_411_scale_0 5s linear infinite alternate;
+    }
+
+    :global(.map-sp-glow-path) {
+      animation: kf_8991_411_filter_effect_0_0 5s linear infinite alternate;
+    }
+
+    :global(.map-route-trace) {
+      animation: kf_8991_414_path_trim_0 5s linear infinite alternate;
+    }
+
+    @media (max-width: 1023px) {
+      :global(.map-sp-glow) {
+        animation:
+          kf_8902_247_translate_0 5s linear infinite alternate,
+          kf_8902_247_scale_0 5s linear infinite alternate;
+      }
+
+      :global(.map-sp-glow-path) {
+        animation: kf_8902_247_filter_effect_0_0 5s linear infinite alternate;
+      }
+
+      :global(.map-route-trace) {
+        animation: kf_8902_250_path_trim_0 5s linear infinite alternate;
+      }
+    }
+  }
+
+  :global(.map-brazil:not(.is-visible) .map-sp-glow),
+  :global(.map-brazil:not(.is-visible) .map-sp-glow-path),
+  :global(.map-brazil:not(.is-visible) .map-route-trace) {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.map-sp-glow),
+    :global(.map-sp-glow-path),
+    :global(.map-route-trace) {
+      animation: none;
+    }
+
+    :global(.map-sp-glow) {
+      translate: 0.03px 0.021px;
+      scale: 1 1;
+    }
+
+    :global(.map-sp-glow-path) {
+      filter: blur(0px);
+    }
+
+    :global(.map-route-trace) {
+      visibility: hidden;
+    }
+
+    @media (max-width: 1023px) {
+      :global(.map-sp-glow) {
+        translate: 0.019px 0.013px;
+      }
+    }
+  }
+
+  @keyframes kf_8991_411_filter_effect_0_0 {
+    0%,
+    35.508% {
+      filter: blur(100px);
+    }
+    35.508% {
+      animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
+    }
+    74.32%,
+    100% {
+      filter: blur(0px);
+    }
+  }
+
+  @keyframes kf_8991_411_translate_0 {
+    0%,
+    35.508% {
+      translate: 12.413px 15.27px;
+    }
+    51.02% {
+      translate: 12.347px 15.199px;
+    }
+    65.188%,
+    100% {
+      translate: 0.03px 0.021px;
+    }
+  }
+
+  @keyframes kf_8991_411_scale_0 {
+    0%,
+    35.508% {
+      scale: 0.05 0.05;
+    }
+    35.508% {
+      animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
+    }
+    65.188%,
+    100% {
+      scale: 1 1;
+    }
+  }
+
+  @keyframes kf_8991_414_path_trim_0 {
+    0% {
+      animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
+      stroke-dasharray: 0 1;
+      stroke-dashoffset: -1;
+      visibility: hidden;
+    }
+    18.819% {
+      animation-timing-function: cubic-bezier(0.256, 0.48, 0.491, 1);
+      stroke-dasharray: 0.5476 1;
+      stroke-dashoffset: -0.02;
+      visibility: visible;
+    }
+    40%,
+    100% {
+      stroke-dasharray: 0 1;
+      stroke-dashoffset: -0.02;
+      visibility: hidden;
+    }
+  }
+
+  @keyframes kf_8902_250_path_trim_0 {
+    0% {
+      animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
+      stroke-dasharray: 0 1;
+      stroke-dashoffset: -1;
+      visibility: hidden;
+    }
+    18.819% {
+      animation-timing-function: cubic-bezier(0.256, 0.48, 0.491, 1);
+      stroke-dasharray: 0.5476 1;
+      stroke-dashoffset: -0.02;
+      visibility: visible;
+    }
+    40%,
+    100% {
+      stroke-dasharray: 0 1;
+      stroke-dashoffset: -0.02;
+      visibility: hidden;
+    }
+  }
+
+  @keyframes kf_8902_247_filter_effect_0_0 {
+    0%,
+    35.508% {
+      filter: blur(100px);
+    }
+    35.508% {
+      animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
+    }
+    74.32%,
+    100% {
+      filter: blur(0px);
+    }
+  }
+
+  @keyframes kf_8902_247_translate_0 {
+    0%,
+    35.508% {
+      translate: 7.754px 9.539px;
+    }
+    51.02% {
+      translate: 7.713px 9.495px;
+    }
+    65.188%,
+    100% {
+      translate: 0.019px 0.013px;
+    }
+  }
+
+  @keyframes kf_8902_247_scale_0 {
+    0%,
+    35.508% {
+      scale: 0.05 0.05;
+    }
+    35.508% {
+      animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
+    }
+    65.188%,
+    100% {
+      scale: 1 1;
+    }
+  }
+</style>

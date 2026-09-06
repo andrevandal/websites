@@ -36,19 +36,20 @@ try {
     )
   }
 
-  const args = await parseArgs(process.argv)
-  const { target, isDebug } = args
-
-  if (isDebug) consola.level = 5
+  const { debug: isDebug, target } = await parseArgs(process.argv)
 
   const project = availableTargets[`${target}`]
 
   if (!project) throw new Error(`Target not found.`)
 
-  await execa("moon", ["run", `${project.id}:dev`], {
-    stdio: "inherit",
-    env: { ...process.env, CI: undefined },
-  })
+  await execa(
+    "moon",
+    ["run", `${project.id}:dev`, ...(isDebug ? ["--log", "debug"] : [])],
+    {
+      stdio: "inherit",
+      env: { ...process.env, CI: undefined },
+    }
+  )
 } catch (err) {
   consola.error((err as Error).message)
   process.exit(1)

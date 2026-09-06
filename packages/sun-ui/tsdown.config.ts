@@ -37,6 +37,7 @@ export default defineConfig({
       /\.svelte$/,
       "svelte",
       "@astrojs/svelte",
+      "bits-ui",
     ],
   },
   copy: [
@@ -48,12 +49,21 @@ export default defineConfig({
         "src/astro/**/*.utils.ts",
         "src/astro/**/*.svelte",
         "src/astro/**/*.svelte.d.ts",
+        "src/svelte/**/*.svelte",
+        "src/svelte/**/*.svelte.d.ts",
+        "!src/astro/**/*.{test,spec}.*",
+        "!src/svelte/**/*.{test,spec}.*",
       ],
       flatten: false,
     },
   ],
   exports: {
     customExports(exports) {
+      exports["./svelte"] = {
+        types: "./dist/svelte/index.d.mts",
+        default: "./dist/svelte/index.mjs",
+      }
+
       for (const folder of astroFolders)
         exports[`./astro/${folder}/*`] = `./dist/astro/${folder}/*.astro`
 

@@ -1,0 +1,138 @@
+---
+import Logo from "./Logo.astro"
+import { navLinks } from "@/data/site"
+import Button from "./ui/Button.astro"
+---
+
+<header
+  id="navigation"
+  class="fixed top-0 z-20 w-full border-b border-white/10 bg-gray-900/85 backdrop-blur-sm"
+>
+  <div
+    class="container grid grid-cols-[1fr_40px] flex-wrap items-center justify-between gap-x-2 p-4 xl:flex xl:flex-row xl:justify-between xl:px-8"
+  >
+    <a href="/" class="block" aria-label="Transportugal">
+      <Logo />
+    </a>
+    <input class="hidden" type="checkbox" id="menu-opened" />
+    <label id="menu-button" for="menu-opened">
+      <span class="icon"></span>
+    </label>
+
+    <nav id="menu">
+      {
+        navLinks.map(link => (
+          <a
+            href={link.href}
+            class="inline-flex h-12 w-full place-items-center rounded-lg text-base leading-none whitespace-nowrap text-white transition-colors hover:text-gray-200 xl:h-10 xl:max-w-fit xl:px-2"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+
+      <Button as="a" href="#contato" icon="whatsapp"> Contato </Button>
+    </nav>
+  </div>
+</header>
+
+<style>
+  @reference "../styles/global.css";
+
+  #menu-button {
+    @apply inline-flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end border border-white/15 p-2 select-none;
+    @apply xl:hidden;
+  }
+
+  #menu-button .icon {
+    @apply relative block h-0.5 w-[21.33px] rounded-full bg-white transition-colors ease-out;
+  }
+
+  #menu-button .icon:before,
+  #menu-button .icon:after {
+    @apply absolute block h-full w-full rounded-full bg-white transition-all ease-out content-[''];
+  }
+
+  #menu-button .icon:before {
+    @apply top-2;
+  }
+
+  #menu-button .icon:after {
+    @apply -top-2;
+  }
+
+  #menu {
+    @apply col-span-2 clear-both box-border flex max-h-0 flex-col gap-2 overflow-hidden transition-[max-height] duration-200 ease-out will-change-auto;
+    @apply xl:mt-0 xl:max-h-fit xl:flex-row xl:items-center xl:justify-center xl:gap-x-3 xl:pt-0;
+  }
+
+  #menu a:last-of-type {
+    @apply mt-2 h-10 xl:mt-0 xl:ml-3;
+  }
+
+  #menu-opened:checked ~ #menu {
+    @apply mt-4 max-h-fit pt-4 pb-2 xl:p-0;
+    max-height: 352px;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon {
+    @apply bg-transparent;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon:before {
+    @apply top-0 -rotate-45;
+  }
+
+  #menu-opened:checked ~ #menu-button .icon:after {
+    @apply top-0 rotate-45;
+  }
+
+  #navigation.actived,
+  #navigation:has(#menu-opened:checked) {
+    @apply bg-gray-900;
+  }
+</style>
+
+<script>
+  const useHeader = (selector: string | Element) => {
+    const nav =
+      typeof selector === "string"
+        ? document.querySelector<HTMLElement>(selector)
+        : (selector as HTMLElement)
+
+    if (!nav) return
+
+    const toggle =
+      nav.querySelector<HTMLInputElement>("[data-header-toggle]") ??
+      nav.querySelector<HTMLInputElement>('input[type="checkbox"]')
+
+    const menu =
+      nav.querySelector<HTMLElement>("[data-header-menu]") ??
+      nav.querySelector<HTMLElement>("ul")
+
+    const closeMenu = () => {
+      if (toggle) toggle.checked = false
+    }
+
+    window.addEventListener("scroll", () => {
+      nav.classList.toggle("actived", window.scrollY > 0)
+    })
+
+    if (!toggle || !menu) return
+
+    menu?.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", closeMenu)
+    })
+
+    document.addEventListener(
+      "click",
+      event => {
+        const target = event.target as HTMLElement
+        if (!nav.contains(target) && toggle?.checked) closeMenu()
+      },
+      false
+    )
+  }
+
+  useHeader("#inicio nav")
+</script>

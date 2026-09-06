@@ -1,0 +1,40 @@
+---
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+
+const {
+  as: Tag = "button",
+  href,
+  variant = "primary",
+  icon = "whatsapp",
+  class: className,
+  ...props
+} = Astro.props
+
+const isLink = Tag === "a"
+
+const customProps = {
+  ...(isLink && { href: href ?? "#contato" }),
+  ...props,
+}
+
+const variants = {
+  primary:
+    "text-white [background-image:linear-gradient(to_right,_#af3741_0%,_#af3741_50%,_#cc4954_50%,_#852129_100%)] [background-size:200%_100%] [background-position:100%_0%] shadow-[0_2px_4px_rgba(175,55,65,0.4),0_2px_1px_rgba(175,55,65,0.15)] transition-[background-position,box-shadow] duration-300 ease-out hover:[background-position:0%_0%] hover:shadow-none active:[background-position:0%_0%] active:shadow-none active:ring-4 active:ring-[rgba(175,55,65,0.25)] focus-visible:[background-position:0%_0%] focus-visible:shadow-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(175,55,65,0.25)]",
+  light:
+    "text-[#1f1e1e] [background-image:linear-gradient(to_right,_#ffffff_0%,_#ffffff_50%,_#ffffff_50%,_#d9d5d5_100%)] [background-size:200%_100%] [background-position:100%_0%] transition-[background-position,box-shadow] duration-300 ease-out hover:[background-position:0%_0%] active:[background-position:0%_0%] active:ring-4 active:ring-white/25 focus-visible:[background-position:0%_0%] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/25",
+}
+
+const variantClass = variant === "light" ? variants.light : variants.primary
+---
+
+<Tag
+  class:list={[
+    "inline-flex items-center justify-center gap-2 rounded px-6 py-3.5 text-base font-normal",
+    variantClass,
+    className,
+  ]}
+  {...customProps}
+>
+  <span><slot /></span>
+  <SunIcon name={icon} width={20} height={20} />
+</Tag>

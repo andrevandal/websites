@@ -1,0 +1,73 @@
+---
+import Logo from "./Logo.astro"
+
+const currentYear = new Date().getFullYear()
+---
+
+<footer class="flex w-full flex-col items-center bg-gray-900">
+  <div class="container flex flex-col gap-10 pt-12 pb-6 xl:flex-row xl:pb-12">
+    <div class="order-3 flex flex-1 flex-col gap-4 xl:order-0">
+      <Logo />
+      <p class="text-base text-balance text-gray-300">
+        Transportugal Ltda. Transporte de cargas fracionadas e fechadas entre
+        São Paulo e o Espírito Santo.
+      </p>
+    </div>
+
+    <div class="order-1 flex flex-1 flex-col gap-6 text-base xl:order-0">
+      <p class="font-medium tracking-[1.6px] text-[#d98b92]">UNIDADES</p>
+      <div class="flex flex-col gap-4">
+        <p class="font-medium text-white">Matriz - Guarulhos (SP)</p>
+        <div class="flex flex-col gap-1 text-gray-300">
+          <p class="underline">Rua Birigui, 1117 - Cidade Jardim Cumbica</p>
+          <p>CEP 07180-310</p>
+          <p>Telefone: (11) 2358-0475</p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-4">
+        <p class="font-medium text-white">Filial - Cariacica (ES)</p>
+        <div class="flex flex-col gap-1 text-gray-300">
+          <p class="underline">Rua das Imbuías, 81 - Santo Antônio</p>
+          <p>CEP 29156-849</p>
+          <p>Telefone: (27) 99707-9958</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-2 flex flex-1 flex-col gap-6 xl:order-0">
+      <p class="text-base font-medium tracking-[1.6px] text-[#d98b92]">
+        FALE CONOSCO
+      </p>
+      <div class="flex flex-col gap-4">
+        <p class="text-base font-medium text-white">Horário de atendimento</p>
+        <p class="text-base text-gray-300">Das 9h às 18h</p>
+      </div>
+      <div class="flex flex-col gap-4 text-base">
+        <p class="font-medium text-white">Cotação e acompanhar carga</p>
+        <div class="flex flex-col gap-1 text-gray-300">
+          <p>WhatsApp (11) 2358-0464</p>
+          <p>comercial@transportugal.com.br</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="container flex items-center justify-center border-t border-gray-800 py-6"
+  >
+    <div
+      class="flex w-full flex-col justify-between gap-4 text-base xl:flex-row xl:items-center"
+    >
+      <div class="flex flex-col gap-2 text-pretty text-white">
+        <p>Transportugal {currentYear}. Todos os direitos reservados.</p>
+        <p>CNPJ 66.225.530/0001-46 - Inscrição Estadual 159.228.453.116</p>
+      </div>
+      <div class="flex gap-1">
+        <p class="text-white">Feito por</p>
+        <p class="text-red font-medium">Pedro Henri</p>
+        <p class="text-white">&</p>
+        <p class="text-red font-medium">André Vandal</p>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,6 @@
+[test]
+preload = [
+  "../../happydom.ts",
+  "../../astro-actions-stub.ts",
+  "../../svelte-loader.ts",
+]

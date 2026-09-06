@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-@source "@vandal-websites/sun-ui/dist";
-@source "../../node_modules/@vandal-websites/sun-ui/dist";
+@source "../../../../packages/sun-ui/src";
 
 @theme {
   --font-sans: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;

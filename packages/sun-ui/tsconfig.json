@@ -9,5 +9,6 @@
     "declaration": true,
     "noEmit": false
   },
-  "plugins": [{ "name": "@astrojs/ts-plugin" }]
+  "plugins": [{ "name": "@astrojs/ts-plugin" }],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/*.test.svelte"]
 }

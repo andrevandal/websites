@@ -7,7 +7,14 @@ on:
         description: App or website to deploy
         type: choice
         options:
-          [images, web, brunabraz, clinicamauricioaraujo.com.br, vandallabs]
+          [
+            images,
+            web,
+            brunabraz,
+            clinicamauricioaraujo.com.br,
+            transportugal,
+            vandallabs,
+          ]
         required: true
       environment:
         description: Target environment
@@ -47,6 +54,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ENV_VARS_BRUNABRAZ: ${{ vars.ENV_VARS_BRUNABRAZ }}
       ENV_VARS_CLINICAMAURICIOARAUJO: ${{ vars.ENV_VARS_CLINICAMAURICIOARAUJO }}
+      ENV_VARS_TRANSPORTUGAL: ${{ vars.ENV_VARS_TRANSPORTUGAL }}
       ENV_VARS_VANDALLABS: ${{ vars.ENV_VARS_VANDALLABS }}
     steps:
       - name: Checkout code
