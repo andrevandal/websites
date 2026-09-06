@@ -1,23 +1,31 @@
 ---
 import "@styles/global.css"
 
-import { SunLayout } from "@vandal-websites/sun-ui/astro"
+import { SunLayout, SunAnimateOnScroll } from "@vandal-websites/sun-ui/astro"
 import TheFooter from "@/components/TheFooter.astro"
 
 import { Font } from "astro:assets"
 import type { ComponentProps } from "astro/types"
 
-type Props = ComponentProps<typeof SunLayout>
+type Props = ComponentProps<typeof SunLayout> & {
+  noCallToAction?: boolean
+}
 
-const { image = "", ...props } = Astro.props
+const { image = "", noCallToAction, ...props } = Astro.props
 ---
 
-<SunLayout image={image} lang="pt-BR" {...props}>
+<SunLayout image={image} lang="pt-BR" class="no-js" {...props}>
   <Fragment slot="close-head">
+    <script is:inline>
+      document.documentElement.classList.replace("no-js", "js")
+    </script>
     <Font cssVariable="--font-dm-sans" preload />
     <Font cssVariable="--font-averia" preload />
     <slot name="head" />
   </Fragment>
   <slot />
-  <TheFooter />
+  <TheFooter noCallToAction={noCallToAction} />
+  <Fragment slot="close-body">
+    <SunAnimateOnScroll />
+  </Fragment>
 </SunLayout>

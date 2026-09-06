@@ -36,9 +36,7 @@ const {
 console.log(
   `[ASTRO] Partytown is ${isPartytownEnabled ? "enabled" : "disabled"}.`
 )
-console.log(
-  `[ASTRO] Image service: ${IMAGES_BASE_URL ? "custom" : "passthrough"}.`
-)
+console.log(`[ASTRO] websites Images Base URL is ${IMAGES_BASE_URL ?? "none"}.`)
 
 export default defineConfig({
   output: "server",

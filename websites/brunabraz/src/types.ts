@@ -18,5 +18,6 @@ export type Post = {
 export type Testimonial = {
   image: Image
   author: string
+  role: string
   content: string
 }

@@ -1,0 +1,50 @@
+---
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import Heading from "@components/Heading.astro"
+
+type FeatureCard = {
+  readonly icon: {
+    readonly name: string
+    readonly width: number
+  }
+  readonly title: string
+  readonly description: string
+}
+
+type Props = {
+  cards: readonly FeatureCard[]
+}
+
+const { cards } = Astro.props
+---
+
+{
+  cards.map(({ icon, title, description }, index) => (
+    <article
+      class="bg-tobago flex w-full flex-col gap-y-4 p-6"
+      data-animate
+      data-delay={(index % 4) + 1}
+    >
+      <div class="isolate grid size-16 content-center items-center justify-center justify-items-center overflow-visible">
+        <SunIcon
+          name={icon.name}
+          width={icon.width}
+          height="100%"
+          class="text-tobago z-3 col-start-1 row-start-1"
+          aria-hidden="true"
+        />
+        <SunIcon
+          name="dark-square"
+          width={70}
+          height={70}
+          class="text-light-mushroom col-start-1 row-start-1"
+          aria-hidden="true"
+        />
+      </div>
+      <Heading as="h3" class="text-card-heading">
+        <span class="text-light-mushroom">{title}</span>
+      </Heading>
+      <p class="text-white-chocolate text-body-small">{description}</p>
+    </article>
+  ))
+}

@@ -1,0 +1,44 @@
+---
+import Button from "@components/Button.astro"
+import { cn } from "@vandal-websites/sun-ui"
+
+type Variant = "home" | "lp"
+
+type Props = {
+  variant?: Variant
+  imageAlt?: string
+  ctaHref?: string
+  containerClass?: string
+}
+
+const { variant = "home", ctaHref = "#", containerClass = "" } = Astro.props
+
+const backgroundClass = variant === "lp" ? "bg-dark-green" : "bg-tobago"
+const ctaVariant = variant === "lp" ? "secondary" : "primary"
+---
+
+<header id="inicio" class:list={[backgroundClass, "pt-18"]}>
+  <div
+    class={cn(
+      "container flex flex-col items-center gap-8 py-10 lg:flex-row lg:flex-nowrap lg:justify-between lg:pt-14",
+      containerClass
+    )}
+  >
+    <slot name="media" />
+    <div
+      class="order-1 flex flex-col items-center gap-4 lg:order-1 lg:items-start lg:py-12"
+    >
+      <slot name="heading" />
+      <slot name="description" />
+      <Button
+        as="a"
+        href={ctaHref}
+        variant={ctaVariant}
+        class="mt-2"
+        iconName="whatsapp"
+      >
+        <slot name="cta">Quero estudar com você!</slot>
+      </Button>
+    </div>
+  </div>
+</header>

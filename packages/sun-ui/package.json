@@ -14,6 +14,7 @@
     "./astro": "./dist/astro/index.mjs",
     "./astro-image-service": "./dist/astro-image-service.mjs",
     "./astro-integration": "./dist/astro-integration.mjs",
+    "./config": "./dist/config.mjs",
     "./svelte": "./dist/svelte/index.mjs",
     "./package.json": "./package.json",
     "./astro/layouts/*": "./dist/astro/layouts/*.astro",

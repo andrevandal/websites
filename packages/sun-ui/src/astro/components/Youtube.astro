@@ -1,15 +1,19 @@
 ﻿---
 import { YouTube } from "@astro-community/astro-embed-youtube"
 import type { YoutubeProps as Props } from "./Youtube.props"
+import { cn } from "../../index"
 
 const {
-  id,
+  videoId,
   poster,
   posterQuality,
   params,
   playlabel = "Play",
   title,
-} = Astro.props
+  class: className,
+  id: _,
+  ...props
+} = Astro.props as Props
 ---
 
 <style>
@@ -19,16 +23,16 @@ const {
 </style>
 
 {
-  id && (
-    <div class="not-prose w-full">
-      <YouTube
-        id={id}
-        poster={poster}
-        posterQuality={posterQuality}
-        params={params}
-        playlabel={playlabel}
-        title={title}
-      />
-    </div>
+  videoId && (
+    <YouTube
+      id={videoId}
+      poster={poster}
+      posterQuality={posterQuality}
+      params={params}
+      playlabel={playlabel}
+      title={title}
+      class={cn("not-prose w-full max-w-[unset]", className)}
+      {...props}
+    />
   )
 }

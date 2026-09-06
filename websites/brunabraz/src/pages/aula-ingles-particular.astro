@@ -1,0 +1,772 @@
+---
+import Layout from "@layouts/Layout.astro"
+import FeatureCards from "@components/FeatureCards.astro"
+import Heading from "@components/Heading.astro"
+import type { ComponentProps } from "astro/types"
+import { lpFeatureCards } from "@/data/lp-features"
+import { buildWhatsAppLink } from "@/data/whatsapp"
+import { testimonials } from "@/data/testimonials"
+import { SunIcon, SunPicture, SunVideo } from "@vandal-websites/sun-ui/astro"
+import Navigation from "@components/Navigation.astro"
+import Hero from "@components/Hero.astro"
+import WidgetTestimonials from "@components/widgets/Testimonials.astro"
+import PricingCalculator from "@components/PricingCalculator.astro"
+
+const faqs = [
+  {
+    question:
+      "Já tentei aprender inglês antes e não funcionou. Por que com você seria diferente?",
+    answer:
+      "Porque aqui o método se adapta a você, e não o contrário. A maioria dos métodos falha justamente porque é genérica. Comigo, tudo parte do seu nível, dos seus interesses e das suas dificuldades reais.",
+  },
+  {
+    question:
+      "Meu nível é muito básico (ou estou enferrujado). Consigo acompanhar?",
+    answer:
+      "Sim! Após a aula experimental (que pode até ser desafiadora), as aulas começam exatamente do onde você está. Eu trabalho com estudantes em todos os níveis, além de ter calma e paciência com o estilo e velocidade de aprendizado de cada um.",
+  },
+  {
+    question: "Não tenho muito tempo. Dá pra encaixar?",
+    answer:
+      "Aprender qualquer idioma é completamente diferente de aprender outros assuntos/matérias (apesar de ser tratado da mesma forma nas escolas regulares). Línguas modulam e são moduladas pelas interações entre seres humanos e o ambiente em que vivem, assim como seres humanos entre si. Para além da nossas aulas, vamos discutir outras pequenas atividades que você consegue inserir no seu dia a dia para manter a constância. Pensa um pouco sobre como você aprendeu português: foi só na sala de aula na escola com a(o) docente de português, ou foi no dia a dia, interagindo constantemente com a língua?",
+  },
+  {
+    question: "Aula online funciona mesmo?",
+    answer:
+      "Não nego que gosto muito das interações das aulas presenciais, mas trabalhar no online me permite alcançar alunos do Brasil inteiro (e até mesmo brasileiros morando no exterior). O online também permite uma maior flexibilidade de horários (e menos tempo gasto no trânsito), sem contar a infinidade de recursos disponíveis. Além disso, durante nossa hora junta(o)s, meu foco é 100% em você!",
+  },
+  {
+    question: "E se eu não me adaptar ou não gostar?",
+    answer:
+      "Tudo começa com uma aula experimental gratuita, justamente para você me conhecer e sentir sua interação comigo antes de qualquer compromisso.",
+  },
+  {
+    question: "A aula experimental é mesmo gratuita?",
+    answer:
+      "Sim! É apenas após a aula experimental que fazemos o compromisso das nossas aulas através de um contrato. Antes disso, você estará apenas conhecendo meu serviço.",
+  },
+  {
+    question: "Como funciona o pagamento?",
+    answer:
+      "O pagamento é mensal, via boleto. Depois que você decidir o número de aulas e a frequência semanal, assinamos um contrato com todos os detalhes. Após a assinatura, todos os boletos são emitidos com data de vencimento até o dia 10 de cada mês.",
+  },
+]
+
+const meta = {
+  title: "Aulas de Inglês Particulares e Online | Bruna Braz",
+  description:
+    "Aprenda inglês com aulas particulares 100% online e personalizadas para o seu ritmo, interesses e objetivos. Agende sua aula experimental gratuita com a Bruna Braz!",
+  image:
+    "https://files.vandal.services/brunabraz/images/social/landing-page.png",
+  url: Astro.url,
+  noCallToAction: true,
+} satisfies ComponentProps<typeof Layout>
+---
+
+<Layout {...meta}>
+  <Navigation variant="green" />
+  <main>
+    <Hero
+      variant="lp"
+      containerClass="pb-0"
+      ctaHref={buildWhatsAppLink(
+        "Olá, Bruna! Quero saber mais sobre as aulas particulares de inglês."
+      )}
+    >
+      <SunPicture
+        src="https://files.vandal.services/brunabraz/images/hero-oficial-green.png"
+        alt={"Bruna Braz, professora de inglês"}
+        width={375}
+        height={361}
+        quality={90}
+        densities={[1, 1.5, 2, 3]}
+        breakpoints={[
+          { minWidth: 1024, width: 472 },
+          { minWidth: 1280, width: 493 },
+        ]}
+        loading="eager"
+        fetchpriority="high"
+        placeholderMode="circle"
+        wrapperClass="order-2 -mx-4 aspect-[375/361] w-full sm:mx-0 sm:w-[375px] lg:order-2 lg:aspect-[472/460] lg:w-[472px] lg:shrink-0 lg:self-end xl:aspect-[493/481] xl:w-[493px]"
+        class="size-full object-cover"
+        slot="media"
+      />
+      <Heading
+        as="h1"
+        slot="heading"
+        class="text-white-chocolate text-hero max-w-[34ch] text-center lg:text-left"
+      >
+        Aulas de inglês nas quais o ponto de equilíbrio é você!
+      </Heading>
+      <p
+        slot="description"
+        class="text-white-chocolate text-body max-w-[52ch] text-center lg:text-left"
+      >
+        Ministradas online e personalizadas para o seu momento, seus interesses
+        e seus objetivos. Se, por acaso, você já tentou aprender inglês de
+        diversas formas e não se desenvolveu, há grandes chances do problema não
+        ter sido você.
+      </p>
+      <Fragment slot="cta">Quero estudar com você!</Fragment>
+    </Hero>
+
+    <section
+      id="contexto"
+      class="relative overflow-clip overflow-y-visible bg-white"
+    >
+      <div
+        class="relative container flex flex-col items-center gap-6 py-14 sm:grid sm:grid-cols-2 sm:items-center sm:gap-4 sm:py-14 sm:text-left lg:py-16 xl:py-20"
+      >
+        <SunIcon
+          name="book-tilted"
+          width={154}
+          height={124}
+          aria-hidden="true"
+          class="text-cambridge/10 pointer-events-none absolute right-[-24px] bottom-[-24px] z-10 -scale-y-100 rotate-180 select-none sm:right-[unset] sm:bottom-[-24px] sm:left-[-16px] sm:scale-y-[unset] sm:rotate-[unset] lg:bottom-[-32px] xl:bottom-[-16px] xl:left-[-24px]"
+        />
+        <Heading
+          as="h2"
+          class="text-tobago text-section-heading max-w-[30ch] text-pretty"
+          data-animate
+        >
+          Você provavelmente já tentou aprender inglês <em
+            class="text-giraffe-brown italic">mais de uma vez.</em
+          >
+        </Heading>
+        <div
+          class="text-brown-leather text-body max-w-[62ch]"
+          data-animate
+          data-delay="1"
+        >
+          <p>
+            Curso, aplicativo, apostila, vídeos prometendo fluência rápida. E
+            sempre a mesma sensação: voltar à estaca zero ou travar no mesmo
+            ponto.
+          </p>
+          <p class="mt-4">
+            O problema raramente é falta de esforço. É que a maioria dos métodos
+            trata todo mundo igual, como se aprender uma língua fosse seguir uma
+            receita pronta.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="dor"
+      class="bg-cambridge/10 py-14 sm:py-14 lg:py-16 xl:pt-20 xl:pb-[104px]"
+    >
+      <div
+        class="relative z-10 container flex flex-col items-center gap-8 text-center"
+      >
+        <Heading
+          as="h2"
+          class="text-tobago text-section-heading text-balanced max-w-[50ch]"
+          data-animate
+        >
+          Quanto mais o tempo passa, mais o inglês vira uma <em
+            class="text-giraffe-brown italic"
+            >dívida em aberto consigo mesma(o).</em
+          >
+        </Heading>
+        <ol
+          class="border-cambridge/25 w-full text-left sm:w-full lg:grid lg:grid-cols-2 lg:gap-x-8"
+        >
+          {
+            [
+              [
+                "A vaga de trabalho que passou",
+                "Pedia inglês e você não se candidatou.",
+              ],
+              [
+                "O conteúdo filtrado",
+                "Artigos, livros e vídeos que chegam sempre traduzidos por outra pessoa.",
+              ],
+              [
+                "A cultura pela metade",
+                "Filmes, séries e músicas que você curte sem captar metade do que dizem.",
+              ],
+              [
+                "A conversa evitada",
+                "A reunião, a viagem ou a troca que você desviou por medo de errar.",
+              ],
+            ].map(([title, description], index) => (
+              <li
+                class="border-cambridge/25 flex gap-4 border-b py-6 first:border-t sm:min-h-26 sm:items-center lg:nth-2:border-t"
+                data-animate
+                data-delay={(index % 2) + 1}
+              >
+                <span class="text-giraffe-brown relative flex size-14 shrink-0 items-center justify-center p-2 font-serif text-[32px] leading-none">
+                  <img
+                    src="/images/illustrations/dor-number-ring.svg"
+                    alt=""
+                    aria-hidden="true"
+                    class="pointer-events-none absolute inset-x-0 top-1/2 h-[52px] w-14 -translate-y-1/2 opacity-25"
+                    loading="lazy"
+                  />
+                  <span class="relative z-10">{index + 1}</span>
+                </span>
+                <div>
+                  <Heading as="h3" class="text-tobago text-card-heading">
+                    {title}
+                  </Heading>
+                  <p class="text-brown-leather text-body mt-1 text-pretty">
+                    {description}
+                  </p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+        <p
+          class="text-tobago text-quote max-w-[45ch] text-balance"
+          data-animate
+        >
+          Cada uma dessas é uma porta que segue fechada enquanto você espera o
+          dia de "aprender inglês de verdade".
+        </p>
+      </div>
+    </section>
+
+    <section
+      id="metodo"
+      class="bg-white py-14 sm:py-14 lg:py-16 xl:pt-20 xl:pb-[104px]"
+    >
+      <div class="container flex flex-col items-center gap-8 text-center">
+        <div
+          class="flex w-full max-w-[60ch] flex-col items-center gap-4 sm:max-w-none sm:gap-6"
+          data-animate
+        >
+          <Heading as="h2" class="text-tobago text-section-heading w-full">
+            Sempre me perguntam <em class="text-giraffe-brown italic"
+              >qual método</em
+            > eu uso.
+          </Heading>
+          <p class="text-brown-leather text-body w-full sm:leading-[22px]">
+            Honestamente, minha prática se aproxima do pós-método de <u
+              class="underline-dotted">Bala Kumaravadivelu</u
+            >: uma ideia que rompe com a busca por uma fórmula única que sirva
+            para todo mundo. Na prática, penso e ajo como uma professora que se
+            adapta a cada estudante ao invés de seguir receitas prontas.<br
+            />Para isso, me apoio em três pilares:
+          </p>
+        </div>
+        <div class="relative isolate flex w-full flex-col gap-12 sm:gap-8">
+          <div
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 z-0 sm:hidden"
+          >
+            <span
+              class="border-giraffe-brown absolute top-[83px] left-10 h-[86px] border-l border-dashed"
+            ></span>
+            <span
+              class="border-giraffe-brown absolute top-[169px] right-10 left-10 border-t border-dashed"
+            ></span>
+            <span
+              class="border-giraffe-brown absolute top-[169px] right-10 h-[191px] border-r border-dashed"
+            ></span>
+            <span
+              class="border-giraffe-brown absolute top-[360px] right-10 left-10 border-t border-dashed"
+            ></span>
+            <span
+              class="border-giraffe-brown absolute top-[360px] left-10 h-[81px] border-l border-dashed"
+            ></span>
+          </div>
+          <div
+            aria-hidden="true"
+            class="border-giraffe-brown pointer-events-none absolute top-[72px] bottom-[83px] left-1/2 z-0 hidden -translate-x-1/2 border-l border-dashed sm:block"
+          >
+          </div>
+          {
+            [
+              {
+                title: "Particularidade",
+                description:
+                  "Levo a sério quem você é. Por isso tudo começa com uma aula experimental, pra conhecer sua história, seus obstáculos e o seu contexto.",
+                image: "/images/illustrations/metodo-1.svg",
+                width: 149.59,
+                height: 84.92,
+                rotation: "rotate-[-8.31deg]",
+              },
+              {
+                title: "Praticidade",
+                description:
+                  "Observo o que funciona pra você e o que não funciona, ajustando o caminho durante e depois de cada aula, sem engessamento.",
+                image: "/images/illustrations/metodo-2.svg",
+                width: 207.17,
+                height: 96.28,
+                rotation: "rotate-[7.44deg]",
+              },
+              {
+                title: "Possibilidade",
+                description:
+                  "Trago os assuntos que você gosta e te dou voz, assim você sugere o ritmo, temas e onde quer mais ajuda. Dessa forma, construímos as aulas em conjunto.",
+                image: "/images/illustrations/metodo-3.svg",
+                width: 108,
+                height: 134.44,
+                rotation: "rotate-[12.89deg]",
+              },
+            ].map(
+              (
+                { title, description, image, width, height, rotation },
+                index
+              ) => (
+                <article
+                  class:list={[
+                    "relative flex min-h-36 items-center gap-6 sm:grid sm:grid-cols-[1fr_80px_1fr] sm:items-center sm:gap-6",
+                    index === 1 && "flex-row-reverse",
+                    index === 2 && "min-h-[166px]",
+                  ]}
+                  data-animate
+                  data-delay={(index % 3) + 1}
+                >
+                  <div
+                    class:list={[
+                      "pointer-events-none relative z-0 hidden h-full w-full items-center justify-center sm:flex",
+                      index === 1
+                        ? "sm:col-start-3 sm:row-start-1"
+                        : "sm:col-start-1 sm:row-start-1",
+                    ]}
+                  >
+                    <img
+                      src={image}
+                      alt=""
+                      width={width}
+                      height={height}
+                      class:list={["block opacity-25", rotation]}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                  <span class="border-giraffe-brown relative z-10 flex size-20 shrink-0 items-center justify-center rounded-full border bg-white font-serif text-[2rem] leading-[110%] font-bold text-white sm:col-start-2 sm:row-start-1 sm:justify-self-center">
+                    <span
+                      aria-hidden="true"
+                      class="bg-giraffe-brown absolute inset-[7px] rounded-full"
+                    />
+                    <span class="relative z-10">{index + 1}</span>
+                  </span>
+                  <div
+                    class:list={[
+                      "relative z-10 min-w-0",
+                      index === 1
+                        ? "text-right sm:col-start-1 sm:row-start-1"
+                        : "text-left sm:col-start-3 sm:row-start-1",
+                    ]}
+                  >
+                    <Heading
+                      as="h3"
+                      class="text-giraffe-brown text-card-heading w-full"
+                    >
+                      {title}
+                    </Heading>
+                    <p class="text-tobago text-body mt-2 w-full text-pretty sm:leading-[22px]">
+                      {description}
+                    </p>
+                  </div>
+                </article>
+              )
+            )
+          }
+        </div>
+        <p
+          class="text-tobago text-quote max-w-[38ch] leading-[130%] text-balance sm:max-w-none"
+          data-animate
+        >
+          No fim, cada aula é pensada, repensada e ajustada <strong
+            class="text-giraffe-brown">pra você.</strong
+          >
+        </p>
+      </div>
+    </section>
+
+    <section
+      id="posicionamento"
+      class="bg-cambridge/10 py-14 sm:py-14 lg:pt-16 lg:pb-20 xl:pt-20 xl:pb-[104px]"
+    >
+      <div class="container flex flex-col items-center gap-8">
+        <div class="flex max-w-[60ch] flex-col items-center gap-4" data-animate>
+          <Heading
+            as="h2"
+            class="text-tobago text-section-heading text-center text-balance"
+          >
+            Aprender vai <em class="text-giraffe-brown italic">além</em> de ter uma
+            linha afirmando ter fluência no seu currículo.
+          </Heading>
+          <p class="text-brown-leather text-body text-center text-pretty">
+            Não posso negar que ser fluente em inglês abre portas profissionais.
+            Cargos e salários mais dignos, acesso ao mercado global. No mundo em
+            que vivemos, isso é importante sim. Porém, aprender inglês (ou
+            qualquer outra língua) nos leva em um ponto mais difícil de colocar
+            em um currículo:
+          </p>
+        </div>
+        <div
+          class="grid items-stretch gap-4 sm:grid-cols-1 lg:grid-cols-3 xl:gap-6"
+        >
+          <FeatureCards cards={lpFeatureCards} />
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="como-funcionam-as-aulas"
+      class="bg-white py-14 sm:py-14 lg:pt-16 lg:pb-20 xl:pt-20 xl:pb-[104px]"
+    >
+      <div class="container flex flex-col items-center gap-8">
+        <div
+          class="flex max-w-[60ch] flex-col items-center gap-4 text-center sm:gap-2"
+          data-animate
+        >
+          <Heading as="h2" class="text-tobago text-section-heading">
+            Como funcionam <em class="text-giraffe-brown italic">as aulas?</em>
+          </Heading>
+          <p class="text-brown-leather text-body sm:text-[.875rem]">
+            Desde o primeiro "hello" ao seu progresso, o caminho é construído
+            com você.
+          </p>
+        </div>
+        <div class="flex flex-col gap-8 lg:flex-row">
+          <div data-animate data-delay="1">
+            <SunVideo
+              autoplay
+              sources={{
+                mp4: "https://files.vandal.services/brunabraz/videos/welcome-to-our-class.mp4",
+                webm: "https://files.vandal.services/brunabraz/videos/welcome-to-our-class.webm",
+              }}
+              poster="https://files.vandal.services/brunabraz/images/preload-gif.jpg"
+              posterAlt="Prévia em vídeo de uma aula de inglês com a Bruna Braz"
+              width={1412}
+              height={1080}
+              title="Vídeo: como funcionam as aulas"
+            />
+          </div>
+          <ol
+            class="border-cambridge/25 w-full max-w-[42rem] border px-4 sm:max-w-none"
+          >
+            {
+              [
+                [
+                  "A aula experimental",
+                  "Esse é o momento onde eu te conheço, entendo seu nível, seus objetivos, o que já tentou e o que te interessa.",
+                ],
+                [
+                  "O plano sob medida",
+                  "Monto um caminho de aprendizado feito para você que não sai de uma apostila pronta.",
+                ],
+                [
+                  "As aulas",
+                  "Gramática, conversa, leitura e escuta conectadas ao que importa pra você.",
+                ],
+                [
+                  "A transformação",
+                  "Acompanho seu progresso e ajusto o caminho conforme você avança.",
+                ],
+              ].map(([title, description], index) => (
+                <li
+                  class="border-cambridge/25 relative flex gap-4 border-b py-4 last:border-b-0"
+                  data-animate
+                  data-delay={(index % 4) + 1}
+                >
+                  <span class="relative z-10 flex size-14 shrink-0 items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 56 56"
+                      width={56}
+                      height={56}
+                      class="absolute inset-0 size-full select-none"
+                    >
+                      <defs>
+                        <linearGradient
+                          id={`ring-gradient-${index}`}
+                          x1="0%"
+                          y1="0%"
+                          x2="100%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stop-color="#506c5c"
+                            stop-opacity="1"
+                          />
+                          <stop
+                            offset="100%"
+                            stop-color="#506c5c"
+                            stop-opacity="0"
+                          />
+                        </linearGradient>
+                        <mask
+                          id={`ring-mask-${index}`}
+                          maskUnits="userSpaceOnUse"
+                          x="0"
+                          y="0"
+                          width="56"
+                          height="56"
+                        >
+                          <path
+                            fill="#fff"
+                            d="M54.6 28c.773 0 1.404.627 1.365 1.4A28 28 0 1 1 34.731.82c.75.186 1.17.97.946 1.711-.223.74-1.003 1.155-1.755.974a25.2 25.2 0 1 0 19.24 25.893c.042-.772.665-1.399 1.438-1.399"
+                          />
+                        </mask>
+                      </defs>
+                      <circle
+                        cx="28"
+                        cy="28"
+                        r="26.6"
+                        fill="none"
+                        stroke={`url(#ring-gradient-${index})`}
+                        stroke-width="2.8"
+                        stroke-linecap="round"
+                        stroke-dasharray="100"
+                        pathLength="100"
+                        mask={`url(#ring-mask-${index})`}
+                        class="ring-draw"
+                      />
+                    </svg>
+                    <span class="bg-cambridge/25 border-cambridge/25 relative flex size-11 items-center justify-center rounded-full border">
+                      <span class="text-dark-green font-serif text-2xl">
+                        {index + 1}
+                      </span>
+                    </span>
+                  </span>
+                  <div class="relative z-10">
+                    <Heading as="h3" class="text-dark-green text-card-heading">
+                      {title}
+                    </Heading>
+                    <p class="text-tobago text-body mt-2">{description}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 - Resultados -->
+    <section
+      id="resultados"
+      class="bg-cambridge/10 py-14 sm:py-14 lg:pt-16 lg:pb-20 xl:pt-20 xl:pb-[104px]"
+    >
+      <div class="container flex flex-col items-center gap-8">
+        <div
+          class="flex max-w-[60ch] flex-col items-center gap-4 text-center"
+          data-animate
+        >
+          <Heading as="h2" class="text-tobago text-section-heading">
+            E o que muda quando a língua inglesa <em
+              class="text-giraffe-brown italic">se torna sua?</em
+            >
+          </Heading>
+          <p class="text-brown-leather text-body">
+            Com o tempo, o inglês deixa de ser aquela matéria distante e passa a
+            fazer parte de você. Você ganha:
+          </p>
+        </div>
+        <div class="grid w-full gap-4 sm:grid-cols-2">
+          {
+            [
+              [
+                "Segurança",
+                "Para pedir socorro caso se perca no aeroporto ou perceber uma tentativa de golpe antes que ela aconteça.",
+              ],
+              [
+                "Naturalidade",
+                "Para poder fazer uma piada no momento certo, chorar com uma música sem precisar traduzir a letra ou argumentar em um debate sem travar.",
+              ],
+              [
+                "Autonomia",
+                "Para pesquisar a solução de um problema no YouTube, ler um artigo científico recém-lançado ou assistir a uma palestra ao vivo, sem depender da tradução (e do viés) de terceiros.",
+              ],
+              [
+                "Liberdade",
+                "Para trabalhar de qualquer lugar, ter amizades que vão além do seu país e sair da sua bolha para se tornar um cidadão do mundo.",
+              ],
+            ].map(([title, description], index) => (
+              <article
+                class="border-cambridge/25 flex flex-col gap-4 overflow-hidden border bg-white px-4 py-6"
+                data-animate
+                data-delay={(index % 4) + 1}
+              >
+                <Heading as="h3" class="text-giraffe-brown text-card-heading">
+                  {title}
+                </Heading>
+                <p class="text-tobago text-body">{description}</p>
+              </article>
+            ))
+          }
+          <article
+            class="bg-tobago text-white-chocolate text-quote font-bolds] relative w-full overflow-visible p-6 px-4 sm:col-span-2 sm:pr-8 lg:px-6 lg:py-8 lg:pr-16 xl:px-12 xl:py-8 xl:pr-20"
+            data-animate
+            data-delay="4"
+          >
+            <div class="relative z-10 text-pretty">
+              <p>Não prometo fluência em prazo recorde.</p>
+              <p>
+                Prometo um processo honesto, no seu ritmo, que de fato leva você
+                adiante.
+              </p>
+            </div>
+            <img
+              src="/images/illustrations/resultados-banner.svg"
+              alt=""
+              width={91}
+              height={104}
+              loading="lazy"
+              decoding="async"
+              class="pointer-events-none absolute -top-6 -right-8 z-0 w-[91px] select-none lg:-right-7 lg:w-[105px]"
+            />
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <WidgetTestimonials
+      id="depoimentos"
+      testimonials={testimonials}
+      title="O que diz quem já estudou comigo?"
+      description="Depoimentos de quem confiou em mim para acompanhar seus processos individuais."
+    />
+
+    <section
+      id="planos"
+      class="bg-cambridge/10 overflow-hidden py-14 sm:py-14 lg:pt-16 lg:pb-20 xl:py-20"
+    >
+      <div class="relative container flex flex-col items-center">
+        <img
+          src="/images/illustrations/sansa.svg"
+          alt=""
+          width={388}
+          height={207}
+          class="pointer-events-none absolute right-[-7rem] bottom-[-5rem] z-0 hidden h-auto w-[17rem] select-none lg:block xl:right-[-9rem] xl:w-[388px]"
+          loading="lazy"
+          decoding="sync"
+        />
+        <div data-animate>
+          <PricingCalculator />
+        </div>
+      </div>
+    </section>
+    <!-- 09 - FAQ -->
+    <section id="faq" class="bg-white py-14 sm:py-14 lg:py-16 xl:py-20">
+      <div class="container flex flex-col items-center gap-8">
+        <div
+          class="flex max-w-[60ch] flex-col items-center gap-2 text-center"
+          data-animate
+        >
+          <p class="text-brown-leather text-eyebrow tracking-[.7px]">
+            PERGUNTAS FREQUENTES
+          </p>
+          <Heading as="h2" class="text-tobago text-section-heading">
+            Ainda tem alguma dúvida? <em class="text-giraffe-brown italic"
+              >Talvez ela esteja aqui:</em
+            >
+          </Heading>
+        </div>
+        <div class="w-full max-w-[42rem]">
+          {
+            faqs.map(({ question, answer }, index) => (
+              <details
+                class="border-brown-leather border-b px-2 py-6"
+                data-animate
+                data-delay={(index % 3) + 1}
+              >
+                <summary class="text-tobago text-faq-question flex cursor-pointer list-none items-start justify-between gap-4">
+                  {question}
+                  <span class="text-giraffe-brown text-2xl">+</span>
+                </summary>
+                <p class="text-brown-leather text-body mt-2 pr-10">{answer}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+      <script>
+        const faq = document.querySelector<HTMLElement>("#faq")
+        const reduceFaqMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        )
+
+        faq?.querySelectorAll<HTMLDetailsElement>("details").forEach(detail => {
+          const summary = detail.querySelector<HTMLElement>("summary")
+          if (!summary) return
+
+          let animation: Animation | null = null
+          let requestedOpen = detail.open
+
+          const getCollapsedHeight = () => {
+            const styles = getComputedStyle(detail)
+            const padding =
+              Number.parseFloat(styles.paddingTop) +
+              Number.parseFloat(styles.paddingBottom)
+            const borders =
+              Number.parseFloat(styles.borderTopWidth) +
+              Number.parseFloat(styles.borderBottomWidth)
+
+            return summary.getBoundingClientRect().height + padding + borders
+          }
+
+          const clearAnimationStyles = () => {
+            detail.style.removeProperty("height")
+            detail.style.removeProperty("overflow")
+          }
+
+          const setOpenImmediately = (open: boolean) => {
+            animation?.cancel()
+            animation = null
+            requestedOpen = open
+            detail.open = open
+            clearAnimationStyles()
+          }
+
+          const animateTo = (open: boolean) => {
+            requestedOpen = open
+            if (reduceFaqMotion.matches) {
+              setOpenImmediately(open)
+              return
+            }
+
+            animation?.cancel()
+            animation = null
+            const startHeight = detail.getBoundingClientRect().height
+            detail.style.overflow = "hidden"
+
+            if (open) {
+              detail.open = true
+              detail.style.height = "auto"
+            }
+
+            const endHeight = open
+              ? detail.getBoundingClientRect().height
+              : getCollapsedHeight()
+
+            detail.style.height = `${startHeight}px`
+            const nextAnimation = detail.animate(
+              [{ height: `${startHeight}px` }, { height: `${endHeight}px` }],
+              {
+                duration: 280,
+                easing: "ease",
+                fill: "both",
+              }
+            )
+            animation = nextAnimation
+
+            nextAnimation.onfinish = () => {
+              if (animation !== nextAnimation || requestedOpen !== open) return
+
+              animation = null
+              if (!open) detail.open = false
+              clearAnimationStyles()
+              nextAnimation.cancel()
+            }
+          }
+
+          summary.addEventListener("click", event => {
+            event.preventDefault()
+            animateTo(!requestedOpen)
+          })
+        })
+      </script>
+    </section>
+  </main>
+</Layout>

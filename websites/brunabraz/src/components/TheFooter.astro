@@ -2,6 +2,7 @@
 import { SunIcon } from "@vandal-websites/sun-ui/astro"
 import LogoHorizontal from "./LogoHorizontal.astro"
 import { defaultConfig } from "@/data/site"
+import { buildWhatsAppLink } from "@/data/whatsapp"
 import Button from "@components/Button.astro"
 
 const year = new Date().getFullYear()
@@ -50,20 +51,27 @@ const socialWidget = [
               vozes e fazer a sua própria voz circular com mais força.
             </p>
           </blockquote>
-          <Button iconName="whatsapp" variant="secondary">
+          <Button
+            as="a"
+            href={buildWhatsAppLink(
+              "Olá, Bruna! Quero estudar inglês com você."
+            )}
+            iconName="whatsapp"
+            variant="secondary"
+          >
             Quero estudar com você!
           </Button>
         </div>
       </section>
     )
   }
-  <footer class="bg-tobago py-10 lg:py-12">
-    <div class="divide-ruddy-brown container flex flex-col divide-y">
+  <footer class="bg-tobago py-10 sm:py-12">
+    <div class="divide-ruddy-brown container flex flex-col divide-y sm:px-8">
       <div
-        class="flex flex-col items-start gap-6 pb-6 lg:flex-row lg:items-end-safe lg:justify-between"
+        class="flex flex-col items-start gap-6 pb-6 sm:flex-row sm:items-end-safe sm:justify-between"
       >
-        <a href="/" class="text-white-chocolate block">
-          <img src="/images/logo-horizontal.png" width="250" alt="" />
+        <a href="/" class="text-white-chocolate block" aria-label="Bruna Braz">
+          <LogoHorizontal width={250} height={81} />
         </a>
         <div class="flex flex-col gap-y-2">
           <p
@@ -92,7 +100,7 @@ const socialWidget = [
       </div>
 
       <div
-        class="text-white-chocolate flex flex-col gap-6 pt-6 font-sans text-sm leading-none lg:flex-row lg:items-end-safe lg:justify-between"
+        class="text-white-chocolate flex flex-col gap-6 pt-6 font-sans text-sm leading-none sm:flex-row sm:items-end-safe sm:justify-between sm:text-xs sm:leading-4"
       >
         <p>
           Bruna Braz @ {year}. Todos os direitos reservados.

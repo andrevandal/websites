@@ -1,12 +1,13 @@
 ﻿export const defaultConfig = {
   description:
-    "Pariatur eu Lorem laborum est ad laboris voluptate ex aliqua nostrud officia. Velit in mollit pariatur ipsum cupidatat veniam ex sit labore ipsum velit non adipisicing in. Duis sit veniam laborum irure enim enim aute commodo labore dolore. Et consequat non enim esse aute aliquip. Eu Lorem sint fugiat sunt. Do voluptate voluptate et deserunt mollit culpa cillum culpa veniam ea nisi ex enim.",
-  socialImage: "",
+    "Bruna Braz é professora de inglês com 10 anos de experiência e mestrado na área. Aulas online personalizadas para você ampliar sua voz no mundo. Saiba mais!",
+  socialImage:
+    "https://files.vandal.services/brunabraz/images/social/home-page.png",
   links: {
-    whatsapp: "",
-    instagram: "",
-    youtube: "",
-    twitch: "",
-    discord: "",
+    whatsapp: "https://wa.me/5543991100512",
+    instagram: "https://www.instagram.com/teacherbrunabraz/",
+    youtube: "https://www.youtube.com/channel/UCY9X9GT9MhPdUggz5XG-fmQ",
+    twitch: "https://www.twitch.tv/princesafoia",
+    discord: "https://discord.gg/UuxEUhYF2S",
   },
 }

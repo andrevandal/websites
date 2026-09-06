@@ -10,71 +10,73 @@ export type Props = {
 const { posts } = Astro.props
 ---
 
-<section class="bg-white-chocolate">
-  <div class="container flex flex-col gap-y-10 pt-14 pb-18 lg:pt-20 lg:pb-26">
-    <div
-      class="flex flex-col items-center-safe justify-center-safe sm:flex-row sm:items-end-safe sm:justify-between sm:gap-x-6"
-    >
-      <div class="flex flex-col gap-y-4">
-        <Heading
-          as="h2"
-          class="text-tobago w-full text-center font-serif text-[2rem] leading-[110%] font-bold sm:text-left"
-        >
-          Um espaço meu para pensar{" "}<em class="text-giraffe-brown italic"
-            >língua, cultura e mundo</em
-          >.
-        </Heading>
-        <p
-          class="text-brown-leather text-center text-2xl leading-[160%] sm:text-left"
-        >
-          Aqui você encontra algumas das minhas reflexões sobre...
-        </p>
-      </div>
-      <Button
-        variant="secondary"
-        as="a"
-        href="/blog/"
-        class="mt-2 whitespace-nowrap sm:mt-0">Ler o blog</Button
-      >
-    </div>
+{
+  posts.length > 0 && (
+    <section class="bg-white-chocolate">
+      <div class="container flex flex-col gap-y-10 pt-14 pb-18 lg:pt-20 lg:pb-26">
+        <div class="flex flex-col items-center-safe justify-center-safe sm:flex-row sm:items-end-safe sm:justify-between sm:gap-x-6">
+          <div class="flex flex-col gap-y-4" data-animate>
+            <Heading
+              as="h2"
+              class="text-tobago w-full text-center font-serif text-[2rem] leading-[110%] font-bold sm:text-left"
+            >
+              Um espaço meu para pensar{" "}
+              <em class="text-giraffe-brown italic">língua, cultura e mundo</em>
+              .
+            </Heading>
+            <p class="text-brown-leather text-center text-2xl leading-[160%] sm:text-left">
+              Aqui você encontra algumas das minhas reflexões sobre...
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            as="a"
+            href="/blog/"
+            class="mt-2 whitespace-nowrap sm:mt-0"
+          >
+            Ler o blog
+          </Button>
+        </div>
 
-    <ul
-      class="mx-auto flex flex-col gap-4 sm:grid sm:grid-cols-[max-content_max-content] lg:gap-6 lg:px-25 xl:mx-[unset] xl:flex xl:flex-row xl:px-0"
-    >
-      {
-        posts.map(({ image, tags, title, slug }) => {
-          const [tag] = tags
-          return (
-            <li class="border-tobago/15 border bg-white sm:max-w-74 lg:max-w-85.5 xl:w-71.5">
-              <article class="flex flex-col">
-                <a href={`/post/${slug}`}>
-                  <img class="aspect-video h-auto w-full" {...image} />
-                </a>
-                <div class="flex flex-col gap-x-1 px-4 py-6">
-                  {tag && (
-                    <a href={`/categoria/${tag.slug}`}>
+        <ul class="mx-auto flex flex-col gap-4 sm:grid sm:grid-cols-[max-content_max-content] lg:gap-6 lg:px-25 xl:mx-[unset] xl:flex xl:flex-row xl:px-0">
+          {posts.map(({ image, tags, title, slug }, index) => {
+            const [tag] = tags
+            return (
+              <li
+                class="border-tobago/15 border bg-white sm:max-w-74 lg:max-w-85.5 xl:w-71.5"
+                data-animate
+                data-delay={(index % 3) + 1}
+              >
+                <article class="flex flex-col">
+                  <a href={`/post/${slug}`}>
+                    <img class="aspect-video h-auto w-full" {...image} />
+                  </a>
+                  <div class="flex flex-col gap-x-1 px-4 py-6">
+                    {tag && (
+                      <a href={`/categoria/${tag.slug}`}>
+                        <Heading
+                          as="span"
+                          class="text-brown-leather text-[0.875rem] leading-[110%] font-medium uppercase"
+                        >
+                          {tag.label}
+                        </Heading>
+                      </a>
+                    )}
+                    <a href={`/post/${slug}`}>
                       <Heading
-                        as="span"
-                        class="text-brown-leather text-[0.875rem] leading-[110%] font-medium uppercase"
+                        as="h3"
+                        class="text-tobago block h-14 max-h-14 overflow-hidden font-serif text-xl leading-[140%] font-bold text-wrap text-ellipsis"
                       >
-                        {tag.label}
+                        {title}
                       </Heading>
                     </a>
-                  )}
-                  <a href={`/post/${slug}`}>
-                    <Heading
-                      as="h3"
-                      class="text-tobago block h-14 max-h-14 overflow-hidden font-serif text-xl leading-[140%] font-bold text-wrap text-ellipsis"
-                    >
-                      {title}
-                    </Heading>
-                  </a>
-                </div>
-              </article>
-            </li>
-          )
-        })
-      }
-    </ul>
-  </div>
-</section>
+                  </div>
+                </article>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    </section>
+  )
+}

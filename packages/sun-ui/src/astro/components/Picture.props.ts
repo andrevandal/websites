@@ -50,11 +50,11 @@ type SunPictureProps = Omit<
   /** Class applied to the wrapping element (sizing, aspect-ratio, etc). */
   wrapperClass?: string
   /**
-   * Base URL of the Sun image service (`IMAGES_BASE_URL`). Required to render a
-   * blur-up placeholder; omit it to render the image with no placeholder.
+   * Render the blur-up placeholder. Defaults to `true`. Requires the consuming
+   * site to configure `SunUIAstroIntegration({ imageServiceBaseUrl })`; without
+   * it there is no image service to request a placeholder from and the image
+   * renders with no placeholder regardless of this flag.
    */
-  imagesBaseUrl?: string
-  /** Disable the blur-up placeholder even when `imagesBaseUrl` is set. Defaults to `true`. */
   placeholder?: boolean
   /** Apply a CSS-only mask to the blur-up placeholder. */
   placeholderMode?: SunPicturePlaceholderMode

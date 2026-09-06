@@ -1,20 +1,19 @@
 ---
-import { IMAGES_BASE_URL } from "astro:env/server"
-
 import Layout from "@layouts/Layout.astro"
 import Heading from "@components/Heading.astro"
-import TrajectoryVideo from "@components/TrajectoryVideo.astro"
+import FeatureCards from "@components/FeatureCards.astro"
 import type { ComponentProps } from "astro/types"
 import { defaultConfig } from "@/data/site"
-import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { buildWhatsAppLink } from "@/data/whatsapp"
+import { autonomyCards } from "@/data/autonomy"
+import { testimonials } from "@/data/testimonials"
+import { SunIcon, SunPicture, SunYoutube } from "@vandal-websites/sun-ui/astro"
 import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
 import Button from "@components/Button.astro"
 import WidgetReadMore from "@components/widgets/ReadMore.astro"
 import WidgetTestimonials from "@components/widgets/Testimonials.astro"
 import Navigation from "@components/Navigation.astro"
-
-const HERO_SRC =
-  "https://files.vandal.services/brunabraz/images/hero-oficial.png"
+import Hero from "@components/Hero.astro"
 
 const timeline = [
   {
@@ -30,7 +29,7 @@ const timeline = [
     description: "BSc - Aberystwyth University",
   },
   {
-    icon: "language",
+    icon: "languages",
     prefix: "2021-2025",
     name: "Letras-Inglês",
     description:
@@ -49,152 +48,74 @@ const timeline = [
     description: "6 anos online",
   },
   {
-    icon: "globe-outline",
+    icon: "world",
     prefix: "∞",
     name: "30+ países",
     description: "Vividos e percorridos",
   },
 ]
 
-const tools = [
-  {
-    icon: {
-      name: "compass",
-      width: 44.4,
-    },
-    name: "Autonomia",
-    description:
-      "Acessar mais culturas, mais possibilidades e mais formas de existir.",
-  },
-  {
-    icon: {
-      name: "sun",
-      width: 56.6,
-    },
-    name: "Expressão",
-    description:
-      "Fazer suas ideias, histórias e opiniões chegarem mais longe e alcançarem mais pessoas.",
-  },
-  {
-    icon: {
-      name: "eye",
-      width: 51.9,
-    },
-    name: "Consciência",
-    description:
-      "Entender como cultura, história e poder vivem dentro de uma língua.",
-  },
-  {
-    icon: {
-      name: "feather",
-      width: 29.2,
-    },
-    name: "Personalização",
-    description:
-      "Aulas construídas a partir do seu repertório, ritmo, interesses e objetivos.",
-  },
-]
-
-const testimonials = [
-  {
-    image: {
-      src: "https://placehold.co/40x40",
-      alt: "",
-    },
-    author: `Nome Aluno`,
-    content:
-      "Lorem ipsum dolor sit amet consectetur. Enim donec lectus tellus magna velit. Quis ridiculus dignissim proin donec orci nunc in eget. Quam vitae dui in sed lobortis mi. Arcu nunc tempus dignissim aliquet volutpat at tellus. Egestas aliquam gravida enim egestas gravida egestas elit blandit adipiscing.",
-  },
-  {
-    image: {
-      src: "https://placehold.co/40x40",
-      alt: "",
-    },
-    author: `Nome Aluno`,
-    content:
-      "Lorem ipsum dolor sit amet consectetur. Enim donec lectus tellus magna velit. Quis ridiculus dignissim proin donec orci nunc in eget. Quam vitae dui in sed lobortis mi. Arcu nunc tempus dignissim aliquet volutpat at tellus. Egestas aliquam gravida enim egestas gravida egestas elit blandit adipiscing.",
-  },
-  {
-    image: {
-      src: "https://placehold.co/40x40",
-      alt: "",
-    },
-    author: `Nome Aluno`,
-    content:
-      "Lorem ipsum dolor sit amet consectetur. Enim donec lectus tellus magna velit. Quis ridiculus dignissim proin donec orci nunc in eget. Quam vitae dui in sed lobortis mi. Arcu nunc tempus dignissim aliquet volutpat at tellus. Egestas aliquam gravida enim egestas gravida egestas elit blandit adipiscing.",
-  },
-  {
-    image: {
-      src: "https://placehold.co/40x40",
-      alt: "",
-    },
-    author: `Nome Aluno`,
-    content:
-      "Lorem ipsum dolor sit amet consectetur. Enim donec lectus tellus magna velit. Quis ridiculus dignissim proin donec orci nunc in eget. Quam vitae dui in sed lobortis mi. Arcu nunc tempus dignissim aliquet volutpat at tellus. Egestas aliquam gravida enim egestas gravida egestas elit blandit adipiscing.",
-  },
-]
-
 const posts = [
-  {
-    image: {
-      src: "https://placehold.co/341x192",
-      alt: "",
-    },
-    tags: [
-      {
-        label: "Linguística",
-        slug: "linguistica",
-      },
-    ],
-    title: "O que significa ser fluente em inglês?",
-    slug: "#",
-  },
-  {
-    image: {
-      src: "https://placehold.co/341x192",
-      alt: "",
-    },
-    tags: [
-      {
-        label: "Cultura",
-        slug: "cultura",
-      },
-    ],
-    title: "Inglês como ferramenta de leitura crítica do mundo",
-    slug: "#",
-  },
-  {
-    image: {
-      src: "https://placehold.co/341x192",
-      alt: "",
-    },
-    tags: [
-      {
-        label: "Linguística",
-        slug: "linguistica",
-      },
-    ],
-    title: "O que significa ser fluente em inglês?",
-    slug: "#",
-  },
-  {
-    image: {
-      src: "https://placehold.co/341x192",
-      alt: "",
-    },
-    tags: [
-      {
-        label: "Cultura",
-        slug: "cultura",
-      },
-    ],
-    title: "Inglês como ferramenta de leitura crítica do mundo",
-    slug: "#",
-  },
-]
+  // {
+  //   image: {
+  //     src: "https://placehold.co/341x192",
+  //     alt: "",
+  //   },
+  //   tags: [
+  //     {
+  //       label: "Linguística",
+  //       slug: "linguistica",
+  //     },
+  //   ],
+  //   title: "O que significa ser fluente em inglês?",
+  //   slug: "#",
+  // },
+  // {
+  //   image: {
+  //     src: "https://placehold.co/341x192",
+  //     alt: "",
+  //   },
+  //   tags: [
+  //     {
+  //       label: "Cultura",
+  //       slug: "cultura",
+  //     },
+  //   ],
+  //   title: "Inglês como ferramenta de leitura crítica do mundo",
+  //   slug: "#",
+  // },
+  // {
+  //   image: {
+  //     src: "https://placehold.co/341x192",
+  //     alt: "",
+  //   },
+  //   tags: [
+  //     {
+  //       label: "Linguística",
+  //       slug: "linguistica",
+  //     },
+  //   ],
+  //   title: "O que significa ser fluente em inglês?",
+  //   slug: "#",
+  // },
+  // {
+  //   image: {
+  //     src: "https://placehold.co/341x192",
+  //     alt: "",
+  //   },
+  //   tags: [
+  //     {
+  //       label: "Cultura",
+  //       slug: "cultura",
+  //     },
+  //   ],
+  //   title: "Inglês como ferramenta de leitura crítica do mundo",
+  //   slug: "#",
+  // },
+] as []
 
 const meta = {
-  title: `Bruna Braz`,
+  title: `Bruna Braz | Professora de Inglês Online e Aulas Personalizadas`,
   description: defaultConfig.description,
   image: defaultConfig.socialImage,
   url: Astro.url,
@@ -203,18 +124,21 @@ const meta = {
 
 <Layout {...meta}>
   <!-- Navigation -->
-  <Navigation />
-
-  <!-- Hero -->
-  <header class="bg-tobago mt-18">
-    <div
-      class="container flex flex-col items-center gap-8 py-10 pb-0 lg:flex-row lg:flex-nowrap lg:justify-between lg:pt-14"
+  <Navigation variant="brown" />
+  <main>
+    <!-- Hero -->
+    <Hero
+      variant="home"
+      containerClass="pb-0"
+      ctaHref={buildWhatsAppLink(
+        "Olá, Bruna! Vi seu site e quero saber mais sobre as aulas de inglês."
+      )}
     >
       <SunPicture
-        src={HERO_SRC}
-        alt="Bruna Braz, professora de inglês"
+        src="https://files.vandal.services/brunabraz/images/hero-oficial.png"
+        alt={"Bruna Braz, professora de inglês"}
         width={375}
-        height={361}
+        height={323}
         quality={90}
         densities={[1, 1.5, 2, 3]}
         breakpoints={[
@@ -222,307 +146,335 @@ const meta = {
           { minWidth: 1280, width: 493 },
         ]}
         loading="eager"
-        imagesBaseUrl={IMAGES_BASE_URL}
+        fetchpriority="high"
         placeholderMode="circle"
-        wrapperClass="order-2 -mx-4 aspect-[375/361] w-full sm:mx-0 sm:w-[375px] lg:order-2 lg:aspect-[472/460] lg:w-[472px] lg:shrink-0 lg:self-end xl:aspect-[493/481] xl:w-[493px]"
-        class="size-full object-cover"
+        wrapperClass="order-2 -mx-4 aspect-[375/323] w-full sm:mx-0 sm:w-[375px] lg:order-2 lg:aspect-[472/460] lg:w-[472px] lg:shrink-0 lg:self-end  xl:w-[493px]"
+        class="size-full object-contain"
+        slot="media"
       />
-      <div
-        class="order-1 flex flex-col items-center gap-4 lg:order-1 lg:items-start lg:py-12"
-      >
-        <Heading
-          as="h1"
-          class="text-white-chocolate max-w-[60ch] text-center font-serif text-[2rem] leading-[110%] font-bold sm:text-[40px] lg:text-left"
-        >
-          Faça do <em class="text-light-mushroom italic">inglês</em> uma ferramenta
-          para <em class="text-light-mushroom italic"
-            >ampliar sua voz no mundo</em
-          >
-        </Heading>
-        <Heading
-          as="p"
-          class="text-white-chocolate text-center leading-[140%] md:max-w-[80ch] lg:text-left"
-        >
-          Prazer, me chamo Bruna Braz e sou [sua futura] professora de inglês!
-          Tenho como máxima ensinar este idioma de forma personalizada, crítica
-          e humana, conectando aprendizado, cultura, autonomia e expressão.
-        </Heading>
-        <Button as="a" href="#" class="mt-6" iconName="whatsapp"
-          >Quero estudar com você!</Button
-        >
-      </div>
-    </div>
-  </header>
 
-  <!-- Credentials band -->
-  <section
-    class="bg-ruddy-brown border-t-tobago border-b-ruddy-brown border-t border-b"
-  >
-    <ul
-      class="text-white-chocolate divide-tobago flex flex-col items-center divide-y px-0 font-serif leading-[140%] tracking-[-.48px] sm:grid sm:grid-cols-2 sm:flex-row sm:items-stretch sm:justify-center sm:divide-x sm:divide-y-0 lg:mx-auto lg:max-w-240 lg:grid-cols-4 lg:px-8 xl:max-w-304"
-    >
-      <li
-        class="sm:border-b-tobago flex w-full items-center justify-center px-2 py-2 text-center sm:border-b lg:border-b-0"
-      >
-        10 anos de experiência<br />(6 anos online)
-      </li>
-      <li
-        class="sm:border-b-tobago flex w-full items-center justify-center px-2 py-2 text-center sm:border-b lg:border-b-0"
-      >
-        Letras-Inglês<br />(Universidade Estadual de Londrina)
-      </li>
-      <li
-        class="sm:border-b-tobago flex w-full items-center justify-center px-2 py-2 text-center sm:border-b lg:border-b-0"
-      >
-        Mestre em<br />Estudos da Linguagem
-      </li>
-      <li
-        class="sm:border-b-tobago flex w-full items-center justify-center px-2 py-2 text-center sm:border-b lg:border-b-0"
-      >
-        Mais de 30<br />países explorados
-      </li>
-    </ul>
-  </section>
-
-  <!-- Uma língua + carousel -->
-  <section class="flex flex-col overflow-clip bg-white py-14">
-    <div class="container flex flex-col items-center gap-6 text-center">
       <Heading
-        as="h2"
-        class="text-tobago w-full max-w-[60ch] font-serif text-[2rem] leading-[110%] font-bold text-balance"
+        as="h1"
+        class="text-white-chocolate text-hero max-w-[60ch] text-center lg:text-left"
+        slot="heading"
       >
-        Uma língua nunca <em class="text-giraffe-brown italic"
-          >é só uma língua.</em
-        >.
+        Faça do <em class="text-light-mushroom italic">inglês</em> uma ferramenta
+        para
+        <em class="text-light-mushroom italic">ampliar sua voz no mundo</em>
       </Heading>
-      <p class="text-brown-leather leading-[140%] text-wrap md:max-w-[80ch]">
-        Aprender inglês vai muito além de memorizar regras ou buscar uma
-        finitude na fluência. Toda língua carrega cultura, história e formas de
-        existir no mundo. Aprender uma língua nova não só complementa e expande
-        sua forma de viver, mas também amplifica o poder da sua voz.
-      </p>
-    </div>
-    <SunCarousel client:load className="mt-10">
-      {
-        [
-          "https://placehold.co/290x340",
-          "https://placehold.co/290x340",
-          "https://placehold.co/290x340",
-          "https://placehold.co/290x340",
-          "https://placehold.co/290x340",
-          "https://placehold.co/290x340",
-        ].map(imgSrc => (
-          <div class="grid-cols isolate grid w-full min-w-[min(calc(100%-2rem),18.125rem)] snap-center content-center items-center justify-center justify-items-center overflow-visible first:ml-4 last:mr-4 lg:w-72.5 first:lg:ml-8 last:lg:mr-8">
-            <SunIcon
-              name="image-frame"
-              class="text-giraffe-brown z-3 col-start-1 row-start-1 aspect-290/340 select-none"
-            />
-            <img
-              src={imgSrc}
-              alt=""
-              class="image-mask z-2 col-start-1 row-start-1 aspect-290/340"
-            />
-          </div>
-        ))
-      }
-    </SunCarousel>
-  </section>
-  <!-- Minha trajetória + video -->
-  <section class="bg-cambridge bg-pattern-wave pt-14 pb-12 lg:pt-20 lg:pb-14">
-    <div class="container flex flex-col gap-10 lg:max-w-200.5">
-      <div class="flex flex-col gap-4">
-        <Heading
-          as="h3"
-          class="text-white-chocolate text-center text-base leading-[100%] font-semibold uppercase"
-          >Minha tragetória até aqui</Heading
-        >
-        <Heading
-          as="h2"
-          class="text-light-mushroom text-center font-serif text-[2rem] leading-[110%] font-bold"
-        >
-          A forma como eu ensino mudou quando minha forma de enxergar o inglês
-          mudou.
-        </Heading>
-        <p class="text-white-chocolate text-center leading-[120%]">
-          Minha trajetória não foi linear e percorrei — e ainda percorro —
-          diversos caminhos para chegar onde estou. No video você me escuta
-          contando minha trajetória em 1 minutinho.
-        </p>
-      </div>
-      <TrajectoryVideo />
-      <Button
-        as="a"
-        href="#"
-        variant="secondary"
-        class="mx-auto"
-        iconName="whatsapp"
+      <Heading
+        as="p"
+        class="text-white-chocolate text-body text-center md:max-w-[80ch] lg:text-left"
+        slot="description"
       >
-        Quero estudar com você!
-      </Button>
-    </div>
-  </section>
+        Prazer, me chamo Bruna Braz e sou [sua futura] professora de inglês!
+        Tenho como máxima ensinar este idioma de forma personalizada, crítica e
+        humana, conectando aprendizado, cultura, autonomia e expressão.
+      </Heading>
+      <Fragment slot="cta">Quero estudar com você!</Fragment>
+    </Hero>
 
-  <!-- Timeline -->
-  <section class="bg-dark-green">
-    <div class="container py-10">
+    <!-- Credentials band -->
+    <section
+      id="credenciais"
+      class="bg-ruddy-brown border-t-tobago border-b-ruddy-brown border-t border-b"
+    >
       <ul
-        class="relative isolate mx-auto flex w-full max-w-113 flex-col gap-8 lg:mx-[unset] lg:max-w-[unset] lg:flex-row lg:flex-nowrap lg:gap-[unset]"
+        class="text-white-chocolate text-stat divide-tobago flex flex-col items-center divide-y px-0 tracking-[-.48px] sm:grid sm:grid-cols-2 sm:flex-row sm:items-stretch sm:justify-center sm:divide-x sm:divide-y-0 lg:mx-auto lg:max-w-240 lg:grid-cols-4 lg:px-8 xl:max-w-304"
       >
-        <div
-          aria-hidden="true"
-          class="text-light-mushroom pointer-events-none absolute top-10 bottom-10 left-10 z-0 w-px bg-[repeating-linear-gradient(to_bottom,currentColor_0_4px,transparent_4px_8px)] lg:top-[4.225rem] lg:right-[calc(100%/12)] lg:bottom-auto lg:left-[calc(100%/12)] lg:h-px lg:w-auto lg:bg-[repeating-linear-gradient(to_right,currentColor_0_4px,transparent_4px_8px)]"
+        <li
+          class="sm:border-b-tobago flex w-full items-center justify-center px-2 py-2 text-center sm:border-b lg:border-b-0"
+          data-animate
+          data-delay="1"
         >
-        </div>
-        {
-          timeline.map(({ icon, prefix, name, description }) => (
-            <li class="relative z-10 w-full max-w-113 lg:max-w-[unset]">
-              <article class="group grid grid-cols-[5rem_1.25rem_1fr] grid-rows-[1fr_auto_auto_auto_1fr] items-center lg:flex lg:flex-col lg:gap-2">
-                <Heading
-                  as="h4"
-                  class="text-light-mushroom col-start-3 row-start-2 font-serif text-[.875rem] leading-[140%] font-bold"
-                >
-                  {prefix === "∞" ? (
-                    <SunIcon name="infinity" width={20} height={20} />
-                  ) : (
-                    prefix
-                  )}
-                </Heading>
-                <div class="bg-dark-green col-start-1 row-span-5">
-                  <div class="border-cambridge from-cambridge/40 to-cambridge/70 text-light-mushroom group-hover:text-white-chocolate group-hover:border-ruddy-brown group-hover:from-ruddy-brown/60 group-hover:to-ruddy-brown/90 flex h-20 w-20 items-center justify-center rounded-full border bg-linear-to-b transition-colors">
-                    <SunIcon name={icon} width={40} height={40} />
-                  </div>
-                </div>
-                <Heading
-                  as="h3"
-                  class="text-light-mushroom col-start-3 row-start-3 font-serif text-[.875rem] leading-[140%] font-bold"
-                >
-                  {name}
-                </Heading>
-                <Heading
-                  as="p"
-                  class="text-white-chocolate -lg:mt-1 col-start-3 row-start-4 text-[.875rem] leading-[140%] lg:text-center"
-                >
-                  {description}
-                </Heading>
-              </article>
-            </li>
-          ))
-        }
+          10 anos de experiência<br />(6 anos online)
+        </li>
+        <li
+          class="sm:border-b-tobago flex w-full items-center justify-center px-2 py-2 text-center sm:border-b lg:border-b-0"
+          data-animate
+          data-delay="2"
+        >
+          Letras-Inglês<br />(Universidade Estadual de Londrina)
+        </li>
+        <li
+          class="sm:border-b-tobago flex w-full items-center justify-center px-2 py-2 text-center sm:border-b lg:border-b-0"
+          data-animate
+          data-delay="3"
+        >
+          Mestre em<br />Estudos da Linguagem
+        </li>
+        <li
+          class="sm:border-b-tobago flex w-full items-center justify-center px-2 py-2 text-center sm:border-b lg:border-b-0"
+          data-animate
+          data-delay="4"
+        >
+          Mais de 30<br />países explorados
+        </li>
       </ul>
-    </div>
-  </section>
+    </section>
 
-  <!-- Ensino inglês como ferramenta de autonomia + cards -->
-  <section class="flex flex-col bg-white py-14">
-    <div class="container flex flex-col gap-y-10">
-      <div class="flex flex-col items-center gap-6 text-center">
+    <!-- Uma língua + carousel -->
+    <section
+      id="lingua-e-cultura"
+      class="flex flex-col overflow-clip bg-white py-14"
+    >
+      <div class="container flex flex-col items-center gap-6 text-center">
         <Heading
           as="h2"
-          class="text-tobago w-full max-w-[60ch] font-serif text-[2rem] leading-[110%] font-bold text-balance"
+          class="text-tobago text-section-heading w-full max-w-[60ch] text-balance"
+          data-animate
         >
-          Ensino inglês como <em class="text-giraffe-brown italic"
-            >ferramenta de autonomia</em
+          Uma língua nunca <em class="text-giraffe-brown italic"
+            >é só uma língua.</em
           >.
         </Heading>
-        <p class="text-brown-leather max-w-[60ch] leading-[140%] text-balance">
-          Nas minhas aulas, falar em inglês não é o ponto final. Comigo, você
-          faz da língua inglesa uma ferramenta para ampliar seu repertório,
-          acessar culturas e ecoar sua voz.
+        <p
+          class="text-brown-leather text-body text-wrap md:max-w-[80ch]"
+          data-animate
+        >
+          Aprender inglês vai muito além de memorizar regras ou buscar uma
+          finitude na fluência. Toda língua carrega cultura, história e formas
+          de existir no mundo. Aprender uma língua nova não só complementa e
+          expande sua forma de viver, mas também amplifica o poder da sua voz.
         </p>
       </div>
-      <div
-        class="flex flex-col flex-wrap items-center justify-center gap-4 sm:flex-row sm:items-stretch lg:flex-nowrap xl:gap-6"
-      >
-        {
-          tools.map(({ icon, name, description }) => {
-            return (
-              <article class="bg-tobago flex w-full flex-col gap-y-4 p-6 sm:w-74 lg:w-57 lg:min-w-57 xl:w-71.5 xl:min-w-71.5">
-                <div class="isolate grid size-16 content-center items-center justify-center justify-items-center overflow-visible">
+      <div data-animate>
+        <SunCarousel client:load className="mt-10 items-stretch">
+          {
+            [
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-1.jpg",
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-2.jpg",
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-3.jpg",
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-4.jpg",
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-5.jpg",
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-6.jpg",
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-7.jpg",
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-8.jpg",
+              "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-9.jpg",
+            ].map(imgSrc => (
+              <div class="flex w-[290px] min-w-[290px] shrink-0 snap-center items-start justify-center overflow-visible first:ml-4 last:mr-4 lg:first:ml-8 lg:last:mr-8">
+                <div class="relative h-[362px] w-[290px]">
                   <SunIcon
-                    name={icon.name}
-                    width={icon.width}
-                    height="100%"
-                    class="text-tobago z-3 col-start-1 row-start-1"
+                    name="image-frame"
+                    width={290}
+                    height={362}
+                    class="text-giraffe-brown pointer-events-none absolute inset-0 z-3 h-[362px] w-[290px] object-fill select-none"
                   />
-                  <SunIcon
-                    name="dark-square"
-                    width={70}
-                    height={70}
-                    class="text-light-mushroom col-start-1 row-start-1"
+                  <SunPicture
+                    src={imgSrc}
+                    alt=""
+                    width={290}
+                    height={362}
+                    quality={90}
+                    densities={[1, 1.5, 1.75, 2, 3]}
+                    wrapperClass="relative z-2 h-[362px] w-[290px]"
+                    class="image-mask block size-full object-cover"
                   />
                 </div>
-                <Heading
-                  as="h3"
-                  class="text-light-mushroom overflow-hidden font-serif text-[1.5rem] leading-[110%] font-semibold text-ellipsis"
-                >
-                  {name}
-                </Heading>
-                <p class="text-white-chocolate leading-[140%]">{description}</p>
-              </article>
-            )
-          })
-        }
+              </div>
+            ))
+          }
+        </SunCarousel>
       </div>
-    </div>
-  </section>
+    </section>
+    <!-- Minha trajetória + video -->
+    <section
+      id="minha-trajetoria"
+      class="bg-cambridge bg-pattern-wave pt-14 pb-12 lg:pt-20 lg:pb-14"
+    >
+      <div class="container flex flex-col gap-10 lg:max-w-200.5">
+        <div class="flex flex-col gap-4" data-animate>
+          <Heading as="h3" class="text-white-chocolate text-eyebrow text-center"
+            >Minha tragetória até aqui</Heading
+          >
+          <Heading
+            as="h2"
+            class="text-light-mushroom text-section-heading text-center"
+          >
+            A forma como eu ensino mudou quando minha forma de enxergar o inglês
+            mudou.
+          </Heading>
+          <p class="text-white-chocolate text-body text-center">
+            Minha trajetória não foi linear e percorrei — e ainda percorro —
+            diversos caminhos para chegar onde estou. No video você me escuta
+            contando minha trajetória em 1 minutinho.
+          </p>
+        </div>
+        <SunYoutube
+          videoId="vNFjWgcLZVs"
+          title="Vídeo: Bruna conta sua trajetória (1 min)"
+          data-animate
+          data-delay="1"
+        />
+        <Button
+          as="a"
+          href={buildWhatsAppLink(
+            "Olá, Bruna! Vi sua trajetória e quero estudar inglês com você."
+          )}
+          variant="secondary"
+          class="text-button mx-auto"
+          iconName="whatsapp"
+          data-animate
+          data-delay="2"
+        >
+          Quero estudar com você!
+        </Button>
+      </div>
+    </section>
 
-  <!-- Meu propósito + numbered needs + CTA -->
-  <section class="bg-white-chocolate overflow-x-clip">
-    <div class="relative container flex flex-col gap-y-6 py-14 lg:py-20">
-      <Heading
-        as="h2"
-        class="text-tobago w-full max-w-[50ch] font-serif text-[2rem] leading-[110%] font-bold text-wrap"
-      >
-        Meu propósito é guiar você a <em class="text-giraffe-brown italic"
-          >trilhar seu próprio caminho</em
-        > no aprendizado da{" "}<em class="text-giraffe-brown italic"
-          >Língua Inglesa</em
-        >.
-      </Heading>
-      <p class="text-brown-leather text-2xl leading-[160%]">
-        Cada estudante chega em um momento diferente. E cada momento pede uma
-        ação distinta.
-      </p>
-      <p
-        class="text-brown-leather text-base leading-[160%] font-semibold uppercase"
-      >
-        Às vezes você precisa de...
-      </p>
-      <ol class="flex flex-col gap-y-6">
-        {
-          [
-            "Um local seguro para errar sem medo (e você vai errar).",
-            "Alguém que ensine de uma forma diferente do que você já tentou.",
-            "Um desafio, mesmo que você acredite que chegou ao fim (spoiler: não tem fim).",
-            "Apenas se divertir estudando!",
-          ].map((item, index) => (
-            <li class="flex flex-row items-center-safe gap-x-4">
-              <span class="border-light-mushroom text-brown-leather flex aspect-square size-10 items-center-safe justify-center-safe rounded-full border leading-[110%] font-semibold">
-                {index + 1}
-              </span>
-              <span class="text-tobago font-serif text-[1.375rem] italic">
-                {item}
-              </span>
-            </li>
-          ))
-        }
-      </ol>
-      <Button
-        as="a"
-        variant="secondary"
-        href="#"
-        class="relative z-10 mt-4"
-        iconName="whatsapp">Conheça minhas aulas</Button
-      >
-      <SunIcon
-        name="compass"
-        width="11.125rem"
-        height="9.875rem"
-        class="xl:w-[24.3125]xl:h-[21.26413] absolute -right-2.75 bottom-[-2.00725rem] rotate-y-180 text-[#D8C5AC] select-none sm:right-0 sm:h-[16.14306rem] sm:w-74 lg:bottom-[-2.14rem] lg:h-[16.891rem] lg:w-77.25"
-      />
-    </div>
-  </section>
+    <!-- Timeline -->
+    <section id="linha-do-tempo" class="bg-dark-green">
+      <div class="container py-10">
+        <ul
+          class="relative isolate mx-auto flex w-full max-w-113 flex-col gap-8 lg:mx-[unset] lg:max-w-[unset] lg:flex-row lg:flex-nowrap lg:gap-[unset]"
+        >
+          <div
+            aria-hidden="true"
+            class="text-light-mushroom pointer-events-none absolute top-10 bottom-10 left-10 z-0 w-px bg-[repeating-linear-gradient(to_bottom,currentColor_0_4px,transparent_4px_8px)] lg:top-[4.225rem] lg:right-[calc(100%/12)] lg:bottom-auto lg:left-[calc(100%/12)] lg:h-px lg:w-auto lg:bg-[repeating-linear-gradient(to_right,currentColor_0_4px,transparent_4px_8px)]"
+          >
+          </div>
+          {
+            timeline.map(({ icon, prefix, name, description }, index) => (
+              <li
+                class="relative z-10 w-full max-w-113 lg:max-w-[unset]"
+                data-animate
+                data-delay={(index % 3) + 1}
+              >
+                <article class="group grid grid-cols-[5rem_1.25rem_1fr] grid-rows-[1fr_auto_auto_auto_1fr] items-center lg:flex lg:flex-col lg:gap-2">
+                  <Heading
+                    as="h3"
+                    class="text-light-mushroom text-stat col-start-3 row-start-2"
+                  >
+                    {prefix === "∞" ? (
+                      <SunIcon
+                        name="infinity"
+                        width={20}
+                        height={20}
+                        class="text-light-mushroom group-hover:text-white-chocolate"
+                      />
+                    ) : (
+                      prefix
+                    )}
+                  </Heading>
+                  <div class="bg-dark-green col-start-1 row-span-5">
+                    <div class="border-cambridge from-cambridge/40 to-cambridge/70 text-light-mushroom group-hover:text-white-chocolate group-hover:border-ruddy-brown group-hover:from-ruddy-brown/60 group-hover:to-ruddy-brown/90 flex h-20 w-20 items-center justify-center rounded-full border bg-linear-to-b transition-colors">
+                      <SunIcon
+                        name={icon}
+                        width={56}
+                        height={56}
+                        class="text-light-mushroom group-hover:text-white-chocolate"
+                      />
+                    </div>
+                  </div>
+                  <Heading
+                    as="h4"
+                    class="text-light-mushroom text-stat col-start-3 row-start-3"
+                  >
+                    {name}
+                  </Heading>
+                  <Heading
+                    as="p"
+                    class="text-white-chocolate text-body-small -lg:mt-1 col-start-3 row-start-4 lg:text-center"
+                  >
+                    {description}
+                  </Heading>
+                </article>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
 
-  <WidgetTestimonials testimonials={testimonials} />
-  <WidgetReadMore posts={posts} />
+    <!-- Ensino inglês como ferramenta de autonomia + cards -->
+    <section id="ferramenta-de-autonomia" class="flex flex-col bg-white py-14">
+      <div class="container flex flex-col gap-y-10">
+        <div class="flex flex-col items-center gap-6 text-center" data-animate>
+          <Heading
+            as="h2"
+            class="text-tobago text-section-heading w-full max-w-[60ch] text-balance"
+          >
+            Ensino inglês como <em class="text-giraffe-brown italic"
+              >ferramenta de autonomia</em
+            >.
+          </Heading>
+          <p class="text-brown-leather text-body max-w-[60ch] text-balance">
+            Nas minhas aulas, falar em inglês não é o ponto final. Comigo, você
+            faz da língua inglesa uma ferramenta para ampliar seu repertório,
+            acessar culturas e ecoar sua voz.
+          </p>
+        </div>
+        <div
+          class="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:gap-6"
+        >
+          <FeatureCards cards={autonomyCards} />
+        </div>
+      </div>
+    </section>
+
+    <!-- Meu propósito + numbered needs + CTA -->
+    <section id="meu-proposito" class="bg-white-chocolate overflow-x-clip">
+      <div class="relative container flex flex-col gap-y-6 py-14 lg:py-20">
+        <Heading
+          as="h2"
+          class="text-tobago text-section-heading w-full max-w-[50ch] text-wrap"
+          data-animate
+        >
+          Meu propósito é guiar você a <em class="text-giraffe-brown italic"
+            >trilhar seu próprio caminho</em
+          > no aprendizado da{" "}<em class="text-giraffe-brown italic"
+            >Língua Inglesa</em
+          >.
+        </Heading>
+        <p class="text-brown-leather text-body" data-animate>
+          Cada estudante chega em um momento diferente. E cada momento pede uma
+          ação distinta.
+        </p>
+        <p class="text-brown-leather text-eyebrow" data-animate>
+          Às vezes você precisa de...
+        </p>
+        <ol class="flex flex-col gap-y-6">
+          {
+            [
+              "Um local seguro para errar sem medo (e você vai errar).",
+              "Alguém que ensine de uma forma diferente do que você já tentou.",
+              "Um desafio, mesmo que você acredite que chegou ao fim (spoiler: não tem fim).",
+              "Apenas se divertir estudando!",
+            ].map((item, index) => (
+              <li
+                class="flex flex-row items-center-safe gap-x-4"
+                data-animate
+                data-delay={(index % 3) + 1}
+              >
+                <span class="border-light-mushroom text-brown-leather text-body flex aspect-square size-10 items-center-safe justify-center-safe rounded-full border leading-[110%] font-semibold">
+                  {index + 1}
+                </span>
+                <span class="text-tobago text-quote">{item}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <Button
+          as="a"
+          variant="secondary"
+          href={buildWhatsAppLink(
+            "Olá, Bruna! Quero conhecer suas aulas de inglês."
+          )}
+          class="text-button relative z-10 mt-4"
+          iconName="whatsapp"
+          data-animate
+          data-delay="4">Conheça minhas aulas</Button
+        >
+        <SunIcon
+          name="compass"
+          width="11.125rem"
+          height="9.875rem"
+          class="xl:w-[24.3125]xl:h-[21.26413] absolute -right-2.75 bottom-[-2.00725rem] rotate-y-180 text-[#D8C5AC] select-none sm:right-0 sm:h-[16.14306rem] sm:w-74 lg:bottom-[-2.14rem] lg:h-[16.891rem] lg:w-77.25"
+        />
+      </div>
+    </section>
+
+    <WidgetTestimonials id="depoimentos" testimonials={testimonials} />
+    <WidgetReadMore posts={posts} />
+  </main>
 </Layout>

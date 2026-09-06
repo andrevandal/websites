@@ -1,25 +1,35 @@
 ---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { buildWhatsAppLink } from "@/data/whatsapp"
 import Button from "./Button.astro"
 
 export const navigation = [
-  { href: "/#sobre-min", name: "Sobre Mim" },
-  { href: "/#minhas-aulas", name: "Minhas Aulas" },
-  { href: "/blog/", name: "Blog" },
-]
+  { href: "/#minha-trajetoria", name: "Sobre Mim" },
+  { href: "/aula-ingles-particular", name: "Minhas Aulas" },
+] as const
+
+type Props = {
+  variant?: "brown" | "green"
+}
+
+const { variant = "brown" } = Astro.props
 ---
 
 <nav
   id="navigation"
-  class="bg-tobago border-b-ruddy-brown fixed top-0 z-20 w-full border-b"
+  class="fixed top-0 z-20 w-full border-b border-transparent bg-transparent transition-colors duration-200"
+  data-variant={variant}
 >
   <div
     class="container grid grid-cols-[1fr_40px] flex-wrap gap-x-2 px-4 py-4 lg:flex lg:flex-row lg:justify-between"
   >
     <a href="/" class="block">
-      <img
-        src="/images/logo-horizontal-only-text.png"
-        width="183"
-        alt=""
+      <SunPicture
+        src="https://files.vandal.services/brunabraz/images/logo-horizontal-only-text.png"
+        alt="Bruna Braz"
+        width={183}
+        height={40}
+        densities={[1, 1.5, 1.75, 2, 3]}
         loading="eager"
       />
     </a>
@@ -36,7 +46,7 @@ export const navigation = [
               variant="secondary-inverted"
               block
               href={item.href}
-              class="text-left lg:h-10"
+              class="nav-link text-left lg:h-10"
             >
               {item.name}
             </Button>
@@ -46,10 +56,13 @@ export const navigation = [
       <li>
         <Button
           as="a"
-          href={"/#"}
+          variant={variant === "green" ? "secondary" : "primary"}
           block
           centered
-          class="track-conversion lg:h-10"
+          href={buildWhatsAppLink(
+            "Olá, Bruna! Quero ser sua aluna(o) de inglês."
+          )}
+          class="nav-cta track-conversion lg:h-10"
           data-lead-type="whatsapp"
           data-button-location="header"
           iconName="whatsapp"
@@ -59,8 +72,20 @@ export const navigation = [
       </li>
     </ul>
   </div>
+  <div
+    class:list="absolute"
+    data-document-progress
+    data-visible="false"
+    role="progressbar"
+    aria-label="Progresso da página"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+    aria-hidden="true"
+  >
+    <span data-document-progress-bar></span>
+  </div>
 </nav>
-
 <style>
   @reference "../styles/global.css";
 
@@ -99,8 +124,52 @@ export const navigation = [
     @apply border-transparent;
   }
 
+  #navigation[data-variant="brown"] {
+    --navigation-surface: var(--color-tobago);
+    --navigation-border: var(--color-ruddy-brown);
+    --navigation-cta: var(--color-cambridge);
+    --navigation-progress: var(--color-cambridge);
+    --navigation-link-overlay: color-mix(
+      in srgb,
+      var(--color-tobago) 72%,
+      transparent
+    );
+    --navigation-hover: var(--color-dark-green);
+  }
+
+  #navigation[data-variant="green"] {
+    --navigation-surface: var(--color-dark-green);
+    --navigation-border: var(--color-cambridge);
+    --navigation-cta: var(--color-ruddy-brown);
+    --navigation-progress: var(--color-ruddy-brown);
+    --navigation-link-overlay: color-mix(
+      in srgb,
+      var(--color-dark-green) 72%,
+      transparent
+    );
+    --navigation-hover: var(--color-tobago);
+  }
+
+  #navigation[data-variant] #menu li :global(.nav-link) {
+    background-color: var(--navigation-link-overlay);
+  }
+
+  #navigation[data-variant] #menu li :global(.nav-cta) {
+    background-color: color-mix(
+      in srgb,
+      var(--navigation-cta) 72%,
+      transparent
+    );
+  }
+
+  #navigation[data-variant] #menu li :global(.nav-link:hover),
+  #navigation[data-variant] #menu li :global(.nav-cta:not(:disabled):hover) {
+    background-color: var(--navigation-hover);
+    color: var(--color-light-mushroom);
+  }
+
   #menu-opened:checked ~ #menu {
-    @apply mt-4 max-h-fit pt-4 pb-3 lg:p-0;
+    @apply mt-4 max-h-fit pt-4 pb-3 lg:mt-0 lg:p-0;
     max-height: 282px;
   }
 
@@ -116,9 +185,51 @@ export const navigation = [
     @apply top-0 rotate-45;
   }
 
-  #navigation.actived #menu,
-  #navigation:has(#menu-opened:checked) #menu {
-    /* @apply bg-ruddy-brown; */
+  #navigation.actived[data-variant],
+  #navigation:has(#menu-opened:checked)[data-variant] {
+    border-bottom-color: var(--navigation-border);
+  }
+
+  #navigation.actived[data-variant],
+  #navigation:has(#menu-opened:checked)[data-variant] {
+    background-color: var(--navigation-surface);
+  }
+
+  #navigation.actived[data-variant] #menu li :global(.nav-link),
+  #navigation:has(#menu-opened:checked)[data-variant]
+    #menu
+    li
+    :global(.nav-link),
+  #navigation.actived[data-variant] #menu li :global(.nav-cta),
+  #navigation:has(#menu-opened:checked)[data-variant]
+    #menu
+    li
+    :global(.nav-cta) {
+    background-color: var(--navigation-surface);
+  }
+
+  #navigation.actived[data-variant] #menu li :global(.nav-cta),
+  #navigation:has(#menu-opened:checked)[data-variant]
+    #menu
+    li
+    :global(.nav-cta) {
+    background-color: var(--navigation-cta);
+  }
+
+  [data-document-progress] {
+    @apply h-1 w-full overflow-hidden opacity-0 transition-opacity duration-200;
+  }
+
+  [data-document-progress][data-visible="true"] {
+    @apply opacity-100;
+  }
+
+  [data-document-progress-bar] {
+    display: block;
+    width: 0;
+    height: 100%;
+    background-color: var(--navigation-progress);
+    transition: width 200ms ease-out;
   }
 </style>
 
@@ -139,17 +250,51 @@ export const navigation = [
       nav.querySelector<HTMLElement>("[data-header-menu]") ??
       nav.querySelector<HTMLElement>("ul")
 
+    const progress = nav.querySelector<HTMLElement>("[data-document-progress]")
+    const progressBar = nav.querySelector<HTMLElement>(
+      "[data-document-progress-bar]"
+    )
+
     const closeMenu = () => {
       if (toggle) toggle.checked = false
     }
 
-    window.addEventListener("scroll", () => {
-      nav.classList.toggle("actived", window.scrollY > 0)
+    let frame: number | null = null
+    const updateNavigation = () => {
+      frame = null
+
+      const scrollTop = window.scrollY
+      const scrollableHeight =
+        document.documentElement.scrollHeight - window.innerHeight
+      const percentage =
+        scrollableHeight > 0
+          ? Math.min(100, Math.max(0, (scrollTop / scrollableHeight) * 100))
+          : 0
+      const isActive = scrollTop > nav.offsetHeight
+
+      nav.classList.toggle("actived", isActive)
+
+      if (progress && progressBar) {
+        progress.dataset.visible = String(isActive)
+        progress.setAttribute("aria-hidden", String(!isActive))
+        progress.setAttribute("aria-valuenow", String(Math.round(percentage)))
+        progressBar.style.width = `${percentage}%`
+      }
+    }
+
+    const scheduleNavigationUpdate = () => {
+      if (frame !== null) return
+      frame = window.requestAnimationFrame(updateNavigation)
+    }
+
+    window.addEventListener("scroll", scheduleNavigationUpdate, {
+      passive: true,
     })
+    scheduleNavigationUpdate()
 
     if (!toggle || !menu) return
 
-    menu?.querySelectorAll("a").forEach(link => {
+    menu.querySelectorAll("a").forEach(link => {
       link.addEventListener("click", closeMenu)
     })
 
@@ -163,5 +308,5 @@ export const navigation = [
     )
   }
 
-  useHeader("#inicio nav")
+  useHeader("#navigation")
 </script>

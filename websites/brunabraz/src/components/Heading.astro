@@ -1,5 +1,4 @@
 ---
-import { cn } from "@vandal-websites/sun-ui"
 import type { Polymorphic } from "astro/types"
 
 type AllowedTags = "h1" | "h2" | "h3" | "h4" | "h5" | "span" | "p"
@@ -11,6 +10,6 @@ type Props<Tag extends AllowedTags = AllowedTags> = Polymorphic<{
 const { as: Tag = "h2", class: className, ...attrs } = Astro.props
 ---
 
-<Tag class={cn("text-balance", className)} {...attrs}>
+<Tag class:list={["text-balance", className]} {...attrs}>
   <slot />
 </Tag>

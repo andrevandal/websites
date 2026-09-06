@@ -1,0 +1,234 @@
+---
+import { getImage } from "astro:assets"
+import type { SunVideoProps as Props } from "./Video.props"
+import SunPicture from "./Picture.astro"
+import { buildVideoSources } from "./Video.utils"
+import { cn } from "../../index"
+
+const props = Astro.props as Props
+const {
+  sources,
+  poster,
+  width,
+  height,
+  title,
+  class: className,
+  wrapperClass,
+} = props
+
+const videoSources = buildVideoSources(sources)
+
+const optimizedPoster = await getImage({ src: poster, width, height })
+const optimizedPosterUrl = optimizedPoster.src
+---
+
+<div
+  class={cn("sun-video", wrapperClass)}
+  data-sun-video
+  data-autoplay={props.autoplay ? "" : undefined}
+  data-sources={props.autoplay ? JSON.stringify(videoSources) : undefined}
+  data-title={props.autoplay ? title : undefined}
+  style={`aspect-ratio: ${width} / ${height}`}
+>
+  {
+    props.autoplay ? (
+      <>
+        <SunPicture
+          src={poster}
+          alt={props.posterAlt}
+          width={width}
+          height={height}
+          class={cn("sun-video__poster-img", className)}
+          wrapperClass="sun-video__poster"
+        />
+        <button
+          type="button"
+          class="sun-video__play"
+          hidden
+          aria-label={props.playlabel ?? "Play"}
+        >
+          <svg
+            class="sun-video__play-icon"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </button>
+        <noscript>
+          <video
+            controls
+            preload="none"
+            poster={optimizedPosterUrl}
+            width={width}
+            height={height}
+            aria-label={title}
+            class={cn("sun-video__video", className)}
+          >
+            {videoSources.map(source => (
+              <source src={source.src} type={source.type} />
+            ))}
+          </video>
+        </noscript>
+      </>
+    ) : (
+      <video
+        controls
+        preload="none"
+        poster={optimizedPosterUrl}
+        width={width}
+        height={height}
+        aria-label={title}
+        class={cn("sun-video__video", className)}
+      >
+        {videoSources.map(source => (
+          <source src={source.src} type={source.type} />
+        ))}
+      </video>
+    )
+  }
+</div>
+
+<style>
+  .sun-video {
+    position: relative;
+    display: block;
+    overflow: hidden;
+  }
+
+  .sun-video :global(.sun-video__poster) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sun-video :global(.sun-video__poster-img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .sun-video :global(.sun-video__video) {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 3;
+  }
+
+  .sun-video__play {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .sun-video__play[hidden] {
+    display: none;
+  }
+
+  .sun-video__play-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    fill: white;
+    filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.4));
+  }
+</style>
+
+<script>
+  import { canAutoplay } from "./Video.utils"
+  import type { SunVideoSource, SunVideoConnectionInfo } from "./Video.utils"
+
+  const injectVideo = (wrapper: HTMLElement): HTMLVideoElement => {
+    const existing =
+      wrapper.querySelector<HTMLVideoElement>(".sun-video__video")
+    if (existing) return existing
+
+    const sourcesData: SunVideoSource[] = JSON.parse(
+      wrapper.dataset.sources ?? "[]"
+    )
+    const video = document.createElement("video")
+    video.className = "sun-video__video"
+    video.muted = true
+    video.loop = true
+    video.playsInline = true
+    video.setAttribute("aria-label", wrapper.dataset.title ?? "")
+    for (const source of sourcesData) {
+      const sourceEl = document.createElement("source")
+      sourceEl.src = source.src
+      sourceEl.type = source.type
+      video.appendChild(sourceEl)
+    }
+    wrapper.appendChild(video)
+    return video
+  }
+
+  document
+    .querySelectorAll<HTMLElement>("[data-sun-video][data-autoplay]")
+    .forEach(wrapper => {
+      const playButton =
+        wrapper.querySelector<HTMLButtonElement>(".sun-video__play")
+      let video: HTMLVideoElement | null = null
+
+      playButton?.addEventListener("click", () => {
+        video = injectVideo(wrapper)
+        // Two-callback then() is load-bearing here: a trailing .catch() would
+        // also swallow errors thrown by the success handler above, which a
+        // rejection-only catch must not touch.
+        // oxlint-disable-next-line promise/prefer-catch promise/prefer-await-to-then
+        video.play().then(
+          () => playButton.setAttribute("hidden", ""),
+          () => {}
+        )
+      })
+
+      const { connection } = navigator as Navigator & {
+        connection?: SunVideoConnectionInfo
+      }
+      const reducedMotion =
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
+
+      const shouldAutoStart = canAutoplay(connection, reducedMotion)
+      if (!shouldAutoStart) playButton?.removeAttribute("hidden")
+
+      const observer = new IntersectionObserver(
+        entries => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              if (
+                shouldAutoStart ||
+                wrapper.querySelector(".sun-video__video")
+              ) {
+                video = injectVideo(wrapper)
+                // See the click handler above for why this stays a two-callback then().
+                // oxlint-disable-next-line promise/prefer-catch promise/prefer-await-to-then promise/prefer-await-to-callbacks
+                video.play().then(
+                  () => playButton?.setAttribute("hidden", ""),
+                  error => {
+                    // A pause() interrupting this same play() rejects it with AbortError
+                    // (routine on fast scroll) -- that isn't a playback failure, so it must
+                    // not reveal the fallback button over a video that is merely paused.
+                    if (error?.name !== "AbortError")
+                      playButton?.removeAttribute("hidden")
+                  }
+                )
+              }
+            } else video?.pause()
+          }
+        },
+        { threshold: 0.25 }
+      )
+      observer.observe(wrapper)
+    })
+</script>

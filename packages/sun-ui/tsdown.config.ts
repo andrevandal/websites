@@ -3,20 +3,19 @@ import { promises } from "node:fs"
 import { resolve } from "node:path"
 
 const astroExportFolders = async () => {
-  const root = resolve(import.meta.dirname, "src/astro")
-  const folders = new Set<string>()
-  for await (const entry of promises.glob(resolve(root, "**/*.astro"))) {
-    const folder = entry
-      .slice(root.length + 1)
-      .split("/")
-      .slice(0, -1)
-      .join("/")
-    if (folder) folders.add(folder)
-  }
-  return folders
-}
-
-const astroFolders = await astroExportFolders()
+    const root = resolve(import.meta.dirname, "src/astro"),
+      folders = new Set<string>()
+    for await (const entry of promises.glob(resolve(root, "**/*.astro"))) {
+      const folder = entry
+        .slice(root.length + 1)
+        .split("/")
+        .slice(0, -1)
+        .join("/")
+      if (folder) folders.add(folder)
+    }
+    return folders
+  },
+  astroFolders = await astroExportFolders()
 
 export default defineConfig({
   entry: [
@@ -25,6 +24,7 @@ export default defineConfig({
     "./src/svelte/index.ts",
     "./src/astro-integration.ts",
     "./src/astro-image-service.ts",
+    "./src/config.ts",
   ],
   dts: true,
   publint: true,

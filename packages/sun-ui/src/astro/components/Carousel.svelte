@@ -19,9 +19,11 @@
     children,
   }: Props = $props()
 
-  const trackClass = cn(
-    "flex cursor-grab snap-x snap-mandatory scrollbar-none flex-row flex-nowrap gap-x-6 overflow-x-auto select-none active:cursor-grabbing",
-    className
+  const trackClass = $derived(
+    cn(
+      "flex cursor-grab snap-x snap-mandatory scrollbar-none flex-row flex-nowrap gap-x-6 overflow-x-auto select-none active:cursor-grabbing",
+      className
+    )
   )
 
   // Assigned via `bind:this` in the markup below; invisible to static
@@ -243,11 +245,10 @@
   })
 </script>
 
-<div
-  bind:this={containerEl}
-  onmouseenter={() => pause("hover")}
-  onmouseleave={() => scheduleResume("hover")}
->
+<!-- svelte-ignore a11y_no_static_element_interactions -- hover only pauses/resumes the decorative autoscroll; it gates no content or functionality, so no interactive role/keyboard equivalent is required. -->
+<div bind:this={containerEl} onmouseenter={() => pause("hover")} onmouseleave={() => scheduleResume("hover")}>
+  <!-- svelte-ignore a11y_no_static_element_interactions -- custom drag-to-scroll region; no single ARIA widget role fits a horizontally draggable strip of externally-supplied children, and it already exposes an equivalent keyboard interaction below. -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -- tabindex is required so onkeydown can drive keyboard scrolling (see getKeyboardScrollDelta), the deliberate keyboard equivalent to mouse drag. -->
   <div
     bind:this={trackEl}
     tabindex="0"

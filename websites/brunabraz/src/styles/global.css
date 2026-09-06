@@ -20,6 +20,122 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
 }
+@utility text-hero {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 110%;
+
+  @variant sm {
+    font-size: 2.5rem;
+    line-height: 110%;
+  }
+}
+
+@utility text-section-heading {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 120%;
+
+  @variant sm {
+    font-size: 2rem;
+    line-height: 110%;
+  }
+}
+
+@utility text-card-heading {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 110%;
+}
+
+@utility underline-dotted {
+  font-weight: 700;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-skip-ink: none;
+  text-decoration-thickness: 8%;
+  text-underline-offset: 16%;
+  text-underline-position: from-font;
+}
+
+@utility text-body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+@utility text-body-small {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+@utility text-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 110%;
+  text-transform: uppercase;
+}
+
+@utility text-nav {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: normal;
+}
+
+@utility text-button {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: normal;
+}
+
+@utility text-testimonial {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+@utility text-quote {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 120%;
+}
+
+@utility text-faq-question {
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: 130%;
+}
+
+@utility text-footer {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1;
+
+  @variant sm {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+}
+
+@utility text-stat {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 140%;
+}
 
 @utility container {
   margin-inline: auto;
@@ -126,4 +242,52 @@
 @utility bg-pattern-sun {
   background-image: url("https://infra.example.invalid/f_auto,q_90,w_236,h_304/https://files.vandal.services/brunabraz/images/pattern-sun.png");
   background-size: 236px 304px;
+}
+@keyframes fade-scale-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.js [data-animate] {
+  opacity: 0;
+}
+
+.js [data-animate][data-visible] {
+  animation: fade-scale-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--animate-delay, 0) * 1ms);
+}
+
+.js .ring-draw {
+  stroke-dashoffset: 100;
+}
+
+.js [data-animate][data-visible] .ring-draw {
+  animation: ring-draw 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes ring-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-animate] {
+    opacity: 1;
+  }
+  .js [data-animate][data-visible] {
+    animation: none;
+  }
+  .js .ring-draw {
+    stroke-dashoffset: 0;
+  }
+  .js [data-animate][data-visible] .ring-draw {
+    animation: none;
+  }
 }

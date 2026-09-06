@@ -2,6 +2,7 @@
 import { Image } from "astro:assets"
 import type { SunPictureProps } from "./Picture.props.ts"
 import { getPlaceholderUrl } from "../../astro-image-service"
+import { imageServiceBaseUrl } from "../../config"
 import {
   computeResponsiveImageProps,
   getPlaceholderModeAttribute,
@@ -20,7 +21,6 @@ const {
   fit,
   densities,
   breakpoints,
-  imagesBaseUrl,
   placeholder = true,
   placeholderMode,
   class: className,
@@ -31,8 +31,8 @@ const {
 } = Astro.props
 
 const placeholderUrl =
-  placeholder && imagesBaseUrl
-    ? getPlaceholderUrl(imagesBaseUrl, src)
+  placeholder && imageServiceBaseUrl
+    ? getPlaceholderUrl(imageServiceBaseUrl, src)
     : undefined
 const placeholderModeAttribute = placeholderUrl
   ? getPlaceholderModeAttribute(placeholderMode)

@@ -1,4 +1,5 @@
 ---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
 import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
 import Heading from "@components/Heading.astro"
 
@@ -6,49 +7,80 @@ import type { Testimonial } from "@/types"
 
 type Props = {
   testimonials: Testimonial[]
+  title?: string
+  description?: string
+  id?: string
 }
 
-const { testimonials } = Astro.props
+const {
+  testimonials,
+  title = "Depoimentos",
+  description = "Veja os depoimentos dos meus alunos",
+  id,
+} = Astro.props
 ---
 
-<section class="flex flex-col overflow-clip bg-white px-0 pt-14 pb-18">
-  <div class="container mb-8 flex flex-col gap-y-6">
-    <Heading
-      as="h2"
-      class="text-tobago text-center font-serif text-[2rem] leading-[110%] font-bold"
-    >
-      Depoimentos
+<section
+  id={id}
+  class="flex flex-col overflow-clip bg-white px-0 pt-14 pb-18 sm:pb-14"
+>
+  <div
+    class="container mb-8 flex min-h-0 flex-col gap-y-6 sm:min-h-[103px]"
+    data-animate
+  >
+    <Heading as="h2" class="text-tobago text-section-heading text-center">
+      {title}
     </Heading>
-    <p class="text-brown-leather text-center text-[.875rem] leading-[140%]">
-      Veja os depoimentos dos meus alunos
+    <p class="text-brown-leather text-body-small text-center">
+      {description}
     </p>
   </div>
-  <SunCarousel client:load direction="left-to-right">
-    {
-      testimonials.map(({ image, author, content }) => {
-        return (
-          <article class="bg-white-chocolate/25 border-tobago/15 flex w-full min-w-[min(calc(100%-2rem),18.125rem)] snap-center flex-col items-start border p-6 first:ml-4 last:mr-4 first:lg:ml-8 last:lg:mr-8">
-            <span class="text-light-mushroom font-serif text-[2rem] leading-normal font-bold select-none">
-              “
-            </span>
-            <blockquote class="border-b-tobago/15 text-brown-leather mt-1 border-b pb-4 font-serif text-[.875rem] text-balance italic select-none">
-              {content}
-            </blockquote>
-            <div class="mt-4 flex w-full flex-row items-center-safe justify-items-start gap-x-4">
-              <img
-                {...image}
-                class="border-tobago/10 pointer-events-none size-10 rounded-full border"
-              />
-              <Heading
-                as="h3"
-                class="text-tobago overflow-hidden text-[.875rem] leading-[110%] font-semibold text-ellipsis select-none"
-              >
-                {author}
-              </Heading>
-            </div>
-          </article>
-        )
-      })
-    }
-  </SunCarousel>
+  <div data-animate>
+    <SunCarousel
+      client:load
+      className="items-stretch"
+      direction="left-to-right"
+    >
+      {
+        testimonials.map(({ image, author, role, content }) => {
+          return (
+            <article class="bg-white-chocolate/25 border-tobago/15 flex w-[286px] shrink-0 snap-center flex-col items-start border p-6 first:ml-4 last:mr-4 first:lg:ml-8 last:lg:mr-8">
+              <div class="flex w-full flex-1 flex-col items-start">
+                <span class="text-light-mushroom font-serif text-[2rem] leading-normal font-bold select-none">
+                  &ldquo;
+                </span>
+                <blockquote class="text-brown-leather text-testimonial mt-1 text-balance italic select-none">
+                  {content}
+                </blockquote>
+              </div>
+              <div class="border-b-tobago/15 my-4 w-full border-b" />
+              <div class="mt-auto flex w-full flex-row items-center-safe justify-items-start gap-x-4">
+                <SunPicture
+                  src={image.src}
+                  alt={image.alt}
+                  width={40}
+                  height={40}
+                  quality={90}
+                  densities={[1, 1.5, 1.75, 2, 3]}
+                  wrapperClass="border-tobago/10 pointer-events-none size-10 shrink-0 overflow-hidden rounded-full border"
+                  class="size-full object-cover"
+                />
+                <div class="flex min-w-0 flex-col">
+                  <Heading
+                    as="h3"
+                    class="text-tobago text-[.875rem] leading-[110%] font-semibold select-none"
+                  >
+                    {author}
+                  </Heading>
+                  <p class="text-tobago/50 mt-1 text-[.875rem] leading-[110%] select-none">
+                    {role}
+                  </p>
+                </div>
+              </div>
+            </article>
+          )
+        })
+      }
+    </SunCarousel>
+  </div>
 </section>

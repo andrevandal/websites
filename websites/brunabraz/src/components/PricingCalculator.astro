@@ -1,0 +1,278 @@
+---
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import Heading from "@components/Heading.astro"
+import {
+  calculateLessonPackage,
+  buildPricingWhatsAppMessage,
+} from "@/data/pricing"
+import { buildWhatsAppLink } from "@/data/whatsapp"
+
+const defaultLessonPackage = calculateLessonPackage("individual", 1, 3)
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+})
+const defaultCtaHref = buildWhatsAppLink(
+  buildPricingWhatsAppMessage(
+    "individual",
+    1,
+    3,
+    defaultLessonPackage,
+    currencyFormatter.format(defaultLessonPackage.valorParcela)
+  )
+)
+---
+
+<div
+  class="border-cambridge/25 relative z-10 flex w-full max-w-[472px] flex-col gap-8 border bg-white p-4 pt-8 sm:p-8 sm:pb-[2.3125rem]"
+>
+  <Heading as="h2" class="text-tobago text-section-heading text-center">
+    Escolha o ritmo que <em class="text-giraffe-brown italic"
+      >funciona pra você</em
+    >
+  </Heading>
+  <div class="flex flex-col gap-6" data-pricing-tabs>
+    <div
+      class="border-giraffe-brown relative flex h-10 overflow-hidden rounded-full border p-0.5 text-sm"
+      role="group"
+      aria-label="Modalidade"
+    >
+      <span
+        class="bg-giraffe-brown pointer-events-none absolute inset-y-0.5 z-0 rounded-full transition-[transform,width] duration-300 ease-out"
+        data-pricing-indicator></span>
+      {
+        [
+          ["Individuais", "individual"],
+          ["Em dupla", "dupla"],
+          ["Conversação", "conversacao"],
+        ].map(([label, value], i) => (
+          <button
+            type="button"
+            data-group="modalidade"
+            data-value={value}
+            aria-pressed={i === 0}
+            class="aria-pressed:text-white-chocolate relative z-10 flex flex-1 cursor-pointer items-center justify-center rounded-full transition-colors duration-300"
+          >
+            {label}
+          </button>
+        ))
+      }
+    </div>
+    <div
+      class="border-giraffe-brown relative flex h-10 overflow-hidden rounded-full border p-0.5 text-sm"
+      role="group"
+      aria-label="Frequência"
+    >
+      <span
+        class="bg-giraffe-brown pointer-events-none absolute inset-y-0.5 z-0 rounded-full transition-[transform,width] duration-300 ease-out"
+        data-pricing-indicator></span>
+      {
+        ["1x por semana", "2x por semana"].map((label, i) => (
+          <button
+            type="button"
+            data-group="frequencia"
+            data-value={i === 0 ? "1" : "2"}
+            aria-pressed={i === 0}
+            class="aria-pressed:text-white-chocolate relative z-10 flex flex-1 cursor-pointer items-center justify-center rounded-full transition-colors duration-300"
+          >
+            {label}
+          </button>
+        ))
+      }
+    </div>
+    <div
+      class="border-giraffe-brown relative flex h-10 overflow-hidden rounded-full border p-0.5 text-sm"
+      role="group"
+      aria-label="Duração"
+    >
+      <span
+        class="bg-giraffe-brown pointer-events-none absolute inset-y-0.5 z-0 rounded-full transition-[transform,width] duration-300 ease-out"
+        data-pricing-indicator></span>
+      {
+        ["3", "6", "9", "12"].map((months, i) => (
+          <button
+            type="button"
+            data-group="duracao"
+            data-value={months}
+            aria-pressed={i === 0}
+            class="aria-pressed:text-white-chocolate relative z-10 flex flex-1 cursor-pointer items-center justify-center rounded-full transition-colors duration-300"
+          >
+            {months} meses
+          </button>
+        ))
+      }
+    </div>
+  </div>
+  <div class="text-tobago text-body-small">
+    <p>Nesse pacote você está contratando:</p>
+    <ul
+      class="text-giraffe-brown list-disc pl-6 font-serif text-base leading-[140%]"
+      data-pricing-summary
+    >
+      <li data-summary-lessons>
+        {defaultLessonPackage.quantidadeAulas} aulas individuais no total
+      </li>
+      <li data-summary-frequency>Realizadas 1x por semana</li>
+      <li data-summary-duration>Em até 3 meses</li>
+      <li data-summary-per-lesson>
+        Por aula: {currencyFormatter.format(defaultLessonPackage.valorPorAula)}
+      </li>
+    </ul>
+    <p data-summary-details>{defaultLessonPackage.details}</p>
+  </div>
+  <div class="flex flex-col gap-0.5">
+    <a
+      href={defaultCtaHref}
+      class="bg-dark-green text-white-chocolate flex items-center justify-between px-4 py-2 font-medium"
+      data-pricing-cta
+    >
+      <span
+        >Contrate por <strong data-cta-text
+          >{defaultLessonPackage.quantidadeParcelas}x de R$ {
+            defaultLessonPackage.valorParcela
+          }</strong
+        ></span
+      >
+      <span
+        class="bg-cambridge/25 border-cambridge/50 flex size-10 items-center justify-center border"
+        ><SunIcon
+          name="whatsapp"
+          width={24}
+          height={24}
+          class="text-white-chocolate"
+        /></span
+      >
+    </a>
+    <span class="underline-dotted text-center text-xs font-medium"
+      >valor por pessoa</span
+    >
+  </div>
+</div>
+
+<script>
+  import type { Frequency, Modality, Months } from "@/data/pricing"
+  import {
+    calculateLessonPackage,
+    modalitySummaryLabels,
+    buildPricingWhatsAppMessage,
+  } from "@/data/pricing"
+  import { buildWhatsAppLink } from "@/data/whatsapp"
+
+  type PricingState = {
+    modalidade: Modality
+    frequencia: Frequency
+    duracao: Months
+  }
+
+  const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  })
+
+  const updateIndicator = (row: HTMLElement) => {
+    const indicator = row.querySelector<HTMLElement>("[data-pricing-indicator]")
+    const active = row.querySelector<HTMLButtonElement>(
+      'button[aria-pressed="true"]'
+    )
+    if (!indicator || !active) return
+
+    indicator.style.width = `${active.offsetWidth}px`
+    indicator.style.transform = `translateX(${active.offsetLeft - 2}px)`
+  }
+
+  const initPricingCalculator = () => {
+    const root = document.querySelector<HTMLElement>("[data-pricing-tabs]")
+    if (!root) return
+
+    const section = root.closest("section")
+    if (!section) return
+
+    const rows = Array.from(root.children) as HTMLElement[]
+
+    const state: PricingState = {
+      modalidade: "individual",
+      frequencia: 1,
+      duracao: 3,
+    }
+
+    const render = () => {
+      const packagePrice = calculateLessonPackage(
+        state.modalidade,
+        state.frequencia,
+        state.duracao
+      )
+      const modalidadeLabel = modalitySummaryLabels[state.modalidade]
+
+      const lessonsEl = section.querySelector("[data-summary-lessons]")
+      if (lessonsEl)
+        lessonsEl.textContent = `${packagePrice.quantidadeAulas} aulas ${modalidadeLabel} no total`
+
+      const frequencyEl = section.querySelector("[data-summary-frequency]")
+      if (frequencyEl)
+        frequencyEl.textContent = `Realizadas ${state.frequencia}x por semana`
+
+      const durationEl = section.querySelector("[data-summary-duration]")
+      if (durationEl) durationEl.textContent = `Em até ${state.duracao} meses`
+
+      const perLessonEl = section.querySelector("[data-summary-per-lesson]")
+      if (perLessonEl)
+        perLessonEl.textContent = `Por aula: ${currencyFormatter.format(packagePrice.valorPorAula)}`
+
+      const detailsEl = section.querySelector("[data-summary-details]")
+      if (detailsEl) detailsEl.textContent = `${packagePrice.details}`
+
+      const formattedValorParcela = currencyFormatter.format(
+        packagePrice.valorParcela
+      )
+
+      const ctaEl = section.querySelector("[data-cta-text]")
+      if (ctaEl)
+        ctaEl.textContent = `${packagePrice.quantidadeParcelas}x de ${formattedValorParcela}`
+
+      const ctaLink =
+        section.querySelector<HTMLAnchorElement>("[data-pricing-cta]")
+      if (ctaLink) {
+        ctaLink.href = buildWhatsAppLink(
+          buildPricingWhatsAppMessage(
+            state.modalidade,
+            state.frequencia,
+            state.duracao,
+            packagePrice,
+            formattedValorParcela
+          )
+        )
+      }
+    }
+
+    root
+      .querySelectorAll<HTMLButtonElement>("button[data-group]")
+      .forEach(button => {
+        button.addEventListener("click", () => {
+          const group = button.dataset.group as keyof PricingState
+          const value = button.dataset.value ?? ""
+          const row = button.closest<HTMLElement>("[role='group']")
+
+          root
+            .querySelectorAll<HTMLButtonElement>(
+              `button[data-group="${group}"]`
+            )
+            .forEach(sibling => sibling.setAttribute("aria-pressed", "false"))
+          button.setAttribute("aria-pressed", "true")
+          if (row) updateIndicator(row)
+
+          if (group === "modalidade") state.modalidade = value as Modality
+          if (group === "frequencia")
+            state.frequencia = Number(value) as Frequency
+          if (group === "duracao") state.duracao = Number(value) as Months
+          render()
+        })
+      })
+
+    rows.forEach(updateIndicator)
+    window.addEventListener("resize", () => rows.forEach(updateIndicator))
+
+    render()
+  }
+
+  initPricingCalculator()
+</script>
