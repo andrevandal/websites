@@ -11,9 +11,10 @@ Websites for Vandal clients. TypeScript monorepo managed with moonrepo and bun.
 
 ### Websites
 
-- **`websites/brunabraz`** — Astro site, deployed to Cloudflare Workers.
-- **`websites/clinicamauricioaraujo.com.br`** — Astro site, deployed to
-  Cloudflare Workers.
+- **`websites/brunabraz`** - Astro site, deployed to Cloudflare Workers.
+- **`websites/clinicamauricioaraujo.com.br`** - Astro site, deployed to Cloudflare Workers.
+- **`websites/transportugal`** - Astro site, deployed to Cloudflare Workers.
+- **`websites/vandallabs`** - Astro site, deployed to Cloudflare Workers.
 
 ### Packages
 
@@ -83,6 +84,20 @@ Make sure you have the AWS CLI installed and configured with the necessary crede
 
 - `bun moon sync projects` or `bun sync` - Sync all project dependencies and configurations. Specially typescript references.
 - `bun run deploy <target> --env <preview|staging|production>` - Deploy a single app/website target manually.
+
+### Bootstrap a website
+
+```sh
+bun run website:new acme-consulting --title "Acme Consulting"
+bun install
+moon run acme-consulting:check
+moon run acme-consulting:typecheck
+moon run acme-consulting:build
+```
+
+The generator registers release, CI environment passthrough, and manual deploy
+selection. It does not provision a Cloudflare custom domain. Add that only
+after its domain exists in Cloudflare.
 
 ## Package Management
 

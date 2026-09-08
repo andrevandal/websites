@@ -139,6 +139,7 @@
     "sync": "moon sync projects",
     "deploy": "bun scripts/deploy.ts",
     "dev": "bun scripts/dev.ts",
+    "website:new": "bun scripts/new-website.ts",
     "optimize:svg": "bun scripts/optimizeSvg.ts",
     "typecheck": "moon run *:typecheck",
     "test": "moon run *:test",
