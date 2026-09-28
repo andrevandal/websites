@@ -64,3 +64,15 @@ tasks:
       - "/happydom.ts"
     options:
       runInCI: true
+
+  # Enforces coverage.config.ts against the lcov report the project's `test`
+  # task writes. Projects without a config entry exclude this task in their moon.yml.
+  coverage:
+    command: "bun $workspaceRoot/scripts/coverage.ts --project $project"
+    inputs:
+      - "/coverage.config.ts"
+      - "/scripts/coverage.ts"
+    dependsOn:
+      - test
+    options:
+      runInCI: true

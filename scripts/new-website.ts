@@ -167,6 +167,12 @@ tasks:
       - "/packages/sun-ui/src/**/*"
     dependsOn:
       - check
+
+workspace:
+  inheritedTasks:
+    # Client sites are not in coverage.config.ts; their tests still run in \`test\`.
+    exclude:
+      - coverage
 `
 
 const renderAstroConfig = (

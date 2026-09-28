@@ -1,101 +1,105 @@
-@../AGENTS.md
+# Agent guidance
 
-# AGENTS.md (main worktree)
+## Project structure
 
-Repo-specific mechanics only. Shared workflow, coding rules, and the
-goal-hub/spec-driven/TDD conventions live in the imported hub-level
-file above (`~/www/websites/AGENTS.md`) — don't re-add them here.
+websites is a bun + moon monorepo of client websites, shared packages and an image service. Tool
+versions live in `.prototools`.
 
-## Toolchain
+- `apps/images` - Hono + Bun.Image image service; sharp only for animated GIF output.
+- `packages/sun-ui` - Astro + Svelte UI kit for the websites.
+- `websites/*` - client Astro sites on Cloudflare. Scaffold one with
+  `bun run website:new`.
 
-- **Package Manager**: bun 1.3.14
-- **Node.js**: 24.16.0 (managed via proto)
-- **Build System**: moonrepo 2.3.4 (moon CLI)
-- **TypeScript**: 5.9.3
-- **Formatter**: oxfmt
-- **Linter**: oxlint
-- **Test Runner**: bun test (Jest-compatible, built-in coverage)
-- **Release Management**: release-please
-- **Git Hooks**: lefthook (pre-commit: format + lint, pre-push: lint + typecheck, commit-msg: commitlint)
-- **Commit Convention**: Conventional Commits via @commitlint/config-conventional
+## Commands
 
-## Repository Structure
+- `bun install` - dependencies; postinstall syncs moon projects.
+- `bun run check` - format, lint, typecheck, test, coverage, docs. The single gate.
+- `bun run lint:fix` / `bun run format:fix` - apply fixes repo-wide.
+- `moon run <project>:<task>` - one project; tasks are `lint`, `format`,
+  `typecheck`, `test`, `build`.
+- `bun run docs` - docs, skills, and `AGENTS.md` checks.
+- `bun test scripts` - tests for root `scripts/`, which no moon project owns.
+- `bun run dev <target>` - dev server for an app or website.
 
-```
-/
-├── .moon/
-│   ├── workspace.yml      # Project discovery (apps/*, packages/*)
-│   ├── toolchains.yml     # Tool configuration (node, bun, typescript)
-│   └── tasks/all.yml      # Shared task definitions
-├── apps/
-├── packages/
-│   ├── sun-ui/             # @vandal-websites/sun-ui — Astro UI components for marketing sites
-├── docker/                # Dockerfile and docker-compose
-├── scripts/               # Kickstart and utility scripts
-├── tsconfig.json          # Root config (project references, auto-managed by moon)
-├── tsconfig.options.json  # Base compiler options (bun-types + node)
-├── tsconfig.packages.json # For packages (emitDeclarationOnly)
-└── tsconfig.modules.json  # For apps/modules (noEmit)
-```
+CI details: [`docs/ci-pipeline.md`](docs/ci-pipeline.md).
 
-## Common Commands
+## Testing
 
-- `bun install` — Install dependencies
-- `bun sync` — Sync dependencies and TypeScript project references
-- `bun check` — Run all quality checks with auto-fix (formatfix, lintfix, typecheck, test)
-- `moon run <project>:<task>` — Run task in specific project
-- `moon run :build --affected` — Build only affected projects
-- `moon run :typecheck` — Type check all projects
-- `moon run :lint` — Lint all projects
-- `moon run :test` — Run tests (local, with coverage)
+Verify at the narrowest scope that covers the change, before yielding: the
+file (`bun test <path>`), then the project (`moon run <project>:test`), then
+`bun run check`. The pre-push hook and CI run the same gate.
 
-## Architecture
+`coverage.config.ts` sets per-project coverage thresholds. Its allowlist only
+shrinks; each entry cites the issue that removes it.
 
-### Package Dependency Graph
+## Code style
 
-```
-```
+- Arrow functions only, `type` over `interface`; oxlint enforces both.
+- One grouped `export { ... }` per file.
+- `#/*` subpath imports for a project's own code, `workspace:*` across
+  projects, never a relative path that climbs out of a project.
+- Keep root `tsconfig` free of `compilerOptions.paths` aliases to
+  `packages/*/src`; they collide with moon's project references (TS6305).
+- oxlint + oxfmt cover TS, JS, JSON, and Markdown; eslint + prettier cover
+  only `.astro` and `.svelte`.
+- Tailwind v4 is configured in CSS `@theme` blocks, never a JS config.
+- Plain punctuation in docs: hyphens and straight quotes. `bun run docs`
+  enforces it in agent-facing files.
 
-### Moonrepo Tasks
+## Branches & commits
 
-Tasks defined in `.moon/tasks/all.yml`, inherited by all projects:
+1. One worktree per epic, branch `<type>/<issue#>-<slug>`
+   ([`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)).
+2. Conventional Commits; commitlint runs at commit-msg. Scope with the project
+   (`feat(brunabraz): ...`); a repo-wide change needs none.
+3. PR titles are Conventional Commits too. The `pr` skill writes the body; it
+   says `Closes #<task>`.
+4. release-please owns versions, `CHANGELOG.md`, and tags.
 
-- **Implicit dependencies**: All tasks implicitly depend on `^:build` (builds upstream packages first)
-- **Task presets**: Tasks with `preset: server` don't run in CI
-- **Test runner**: `bun test --pass-with-no-tests --coverage .` (not vitest)
+## Boundaries
 
-### TypeScript Configuration
+- Ask before any git write that rewrites or deletes history. The agent
+  hooks in `scripts/agent-guardrails/` are a tripwire for force-push,
+  `reset --hard`, `clean -f`, and `branch -D`, not a boundary; the rule is
+  the policy. The pre-push hook rejects non-fast-forward pushes and branch
+  deletions.
+- Fix the root cause of a lint, type, or test failure; keep suppressions
+  narrow and explained.
+- Migrate every caller when a shape changes; leave no shim, alias, or
+  deprecated path.
+- Ask before changing root configs (`.moon/`, `tsconfig*.json`,
+  `lefthook.yml`, root `package.json` scripts) or `.github/`.
+- Keep secrets out of git; `.env.example` lists every key, values omitted.
 
-Project references for incremental builds:
+## Planning and decisions
 
-- **tsconfig.options.json**: Base options — `bun-types` and `node` in types
-- **tsconfig.packages.json**: Library packages (emitDeclarationOnly)
-- **tsconfig.modules.json**: Apps (noEmit)
+Work is planned on GitHub: an epic issue is the spec, its tasks are
+sub-issues, and Project #1 is the board. Conventions:
+[`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md).
 
-### Moon TypeScript Notes
+Epics close; durable knowledge moves before they do. Decisions go to
+[`docs/adr/`](docs/adr/FORMAT.md), terms to `CONTEXT.md`
+([`docs/agents/domain.md`](docs/agents/domain.md)), rules to tests.
 
-- Prefer Moon commands for sync/verification: `bun moon sync`, `bun moon run :build`, `bun moon ci :typecheck`, `bun moon ci :testci`.
-- Repo uses Moon TypeScript project references with `routeOutDirToCache: true` and `syncProjectReferences: true`.
-- Don't add root-level TypeScript `compilerOptions.paths` aliases pointing `@vandal-websites/*` to `packages/*/src/*` unless repo intentionally switches to Moon's `syncProjectReferencesToPaths` workflow.
-- Those root `paths` aliases can conflict with Moon's generated declaration outputs in `.moon/cache/types` and break downstream typechecking with TS6305-style errors.
+## Skills
 
-### Conventions
+Committed under `.agents/skills/`; the index is
+[`.agents/skills/README.md`](.agents/skills/README.md). Use a skill by reading
+its `SKILL.md`. The delivery flow is `grill-with-docs` -> `to-spec` ->
+`to-tickets` -> `tdd` -> `code-review` -> `pr`. Refresh vendored skills with
+`bun run skills:update`.
+When sources disagree, an ADR wins over `AGENTS.md` and the format owners
+in `docs/agents/domain.md`, those win over an epic's Constraints, and all of
+them win over a skill. A skill that contradicts an ADR is a bug in the skill.
 
-- **Function style**: Function expressions only (`const fn = () => {}`, enforced by oxlint)
-- **Type definitions**: `type` over `interface` (enforced by oxlint)
-- **Exports**: Prefer one grouped export per file (`const a = ...; const b = ...; export { a, b }`) to avoid `import/group-exports` lint warnings
-- **Imports**: Use `workspace:*` protocol for internal deps
-- **Commits**: Conventional Commits enforced by commitlint via lefthook
-- **Build tool**: tsdown for all library packages
-- **Tailwind v4**: CSS-native config via `@theme` blocks, no JS config files
+## Working style
 
-## CI/CD
-
-- `main.yml`'s `check-all` job runs `moon ci` — affected-scoped
-  `lint`/`format`/`typecheck`/`test` (all four are `runInCI` tasks in
-  `.moon/tasks/all.yml`), on pull requests and pushes to `main`.
-- Repo-root files that no moon project owns (`scripts/**`, root `*.ts`,
-  `*.md`, `*.json`, `*.yml`, `docs/`, `.github/`, `.moon/`) are checked by an
-  explicit always-run oxlint/oxfmt step in the same job.
-- Uses moonrepo/setup-toolchain; caches the bun store and proto tools.
-- Full pipeline documentation: `docs/ci-pipeline.md`.
+- Read the relevant code before changing or diagnosing it; when a cause is
+  unclear, say so instead of guessing.
+- Build the simplest working solution: no speculative features, no
+  abstraction for a single use, no error handling for impossible cases.
+- Prefer editing to rewriting; test before calling work done.
+- In reviews, state the bug, show the fix, stop; no out-of-scope
+  suggestions.
+- Plain punctuation everywhere: hyphens and straight quotes, no decorative
+  Unicode; code output is copy-paste safe.

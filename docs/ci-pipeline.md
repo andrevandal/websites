@@ -6,24 +6,29 @@ How this repo's CI is scoped, cached, and verified. Design rationale:
 ## Affected scoping
 
 `main.yml`'s `check-all` job runs `moon ci`, which runs the `runInCI` tasks
-(`lint`, `format`, `typecheck`, `test` from `.moon/tasks/all.yml`) only for
-projects affected by the change, plus their upstream dependencies. The run
-writes `.moon/cache/ciReport.json`; the `CI report` step prints one
-`target status` line per task from it.
+(`lint`, `format`, `typecheck`, `test`, `coverage` from `.moon/tasks/all.yml`)
+only for projects affected by the change, plus their upstream dependencies.
+`coverage` enforces `coverage.config.ts` per project against the lcov report
+the project's `test` task writes; it never reruns the tests. The run writes
+`.moon/cache/ciReport.json`; the `CI report` step prints one `target status`
+line per task from it.
 
 Repo-root files are outside every moon project (`.moon/workspace.yml`'s
 project globs are `apps/*`, `packages/*`, `websites/*`). The
-`Check root files` step covers them explicitly: `scripts/`, `docs/`,
-`docker/`, `.agents/`, `.github/`, `.moon/`, `.vscode/`, root-level
-`*.ts` / `*.md` / `*.json` / `*.yml`, and the supported hidden JSON/YAML
-configs. Add new root-level paths to that step when they appear.
+`Check root files` step covers them explicitly: oxlint over `scripts/`,
+`.omp/`, and root-level `*.ts`; oxfmt over `scripts/`, `docs/`, `docker/`,
+`.agents/`, `.github/`, `.moon/`, `.omp/`, `.claude/`, `.vscode/`,
+root-level `*.ts` / `*.md` / `*.json` / `*.yml`, and the supported hidden
+JSON/YAML configs; then `bun run test:scripts`, `bun run docs` (docs, skills,
+and `AGENTS.md` checks), and the coverage contract guard. Add new root-level
+paths to that step when they appear.
 
 ## Remote cache
 
 `bazel-remote` runs as a Coolify service on the VPS
 (`docker/bazel-remote.compose.yml`), already deployed and operated
 directly on the host — HTTP REST API via Coolify's TLS-terminated
-domain, Basic Auth via `--htpasswd_file`. Decision and boundaries: ADR 0024.
+domain, Basic Auth via `--htpasswd_file`.
 
 - Repository variable `MOON_REMOTE_HOST` — the cache base URL
   (`https://infra.example.invalid`), no trailing slash. Unset it
@@ -91,7 +96,7 @@ Run: https://github.com/andrevandal/websites/actions/runs/32521605093
 resolved exactly 4 tasks, all from the changed package, and nothing else. No other
 consumer's tasks appeared, despite a production `workspace:*` dependency on it.
 
-Root cause (see ADR 0023 for the full investigation, reproduced 5 ways):
+Root cause (reproduced 5 ways):
 moon's relation-based affected checking (which is what `--downstream`
 needs to expand a change into a consumer's own tasks) is enabled by
 default for query commands (`moon query projects --affected --downstream
@@ -105,12 +110,12 @@ This was a real safety gap, not a cosmetic scoping detail: today's
 unscoped CI always runs every project's `typecheck`/`test`, so a
 shared-package change that breaks a consumer's usage was always caught.
 Affected-scoped `moon ci` would have silently missed this class of
-breakage. Fixed per ADR 0023: every consumer project's `typecheck`/`test`
+breakage. Fixed: every consumer project's `typecheck`/`test`
 now explicitly mirrors its real, production `package.json` workspace
 dependencies' source globs into its own task `inputs:`, so moon's
 (working) file-based affected detection catches it directly instead of
 relying on `--downstream`/`--include-relations` (which has its own
-documented moon 2.3.4 correctness bug — see ADR 0023).
+documented moon 2.3.4 correctness bug).
 
 ### Phase 2 verification, continued
 
@@ -267,7 +272,7 @@ including `cached-from-remote`, the five slowest tasks, total pipeline
 duration) to the job summary via `scripts/ci/ci-report-summary.ts`, parsed
 from `.moon/cache/ciReport.json`.
 
-This is the data source for ADR 0022's test-time budget guardrail: a >20%
+This is the data source for the test-time budget guardrail: a >20%
 regression of a project's `test` task against the recorded baseline needs an explicit
 justification in the PR. Read the number off the summary table instead of
 observing it by hand. Note that a `cached` or `cached-from-remote` row

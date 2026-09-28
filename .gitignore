@@ -78,7 +78,7 @@ tsconfig.tsbuildinfo
 # Knowledge management (personal, per-worktree, never committed)
 .docs/knowledge/
 
-# Git worktrees (task-scoped, per using-git-worktrees skill / ADR 0007)
+# Git worktrees (task-scoped, per using-git-worktrees skill)
 .worktrees/
 
 # subagent-driven-development scratch (briefs/reports/diffs), never committed

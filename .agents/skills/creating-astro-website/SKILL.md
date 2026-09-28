@@ -9,8 +9,10 @@ Create one Moon application at `websites/<slug>`. Start from current repository 
 
 ## Required Sequence
 
-1. In the website goal, write `docs/specs/YYYY-MM-DD-<slug>-design.md` then `docs/plans/YYYY-MM-DD-<slug>-plan.md`. State routes, locales, design source, assets, and every interaction requiring client state.
-2. Run the generator from repository root:
+1. Run `.agents/skills/grill-with-docs/SKILL.md` to nail down the site goal, routes, locales, design source, and interactions requiring client state. This grilling becomes the discussion context for the next steps.
+2. Run `.agents/skills/to-spec/SKILL.md` to synthesize the discussion into an epic and publish it to the project board.
+3. Run `.agents/skills/to-tickets/SKILL.md` to break the epic into tasks. The first task should set up the website scaffolding.
+4. When ready to scaffold, from repository root:
 
    ```sh
    bun run website:new <slug> --title "Client Name"
@@ -20,8 +22,8 @@ Create one Moon application at `websites/<slug>`. Start from current repository 
    moon run <slug>:build
    ```
 
-3. Build the design from Astro components and `@vandal-websites/sun-ui/astro` primitives. Put only site-specific components in `src/components/`; use local SVG icons through `src/icons/` and `astro-iconset`.
-4. Verify actual desktop and mobile output against the approved design, then update the generated site README when the delivered behavior differs from the scaffold.
+5. Build the design from Astro components and `@vandal-websites/sun-ui/astro` primitives. Put only site-specific components in `src/components/`; use local SVG icons through `src/icons/` and `astro-iconset`.
+6. Verify actual desktop and mobile output against the approved design, then update the generated site README when the delivered behavior differs from the scaffold.
 
 ## Generator Contract
 

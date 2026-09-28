@@ -80,3 +80,9 @@ tasks:
       - "@globs(sources)"
       - "@globs(tests)"
       - "/packages/sun-ui/src/**/*"
+
+workspace:
+  inheritedTasks:
+    # Client sites are not in coverage.config.ts; their tests still run in `test`.
+    exclude:
+      - coverage

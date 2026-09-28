@@ -1,6 +1,6 @@
 # @vandal-websites/images-app
 
-RIAPI-flavored image transformation and optimization service, built on [`Bun.Image`](https://bun.com/docs/runtime/image), [`Bun.S3Client`](https://bun.com/docs/runtime/s3), and a narrow [`sharp`](https://sharp.pixelplumbing.com/) fallback only for animated GIF output. Migrated from [`ipx-server`](https://github.com/andrevandal/ipx-server); see `docs/superpowers/specs/2026-07-02-images-app-migration-design.md` at the repo root for the full design rationale.
+RIAPI-flavored image transformation and optimization service, built on [`Bun.Image`](https://bun.com/docs/runtime/image), [`Bun.S3Client`](https://bun.com/docs/runtime/s3), and a narrow [`sharp`](https://sharp.pixelplumbing.com/) fallback only for animated GIF output. Migrated from [`ipx-server`](https://github.com/andrevandal/ipx-server).
 
 ## How it works
 

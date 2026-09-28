@@ -1,0 +1,3 @@
+interface:
+  display_name: "Creating Astro Website"
+  short_description: "Add a client-facing website under websites/"

@@ -19,8 +19,6 @@ Websites for Vandal clients. TypeScript monorepo managed with moonrepo and bun.
 ### Packages
 
 - **`packages/sun-ui`** — Shared UI components (used by the Astro websites).
-- **`packages/tailwind-config`** — Shared Tailwind CSS v4 theme tokens.
-- **`packages/ui`** — UI component library built on Base UI.
 
 ## Deploy environments
 

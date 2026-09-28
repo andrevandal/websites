@@ -4,7 +4,7 @@ import { consola } from "consola"
 
 // Turns `moon ci`'s .moon/cache/ciReport.json into a GITHUB_STEP_SUMMARY
 // table: status counts (including remote cache hits) and the slowest tasks.
-// This is the data source behind ADR 0022's test-time budget guardrail.
+// This is the data source behind the test-time budget guardrail.
 
 type Duration = { secs: number; nanos: number }
 

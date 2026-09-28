@@ -46,7 +46,8 @@
         "prettier-plugin-tailwindcss": "^0.8.0",
         "@svgr/plugin-prettier": "^8.1.0",
         "globals": "^17.12.0",
-        "eslint-plugin-svelte": "^3.23.0"
+        "eslint-plugin-svelte": "^3.23.0",
+        "agents-md-lint": "^1.0.1"
       },
       "testing": {
         "@playwright/test": "^1.52.0",
@@ -134,7 +135,7 @@
     "moon": "moon --color",
     "graph": "moon tg",
     "generate:transportugal-cities": "bun scripts/generate-transportugal-cities.ts",
-    "check": "bun run format && bun run lint && bun run typecheck",
+    "check": "bun run format && bun run lint && bun run typecheck && bun run test && moon run :coverage && bun run docs",
     "postinstall": "bun sync",
     "sync": "moon sync projects",
     "deploy": "bun scripts/deploy.ts",
@@ -147,7 +148,10 @@
     "lint": "oxlint . && eslint --no-error-on-unmatched-pattern",
     "lint:fix": "oxlint --fix . && eslint --no-error-on-unmatched-pattern --fix",
     "format": "oxfmt . --check && prettier --check --no-error-on-unmatched-pattern **/*.astro",
-    "format:fix": "oxfmt . --write && prettier --write --no-error-on-unmatched-pattern **/*.astro"
+    "format:fix": "oxfmt . --write && prettier --write --no-error-on-unmatched-pattern **/*.astro",
+    "docs": "bun scripts/docs-check.ts && bun scripts/skills-check.ts && bun node_modules/agents-md-lint/dist/cli.js --strict AGENTS.md",
+    "skills:install": "bunx skills experimental_install",
+    "skills:update": "bunx skills update -p -y"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:tools",
@@ -160,6 +164,7 @@
     "@types/node": "catalog:types",
     "@types/yargs": "catalog:types",
     "@typescript-eslint/parser": "catalog:linting",
+    "agents-md-lint": "catalog:linting",
     "brasilapi-sdk": "^2.0.0",
     "consola": "catalog:tools",
     "destr": "catalog:tools",

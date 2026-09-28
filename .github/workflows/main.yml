@@ -41,16 +41,18 @@ jobs:
 
       - name: Check root files
         run: |
-          bunx oxlint scripts *.ts
+          bunx oxlint scripts .omp *.ts
           bunx oxfmt --check \
-            scripts docs docker .agents .github .moon .vscode \
+            scripts docs docker .agents .github .moon .vscode .omp .claude \
             *.ts *.md *.json *.yml \
             .gitguardian.yml .oxfmtrc.json .oxlintrc.json \
             .release-please-manifest.json
           bun run test:scripts
+          bun run docs
+          bun scripts/coverage-allowlist-guard.ts
 
       # Writes moon's `remote:` block into this runner's ephemeral checkout.
-      # Never committed - see ADR 0024. Fork PRs can read repository variables
+      # Never committed. Fork PRs can read repository variables
       # but do not receive repository secrets, so test all three values before
       # invoking the strict config writer; missing credentials degrade to local
       # execution instead of breaking the PR.
@@ -71,7 +73,7 @@ jobs:
       - name: Run affected checks
         env:
           NODE_OPTIONS: --max-old-space-size=6144
-        run: moon ci :lint :format :typecheck :test
+        run: moon ci :lint :format :typecheck :test :coverage
 
       - name: CI report summary
         if: always()

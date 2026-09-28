@@ -8,7 +8,7 @@ import { resolve } from "node:path"
 // on every machine dial the VPS. Moon has no env-var override for
 // `remote.auth.headers` (only MOON_REMOTE_AUTH_TOKEN, which is Bearer-shaped),
 // and bazel-remote's auth is genuinely Basic, so this mutation is the
-// mechanism. See ADR 0024.
+// mechanism.
 // NOTE: This script deliberately uses console.log/console.error instead of consola
 // because consola output is silently dropped when invoked via Bun.spawnSync from
 // within a bun:test process (confirmed by reproduction). Do not revert to consola

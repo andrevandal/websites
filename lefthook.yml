@@ -30,11 +30,20 @@ commit-msg:
 pre-push:
   parallel: true
   commands:
+    docs:
+      run: bun run docs
     format:
       run: bun run format
     lint:
       run: bun run lint
+    test-scripts:
+      run: bun test scripts
+    test:
+      run: moon run :test :coverage
     typecheck:
       run: bun run typecheck
-    test:
-      run: bun run test
+    allowlist-guard:
+      run: bun scripts/coverage-allowlist-guard.ts
+    push-guard:
+      run: bun scripts/agent-guardrails/pre-push.ts
+      use_stdin: true

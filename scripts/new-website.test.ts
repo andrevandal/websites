@@ -149,9 +149,12 @@ describe("createWebsite", () => {
         "utf8"
       )
     ).toContain('output: "server"')
-    expect(
-      await readFile(join(root, "websites/acme-consulting/moon.yml"), "utf8")
-    ).toContain('  - "cloudflare"')
+    const moon = await readFile(
+      join(root, "websites/acme-consulting/moon.yml"),
+      "utf8"
+    )
+    expect(moon).toContain('  - "cloudflare"')
+    expect(moon).toContain("    exclude:\n      - coverage")
     expect(
       await readFile(
         join(root, "websites/acme-consulting/src/styles/global.css"),
