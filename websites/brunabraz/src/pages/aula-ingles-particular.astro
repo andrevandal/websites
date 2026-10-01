@@ -23,7 +23,7 @@ const faqs = [
     question:
       "Meu nível é muito básico (ou estou enferrujado). Consigo acompanhar?",
     answer:
-      "Sim! Após a aula experimental (que pode até ser desafiadora), as aulas começam exatamente do onde você está. Eu trabalho com estudantes em todos os níveis, além de ter calma e paciência com o estilo e velocidade de aprendizado de cada um.",
+      "Sim! Após a aula experimental (que pode até ser desafiadora), as aulas começam exatamente de onde você está. Eu trabalho com estudantes em todos os níveis, além de ter calma e paciência com o estilo e velocidade de aprendizado de cada um.",
   },
   {
     question: "Não tenho muito tempo. Dá pra encaixar?",
@@ -48,7 +48,7 @@ const faqs = [
   {
     question: "Como funciona o pagamento?",
     answer:
-      "O pagamento é mensal, via boleto. Depois que você decidir o número de aulas e a frequência semanal, assinamos um contrato com todos os detalhes. Após a assinatura, todos os boletos são emitidos com data de vencimento até o dia 10 de cada mês.",
+      "O pagamento é mensal, via boleto. Depois que você decidir o número de aulas e a frequência semanal, assinamos um contrato com todos os detalhes. Após a assinatura (via GOV.BR), todos os boletos são emitidos com data de vencimento até o dia 10 de cada mês.",
   },
 ]
 
@@ -68,16 +68,15 @@ const meta = {
   <main>
     <Hero
       variant="lp"
-      containerClass="pb-0"
       ctaHref={buildWhatsAppLink(
         "Olá, Bruna! Quero saber mais sobre as aulas particulares de inglês."
       )}
     >
       <SunPicture
-        src="https://files.vandal.services/brunabraz/images/hero-oficial-green.png"
+        src="https://files.vandal.services/brunabraz/images/hero_landing-page.png"
         alt={"Bruna Braz, professora de inglês"}
         width={375}
-        height={361}
+        height={344}
         quality={90}
         densities={[1, 1.5, 2, 3]}
         breakpoints={[
@@ -87,7 +86,7 @@ const meta = {
         loading="eager"
         fetchpriority="high"
         placeholderMode="circle"
-        wrapperClass="order-2 -mx-4 aspect-[375/361] w-full sm:mx-0 sm:w-[375px] lg:order-2 lg:aspect-[472/460] lg:w-[472px] lg:shrink-0 lg:self-end xl:aspect-[493/481] xl:w-[493px]"
+        wrapperClass="order-2 -mx-4 aspect-[375/344] w-full sm:mx-0 sm:w-[375px] lg:order-2 lg:aspect-[472/433] lg:w-[472px] lg:shrink-0 lg:self-end xl:aspect-[493/453] xl:w-[493px]"
         class="size-full object-cover"
         slot="media"
       />
@@ -243,8 +242,11 @@ const meta = {
             > eu uso.
           </Heading>
           <p class="text-brown-leather text-body w-full sm:leading-[22px]">
-            Honestamente, minha prática se aproxima do pós-método de <u
-              class="underline-dotted">Bala Kumaravadivelu</u
+            Honestamente, minha prática se aproxima do pós-método de <a
+              href="http://files.vandal.services/brunabraz/files/b-kumaravadivelu-beyond-methods-macrostrategies-for-language-teaching.pdf"
+              target="_blank"
+              rel="noopener"
+              class="underline-dotted">Bala Kumaravadivelu</a
             >: uma ideia que rompe com a busca por uma fórmula única que sirva
             para todo mundo. Na prática, penso e ajo como uma professora que se
             adapta a cada estudante ao invés de seguir receitas prontas.<br
@@ -394,10 +396,10 @@ const meta = {
           </Heading>
           <p class="text-brown-leather text-body text-center text-pretty">
             Não posso negar que ser fluente em inglês abre portas profissionais.
-            Cargos e salários mais dignos, acesso ao mercado global. No mundo em
-            que vivemos, isso é importante sim. Porém, aprender inglês (ou
-            qualquer outra língua) nos leva em um ponto mais difícil de colocar
-            em um currículo:
+            Cargos e salários mais dignos, acesso ao mercado global... No mundo
+            em que vivemos, isso é importante sim. Porém, aprender inglês (ou
+            qualquer outra língua) nos leva em um ponto mais difícil de ser
+            colocado em um currículo:
           </p>
         </div>
         <div
@@ -421,7 +423,7 @@ const meta = {
             Como funcionam <em class="text-giraffe-brown italic">as aulas?</em>
           </Heading>
           <p class="text-brown-leather text-body sm:text-[.875rem]">
-            Desde o primeiro "hello" ao seu progresso, o caminho é construído
+            Desde o primeiro <i>"hello"</i> ao seu progresso, o caminho é construído
             com você.
           </p>
         </div>

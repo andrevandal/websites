@@ -16,6 +16,7 @@ import {
   qualityIndicators,
   segments,
   services,
+  suppliers,
 } from "@/data/home"
 import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
 import Eyebrown from "@components/Eyebrown.astro"
@@ -26,6 +27,25 @@ const meta = {
   description: siteConfig.description,
   image: siteConfig.defaultSocialImage,
   url: Astro.url,
+}
+
+const SUPPLIER_LOGO_MAX_WIDTH = 191
+const SUPPLIER_LOGO_MAX_HEIGHT = 56
+
+// Scales an intrinsic image size down to fit inside a box without exceeding
+// it, preserving aspect ratio — avoids requesting a transform larger than
+// what's ever rendered (e.g. Carone's 1236x844 source for a 56px-tall slot).
+const fitWithinBox = (
+  width: number,
+  height: number,
+  maxWidth: number,
+  maxHeight: number
+) => {
+  const scale = Math.min(maxWidth / width, maxHeight / height)
+  return {
+    width: Math.round(width * scale),
+    height: Math.round(height * scale),
+  }
 }
 ---
 
@@ -42,7 +62,7 @@ const meta = {
         quality={90}
         densities={[1, 1.5, 2]}
         loading="eager"
-        wrapperClass="relative size-auto sm:hidden object-cover after:content-[''] after:absolute after:inset-0 after:z-10 after:pointer-events-none sm:after:shadow-[inset_0_-32px_16px_rgba(31,30,30,1)] opacity-60"
+        wrapperClass="relative size-auto sm:hidden object-cover after:content-[''] after:absolute after:inset-0 after:z-10 after:pointer-events-none sm:after:shadow-[inset_0_-32px_16px_rgba(31,30,30,1)]"
         class="h-auto w-full"
       />
       <SunPicture
@@ -55,7 +75,7 @@ const meta = {
         breakpoints={[{ minWidth: 1024, width: 1440 }]}
         loading="eager"
         wrapperClass="hidden size-full sm:block"
-        class="size-full object-cover opacity-60"
+        class="size-full object-cover"
       />
     </div>
     <div
@@ -429,17 +449,31 @@ const meta = {
         <SunCarousel
           client:load
           ariaLabel="Logos de clientes"
-          className="gap-4"
+          className="gap-8"
           direction="left-to-right"
         >
           {
-            Array.from({ length: 10 }).map(() => (
-              <div class="flex h-14 w-[191px] shrink-0 items-center justify-center rounded-lg border border-dashed border-[#d6d1ca] bg-[#faf9f7]">
-                <p class="text-[8px] font-bold tracking-[0.96px] text-[#b8b2a9]">
-                  LOGO
-                </p>
-              </div>
-            ))
+            suppliers.map(({ name, logo }) => {
+              const renderSize = fitWithinBox(
+                logo.width,
+                logo.height,
+                SUPPLIER_LOGO_MAX_WIDTH,
+                SUPPLIER_LOGO_MAX_HEIGHT
+              )
+              return (
+                <SunPicture
+                  src={logo.url}
+                  alt={`Logo de ${name}`}
+                  width={renderSize.width}
+                  height={renderSize.height}
+                  quality={90}
+                  densities={[1, 1.5, 2]}
+                  loading="lazy"
+                  wrapperClass="flex h-14 w-fit shrink-0 items-center justify-center"
+                  class="h-auto max-h-full w-auto max-w-full object-contain"
+                />
+              )
+            })
           }
         </SunCarousel>
       </div>
@@ -448,7 +482,7 @@ const meta = {
 
   <section class="flex w-full flex-col bg-[#1f1e1e]">
     <div
-      class="container flex flex-col items-start gap-6 py-14 lg:flex-row xl:py-20"
+      class="container flex flex-col items-start gap-6 py-14 xl:flex-row xl:py-20"
     >
       <div
         class="flex flex-1 flex-col justify-center gap-6 text-center text-balance xl:text-left"
@@ -480,14 +514,14 @@ const meta = {
           href="#contato"
           variant="light"
           icon="arrow-up-right"
-          class="w-full lg:w-auto lg:self-start lg:text-xl"
+          class="w-full xl:w-auto xl:self-start xl:text-xl"
         >
           Quero ser parceiro
         </Button>
       </div>
       <div class="flex flex-1 items-center justify-center self-stretch">
         <div
-          class="relative h-[300px] w-full overflow-hidden rounded-lg lg:h-[477px] lg:w-[596px]"
+          class="relative h-[300px] w-auto overflow-hidden rounded-lg xl:h-[477px] xl:w-[596px]"
         >
           <div class="absolute inset-0 bg-[#2c2a2a]"></div>
           <SunPicture

@@ -166,7 +166,7 @@
 </script>
 
 <div
-  class="flex flex-1 flex-col gap-4 rounded-lg border border-[#d9d5d5] bg-white p-6"
+  class="flex flex-1 flex-col gap-4 rounded-lg border border-[#d9d5d5] bg-white p-4 sm:p-6"
 >
   <div class="flex items-center justify-center border-b border-[#d9d5d5] pb-4">
     <p class="text-3xl font-medium text-[#1f1e1e]">Calcule o prazo</p>
@@ -257,7 +257,7 @@
           </p>
         {/if}
         <p class="text-base leading-relaxed text-[#6f6a6a]">
-          Contado a partir da coleta, em dias úteis
+          Contado após da coleta, em dias úteis
         </p>
       </div>
       <div class="flex flex-col gap-4 p-6">

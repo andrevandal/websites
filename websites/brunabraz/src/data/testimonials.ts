@@ -71,4 +71,14 @@ export const testimonials: Testimonial[] = [
     content:
       "Passei anos em escolas de inglês, mas travava na hora de falar. Com a recomendação da minha irmã, comecei as aulas com a Bruna e, em pouco tempo, destravei.\nAs aulas são super personalizadas para me fazer falar o tempo todo. A Bruna me deu a confiança para usar o inglês como expressão de quem eu sou, falando com clareza e com o meu próprio sotaque. Recomendo demais!",
   },
+  {
+    image: {
+      src: "https://files.vandal.services/brunabraz/images/testimonials/headshots/isabel-limoli.png",
+      alt: "Isabel Limoli",
+    },
+    author: "Isabel Limoli",
+    role: "Bibliotecária aposentada",
+    content:
+      "A Bruna fez toda a diferença no meu aprendizado.\nEla preparava as aulas com muito carinho e cuidado, levando sempre em consideração o meu perfil, de maneira que a gente pudesse discutir, ler e aprender assuntos de nosso interesse.\nHoje apesar de estar com 60+, me sinto confortável para fazer minhas viagens internacionais solo. Para mim foi uma grande conquista!",
+  },
 ].toSorted(() => Math.random() - 0.5)

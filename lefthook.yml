@@ -14,7 +14,7 @@ pre-commit:
     format:
       priority: 2
       glob: "*.{ts,tsx,js,jsx,json,md,yml,yaml,css}"
-      run: bunx oxfmt --write {staged_files}
+      run: bunx oxfmt --write --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
     format-astro:
       priority: 2

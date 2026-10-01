@@ -7,12 +7,12 @@ const monthlyPrices: Record<
     2: { 3: 760, 6: 720, 9: 680, 12: 640 },
   },
   dupla: {
-    1: { 3: 360, 6: 340, 9: 300, 12: 280 },
+    1: { 3: 360, 6: 340, 9: 320, 12: 300 },
     2: { 3: 680, 6: 640, 9: 600, 12: 560 },
   },
   conversacao: {
     1: { 3: 300, 6: 280, 9: 260, 12: 240 },
-    2: { 3: 560, 6: 540, 9: 520, 12: 520 },
+    2: { 3: 560, 6: 520, 9: 520, 12: 520 },
   },
 }
 
@@ -21,6 +21,15 @@ const modalityDetails: Record<Modality, string> = {
   dupla: "Você escolhe a dupla, e eu adapto a aula pra vocês.",
   conversacao: "Aulas de conversação comigo, em grupos de até 6 alunos.",
 }
+
+export const allowedDurations: Record<Modality, Months[]> = {
+  individual: [3, 6, 9, 12],
+  dupla: [3, 6, 9, 12],
+  conversacao: [3, 6],
+}
+
+export const resolveDuration = (modality: Modality, current: Months): Months =>
+  allowedDurations[modality].includes(current) ? current : 3
 
 export const calculateLessonPackage = (
   modality: Modality,

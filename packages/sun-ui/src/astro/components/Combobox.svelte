@@ -110,9 +110,10 @@
   onValueChange={handleValueChange}
 >
   <div
-    class="relative flex h-14 items-center justify-between gap-4 rounded-lg border border-[#d9d5d5] px-4 py-2"
+    class="relative flex h-14 items-center justify-between gap-4 rounded-lg border border-[#d9d5d5] px-4 py-2 ring-4 ring-transparent data-[open]:ring-[rgba(175,55,65,0.25)] has-[:focus-visible]:ring-[rgba(175,55,65,0.25)] duration-150 ease-in-out"
     onclick={openList}
     onfocusin={openList}
+    data-open={open || undefined}
   >
     <div class="flex h-full min-w-0 items-center gap-4">
       {#if leadingSnippet}

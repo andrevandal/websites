@@ -95,7 +95,7 @@ const defaultCtaHref = buildWhatsAppLink(
             data-group="duracao"
             data-value={months}
             aria-pressed={i === 0}
-            class="aria-pressed:text-white-chocolate relative z-10 flex flex-1 cursor-pointer items-center justify-center rounded-full transition-colors duration-300"
+            class="aria-pressed:text-white-chocolate relative z-10 flex flex-1 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {months} meses
           </button>
@@ -152,9 +152,11 @@ const defaultCtaHref = buildWhatsAppLink(
 <script>
   import type { Frequency, Modality, Months } from "@/data/pricing"
   import {
+    allowedDurations,
+    buildPricingWhatsAppMessage,
     calculateLessonPackage,
     modalitySummaryLabels,
-    buildPricingWhatsAppMessage,
+    resolveDuration,
   } from "@/data/pricing"
   import { buildWhatsAppLink } from "@/data/whatsapp"
 
@@ -244,6 +246,31 @@ const defaultCtaHref = buildWhatsAppLink(
       }
     }
 
+    const updateDurationAvailability = () => {
+      const allowed = allowedDurations[state.modalidade]
+      const durationButtons = root.querySelectorAll<HTMLButtonElement>(
+        'button[data-group="duracao"]'
+      )
+      durationButtons.forEach(button => {
+        const months = Number(button.dataset.value) as Months
+        button.disabled = !allowed.includes(months)
+      })
+
+      const resolved = resolveDuration(state.modalidade, state.duracao)
+      if (resolved !== state.duracao) {
+        state.duracao = resolved
+        durationButtons.forEach(button => {
+          button.setAttribute(
+            "aria-pressed",
+            String(Number(button.dataset.value) === resolved)
+          )
+        })
+        const durationRow =
+          durationButtons[0]?.closest<HTMLElement>("[role='group']")
+        if (durationRow) updateIndicator(durationRow)
+      }
+    }
+
     root
       .querySelectorAll<HTMLButtonElement>("button[data-group]")
       .forEach(button => {
@@ -264,6 +291,7 @@ const defaultCtaHref = buildWhatsAppLink(
           if (group === "frequencia")
             state.frequencia = Number(value) as Frequency
           if (group === "duracao") state.duracao = Number(value) as Months
+          updateDurationAvailability()
           render()
         })
       })
@@ -271,6 +299,7 @@ const defaultCtaHref = buildWhatsAppLink(
     rows.forEach(updateIndicator)
     window.addEventListener("resize", () => rows.forEach(updateIndicator))
 
+    updateDurationAvailability()
     render()
   }
 

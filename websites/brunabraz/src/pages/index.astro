@@ -26,7 +26,7 @@ const timeline = [
     icon: "paw-print",
     prefix: "2014-2015",
     name: "Animal Behaviour",
-    description: "BSc - Aberystwyth University",
+    description: "Bachelor of Science - Aberystwyth University",
   },
   {
     icon: "languages",
@@ -135,7 +135,7 @@ const meta = {
       )}
     >
       <SunPicture
-        src="https://files.vandal.services/brunabraz/images/hero-oficial.png"
+        src="https://files.vandal.services/brunabraz/images/hero_pagina-inicial.png"
         alt={"Bruna Braz, professora de inglês"}
         width={375}
         height={323}
@@ -159,7 +159,7 @@ const meta = {
         slot="heading"
       >
         Faça do <em class="text-light-mushroom italic">inglês</em> uma ferramenta
-        para
+        para{" "}
         <em class="text-light-mushroom italic">ampliar sua voz no mundo</em>
       </Heading>
       <Heading
@@ -224,8 +224,8 @@ const meta = {
           class="text-tobago text-section-heading w-full max-w-[60ch] text-balance"
           data-animate
         >
-          Uma língua nunca <em class="text-giraffe-brown italic"
-            >é só uma língua.</em
+          Uma língua nunca é <em class="text-giraffe-brown italic"
+            >só uma língua</em
           >.
         </Heading>
         <p
@@ -300,13 +300,13 @@ const meta = {
           </Heading>
           <p class="text-white-chocolate text-body text-center">
             Minha trajetória não foi linear e percorrei — e ainda percorro —
-            diversos caminhos para chegar onde estou. No video você me escuta
-            contando minha trajetória em 1 minutinho.
+            diversos caminhos para chegar onde estou. No vídeo você me escuta
+            contando minha trajetória brevemente.
           </p>
         </div>
         <SunYoutube
-          videoId="vNFjWgcLZVs"
-          title="Vídeo: Bruna conta sua trajetória (1 min)"
+          videoId="WvjXbsmuoFk"
+          title="Vídeo: Bruna conta sua trajetória (3 min)"
           data-animate
           data-delay="1"
         />
@@ -380,7 +380,12 @@ const meta = {
                     as="p"
                     class="text-white-chocolate text-body-small -lg:mt-1 col-start-3 row-start-4 lg:text-center"
                   >
-                    {description}
+                    {description.split(" - ").map(e => (
+                      <Fragment>
+                        {e}
+                        <br />
+                      </Fragment>
+                    ))}
                   </Heading>
                 </article>
               </li>

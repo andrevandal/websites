@@ -1,30 +1,31 @@
 ﻿import { execa } from "execa"
 import { v } from "./schemas"
 
+const queryTargetsSchema = v.object({
+  projects: v.array(
+    v.object({
+      id: v.string(),
+      aliases: v.array(v.object({ alias: v.string() })),
+    })
+  ),
+})
+
 export const queryTargets = async () => {
   const { stdout } = await execa("moon", [
     "query",
     "projects",
     "--alias",
     "(websites|apps)/*",
-  ]).pipe("jq", [
-    "-cr",
-    '.projects | select(type == "array") | map(select(.id) | { id: .id, alias: .aliases[0].alias })',
   ])
 
-  const targets = v.parse(
-    v.pipe(
-      v.string(),
-      v.parseJson(),
-      v.array(
-        v.object({
-          id: v.string(),
-          alias: v.string(),
-        })
-      )
-    ),
+  const { projects } = v.parse(
+    v.pipe(v.string(), v.parseJson(), queryTargetsSchema),
     stdout
   )
+
+  const targets = projects
+    .filter(project => project.id)
+    .map(project => ({ id: project.id, alias: project.aliases[0].alias }))
 
   return targets.reduce(
     (acc, { id, alias }) => {
@@ -50,25 +51,27 @@ export const queryTargets = async () => {
   )
 }
 
-export const queryDevTargets = async () => {
-  const { stdout } = await execa("moon", ["query", "projects"]).pipe("jq", [
-    "-cr",
-    '.projects | select(type == "array") | map(select(.tasks.dev != null) | { id: .id, source: .source })',
-  ])
+const queryDevTargetsSchema = v.object({
+  projects: v.array(
+    v.object({
+      id: v.string(),
+      source: v.string(),
+      tasks: v.record(v.string(), v.unknown()),
+    })
+  ),
+})
 
-  const targets = v.parse(
-    v.pipe(
-      v.string(),
-      v.parseJson(),
-      v.array(
-        v.object({
-          id: v.string(),
-          source: v.string(),
-        })
-      )
-    ),
+export const queryDevTargets = async () => {
+  const { stdout } = await execa("moon", ["query", "projects"])
+
+  const { projects } = v.parse(
+    v.pipe(v.string(), v.parseJson(), queryDevTargetsSchema),
     stdout
   )
+
+  const targets = projects
+    .filter(project => project.tasks.dev != null)
+    .map(project => ({ id: project.id, source: project.source }))
 
   return targets.reduce(
     (acc, { id, source }) => {

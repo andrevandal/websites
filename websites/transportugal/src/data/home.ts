@@ -1,7 +1,7 @@
 const HERO_SRC =
   "https://files.vandal.services/transportugal/images/hero-bg.png"
 const HERO_SRC_MOBILE =
-  "https://files.vandal.services/transportugal/images/hero-bg-mobile.png"
+  "https://files.vandal.services/transportugal/images/hero-mobile.png"
 const ABOUT_SRC = "https://files.vandal.services/transportugal/images/about.png"
 const PARTNERS_SRC =
   "https://files.vandal.services/transportugal/images/partners.png"
@@ -108,6 +108,129 @@ const segments = [
   "Bazar e utilidades domésticas",
 ]
 
+const suppliers = [
+  {
+    name: "Aço Mix",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/01-acomix.png",
+      width: 353,
+      height: 177,
+    },
+  },
+  {
+    name: "Armarinhos Fernando",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/02-armarinhos-fernando.png",
+      width: 395,
+      height: 82,
+    },
+  },
+  {
+    name: "Atacadão",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/03-atacadao.png",
+      width: 290,
+      height: 94,
+    },
+  },
+  {
+    name: "Bozi",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/04-bozi.png",
+      width: 213,
+      height: 105,
+    },
+  },
+  {
+    name: "Riachuelo",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/05-riachuelo.png",
+      width: 173,
+      height: 61,
+    },
+  },
+  {
+    name: "Carone",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/06-carone.png",
+      width: 1236,
+      height: 844,
+    },
+  },
+  {
+    name: "Bridgestone",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/07-bridgestone.png",
+      width: 176,
+      height: 118,
+    },
+  },
+  {
+    name: "Casagrande",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/08-casagrande.png",
+      width: 195,
+      height: 154,
+    },
+  },
+  {
+    name: "Cesconetto",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/09-cesconetto.png",
+      width: 219,
+      height: 48,
+    },
+  },
+  {
+    name: "Danny Pack",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/10-dannypack.png",
+      width: 384,
+      height: 90,
+    },
+  },
+  {
+    name: "Assaí",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/11-assai.png",
+      width: 384,
+      height: 297,
+    },
+  },
+  {
+    name: "Cescom",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/12-cescom.png",
+      width: 177,
+      height: 169,
+    },
+  },
+  {
+    name: "Pax-Lub",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/13-pax-lub.png",
+      width: 380,
+      height: 380,
+    },
+  },
+  {
+    name: "Quality Fix",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/14-quality-fix.png",
+      width: 357,
+      height: 231,
+    },
+  },
+  {
+    name: "Supermed",
+    logo: {
+      url: "https://files.vandal.services/transportugal/images/suppliers/15-supermed.png",
+      width: 285,
+      height: 332,
+    },
+  },
+] as const
+
 export {
   ABOUT_SRC,
   differentiators,
@@ -118,4 +241,5 @@ export {
   qualityIndicators,
   segments,
   services,
+  suppliers,
 }
