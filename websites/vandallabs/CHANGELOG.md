@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.2.0...vandallabs-v1.3.0) (2026-10-01)
+
+
+### Features
+
+* **repo:** extract typegen task to all cloudflare websites
+* **transportugal-website:** add Transportugal landing page
+
+
+### Bug Fixes
+
+* **repo:** invalidate site build cache on sun-ui changes
+* **repo:** scan sun-ui source for Tailwind utilities
+
 ## [1.2.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.1.0...vandallabs-v1.2.0) (2026-07-10)
 
 

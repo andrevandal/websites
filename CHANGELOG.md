@@ -1,5 +1,213 @@
 # Changelog
 
+## [1.3.0](https://github.com/andrevandal/websites/compare/v1.2.0...v1.3.0) (2026-10-01)
+
+
+### Features
+
+* **brunabraz:** add allowedDurations and resolveDuration to pricing data
+* **brunabraz:** add aula-ingles-particular landing page
+* **brunabraz:** add aula-ingles-particular landing page
+* **brunabraz:** add contexto floating illustration
+* **brunabraz:** add data-animate markup to aula-ingles-particular.astro sections
+* **brunabraz:** add data-animate markup to index.astro sections
+* **brunabraz:** add fade-scale-up keyframes and data-animate base layer
+* **brunabraz:** add Isabel Limoli testimonial
+* **brunabraz:** add lesson pricing calculator
+* **brunabraz:** add metodo illustrations and responsive connecting line
+* **brunabraz:** add no-js/js toggle and mount SunAnimateOnScroll
+* **brunabraz:** add number ring badge and desktop card background
+* **brunabraz:** add planos sansa illustration
+* **brunabraz:** add resultados banner illustration
+* **brunabraz:** add ring-draw keyframes and prefers-reduced-motion compliance
+* **brunabraz:** add shared autonomy card component
+* **brunabraz:** add typography utility roles
+* **brunabraz:** animate planos pill indicator on selection change
+* **brunabraz:** centralize testimonials data with role field
+* **brunabraz:** disable 9/12 month duration for Conversação plan
+* **brunabraz:** extract pricing calculator into reusable component
+* **brunabraz:** log the resolved image service at build time
+* **brunabraz:** make planos pill selection interactive with live summary
+* **brunabraz:** match dor section badge design and add lg+ layout
+* **brunabraz:** opt into SunUIAstroIntegration's svelte option, hydrate SunCarousel
+* **brunabraz:** optimize testimonial avatars and show role, fix card height
+* **brunabraz:** randomize testimonial order
+* **brunabraz:** rebuild lp hero to match home layout in green variant
+* **brunabraz:** redesign aula-ingles-particular and index pages
+* **brunabraz:** replace clip-path SVG ring with stroke-based gradient ring
+* **brunabraz:** replace SunYoutube with self-hosted SunVideo in aula-ingles-particular
+* **brunabraz:** share transparent nav and add pt-BR section ids
+* **brunabraz:** stretch-grid posicionamento cards and stack icons
+* **brunabraz:** update site metadata and add testimonial
+* **brunabraz:** update timeline icons with final artwork
+* **brunabraz:** use real carousel photography
+* **brunabraz:** wire data-animate into shared card and carousel components
+* **brunabraz:** wire real WhatsApp number with contextual messages on every CTA
+* **brunabraz:** wire shared navigation, typography, and cards into pages
+* **clinicamauricioaraujo:** add Google rating badge
+* **clinicamauricioaraujo:** add GoogleRatingBadge component
+* **clinicamauricioaraujo:** register rating icons and score constant
+* **clinicamauricioaraujo:** show rating badge in footer
+* **clinicamauricioaraujo:** show rating badge in hero
+* **deploy:** add prepare-build-env script to export build-time env vars
+* **repo:** extract typegen task to all cloudflare websites
+* **scripts:** add agent git guardrail hooks
+* **scripts:** add docs and skills checks
+* **scripts:** add SVG optimization tool
+* **scripts:** add website:new generator to bootstrap Astro sites
+* **scripts:** add website:new generator to bootstrap Astro sites
+* **sun-ui:** add SunCombobox headless combobox primitive
+* **sun-ui:** add SunVideo component
+* **sun-ui:** add SunVideo props and pure playback-gating utilities
+* **sun-ui:** add Svelte facade entry point re-exporting bits-ui primitives
+* **sun-ui:** export suncarousel as direct svelte island, enable @astrojs/svelte
+* **sun-ui:** open combobox list on interaction, gate empty state on query
+* **sun-ui:** port carousel autoscroll/drag/keyboard logic to a Svelte island
+* **sun-ui:** port SunCarousel to a Svelte island
+* **transportugal-website:** add Transportugal landing page
+* **transportugal-website:** build landing page from Figma design
+* **transportugal-website:** raise hero image quality
+* **transportugal-website:** scaffold new Astro site infra
+* **transportugal-website:** serve photos from files.vandal.services
+* **transportugal:** add allowed-locations data module
+* **transportugal:** add brazil-cities generation script and generated data
+* **transportugal:** add CTA button states to route calculator
+* **transportugal:** add default social image
+* **transportugal:** add favicon assets
+* **transportugal:** add gray/red design tokens and typography primitives
+* **transportugal:** add normalizeCityName data helper
+* **transportugal:** add route Astro Actions
+* **transportugal:** add RoutePrazoCalculator svelte island
+* **transportugal:** add searchBrazilCities data helper
+* **transportugal:** animate MapBrazil SP glow and route trace
+* **transportugal:** integrate map-brazil figma motion animation
+* **transportugal:** make map animation direction to alternate
+* **transportugal:** pause map animation when off-screen
+* **transportugal:** rebuild hero and page sections with new typography components
+* **transportugal:** redesign navigation with animated toggle
+* **transportugal:** render real supplier logos in home page carousel
+* **transportugal:** restyle footer with new gray palette
+* **transportugal:** seed origin suggestions from destinations prop
+
+
+### Bug Fixes
+
+* **brunabraz:** a11y and image-sizing fixes from Lighthouse audit
+* **brunabraz:** add CNPJ to footer
+* **brunabraz:** align class and result sections
+* **brunabraz:** align contexto and dor spacing
+* **brunabraz:** align faq responsive spacing
+* **brunabraz:** align results banner asset
+* **brunabraz:** clear completed FAQ animations
+* **brunabraz:** close planos container wrapper
+* **brunabraz:** contain desktop section decorations
+* **brunabraz:** correct conversação 2x/week 6-month price to 520
+* **brunabraz:** correct dupla plan duration prices
+* **brunabraz:** correct missing data-animate and wrong stagger delay in index.astro
+* **brunabraz:** correct pricing and FAQ copy
+* **brunabraz:** disable 9/12 month duration for Conversação plan
+* **brunabraz:** drop unused index param and IMAGES_BASE_URL import
+* **brunabraz:** expand footer credits with designer and illustrator
+* **brunabraz:** faq items start closed
+* **brunabraz:** fix grammar on aula-ingles-particular FAQ copy
+* **brunabraz:** harden duration test coverage and drop label-keyed selector
+* **brunabraz:** hero image dimensions
+* **brunabraz:** implement full wireframe fidelity for aula-ingles-particular
+* **brunabraz:** include details field in pricing test expectations
+* **brunabraz:** keep planos cta above sansa illustration
+* **brunabraz:** keep trailing period outside italic hero heading
+* **brunabraz:** match dor section Figma assets
+* **brunabraz:** match original Figma ring shape and lengthen draw timing
+* **brunabraz:** pin testimonial divider and author row to card bottom
+* **brunabraz:** prebundle Cloudflare SSR dependencies
+* **brunabraz:** preserve heading caller colors
+* **brunabraz:** preserve planos calculator tabs
+* **brunabraz:** rebuild Método responsive layout
+* **brunabraz:** reconcile wave 1 concurrent commit state
+* **brunabraz:** refine English lesson copy
+* **brunabraz:** refine homepage biography copy
+* **brunabraz:** remove dead /blog/ link from navigation
+* **brunabraz:** reposition planos illustration
+* **brunabraz:** restore fill=none on ring SVG root for defensive clarity
+* **brunabraz:** revert credentials band to plural 'Estudos da Linguagem'
+* **brunabraz:** revert timeline entry to match home page's shipped text
+* **brunabraz:** size homepage carousel slides naturally
+* **brunabraz:** size testimonial cards by content
+* **brunabraz:** stop hiding carousel slides behind a broken per-item observer
+* **brunabraz:** sync hero cta copy to figma
+* **brunabraz:** update hero images and homepage video caption
+* **brunabraz:** update video and add whitespace
+* **brunabraz:** update video and add whitespace
+* **brunabraz:** use distinct positioning illustrations
+* **brunabraz:** use literal Figma/home-page copy in 02-Contexto, 04-Posicionamento, 05-Método
+* **brunabraz:** wrap SunVideo in data-animate div since component drops rest props
+* **ci:** add transportugal-website to release-please manifest
+* **ci:** free runner disk space before docker build to prevent OOM
+* **ci:** never crash ci-report-summary on malformed report, correct overclaims
+* **clinicamauricioaraujo:** correct rating to real 5,0 score and link badge to Google listing
+* **clinicamauricioaraujo:** localize rating decimal and add a11y label to badge
+* **clinicamauricioaraujo:** size hero cover to intrinsic height instead of a fixed cap
+* **clinicamauricioaraujo:** size hero cover to intrinsic height instead of a fixed cap
+* **deps:** patch @volar/kit to fix astro check false errors
+* **docker:** copy Bun patch files before frozen install
+* **landing:** align metodo positioning spacing
+* missing calculator leading icon
+* **repo:** ban numeric ADR citations in docs-check
+* **repo:** harden git guardrails and add a pre-push guard
+* **repo:** invalidate site build cache on sun-ui changes
+* **repo:** scan sun-ui source for Tailwind utilities
+* **repo:** stop shelling out to jq in moon project queries
+* **repo:** stop shelling out to jq in moon project queries
+* **scripts:** type svgo config properly, rename to .config.ts
+* **sun-ui:** add focus ring to combobox trigger
+* **sun-ui:** add spacing between caption and input in combobox
+* **sun-ui:** fix Carousel.svelte reactive className and a11y lint warnings
+* **sun-ui:** fix SunCombobox controlled input, clear desync, and loading precedence
+* **sun-ui:** gate combobox popup container on hasContent
+* **sun-ui:** isolate SunCarousel export, fix svelte resolution at consuming sites
+* **sun-ui:** open combobox on container interaction, not just input/chevron
+* **sun-ui:** recompute Carousel trackClass reactively with $derived
+* **sun-ui:** remove obsolete carousel lint ignore
+* **sun-ui:** resolve final-review findings on SunVideo
+* **sun-ui:** restore closing div dropped in prior fix
+* **sun-ui:** restore responsive carousel scrolling
+* **sun-ui:** simplify picture wrapper and aspect-ratio classes
+* **sun-ui:** tighten combobox item wrapper spacing
+* **sun-ui:** track .svelte sources in check/build task inputs
+* **sun-ui:** unwrap astro-slot wrapper so carousel logic sees real slide elements
+* **sun-ui:** use Tailwind v4 arbitrary-property syntax for aspect ratio
+* **transportugal-website:** correct heading tracking and divider element
+* **transportugal-website:** fix hero image covering content
+* **transportugal-website:** match mobile frame typography and alignment
+* **transportugal-website:** reorder footer sections on mobile
+* **transportugal-website:** restore icon colors, adopt container layout
+* **transportugal-website:** section-by-section pixel comparison fixes
+* **transportugal-website:** svgo-optimize icons with currentColor fills
+* **transportugal-website:** use brunabraz's actual container breakpoints
+* **transportugal:** add local bunfig.toml for test preload resolution
+* **transportugal:** clarify route calculator timing
+* **transportugal:** correct ES base color and add SP/ES pin markers
+* **transportugal:** correct MapBrazil SP base color and mobile layout
+* **transportugal:** correct mobile hero image filename
+* **transportugal:** fix sp glow sizing/alignment against black base
+* **transportugal:** make footer contacts actionable
+* **transportugal:** make hero section flex-fill and right column self-center
+* **transportugal:** make sp map marker a constant black ring
+* **transportugal:** preserve inline map svg rendering
+* **transportugal:** preserve map overlay layers
+* **transportugal:** real Svelte test coverage, true route swap, Area export
+* **transportugal:** redesign combobox to match Figma, remove swap button
+* **transportugal:** reduce route calculator card padding on mobile
+* **transportugal:** remove hero image opacity
+* **transportugal:** render footer copyright year dynamically and adopt Logo
+* **transportugal:** satisfy map lint rules
+* **transportugal:** small UI fixes and supplier logo carousel
+* **transportugal:** stop sp glow blur bleed getting clipped mid-loop
+* **transportugal:** stretch insurance card height on xl breakpoint
+* **transportugal:** switch map layout breakpoint from lg to xl
+* **transportugal:** switch partner section responsive breakpoint to xl
+* **transportugal:** widen supplier carousel logo gap
+
 ## [1.2.0](https://github.com/andrevandal/websites/compare/v1.1.0...v1.2.0) (2026-07-10)
 
 

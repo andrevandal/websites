@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/andrevandal/websites/compare/images-app-v1.0.0...images-app-v1.1.0) (2026-10-01)
+
+
+### Features
+
+* **scripts:** add docs and skills checks
+
 ## 1.0.0 (2026-07-06)
 
 

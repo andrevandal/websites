@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.2.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.1.0...clinicamauricioaraujo-v1.2.0) (2026-10-01)
+
+
+### Features
+
+* **clinicamauricioaraujo:** add Google rating badge
+* **clinicamauricioaraujo:** add GoogleRatingBadge component
+* **clinicamauricioaraujo:** register rating icons and score constant
+* **clinicamauricioaraujo:** show rating badge in footer
+* **clinicamauricioaraujo:** show rating badge in hero
+* **repo:** extract typegen task to all cloudflare websites
+* **transportugal-website:** add Transportugal landing page
+
+
+### Bug Fixes
+
+* **clinicamauricioaraujo:** correct rating to real 5,0 score and link badge to Google listing
+* **clinicamauricioaraujo:** localize rating decimal and add a11y label to badge
+* **clinicamauricioaraujo:** size hero cover to intrinsic height instead of a fixed cap
+* **clinicamauricioaraujo:** size hero cover to intrinsic height instead of a fixed cap
+* **repo:** invalidate site build cache on sun-ui changes
+
 ## [1.1.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.0.0...clinicamauricioaraujo-v1.1.0) (2026-07-08)
 
 
