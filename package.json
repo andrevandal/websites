@@ -3,6 +3,11 @@
   "version": "1.3.0",
   "private": true,
   "description": "Client websites and a shared image service",
+  "keywords": [
+    "astro",
+    "monorepo",
+    "websites"
+  ],
   "license": "MIT",
   "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
   "workspaces": {
@@ -50,10 +55,6 @@
         "agents-md-lint": "^1.0.1"
       },
       "testing": {
-        "@playwright/test": "^1.52.0",
-        "@happy-dom/global-registrator": "^20.10.6",
-        "happy-dom": "^20.10.6",
-        "@testing-library/react": "^16.3.0",
         "@testing-library/svelte": "^5.4.2",
         "@testing-library/user-event": "^14.6.1"
       },
@@ -156,8 +157,6 @@
   "devDependencies": {
     "@commitlint/cli": "catalog:tools",
     "@commitlint/config-conventional": "catalog:tools",
-    "@happy-dom/global-registrator": "^20.11.2",
-    "@playwright/test": "catalog:testing",
     "@prettier/plugin-oxc": "catalog:linting",
     "@svgr/plugin-prettier": "catalog:linting",
     "@types/bun": "catalog:types",

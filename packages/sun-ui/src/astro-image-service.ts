@@ -1,4 +1,4 @@
-import type { ExternalImageService } from "astro"
+import type { ExternalImageService, ImageTransform } from "astro"
 import { buildRiapiModifiers } from "./utils/riapi-modifiers"
 
 type SunImageServiceConfig = {
@@ -115,6 +115,68 @@ const getSrcSet: ExternalImageService<SunImageServiceConfig>["getSrcSet"] =
     return []
   }
 
+// Runtime-injectable functions that build image URLs with an explicit baseUrl parameter,
+// enabling Picture.astro to read IMAGES_BASE_URL through getSecret at request time.
+
+const buildImageUrl = (baseUrl: string, options: ImageTransform): string => {
+  const cleanBaseUrl = baseUrl.replace(/\/+$/, "")
+  const modifiers = buildRiapiModifiers(options)
+  // validateOptions runs before URL building in the image service and guarantees
+  // `src` is a string, but these functions are called directly from Picture.astro
+  // so we must ensure src is a string here too.
+  if (typeof options.src !== "string") {
+    throw new Error(
+      `buildImageUrl requires src to be a string (received ${typeof options.src})`
+    )
+  }
+  const source = encodeURIComponent(options.src)
+
+  return `${cleanBaseUrl}/${modifiers}/${source}`
+}
+
+type SrcSetEntry = {
+  transform: ImageTransform
+  descriptor: string
+}
+
+const buildImageSrcSet = (options: ImageTransform): SrcSetEntry[] => {
+  const { densities, widths, width, height } = options
+  if (!width) return []
+
+  if (densities) {
+    const factors = densities
+      .map(density =>
+        typeof density === "number" ? density : Number.parseFloat(density)
+      )
+      .sort((a, b) => a - b)
+
+    return factors.map(factor => ({
+      transform: {
+        ...options,
+        width: Math.round(width * factor),
+        height: height ? Math.round(height * factor) : undefined,
+      },
+      descriptor: `${factor}x`,
+    }))
+  }
+
+  if (widths) {
+    const aspectRatio = height ? height / width : undefined
+    const targetWidths = [...widths].sort((a, b) => a - b)
+
+    return targetWidths.map(targetWidth => ({
+      transform: {
+        ...options,
+        width: targetWidth,
+        height: aspectRatio ? Math.round(targetWidth * aspectRatio) : undefined,
+      },
+      descriptor: `${targetWidth}w`,
+    }))
+  }
+
+  return []
+}
+
 // apps/images' placeholder endpoint (README "Placeholder"): GET /{modifiers}/{source}?placeholder.
 // Ignores the modifiers segment entirely and returns a fixed small ThumbHash PNG blur, keyed by
 // source only. This is separate from the getURL()/getSrcSet() Astro pipeline — callers request it
@@ -129,6 +191,6 @@ const sunImageService: ExternalImageService<SunImageServiceConfig> = {
   getHTMLAttributes,
 }
 
-export type { SunImageServiceConfig }
-export { getPlaceholderUrl }
+export type { SunImageServiceConfig, SrcSetEntry }
+export { getPlaceholderUrl, buildImageUrl, buildImageSrcSet }
 export default sunImageService

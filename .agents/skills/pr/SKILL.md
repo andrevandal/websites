@@ -19,8 +19,7 @@ metadata:
 - **Evidence** is pasted `bun run check` output and, for a UI change
   (`websites/`, `packages/sun-ui`), a screenshot. Paste the command
   and its outcome, not a claim.
-- **Merge danger** names one-way doors explicitly: database migrations, Turso
-  production data, public API contracts.
+- **Merge danger** names one-way doors explicitly: public API contracts.
 - **Board**: after opening the PR, set the task's Status to Gate with the
   recipe in `docs/agents/issue-tracker.md`.
 

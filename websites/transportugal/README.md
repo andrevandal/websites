@@ -51,9 +51,9 @@ moon run transportugal:preview
 
 ## Environment variables
 
-Configured in `.env.example`: `SITE_URL`, `PUBLIC_GOOGLE_ANALYTICS_ID`,
-`PUBLIC_GOOGLE_ADS_CONVERSION_ID`, `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL`,
-`ENABLE_PARTYTOWN`.
+Configured in `.env.example`: `IMAGES_BASE_URL`, `PUBLIC_GOOGLE_ANALYTICS_ID`,
+`PUBLIC_GOOGLE_ADS_CONVERSION_ID`, `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL`. The
+canonical site URL is the `CANONICAL_SITE_URL` constant in `astro.config.js`.
 
 ## Icons
 

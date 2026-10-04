@@ -1,6 +1,6 @@
 # websites
 
-Websites for Vandal clients. TypeScript monorepo managed with moonrepo and bun.
+Client websites and a shared image service. TypeScript monorepo managed with moonrepo and bun.
 
 ## What's in here
 
@@ -27,8 +27,7 @@ projects a change actually affects are linted, typechecked, and tested — then
 
 - `main` branch → **staging**
 - pull requests → **preview**
-- `apps/images` uses one reusable workflow
-  (`container.yml`, invoked once per affected app from a matrix) that builds
+- `apps/images` deploys via a reusable workflow (`container.yml`) that builds
   a Docker image, pushes it to GHCR, and triggers a Coolify webhook
   (staging on push to `main`, production via `release.yml`'s dispatch —
   pull requests never trigger a container build, unlike the websites below).

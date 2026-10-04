@@ -3,22 +3,12 @@ name: Container
 on:
   workflow_call:
     inputs:
-      app:
-        description: Container app to build (web or images)
-        type: string
-        required: true
       environment:
         description: Target environment
         type: string
         required: true
   workflow_dispatch:
     inputs:
-      app:
-        description: Container app to build
-        type: choice
-        options: [web, images]
-        default: web
-        required: true
       environment:
         description: Target environment
         type: choice
@@ -31,17 +21,14 @@ permissions:
   packages: write
 
 concurrency:
-  group: ${{ inputs.app }}-container-${{ github.event.pull_request.number || github.ref }}
+  group: images-container-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
   REGISTRY: ghcr.io
-  # GitHub Actions expressions have no case/format transform, so every
-  # per-app value is a static ternary on the `app` input - never a
-  # string-interpolated name.
-  IMAGE_NAME: ${{ github.repository }}/${{ inputs.app == 'web' && 'web-app' || 'images-app' }}
-  DOCKERFILE: ${{ inputs.app == 'web' && 'docker/web.Dockerfile' || 'docker/images.Dockerfile' }}
-  BUILD_CACHE_SCOPE: ${{ inputs.app == 'web' && 'web-container-v1' || 'images-container-v2' }}
+  IMAGE_NAME: ${{ github.repository }}/images-app
+  DOCKERFILE: docker/images.Dockerfile
+  BUILD_CACHE_SCOPE: images-container-v2
 
 jobs:
   verify:
@@ -59,15 +46,15 @@ jobs:
       - name: Typecheck app
         env:
           NODE_OPTIONS: --max-old-space-size=6144
-        run: moon run ${{ inputs.app }}:typecheck
+        run: moon run images:typecheck
 
       - name: Test app
         env:
           NODE_OPTIONS: --max-old-space-size=6144
-        run: moon run ${{ inputs.app }}:test
+        run: moon run images:test
 
       - name: Build app
-        run: moon run ${{ inputs.app }}:build
+        run: moon run images:build
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -101,7 +88,7 @@ jobs:
         id: meta
         shell: bash
         run: |
-          version="$(jq -r '.version' apps/${{ inputs.app }}/package.json)"
+          version="$(jq -r '.version' apps/images/package.json)"
           image="${REGISTRY}/${IMAGE_NAME}"
 
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -138,9 +125,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      # The moon remote-cache secrets are consumed only by
-      # docker/web.Dockerfile's builder stage; images.Dockerfile declares no
-      # secret mounts and ignores them.
+      # images.Dockerfile declares no secret mounts and ignores these; kept
+      # wired for parity with the moon remote-cache ADR's mechanism.
       - name: Build and push
         uses: docker/build-push-action@v7
         with:
@@ -165,7 +151,7 @@ jobs:
       - name: Trigger Coolify deploy
         shell: bash
         env:
-          WEBHOOK_URL: ${{ inputs.app == 'web' && secrets.COOLIFY_WEB_WEBHOOK || secrets.COOLIFY_IMAGES_WEBHOOK }}
+          WEBHOOK_URL: ${{ secrets.COOLIFY_IMAGES_WEBHOOK }}
           COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
           CF_BYPASS_SECRET: ${{ secrets.CLOUDFLARE_DEPLOY_BYPASS_SECRET }}
           ENVIRONMENT: ${{ needs.build-and-push.outputs.environment }}

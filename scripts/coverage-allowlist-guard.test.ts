@@ -64,10 +64,18 @@ describe("findContractRegressions", () => {
       expected: ["thresholds.functions lowered from 80 to 70"],
     },
     {
-      name: "project removed",
+      name: "project removed, still a live workspace member",
       current: config({}),
       baseline: config({ web: {} }),
       expected: ["project web was removed"],
+      projectExists: () => true,
+    },
+    {
+      name: "project removed, workspace member deleted outright",
+      current: config({}),
+      baseline: config({ web: {} }),
+      expected: [],
+      projectExists: () => false,
     },
     {
       name: "exclude added",
@@ -81,7 +89,9 @@ describe("findContractRegressions", () => {
       baseline: config({ web: { include: ["src/**/*.ts", "src/**/*.tsx"] } }),
       expected: ['web include dropped "src/**/*.tsx"'],
     },
-  ])("$name", ({ current, baseline, expected }) => {
-    expect(findContractRegressions(current, baseline)).toEqual(expected)
+  ])("$name", ({ current, baseline, expected, projectExists }) => {
+    expect(findContractRegressions(current, baseline, projectExists)).toEqual(
+      expected
+    )
   })
 })

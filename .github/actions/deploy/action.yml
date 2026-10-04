@@ -25,7 +25,7 @@ runs:
   steps:
     - name: Prepare build environment
       shell: bash
-      run: bun run prepare-build-env ${{ inputs.target }}
+      run: bun run prepare-build-env ${{ inputs.target }} --env ${{ inputs.env }}
 
     - name: Build
       shell: bash

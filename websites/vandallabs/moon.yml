@@ -36,8 +36,6 @@ tasks:
       - "@globs(typescript)"
       - "/packages/sun-ui/src/**/*"
       - "./astro.config.js"
-      - "$SITE_URL"
-      - "$ENABLE_PARTYTOWN"
       - "$PUBLIC_GOOGLE_ANALYTICS_ID"
       - "$PUBLIC_GOOGLE_ADS_CONVERSION_ID"
       - "$PUBLIC_GOOGLE_ADS_CONVERSION_LABEL"
@@ -68,7 +66,6 @@ tasks:
       - "@globs(sources)"
       - "bunfig.toml"
       - "/bunfig.toml"
-      - "/happydom.ts"
       - "/packages/sun-ui/src/**/*"
 
   typecheck:

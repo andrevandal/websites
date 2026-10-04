@@ -4,7 +4,6 @@ import svelteIntegration from "@astrojs/svelte"
 
 type Props = {
   iconsetOptions?: Parameters<typeof astroIconset>[0]
-  imageServiceBaseUrl?: string
   svelte?: boolean | Parameters<typeof svelteIntegration>[0]
 }
 
@@ -22,21 +21,17 @@ const VIRTUAL_CONFIG_ID = "virtual:sun-ui/config",
   // Sun UI components import the real `config` module so a site that never
   // registers this integration still builds. When the integration *is* present it
   // overrides that module, which is how its options reach component frontmatter.
-  virtualConfigPlugin = (imageServiceBaseUrl?: string) => ({
+  virtualConfigPlugin = () => ({
     name: "sun-ui:config",
     resolveId: (id: string) =>
       id === VIRTUAL_CONFIG_ID ? RESOLVED_VIRTUAL_CONFIG_ID : undefined,
     load: (id: string) =>
       id === RESOLVED_VIRTUAL_CONFIG_ID || isFallbackConfigModule(id)
-        ? `export const imageServiceBaseUrl = ${
-            imageServiceBaseUrl
-              ? JSON.stringify(imageServiceBaseUrl)
-              : "undefined"
-          }\n`
+        ? `export const imageServiceBaseUrl = undefined\n`
         : undefined,
   }),
   SunUIAstroIntegration = (props: Props = {}): AstroIntegration => {
-    const { iconsetOptions, imageServiceBaseUrl, svelte } = props
+    const { iconsetOptions, svelte } = props
 
     return {
       name: "sun-ui",
@@ -54,15 +49,7 @@ const VIRTUAL_CONFIG_ID = "virtual:sun-ui/config",
 
           const config: Parameters<typeof updateConfig>[0] = {
             integrations,
-            vite: { plugins: [virtualConfigPlugin(imageServiceBaseUrl)] },
-          }
-          if (imageServiceBaseUrl) {
-            config.image = {
-              service: {
-                entrypoint: "@vandal-websites/sun-ui/astro-image-service",
-                config: { baseUrl: imageServiceBaseUrl },
-              },
-            }
+            vite: { plugins: [virtualConfigPlugin()] },
           }
           updateConfig(config)
         },

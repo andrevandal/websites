@@ -47,26 +47,6 @@ domain, Basic Auth via `--htpasswd_file`.
 - Operator checks: `curl -s -u "$USER:$PASS"
 "$MOON_REMOTE_HOST/status"` for size/usage, and a 401 from an
   unauthenticated `/status` to confirm auth is on.
-- `docker/web.Dockerfile`'s builder stage runs a throwaway `git init &&
-git add -A && git commit` over the copied build context before
-  invoking moon: without any git repository present (`.dockerignore`
-  excludes the real `.git`), moon silently computes zero input files
-  for every task's hash, so the Docker-side hash never matched the
-  host-side hash — confirmed the same commit's package `build`
-  hash is now byte-identical on both sides
-  (`de0cfb47fba71e9eaba047dc1ba1642649c51a31d5e9b10d7658c1054d141bce`).
-  `MOON_EXPERIMENT_NATIVE_FILE_HASHING` does **not** fix this — verified
-  it has no effect on the empty-inputs symptom.
-
-**Phase 3 gap (final whole-branch review):** the above hash-parity fix
-is a necessary precondition, not proof of actual cache hydration. No
-real docker-build log, cache-hit confirmation, or build duration has
-been captured — a probe attempt was reverted with no evidence saved.
-That full proof needs real `BAZEL_REMOTE_BASIC_AUTH_*`/
-`MOON_REMOTE_HOST` credentials wired into CI by the repo owner; this
-remains an open item, not a closed gate. GOAL.md previously overstated
-this as "build-cache hit confirmed ... build duration recorded" -
-corrected there too.
 
 ## Verification log
 

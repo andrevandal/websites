@@ -1,48 +1,18 @@
 import { defineConfig, envField, fontProviders } from "astro/config"
-import { loadEnv } from "vite"
 import sunUIAstroIntegration from "@vandal-websites/sun-ui/astro-integration"
 import sitemap from "@astrojs/sitemap"
 import partytown from "@astrojs/partytown"
 import cloudflare from "@astrojs/cloudflare"
 import tailwindcss from "@tailwindcss/vite"
-// oxlint-disable-next-line import/no-namespace
-import * as v from "valibot"
 
-const env = loadEnv(import.meta.env.MODE, process.cwd(), "")
-if (env.IMAGES_BASE_URL === "") delete env.IMAGES_BASE_URL
-
-const {
-  SITE_URL,
-  IMAGES_BASE_URL,
-  ENABLE_PARTYTOWN: isPartytownEnabled,
-} = v.parse(
-  v.pipe(
-    v.object({
-      SITE_URL: v.pipe(
-        v.optional(v.pipe(v.string(), v.url("The url is badly formatted.")))
-      ),
-      IMAGES_BASE_URL: v.pipe(
-        v.optional(v.pipe(v.string(), v.url("The url is badly formatted.")))
-      ),
-      ENABLE_PARTYTOWN: v.pipe(
-        v.optional(v.string(), "false"),
-        v.transform(value => value === "true")
-      ),
-    })
-  ),
-  env
-)
-
-console.log(
-  `[ASTRO] Partytown is ${isPartytownEnabled ? "enabled" : "disabled"}.`
-)
+const CANONICAL_SITE_URL = "https://transportugal.com.br"
 
 export default defineConfig({
   output: "server",
 
   adapter: cloudflare({
     sessionKVBindingName: "SESSION",
-    imageService: IMAGES_BASE_URL ? "custom" : "passthrough",
+    imageService: "passthrough",
     prerenderEnvironment: "node",
   }),
 
@@ -57,34 +27,18 @@ export default defineConfig({
 
   env: {
     schema: {
-      SITE_URL: envField.string({
-        context: "client",
-        access: "public",
-        optional: true,
-      }),
-      ENABLE_PARTYTOWN: envField.boolean({
-        context: "server",
-        access: "secret",
-        optional: true,
-        default: false,
-      }),
-      IMAGES_BASE_URL: envField.string({
-        context: "server",
-        access: "secret",
-        optional: true,
-      }),
       PUBLIC_GOOGLE_ANALYTICS_ID: envField.string({
-        context: "client",
+        context: "server",
         access: "public",
         optional: true,
       }),
       PUBLIC_GOOGLE_ADS_CONVERSION_ID: envField.string({
-        context: "client",
+        context: "server",
         access: "public",
         optional: true,
       }),
       PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: envField.string({
-        context: "client",
+        context: "server",
         access: "public",
         optional: true,
       }),
@@ -94,23 +48,21 @@ export default defineConfig({
 
   integrations: [
     sunUIAstroIntegration({
-      imageServiceBaseUrl: IMAGES_BASE_URL,
       svelte: { configFile: false },
     }),
     sitemap(),
-    isPartytownEnabled &&
-      partytown({
-        config: {
-          forward: [
-            ["dataLayer.push", { preserveBehavior: true }],
-            ["gtag", { preserveBehavior: true }],
-          ],
-        },
-      }),
+    partytown({
+      config: {
+        forward: [
+          ["dataLayer.push", { preserveBehavior: true }],
+          ["gtag", { preserveBehavior: true }],
+        ],
+      },
+    }),
   ],
 
   trailingSlash: "ignore",
-  site: SITE_URL,
+  site: CANONICAL_SITE_URL,
 
   vite: {
     plugins: [tailwindcss()],

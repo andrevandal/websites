@@ -14,6 +14,7 @@
     "./astro": "./dist/astro/index.mjs",
     "./astro-image-service": "./dist/astro-image-service.mjs",
     "./astro-integration": "./dist/astro-integration.mjs",
+    "./astro/runtime-env": "./dist/astro/runtime-env.mjs",
     "./config": "./dist/config.mjs",
     "./svelte": {
       "types": "./dist/svelte/index.d.mts",

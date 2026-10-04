@@ -1,65 +1,27 @@
-import { resolve } from "node:path"
-import { readFileSync } from "node:fs"
 import { randomUUID } from "node:crypto"
-import { v } from "./utils/schemas"
+import { resolve } from "node:path"
+import { resolveSiteConfig } from "./site-config"
+import type { Stage } from "./site-config"
 
-export const repoRoot = resolve(import.meta.dirname, "..")
+const repoRoot = resolve(import.meta.dirname, "..")
 
-export const loadAndResolveEnv = (_: string) => ({
-  PLATFORM_DB_URL: "",
-})
-
-export const parseEnvFileKeys = (filepath: string) => {
-  try {
-    // oxlint-disable-next-line node/no-sync
-    return readFileSync(filepath, "utf-8")
-      .split("\n")
-      .map(l => l.trim())
-      .filter(l => l && !l.startsWith("#"))
-      .map(l => {
-        const eq = l.indexOf("=")
-
-        if (eq === -1) return null
-
-        const key = l.slice(0, eq).trim()
-
-        return key
-      })
-      .filter((entry): entry is string => entry !== null)
-  } catch (err) {
-    console.debug(err)
-    throw new Error(`Failed to read env file at ${filepath}`, { cause: err })
+const extractSiteIdFromLocation = (location: string[]): string => {
+  const [directory, siteId] = location
+  if (directory !== "websites" || !siteId) {
+    throw new Error(
+      `Invalid project location: ${location.join("/")}. Expected ["websites", "<site-id>"]`
+    )
   }
+  return siteId
 }
 
-export const envVarNameForTarget = (projectId: string): string =>
-  `ENV_VARS_${projectId.toUpperCase().split(/[.-]/)[0]}`
-
-export const filterEnvVars = (
-  rawJson: string,
-  allowedKeys: string[]
-): Record<string, string> => {
-  const parsed = v.parse(
-    v.pipe(v.string(), v.parseJson(), v.record(v.string(), v.string())),
-    rawJson.replaceAll("\\", "").replace(/^\uFEFF/, "")
-  )
-  return Object.fromEntries(
-    Object.entries(parsed).filter(([key]) => allowedKeys.includes(key))
-  )
-}
-
-export const resolveTargetEnvVars = (
+const resolveTargetEnvVars = (
   siteLocation: string[],
-  envVarName: string
-): Record<string, string> => {
-  const keys = parseEnvFileKeys(
-      resolve(repoRoot, ...siteLocation, ".env.example")
-    ),
-    raw = process.env[envVarName]
-  return keys.length > 0 && raw ? filterEnvVars(raw, keys) : {}
-}
+  stage: Stage
+): Record<string, string> =>
+  resolveSiteConfig(extractSiteIdFromLocation(siteLocation), stage).vars
 
-export const formatGithubEnvBlock = (vars: Record<string, string>): string =>
+const formatGitHubEnvironmentFile = (vars: Record<string, string>): string =>
   Object.entries(vars)
     .map(([key, value]) => {
       const delimiter = `ghadelim_${randomUUID()}`
@@ -67,7 +29,7 @@ export const formatGithubEnvBlock = (vars: Record<string, string>): string =>
     })
     .join("\n") + (Object.keys(vars).length > 0 ? "\n" : "")
 
-export const resolveDbUrl = (url: string | undefined): string | undefined => {
+const resolveDbUrl = (url: string | undefined): string | undefined => {
   if (!url) return undefined
 
   if (url.startsWith("file:") && !url.startsWith("file:/")) {
@@ -75,4 +37,11 @@ export const resolveDbUrl = (url: string | undefined): string | undefined => {
     return `file:${resolve(repoRoot, relativePath)}`
   }
   return url
+}
+
+export {
+  formatGitHubEnvironmentFile,
+  repoRoot,
+  resolveDbUrl,
+  resolveTargetEnvVars,
 }

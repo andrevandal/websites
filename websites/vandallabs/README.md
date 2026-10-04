@@ -64,20 +64,16 @@ The dev server defaults to Astro's local port. If another server is already runn
 
 Configured in `.env.example`:
 
-| Variable                             | Purpose                                                     |
-| ------------------------------------ | ----------------------------------------------------------- |
-| `SITE_URL`                           | Absolute site URL used by Astro sitemap/canonical metadata. |
-| `PUBLIC_GOOGLE_ANALYTICS_ID`         | Optional Google Analytics measurement id.                   |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_ID`    | Optional Google Ads conversion id.                          |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional Google Ads conversion label.                       |
-| `ENABLE_PARTYTOWN`                   | Enables Partytown when set to `true`. Defaults to `false`.  |
+| Variable                             | Purpose                                   |
+| ------------------------------------ | ----------------------------------------- |
+| `PUBLIC_GOOGLE_ANALYTICS_ID`         | Optional Google Analytics measurement id. |
+| `PUBLIC_GOOGLE_ADS_CONVERSION_ID`    | Optional Google Ads conversion id.        |
+| `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional Google Ads conversion label.     |
 
-CI resolves `ENV_VARS_VANDALLABS` twice: once before the build step (each
-declared key above is exported into the build's own environment, since
-`astro.config.js` reads several of them directly via `loadEnv`/`import.meta.env`
-at build time), and once more after the build, when the same values are
-written into the deployed Worker's `wrangler.json` `vars` for any key still
-needed at request time.
+CI reads the non-secret values from `config.json` for the requested Stage before
+the build. The same values are written to the deployed Worker's `wrangler.json`
+`vars`. Store a sensitive value only on the Worker with `wrangler secret put`;
+do not add it to `config.json`.
 
 ## Icons
 

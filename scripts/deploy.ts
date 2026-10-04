@@ -7,7 +7,7 @@ import { hideBin } from "yargs/helpers"
 
 import { consola } from "consola"
 import { execa } from "execa"
-import { envVarNameForTarget, repoRoot, resolveTargetEnvVars } from "./env"
+import { repoRoot, resolveTargetEnvVars } from "./env"
 import { queryTargets } from "./utils"
 import {
   deleteKvNamespaceByTitle,
@@ -170,12 +170,10 @@ if (import.meta.main) {
       process.exit(0)
     }
 
-    const envVarName = envVarNameForTarget(project.id)
-
-    if (!process.env[envVarName])
-      consola.warn(`${envVarName} not set — deploying with no custom env vars`)
-
-    const envVars = resolveTargetEnvVars(project.location, envVarName)
+    const envVars = resolveTargetEnvVars(
+      project.location,
+      env as "preview" | "staging" | "production"
+    )
 
     if (dryRun) {
       consola.info(

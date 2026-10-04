@@ -21,6 +21,7 @@ export default defineConfig({
   entry: [
     "./src/index.ts",
     "./src/astro/index.ts",
+    "./src/astro/runtime-env.ts",
     "./src/svelte/index.ts",
     "./src/astro-integration.ts",
     "./src/astro-image-service.ts",

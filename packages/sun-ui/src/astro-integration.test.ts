@@ -38,7 +38,7 @@ const setup = (props?: IntegrationProps): ConfigUpdate => {
   }
 
 describe("SunUIAstroIntegration", () => {
-  it("configures only iconset when no image service base URL is provided", () => {
+  it("does not configure image service at build time", () => {
     const call = setup()
 
     expect(Array.isArray(call.integrations)).toBe(true)
@@ -46,17 +46,12 @@ describe("SunUIAstroIntegration", () => {
     expect(call).not.toHaveProperty("image")
   })
 
-  it("configures image service when base URL is provided", () => {
+  it("image service is not configured even when base URL is provided", () => {
     const call = setup({ imageServiceBaseUrl: "https://images.example.com" })
 
     expect(Array.isArray(call.integrations)).toBe(true)
     expect(call.integrations?.length).toBe(1)
-    expect(call.image?.service.entrypoint).toBe(
-      "@vandal-websites/sun-ui/astro-image-service"
-    )
-    expect(call.image?.service.config.baseUrl).toBe(
-      "https://images.example.com"
-    )
+    expect(call).not.toHaveProperty("image")
   })
 
   it("always registers the virtual config plugin", () => {
@@ -69,33 +64,7 @@ describe("SunUIAstroIntegration", () => {
     expect(plugin.resolveId("some-other-module")).toBeUndefined()
   })
 
-  it("exposes the image service base URL through the virtual config module", () => {
-    const plugin = configPlugin({
-      imageServiceBaseUrl: "https://images.example.com",
-    })
-
-    expect(plugin.load("\0virtual:sun-ui/config")).toBe(
-      'export const imageServiceBaseUrl = "https://images.example.com"\n'
-    )
-  })
-
-  it("overrides the package's fallback config module from source and dist", () => {
-    const plugin = configPlugin({
-        imageServiceBaseUrl: "https://images.example.com",
-      }),
-      expected =
-        'export const imageServiceBaseUrl = "https://images.example.com"\n'
-
-    expect(plugin.load("/repo/packages/sun-ui/src/config.ts")).toBe(expected)
-    expect(plugin.load("/repo/node_modules/sun-ui/dist/config.mjs")).toBe(
-      expected
-    )
-    expect(plugin.load("C:\\repo\\packages\\sun-ui\\src\\config.ts")).toBe(
-      expected
-    )
-  })
-
-  it("exposes an undefined base URL when no image service is configured", () => {
+  it("virtual config always exports undefined for imageServiceBaseUrl", () => {
     const plugin = configPlugin()
 
     expect(plugin.load("\0virtual:sun-ui/config")).toBe(

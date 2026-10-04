@@ -2,8 +2,8 @@
 
 ## Project structure
 
-websites is a bun + moon monorepo of client websites, shared packages and an image service. Tool
-versions live in `.prototools`.
+websites is a bun + moon monorepo of client websites and a shared image
+service. Tool versions live in `.prototools`.
 
 - `apps/images` - Hono + Bun.Image image service; sharp only for animated GIF output.
 - `packages/sun-ui` - Astro + Svelte UI kit for the websites.
@@ -51,7 +51,7 @@ shrinks; each entry cites the issue that removes it.
 1. One worktree per epic, branch `<type>/<issue#>-<slug>`
    ([`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)).
 2. Conventional Commits; commitlint runs at commit-msg. Scope with the project
-   (`feat(brunabraz): ...`); a repo-wide change needs none.
+   (`feat(images): ...`); a repo-wide change needs none.
 3. PR titles are Conventional Commits too. The `pr` skill writes the body; it
    says `Closes #<task>`.
 4. release-please owns versions, `CHANGELOG.md`, and tags.
@@ -80,6 +80,8 @@ sub-issues, and Project #1 is the board. Conventions:
 Epics close; durable knowledge moves before they do. Decisions go to
 [`docs/adr/`](docs/adr/FORMAT.md), terms to `CONTEXT.md`
 ([`docs/agents/domain.md`](docs/agents/domain.md)), rules to tests.
+`docs/specs/` and `docs/plans/` are legacy, retired by issue #78; read
+them for history and add nothing new there.
 
 ## Skills
 

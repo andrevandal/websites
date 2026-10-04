@@ -569,11 +569,9 @@ const updateManualTargets = (content: string, slug: string) => {
     .map(value => value.trim())
     .filter(Boolean)
   if (!targets.includes(slug)) targets.push(slug)
-  const fixed = targets.filter(
-    target => target === "images" || target === "web"
-  )
+  const fixed = targets.filter(target => target === "images")
   const websites = targets
-    .filter(target => target !== "images" && target !== "web")
+    .filter(target => target !== "images")
     .sort((a, b) => a.localeCompare(b))
   const [matchedOptions] = match
   return `${content.slice(0, match.index)}options: [${[...fixed, ...websites].join(", ")}]${content.slice(match.index + matchedOptions.length)}`

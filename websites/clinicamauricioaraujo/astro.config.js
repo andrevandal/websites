@@ -1,31 +1,11 @@
 import { defineConfig, envField, fontProviders } from "astro/config"
-import { loadEnv } from "vite"
 import sitemap from "@astrojs/sitemap"
 import partytown from "@astrojs/partytown"
 import cloudflare from "@astrojs/cloudflare"
 import tailwindcss from "@tailwindcss/vite"
 import icon from "astro-iconset"
-// oxlint-disable-next-line import/no-namespace
-import * as v from "valibot"
 
-const { SITE_URL, ENABLE_PARTYTOWN: isPartytownEnabled } = v.parse(
-  v.pipe(
-    v.object({
-      SITE_URL: v.pipe(
-        v.optional(v.pipe(v.string(), v.url("The url is badly formatted.")))
-      ),
-      ENABLE_PARTYTOWN: v.pipe(
-        v.optional(v.string(), "false"),
-        v.transform(value => value === "true")
-      ),
-    })
-  ),
-  loadEnv(import.meta.env.MODE, process.cwd(), "")
-)
-
-console.log(
-  `[ASTRO] Partytown is ${isPartytownEnabled ? "enabled" : "disabled"}.`
-)
+const CANONICAL_SITE_URL = "https://clinicamauricioaraujo.com.br"
 
 export default defineConfig({
   output: "server",
@@ -46,29 +26,18 @@ export default defineConfig({
 
   env: {
     schema: {
-      SITE_URL: envField.string({
-        context: "client",
-        access: "public",
-        optional: true,
-      }),
-      ENABLE_PARTYTOWN: envField.boolean({
-        context: "server",
-        access: "secret",
-        optional: true,
-        default: false,
-      }),
       PUBLIC_GOOGLE_ANALYTICS_ID: envField.string({
-        context: "client",
+        context: "server",
         access: "public",
         optional: true,
       }),
       PUBLIC_GOOGLE_ADS_CONVERSION_ID: envField.string({
-        context: "client",
+        context: "server",
         access: "public",
         optional: true,
       }),
       PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: envField.string({
-        context: "client",
+        context: "server",
         access: "public",
         optional: true,
       }),
@@ -78,15 +47,14 @@ export default defineConfig({
 
   integrations: [
     sitemap(),
-    isPartytownEnabled &&
-      partytown({
-        config: {
-          forward: [
-            ["dataLayer.push", { preserveBehavior: true }],
-            ["gtag", { preserveBehavior: true }],
-          ],
-        },
-      }),
+    partytown({
+      config: {
+        forward: [
+          ["dataLayer.push", { preserveBehavior: true }],
+          ["gtag", { preserveBehavior: true }],
+        ],
+      },
+    }),
     icon({
       include: {
         heroicons: ["arrow-down", "chevron-down", "check", "star-solid"],
@@ -111,7 +79,7 @@ export default defineConfig({
   ],
 
   trailingSlash: "ignore",
-  site: SITE_URL,
+  site: CANONICAL_SITE_URL,
 
   vite: {
     plugins: [tailwindcss()],

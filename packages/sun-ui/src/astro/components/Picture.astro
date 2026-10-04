@@ -1,15 +1,22 @@
 ---
 import { Image } from "astro:assets"
+import { getSecret } from "astro:env/server"
 import type { SunPictureProps } from "./Picture.props.ts"
-import { getPlaceholderUrl } from "../../astro-image-service"
-import { imageServiceBaseUrl } from "../../config"
+import {
+  getPlaceholderUrl,
+  buildImageUrl,
+  buildImageSrcSet,
+} from "../../astro-image-service"
 import {
   computeResponsiveImageProps,
   getPlaceholderModeAttribute,
 } from "./Picture.utils"
+import { runtimeEnv } from "../runtime-env"
 import { cn } from "../../index"
 
 type Props = SunPictureProps
+
+const imageServiceBaseUrl = runtimeEnv(getSecret, "IMAGES_BASE_URL")
 
 const {
   src,
@@ -57,7 +64,82 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
   }}
 >
   {
-    responsiveWidths ? (
+    imageServiceBaseUrl ? (
+      responsiveWidths ? (
+        (() => {
+          const srcsetEntries = buildImageSrcSet({
+            src,
+            width,
+            height,
+            quality,
+            format,
+            fit,
+            widths: responsiveWidths,
+          })
+          const srcset = srcsetEntries
+            .map(
+              entry =>
+                `${buildImageUrl(imageServiceBaseUrl, entry.transform)} ${entry.descriptor}`
+            )
+            .join(", ")
+          return (
+            <img
+              src={buildImageUrl(imageServiceBaseUrl, {
+                src,
+                width,
+                height,
+                quality,
+                format,
+                fit,
+              })}
+              srcset={srcset}
+              sizes={sizes}
+              alt={alt}
+              loading={loading}
+              decoding={decoding}
+              class={cn("aspect-(--ratio)", className)}
+              {...rest}
+            />
+          )
+        })()
+      ) : (
+        (() => {
+          const srcsetEntries = buildImageSrcSet({
+            src,
+            width,
+            height,
+            quality,
+            format,
+            fit,
+            densities,
+          })
+          const srcset = srcsetEntries
+            .map(
+              entry =>
+                `${buildImageUrl(imageServiceBaseUrl, entry.transform)} ${entry.descriptor}`
+            )
+            .join(", ")
+          return (
+            <img
+              src={buildImageUrl(imageServiceBaseUrl, {
+                src,
+                width,
+                height,
+                quality,
+                format,
+                fit,
+              })}
+              srcset={srcset}
+              alt={alt}
+              loading={loading}
+              decoding={decoding}
+              class={cn("aspect-(--ratio)", className)}
+              {...rest}
+            />
+          )
+        })()
+      )
+    ) : responsiveWidths ? (
       <Image
         src={src}
         alt={alt}

@@ -58,7 +58,6 @@ jobs:
           gh workflow run container.yml \
             --repo "${{ github.repository }}" \
             --ref main \
-            -f app=images \
             -f environment=production
 
   deploy-websites-production:
@@ -69,15 +68,9 @@ jobs:
       fail-fast: false
       matrix:
         target: ${{ fromJson(needs.release.outputs.websites_released) }}
-    environment:
-      name: production
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      ENV_VARS_BRUNABRAZ: ${{ vars.ENV_VARS_BRUNABRAZ }}
-      ENV_VARS_CLINICAMAURICIOARAUJO: ${{ vars.ENV_VARS_CLINICAMAURICIOARAUJO }}
-      ENV_VARS_TRANSPORTUGAL: ${{ vars.ENV_VARS_TRANSPORTUGAL }}
-      ENV_VARS_VANDALLABS: ${{ vars.ENV_VARS_VANDALLABS }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7

@@ -53,7 +53,7 @@ const fixtureRepo = async () => {
     writeFile(
       join(root, ".github-workflow-manual.yml"),
       [
-        "options: [images, web, brunabraz, vandallabs]",
+        "options: [images, brunabraz, vandallabs]",
         "env:",
         `  ENV_VARS_BRUNABRAZ: \${{ vars.ENV_VARS_BRUNABRAZ }}`,
         `  ENV_VARS_VANDALLABS: \${{ vars.ENV_VARS_VANDALLABS }}`,

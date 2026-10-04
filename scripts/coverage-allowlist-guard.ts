@@ -2,7 +2,7 @@
 // base revision: it lowers a threshold, removes a project, grows an allowlist,
 // adds an exclude, or drops an include. The contract only tightens.
 import { execFileSync } from "node:child_process"
-import { mkdirSync, writeFileSync } from "node:fs"
+import { existsSync, mkdirSync, writeFileSync } from "node:fs"
 import { dirname } from "node:path"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
@@ -33,10 +33,18 @@ const parseArgs = (argv: string[]): Args =>
 const baselineCachePath =
   "node_modules/.cache/websites/coverage-baseline.config.ts"
 
-// Returns one message per way `current` loosens the contract relative to `baseline`.
+const defaultProjectExists = (id: string): boolean =>
+  ["apps", "packages", "websites"].some(group => existsSync(`${group}/${id}`))
+
+// Returns one message per way `current` loosens the contract relative to
+// `baseline`. `projectExists` is injectable so a project id missing from
+// `current` is only flagged when the project itself still exists (coverage
+// silently dropped for live code) -- a project whose directory is also gone
+// was deleted outright, not quietly un-covered, and isn't a regression.
 const findContractRegressions = (
   current: CoverageConfig,
-  baseline: CoverageConfig
+  baseline: CoverageConfig,
+  projectExists: (id: string) => boolean = defaultProjectExists
 ): string[] => {
   const messages: string[] = []
   for (const key of ["functions", "lines"] as const) {
@@ -44,8 +52,10 @@ const findContractRegressions = (
       c = current.thresholds[key]
     if (c < b) messages.push(`thresholds.${key} lowered from ${b} to ${c}`)
   }
-  for (const id of Object.keys(baseline.projects))
-    if (!current.projects[id]) messages.push(`project ${id} was removed`)
+  for (const id of Object.keys(baseline.projects)) {
+    if (!current.projects[id] && projectExists(id))
+      messages.push(`project ${id} was removed`)
+  }
 
   for (const [id, project] of Object.entries(current.projects)) {
     const base = baseline.projects[id] ?? {

@@ -2,17 +2,13 @@
 import "../styles/global.css"
 
 import { Font } from "astro:assets"
-import { ENABLE_PARTYTOWN } from "astro:env/server"
-import {
-  PUBLIC_GOOGLE_ANALYTICS_ID as googleAnalyticsId,
-  PUBLIC_GOOGLE_ADS_CONVERSION_ID as conversionId,
-  PUBLIC_GOOGLE_ADS_CONVERSION_LABEL as conversionLabel,
-} from "astro:env/client"
+import { getSecret } from "astro:env/server"
 import type { HTMLAttributes } from "astro/types"
 
 import {
   SunAnimateOnScroll as AnimateOnScroll,
   SunLayout as Layout,
+  runtimeGtag,
 } from "@vandal-websites/sun-ui/astro"
 import Navigation from "@components/Navigation.astro"
 import TheFooter from "@components/TheFooter.astro"
@@ -45,12 +41,7 @@ const {
   schema={schema}
   links={links}
   themeColor="#1f1e1e"
-  gtag={{
-    gtagId: googleAnalyticsId,
-    conversionId,
-    conversionLabel,
-    partytown: ENABLE_PARTYTOWN,
-  }}
+  gtag={runtimeGtag(getSecret)}
 >
   <Font cssVariable="--font-lexend" preload slot="close-head" />
   <Navigation />

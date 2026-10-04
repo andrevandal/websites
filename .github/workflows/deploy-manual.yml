@@ -9,7 +9,6 @@ on:
         options:
           [
             images,
-            web,
             brunabraz,
             clinicamauricioaraujo.com.br,
             transportugal,
@@ -33,29 +32,22 @@ concurrency:
 jobs:
   deploy-container:
     name: Deploy container
-    if: inputs.target == 'images' || inputs.target == 'web'
+    if: inputs.target == 'images'
     permissions:
       contents: read
       packages: write
     uses: ./.github/workflows/container.yml
     secrets: inherit
     with:
-      app: ${{ inputs.target }}
       environment: ${{ inputs.environment }}
 
   deploy-website:
     name: Deploy website
-    if: inputs.target != 'images' && inputs.target != 'web'
+    if: inputs.target != 'images'
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      ENV_VARS_BRUNABRAZ: ${{ vars.ENV_VARS_BRUNABRAZ }}
-      ENV_VARS_CLINICAMAURICIOARAUJO: ${{ vars.ENV_VARS_CLINICAMAURICIOARAUJO }}
-      ENV_VARS_TRANSPORTUGAL: ${{ vars.ENV_VARS_TRANSPORTUGAL }}
-      ENV_VARS_VANDALLABS: ${{ vars.ENV_VARS_VANDALLABS }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6

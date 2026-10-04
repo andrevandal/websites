@@ -82,13 +82,13 @@ jobs:
       - name: Get affected apps
         id: affecteds
         run: |
-          # "images" and "web" deploy via the reusable container workflow
+          # "images" deploys via the reusable container workflow
           # (.github/workflows/container.yml — Docker/GHCR/Coolify), not this
           # generic Cloudflare deploy job — always excluded from `apps`, and
           # listed separately in `container_apps_affected` for the matrix.
           affected="$(moon query projects "projectLayer=application" --affected --downstream deep | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; ""))')"
-          apps=$(echo "$affected" | jq -c 'map(select(. != "images" and . != "web"))')
-          container_apps=$(echo "$affected" | jq -c 'map(select(. == "web" or . == "images"))')
+          apps=$(echo "$affected" | jq -c 'map(select(. != "images"))')
+          container_apps=$(echo "$affected" | jq -c 'map(select(. == "images"))')
           echo "apps_affected=$apps" >> $GITHUB_OUTPUT
           echo "container_apps_affected=$container_apps" >> $GITHUB_OUTPUT
 
@@ -101,17 +101,10 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{ fromJson(needs.check-all.outputs.affected_apps) }}
-    environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
-      deployment: false
 
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      ENV_VARS_BRUNABRAZ: ${{ vars.ENV_VARS_BRUNABRAZ }}
-      ENV_VARS_CLINICAMAURICIOARAUJO: ${{ vars.ENV_VARS_CLINICAMAURICIOARAUJO }}
-      ENV_VARS_TRANSPORTUGAL: ${{ vars.ENV_VARS_TRANSPORTUGAL }}
-      ENV_VARS_VANDALLABS: ${{ vars.ENV_VARS_VANDALLABS }}
 
     steps:
       - name: Checkout code
@@ -153,21 +146,16 @@ jobs:
             ${{ steps.lhci.outputs['report-url'] && format('Lighthouse report: {0}', steps.lhci.outputs['report-url']) || '' }}
 
   container:
-    name: Container (${{ matrix.app }})
+    name: Container (images)
     needs: check-all
-    # Containers (web/images) get staging (push to main) and production
+    # The images container gets staging (push to main) and production
     # (release.yml's manual dispatch) deploys only -- no PR preview build,
     # unlike the Cloudflare Pages `deploy` job above.
     if: needs.check-all.outputs.container_apps_affected != '[]' && github.event_name != 'pull_request'
     permissions:
       contents: read
       packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        app: ${{ fromJson(needs.check-all.outputs.container_apps_affected) }}
     uses: ./.github/workflows/container.yml
     secrets: inherit
     with:
-      app: ${{ matrix.app }}
       environment: staging
