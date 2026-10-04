@@ -21,6 +21,9 @@
   "exclude": ["dist", "astro.config.js"],
   "references": [
     {
+      "path": "../../packages/robots-sitemap"
+    },
+    {
       "path": "../../packages/sun-ui"
     }
   ]

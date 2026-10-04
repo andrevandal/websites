@@ -2,7 +2,7 @@
 import { defineConfig, fontProviders, envField } from "astro/config"
 import sunUIAstroIntegration from "@vandal-websites/sun-ui/astro-integration"
 import tailwindcss from "@tailwindcss/vite"
-import sitemap from "@astrojs/sitemap"
+import { robotsSitemap } from "@vandal-websites/robots-sitemap"
 import partytown from "@astrojs/partytown"
 import cloudflare from "@astrojs/cloudflare"
 
@@ -42,7 +42,7 @@ export default defineConfig({
     sunUIAstroIntegration({
       svelte: true,
     }),
-    sitemap(),
+    robotsSitemap({ canonicalHost: CANONICAL_SITE_URL }),
     partytown({
       config: {
         forward: [

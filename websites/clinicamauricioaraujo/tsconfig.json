@@ -22,6 +22,9 @@
   ],
   "references": [
     {
+      "path": "../../packages/robots-sitemap"
+    },
+    {
       "path": "../../packages/sun-ui"
     }
   ]

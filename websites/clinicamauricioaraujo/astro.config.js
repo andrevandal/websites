@@ -1,5 +1,5 @@
 import { defineConfig, envField, fontProviders } from "astro/config"
-import sitemap from "@astrojs/sitemap"
+import { robotsSitemap } from "@vandal-websites/robots-sitemap"
 import partytown from "@astrojs/partytown"
 import cloudflare from "@astrojs/cloudflare"
 import tailwindcss from "@tailwindcss/vite"
@@ -46,7 +46,7 @@ export default defineConfig({
   },
 
   integrations: [
-    sitemap(),
+    robotsSitemap({ canonicalHost: CANONICAL_SITE_URL }),
     partytown({
       config: {
         forward: [

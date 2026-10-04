@@ -1,0 +1,27 @@
+{
+  "name": "@vandal-websites/robots-sitemap",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Request-time robots.txt and sitemap endpoints for the websites",
+  "license": "UNLICENSED",
+  "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./robots": "./dist/robots.mjs",
+    "./sitemap": "./dist/sitemap.mjs",
+    "./package.json": "./package.json"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:types",
+    "@types/node": "catalog:types",
+    "astro": "catalog:astro",
+    "publint": "catalog:tools",
+    "tsdown": "catalog:tools",
+    "typescript": "catalog:typescript"
+  },
+  "packageManager": "bun@1.3.6"
+}

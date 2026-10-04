@@ -1,0 +1,28 @@
+layer: "library"
+language: "typescript"
+
+project:
+  title: "Robots Sitemap"
+  description: "Request-time robots.txt and sitemap endpoints for the websites"
+  channel: ""
+  owner: ""
+  maintainers: []
+
+tasks:
+  build:
+    command: "tsdown"
+    inputs:
+      - "src/**/*.ts"
+      - "tsconfig.json"
+      - "tsdown.config.ts"
+      - "/tsconfig.json"
+      - "/tsconfig.options.json"
+      - "/tsconfig.bundler.json"
+    outputs:
+      - dist
+
+workspace:
+  inheritedTasks:
+    # Not in coverage.config.ts; its tests still run in `test`.
+    exclude:
+      - coverage

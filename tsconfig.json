@@ -7,6 +7,9 @@
       "path": "./apps/images"
     },
     {
+      "path": "./packages/robots-sitemap"
+    },
+    {
       "path": "./packages/sun-ui"
     },
     {
