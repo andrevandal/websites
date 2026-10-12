@@ -9,6 +9,7 @@ on:
         options:
           [
             images,
+            bellypao,
             brunabraz,
             clinicamauricioaraujo.com.br,
             transportugal,

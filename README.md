@@ -11,6 +11,7 @@ Client websites and a shared image service. TypeScript monorepo managed with moo
 
 ### Websites
 
+- **`websites/bellypao`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/brunabraz`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/clinicamauricioaraujo.com.br`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/transportugal`** - Astro site, deployed to Cloudflare Workers.

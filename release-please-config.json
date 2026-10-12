@@ -10,6 +10,11 @@
       "release-type": "node",
       "include-component-in-tag": true
     },
+    "websites/bellypao": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "include-component-in-tag": true
+    },
     "websites/brunabraz": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",

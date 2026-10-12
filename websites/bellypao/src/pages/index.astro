@@ -1,0 +1,430 @@
+---
+import type { HTMLAttributes } from "astro/types"
+
+import Layout from "@layouts/Layout.astro"
+import BaseButton from "@components/BaseButton.astro"
+import Figure from "@components/Figure.astro"
+import Icon from "@components/Icon.astro"
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { fileUrl, imageUrl } from "@utils/images"
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "Belly Pão",
+  url: "https://bellypao.com.br",
+  logo: "https://bellypao.com.br/images/logo.png",
+  image: "https://bellypao.com.br/images/banner.jpg",
+  description: "Descrição curta e atraente da padaria",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Rua Porteiras, 254, Cid. Jardim Cumbica",
+    addressLocality: "Guarulhos",
+    addressRegion: "São Paulo",
+    postalCode: "07180-090",
+    addressCountry: "BR",
+  },
+  telephone: "+55 (11) 94548-8607",
+  priceRange: "$$",
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "06:00",
+      closes: "18:30",
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Saturday", "Sunday"],
+      opens: "06:00",
+      closes: "11:30",
+    },
+  ],
+  hasMap: "https://maps.app.goo.gl/SfVU17vj5jhvVb3GA",
+  sameAs: ["https://www.instagram.com/bellypao.ind/"],
+}
+
+const products = [
+  {
+    path: "images/pao-frances.png",
+    imageAlt: "Pão Frances",
+    imageCaption: "Pão Frances",
+  },
+  {
+    path: "images/pao-de-leite.png",
+    imageAlt: "Pão de Leite",
+    imageCaption: "Pão de Leite",
+  },
+  {
+    path: "images/pao-de-coco.png",
+    imageAlt: "Pão de Coco",
+    imageCaption: "Pão de Coco",
+  },
+  {
+    path: "images/pao-de-milho.png",
+    imageAlt: "Pão de Milho",
+    imageCaption: "Pão de Milho",
+  },
+  {
+    path: "images/pao-de-acucar.png",
+    imageAlt: "Pão de Açúcar",
+    imageCaption: "Pão de Açúcar",
+  },
+  {
+    path: "images/mini-baguete.png",
+    imageAlt: "Mini Baguete",
+    imageCaption: "Mini Baguete",
+  },
+  {
+    path: "images/baguete.png",
+    imageAlt: "Baguete",
+    imageCaption: "Baguete",
+  },
+  {
+    path: "images/bolo-de-fuba.png",
+    imageAlt: "Bolo de Fubá",
+    imageCaption: "Bolo de Fubá",
+  },
+  {
+    path: "images/bolo-de-chocolate.png",
+    imageAlt: "Bolo de Chocolate",
+    imageCaption: "Bolo de Chocolate",
+  },
+]
+
+const srcset = (path: string, widths: number[]) =>
+  widths
+    .map(
+      w => `${imageUrl(path, { width: w, quality: 90, format: "auto" })} ${w}w`
+    )
+    .join(", ")
+
+const desktopWidths = [1216, 960, 640, 576]
+const mobileWidths = [1920, 1280, 1125, 960, 750, 640, 563, 375]
+
+const links: HTMLAttributes<"link">[] = [
+  {
+    rel: "preload",
+    as: "image",
+    href: imageUrl("images/primeira-dobra.png", {
+      width: 576,
+      quality: 90,
+      format: "auto",
+    }),
+    imagesizes: "(min-width: 1280px) 1216px, (min-width: 1024px) 960px, 640px",
+    imagesrcset: srcset("images/primeira-dobra.png", desktopWidths),
+    media: "(min-width: 640px)",
+  },
+  {
+    rel: "preload",
+    as: "image",
+    href: imageUrl("images/primeira-dobra_mobile.png", {
+      width: 375,
+      quality: 90,
+      format: "auto",
+    }),
+    imagesrcset: srcset("images/primeira-dobra_mobile.png", mobileWidths),
+    media: "(max-width: 639px)",
+  },
+]
+---
+
+<Layout
+  title="Belly Pão - Indústria e Comércio de Pães e Delícias"
+  description="Pães, bolos e salgados com sabor específico, e serviço de serviço para empresas em Guarulhos. O aroma do pão quente é um convite para iniciar o dia com sabor!"
+  image="/images/banner.png"
+  url={Astro.url}
+  schema={schema}
+  links={links}
+>
+  <section
+    slot="header"
+    class="mt-2 flex flex-col items-center justify-center gap-y-6 pt-10 pb-42 sm:pt-6 sm:pb-26 lg:gap-y-4 lg:pt-16 lg:pb-37 xl:pt-20 xl:pb-43"
+  >
+    <h1
+      class="font-fields px-6 text-center text-[2.5rem] leading-12 font-extrabold text-[#FFECCC] lg:max-w-200.5 lg:px-0 lg:text-[4rem] lg:leading-18"
+    >
+      O aroma do pão quente é um convite para começar o dia com sabor!
+    </h1>
+    <BaseButton
+      variant="primary"
+      size="sm"
+      icon="whatsapp"
+      href="https://wa.me/5511945488607"
+      >Sinta este aroma, fale conosco!</BaseButton
+    >
+  </section>
+  <section id="diferencial" class="relative bg-white">
+    <div
+      class="bg-pattern-gradient-with-overlay absolute top-0 right-0 left-0 z-1 h-14 lg:h-18"
+    >
+    </div>
+    <div
+      class="text-brown-700 z-2 container mt-1 -translate-y-14 pt-16 text-center sm:pt-20 lg:grid lg:-translate-y-20 lg:grid-cols-2 lg:items-center lg:gap-x-6 lg:text-left"
+    >
+      <div class="flex flex-col items-center gap-y-2 lg:items-start">
+        <h2
+          class="font-fields text-[2rem] leading-9.5 font-extrabold lg:text-5xl lg:leading-14"
+        >
+          Produtos frescos e ingredientes selecionados
+        </h2>
+        <h3
+          class="text-base leading-5 font-medium text-[#FFAA33] uppercase lg:text-2xl lg:leading-7.5"
+        >
+          Qualidade que Você Pode Saborear!
+        </h3>
+        <p class="font-medium text-balance">
+          Nosso compromisso é oferecer produtos feitos com ingredientes frescos
+          e selecionados. Cada mordida é uma experiência única. Conheça a
+          diferença que a qualidade faz em nossos pães, bolos e salgados.
+        </p>
+        <BaseButton
+          variant="secondary-outline"
+          size="sm"
+          icon="whatsapp"
+          href="https://wa.me/5511945488607"
+          class:list={["mt-4"]}>Você merece o melhor, fale conosco!</BaseButton
+        >
+      </div>
+      <div class="mt-6 flex items-center justify-center lg:mt-0 lg:justify-end">
+        <div
+          class="relative block aspect-343/265 h-66.25 w-85.75 lg:h-90.5 lg:w-117 xl:h-100 xl:w-129.25"
+        >
+          <SunPicture
+            src={fileUrl("images/sessao_ingredientes.png")}
+            alt="Ingredientes"
+            width={343}
+            height={265}
+            quality={90}
+            format="auto"
+            densities={[1, 1.5, 2, 3]}
+            breakpoints={[
+              { minWidth: 1024, width: 468 },
+              { minWidth: 1280, width: 517 },
+            ]}
+            loading="lazy"
+            decoding="async"
+            wrapperClass="size-full rounded-lg"
+            class="size-full rounded-lg"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+  <section
+    id="servicos"
+    class="bg-brown-700 bg-pattern bg-size-[155.1px_32.5px]"
+  >
+    <h2 class="sr-only">Serviços</h2>
+    <div class="container flex flex-col gap-4 py-8 sm:gap-6 lg:flex-row">
+      <article
+        class="bg-brown-700 border-brown-800 flex flex-1 flex-col items-center justify-center rounded-lg border px-4 py-6 text-center text-[#FFECCC] lg:p-10 xl:grid xl:grid-cols-[80px_1fr] xl:items-start xl:gap-x-8 xl:text-left"
+      >
+        <div
+          class="mb-4 flex h-20 w-20 items-center justify-center rounded-lg border border-[#FFAA33] p-4 text-[#FFAA33] xl:row-span-2 xl:justify-start"
+        >
+          <Icon name="truck" width="48" height="48" />
+        </div>
+        <h3 class="font-fields mb-2 text-[2rem] leading-8 font-extrabold">
+          Para empresas
+        </h3>
+        <p class="mb-4 text-sm leading-5 xl:mb-0">
+          Oferecemos soluções personalizadas para coffe break e serviços de
+          catering corporativo. Qualidade garantida e atendimento eficiente.
+        </p>
+      </article>
+      <article
+        class="bg-brown-700 border-brown-800 flex flex-1 flex-col items-center justify-center rounded-lg border px-4 py-6 text-center text-[#FFECCC] lg:p-10 xl:grid xl:grid-cols-[80px_1fr] xl:items-start xl:gap-x-8 xl:text-left"
+      >
+        <div
+          class="mb-4 flex h-20 w-20 items-center justify-center rounded-lg border border-[#FFAA33] p-4 text-[#FFAA33] xl:row-span-2 xl:justify-start"
+        >
+          <Icon name="bread" width="48" height="48" />
+        </div>
+        <h3 class="font-fields mb-2 text-[2rem] leading-8 font-extrabold">
+          Produtos exclusivos
+        </h3>
+        <p class="mb-4 text-sm leading-5 xl:mb-0">
+          Pães artesanais, bolos e salgados feitos com ingredientes de alta
+          qualidade. Sem conservantes artificiais.
+        </p>
+      </article>
+      <article
+        class="bg-brown-700 border-brown-800 flex flex-1 flex-col items-center justify-center rounded-lg border px-4 py-6 text-center text-[#FFECCC] lg:p-10 xl:grid xl:grid-cols-[80px_1fr] xl:items-start xl:gap-x-8 xl:text-left"
+      >
+        <div
+          class="mb-4 flex h-20 w-20 items-center justify-center rounded-lg border border-[#FFAA33] p-4 text-[#FFAA33] xl:row-span-2 xl:justify-start"
+        >
+          <Icon name="clock" width="48" height="48" />
+        </div>
+        <h3 class="font-fields mb-2 text-[2rem] leading-8 font-extrabold">
+          Entrega rápida
+        </h3>
+        <p class="mb-4 text-sm leading-5 xl:mb-0">
+          Entregamos fresquinho e no tempo acordado. Porque qualidade e
+          pontualidade andam juntas.
+        </p>
+      </article>
+    </div>
+  </section>
+  <section id="produtos">
+    <div
+      class="text-brown-700 container pt-16 pb-8 text-center sm:pt-20 sm:pb-10"
+    >
+      <div
+        class="flex flex-col items-center gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 lg:gap-6"
+      >
+        <h2
+          class="font-fields mb-2 text-[2rem] leading-9.5 font-extrabold sm:col-span-2 sm:mb-4 lg:col-span-3 lg:text-5xl lg:leading-14"
+        >
+          Leve qualidade e sabor à sua mesa!
+        </h2>
+        {
+          products.map(({ imageAlt, path, imageCaption }) => (
+            <Figure caption={imageCaption}>
+              <SunPicture
+                src={fileUrl(path)}
+                alt={imageAlt}
+                width={343}
+                height={343}
+                quality={90}
+                format="auto"
+                densities={[1, 1.5, 2, 3]}
+                breakpoints={[
+                  { minWidth: 640, width: 280 },
+                  { minWidth: 1024, width: 304 },
+                  { minWidth: 1280, width: 389 },
+                ]}
+                loading="lazy"
+                decoding="async"
+                wrapperClass="aspect-square w-[343px] sm:w-[280px] lg:w-[304px] xl:w-[389px]"
+                class="size-full rounded-lg"
+              />
+            </Figure>
+          ))
+        }
+        <BaseButton
+          variant="primary"
+          size="sm"
+          icon="whatsapp"
+          href="https://wa.me/5511945488607"
+          block
+          centered
+          class="mt-4 sm:col-span-2 sm:mt-4 sm:w-fit! sm:place-self-center lg:col-span-3"
+          >Prove essas delícias, fale conosco!</BaseButton
+        >
+      </div>
+    </div>
+  </section>
+  <section id="quem-somos" class="overflow-hidden">
+    <div
+      class="text-brown-700 container pt-8 pb-14 text-center sm:pt-10 sm:pb-20 lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-6 lg:text-left"
+    >
+      <div class="flex flex-col gap-y-2">
+        <h2
+          class="font-fields text-[2rem] leading-9.5 font-extrabold lg:text-5xl lg:leading-none"
+        >
+          Quem somos
+        </h2>
+        <h3 class="text-base leading-5 font-medium text-[#FFAA33] uppercase">
+          Compromisso, Qualidade e Crescimento Coletivo.
+        </h3>
+        <p class="font-medium text-balance">
+          Com intenção de atender com excelência, a Belly Pão iniciou sua
+          jornada no mercado alimentício, priorizando a satisfação dos clientes.
+          Nos comprometemos a atender às necessidades com os melhores produtos,
+          seguindo rigorosos padrões de higiene e normas da ANVISA.
+        </p>
+        <p class="font-medium text-balance">
+          Em busca do crescimento, confiamos no esforço, na vontade de trabalhar
+          e no suporte oferecido a uma equipe capacitada. Acreditamos no
+          potencial de cada funcionário, reconhecendo que o sucesso da empresa é
+          construído coletivamente.
+        </p>
+      </div>
+      <div class="mt-6 flex items-center justify-center lg:mt-0 lg:justify-end">
+        <div
+          class="relative block aspect-343/265 h-66.25 w-85.75 lg:h-90.5 lg:w-117 xl:h-100 xl:w-129.25"
+        >
+          <SunPicture
+            src={fileUrl("images/sessao_quem-somos.png")}
+            alt="Pães sendo cortados"
+            width={343}
+            height={265}
+            quality={90}
+            format="auto"
+            densities={[1, 1.5, 2, 3]}
+            breakpoints={[
+              { minWidth: 1024, width: 468 },
+              { minWidth: 1280, width: 517 },
+            ]}
+            loading="lazy"
+            decoding="async"
+            wrapperClass="size-full rounded-lg"
+            class="size-full rounded-lg"
+          />
+          <div
+            class="bg-brown-700 absolute top-[49%] -left-6 flex h-12 w-12 min-w-12 items-center justify-center rounded-full text-[#FFAA33] lg:top-[43%]"
+          >
+            <Icon name="wheat" width="24" height="24" />
+          </div>
+
+          <div
+            class="text-brown-700 absolute top-[-23.73px] -right-6 flex h-12 w-12 min-w-12 items-center justify-center rounded-full bg-[#FFAA33]"
+          >
+            <Icon name="bread" width="24" height="24" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="relative bg-[#FFECCC] py-8" slot="footer">
+      <div
+        class="bg-pattern absolute top-0 right-0 bottom-0 left-0 z-1 bg-size-[155.1px_32.5px] opacity-20"
+      >
+      </div>
+      <div
+        class="relative z-2 container flex flex-col items-center justify-center gap-2 lg:flex-row lg:gap-y-6 xl:justify-start"
+      >
+        <h2
+          class="text-brown-700 font-fields z-10 text-center text-2xl font-extrabold lg:text-left lg:text-[1.75rem] lg:leading-[1.29] lg:text-balance xl:text-[2.5rem]"
+        >
+          Demonstre gratidão aos seus colaboradores com alimentos de alta
+          qualidade!
+        </h2>
+        <BaseButton
+          variant="primary"
+          icon="whatsapp"
+          class="whitespace-nowrap"
+          href="https://wa.me/5511945488607"
+          >Fale conosco via WhatsApp</BaseButton
+        >
+      </div>
+    </section>
+  </section>
+  <style>
+    @reference "../styles/global.css";
+
+    .bg-pattern {
+      background-image: var(--belly-pattern);
+    }
+    .bg-pattern-gradient-with-overlay {
+      @apply relative mt-0.5 bg-size-[93.3px_19.5px] lg:mt-1 lg:bg-size-[155.1px_32.5px];
+      background-image: var(--belly-pattern);
+    }
+    .bg-pattern-gradient-with-overlay:before {
+      z-index: 2;
+      position: absolute;
+      content: " ";
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.6) 50%,
+        rgba(255, 255, 255, 1) 100%
+      );
+    }
+  </style>
+</Layout>

@@ -1,0 +1,23 @@
+---
+import type { AvailableIcons } from "@/types"
+
+type Props = {
+  name: AvailableIcons
+  width?: string
+  height?: string
+  class?: string
+}
+
+const { name, width, height, class: className } = Astro.props
+
+const style = `min-width: ${width ?? "24"}px; min-height: ${height ?? "24"}px;`
+---
+
+<svg
+  style={style}
+  class:list={["icon", className]}
+  width={width ?? "24"}
+  height={height ?? "24"}
+>
+  <use href={`/images/icons.svg#${name}`}></use>
+</svg>

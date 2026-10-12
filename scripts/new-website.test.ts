@@ -292,7 +292,7 @@ describe("createWebsite", () => {
     [
       ".github/workflows/pr-preview-cleanup.yml",
       (content: string) =>
-        content.replace("[brunabraz,", `[${SLUG}, brunabraz,`),
+        content.replace(" brunabraz,", ` ${SLUG}, brunabraz,`),
     ],
     [
       ".github/workflows/deploy-manual.yml",

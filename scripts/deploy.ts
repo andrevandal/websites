@@ -65,6 +65,7 @@ type VersionTarget = {
 // (wrangler.json's `name` field), not the CLI target string.
 const CUSTOM_DOMAINS: Record<string, string> = {
   vandallabs: "https://vandallabs.com.br",
+  bellypao: "https://bellypao.com.br",
 }
 
 const UUID_PATTERN =

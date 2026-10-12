@@ -43,7 +43,8 @@ jobs:
             --argjson cl "$([ "${{ steps.release.outputs['websites/clinicamauricioaraujo.com.br--release_created'] }}" = "true" ] && echo true || echo false)" \
             --argjson tp "$([ "${{ steps.release.outputs['websites/transportugal--release_created'] }}" = "true" ] && echo true || echo false)" \
             --argjson vl "$([ "${{ steps.release.outputs['websites/vandallabs--release_created'] }}" = "true" ] && echo true || echo false)" \
-            '[if $br then "brunabraz" else empty end, if $cl then "clinicamauricioaraujo.com.br" else empty end, if $tp then "transportugal" else empty end, if $vl then "vandallabs" else empty end]')
+            --argjson site_bellypao "$([ "${{ steps.release.outputs['websites/bellypao--release_created'] }}" = "true" ] && echo true || echo false)" \
+            '[if $br then "brunabraz" else empty end, if $cl then "clinicamauricioaraujo.com.br" else empty end, if $tp then "transportugal" else empty end, if $vl then "vandallabs" else empty end, if $site_bellypao then "bellypao" else empty end]')
           echo "released=$json" >> "$GITHUB_OUTPUT"
 
   deploy-images-production:

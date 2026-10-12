@@ -1,0 +1,157 @@
+---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import Icon from "@components/Icon.astro"
+import { fileUrl } from "@utils/images"
+---
+
+<footer class="bg-brown-700">
+  <slot />
+  <section class="bg-brown-700 py-8 text-[#FFECCC]">
+    <h2 class="sr-only">Rodapé</h2>
+    <div
+      class="container flex flex-col gap-y-6 text-center lg:flex-row lg:justify-between lg:text-left"
+    >
+      <article>
+        <h3 class="mb-2 text-xl leading-6 font-bold tracking-tighter">
+          Fale conosco
+        </h3>
+        <ul>
+          <li
+            class="flex flex-row justify-center gap-x-1 py-2 lg:justify-start"
+          >
+            <Icon
+              class:list={["h-6 w-6 text-[#FFAA33]"]}
+              width="24"
+              height="24"
+              name="clock"
+            />
+            <p class="w-fit text-base leading-5 text-[#FFECCC]">
+              Segunda a Sexta das 6h ás 18h30<br />
+              Sábado e Domingo das 6h ás 11h30
+            </p>
+          </li>
+          <li
+            class="flex flex-row justify-center gap-x-1 py-2 lg:justify-start"
+          >
+            <Icon
+              class:list={["h-6 w-6 text-[#FFAA33]"]}
+              width="24"
+              height="24"
+              name="whatsapp"
+            />
+            <a
+              href="https://wa.me/5511945488607"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-fit text-base leading-5 text-[#FFECCC]"
+            >
+              (11) 94548-8607
+            </a>
+          </li>
+          <li
+            class="flex flex-row justify-center gap-x-1 py-2 lg:justify-start"
+          >
+            <Icon
+              class:list={["h-6 w-6 text-[#FFAA33]"]}
+              width="24"
+              height="24"
+              name="phone"
+            />
+            <a
+              href="tel:01129374674"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-fit text-base leading-5 text-[#FFECCC]"
+            >
+              (11) 2937-4674
+            </a>
+          </li>
+          <li
+            class="flex flex-row justify-center gap-x-1 py-2 lg:justify-start"
+          >
+            <Icon
+              class:list={["h-6 w-6 text-[#FFAA33]"]}
+              width="24"
+              height="24"
+              name="map-pin"
+            />
+            <a
+              href="https://maps.app.goo.gl/SfVU17vj5jhvVb3GA"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-[25ch] text-base leading-5 text-[#FFECCC]"
+            >
+              Rua Porteiras, 254 - Cid. Jardim Cumbica - Guarulhos (SP)
+            </a>
+          </li>
+        </ul>
+        <ul
+          class="mt-3 flex items-center justify-center gap-x-2 lg:justify-start"
+        >
+          <li>
+            <a
+              href="https://www.instagram.com/bellypao.ind/"
+              class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition-all ease-out hover:bg-[#FFAA33]/25"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon name="instagram" width="24" height="24" />
+            </a>
+          </li>
+        </ul>
+      </article>
+      <article
+        class="flex flex-col items-center gap-4 text-center lg:items-end lg:justify-end lg:text-left"
+      >
+        <a href="/" class="w-fit">
+          <SunPicture
+            src={fileUrl("images/logo-bellypao.h144.png")}
+            alt="Logo Belly Pão"
+            width={191}
+            height={48}
+            quality={90}
+            format="auto"
+            densities={[1, 1.5, 2, 3]}
+            placeholder={false}
+            loading="lazy"
+            decoding="async"
+            wrapperClass="h-12 w-[191px]"
+            class="size-full object-contain"
+          />
+        </a>
+        <p class="text-base leading-5 font-medium">
+          2023 © Belly Pão. <br class="lg:hidden" />Todos os direitos
+          reservados.
+        </p>
+      </article>
+    </div>
+  </section>
+  <section class="bg-brown-700 text-[#FFECCC]">
+    <div class="container flex items-center justify-center">
+      <div
+        class="border-t-brown-800 inline-flex w-full items-center justify-center gap-x-2 border-t border-solid py-2.5"
+      >
+        <span class="text-sm font-medium">Desenvolvido por</span>
+        <a
+          href="https://pedrohenri.design/?utm_source=referral&utm_medium=footer&utm_campaign=bellypao"
+          target="_blank"
+        >
+          <SunPicture
+            src={fileUrl("images/logo-pedrohenri.h60.png")}
+            alt="Pedro Henrique"
+            width={157}
+            height={20}
+            quality={90}
+            format="auto"
+            densities={[1, 1.5, 2, 3]}
+            placeholder={false}
+            loading="lazy"
+            decoding="async"
+            wrapperClass="h-5 w-[157px]"
+            class="size-full object-contain"
+          />
+        </a>
+      </div>
+    </div>
+  </section>
+</footer>
