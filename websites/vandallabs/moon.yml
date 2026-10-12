@@ -36,9 +36,6 @@ tasks:
       - "@globs(typescript)"
       - "/packages/sun-ui/src/**/*"
       - "./astro.config.js"
-      - "$PUBLIC_GOOGLE_ANALYTICS_ID"
-      - "$PUBLIC_GOOGLE_ADS_CONVERSION_ID"
-      - "$PUBLIC_GOOGLE_ADS_CONVERSION_LABEL"
     outputs:
       - dist
     dependsOn:
@@ -51,11 +48,6 @@ tasks:
   preview-wrangler:
     command: wrangler pages dev ./dist
     preset: server
-    dependsOn:
-      - build
-
-  deploy:
-    command: bunx wrangler deploy
     dependsOn:
       - build
 

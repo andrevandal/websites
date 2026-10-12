@@ -93,9 +93,16 @@ jobs:
           echo "container_apps_affected=$container_apps" >> $GITHUB_OUTPUT
 
   deploy:
-    name: Deploying preview
+    # Pull requests get a Workers Preview; main uploads a staging Version and
+    # saves the build that release.yml later promotes to production.
+    name: Deploy (Preview or staging Version)
     needs: check-all
-    if: needs.check-all.outputs.affected_apps != '[]'
+    # Fork PRs receive no Cloudflare credentials, so only same-repository PRs
+    # get a Workers Preview.
+    if: >-
+      needs.check-all.outputs.affected_apps != '[]' &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -119,7 +126,7 @@ jobs:
         id: deploy
         uses: ./.github/actions/deploy
         with:
-          env: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
+          mode: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
           target: ${{ matrix.app }}
           pr: ${{ github.event.pull_request.number }}
 
@@ -140,9 +147,9 @@ jobs:
         with:
           header: preview-url-${{ matrix.app }}
           message: |
-            ### Preview deploy: `${{ matrix.app }}`
+            ### Workers Preview `pr-${{ github.event.pull_request.number }}`: `${{ matrix.app }}`
             :rocket: ${{ steps.deploy.outputs.url }}
-            ${{ steps.deploy.outputs['custom-domain'] && format('Production custom domain: {0}', steps.deploy.outputs['custom-domain']) || '' }}
+
             ${{ steps.lhci.outputs['report-url'] && format('Lighthouse report: {0}', steps.lhci.outputs['report-url']) || '' }}
 
   container:
@@ -150,7 +157,7 @@ jobs:
     needs: check-all
     # The images container gets staging (push to main) and production
     # (release.yml's manual dispatch) deploys only -- no PR preview build,
-    # unlike the Cloudflare Pages `deploy` job above.
+    # unlike the websites' `deploy` job above.
     if: needs.check-all.outputs.container_apps_affected != '[]' && github.event_name != 'pull_request'
     permissions:
       contents: read

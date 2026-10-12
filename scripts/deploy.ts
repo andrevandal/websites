@@ -1,6 +1,8 @@
 import { v } from "./utils/schemas"
-import { readFile, writeFile } from "node:fs/promises"
-import { resolve } from "node:path"
+import { createHash } from "node:crypto"
+import { cp, mkdtemp, readdir, readFile, writeFile } from "node:fs/promises"
+import { tmpdir } from "node:os"
+import { join, relative, resolve } from "node:path"
 
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
@@ -14,255 +16,491 @@ import {
   findOrCreateKvNamespace,
 } from "./utils/cloudflare"
 
-const envChoices = ["production", "staging", "preview"] as const
+type KvBinding = { binding: string; id?: string }
 
 type WranglerConfig = {
   name: string
-  compatibility_date: string
-  compatibility_flags?: string[]
-  assets?: { directory: string }
-  kv_namespaces?: { binding: string; id?: string }[]
+  kv_namespaces?: KvBinding[]
   vars?: Record<string, string>
+  previews?: {
+    vars?: Record<string, string>
+    kv_namespaces?: KvBinding[]
+  }
 }
 
-const workerName = (baseName: string, env: string, pr?: number) => {
-    if (env === "preview") {
-      if (!pr) {
-        throw new Error(
-          "Preview deploys require --pr <N> (the pull request number)."
-        )
-      }
+type DeployDeps = {
+  // Runs `bunx <args>`; `reject: false` returns a failed exit code instead of throwing.
+  exec: (
+    args: string[],
+    options: { cwd: string; reject?: boolean }
+  ) => Promise<{ stdout: string; exitCode: number }>
+  kv: {
+    findOrCreate: (title: string) => Promise<{ id: string; created: boolean }>
+    deleteByTitle: (title: string) => Promise<boolean>
+  }
+  files: {
+    read: (path: string) => Promise<string>
+    write: (path: string, content: string) => Promise<void>
+    copyDir: (from: string, to: string) => Promise<void>
+    tempDir: () => Promise<string>
+  }
+}
 
-      return `${baseName}-pr-${pr}`
-    }
+type PreviewTarget = {
+  siteDir: string
+  generatedConfigPath: string
+  // Base Worker name; Previews are scoped to it, never separate Workers.
+  worker: string
+  pr: number | undefined
+}
 
-    if (env === "staging") return `${baseName}-staging`
+type VersionTarget = {
+  siteDir: string
+  // The one persistent Worker; staging and production are Versions of it.
+  worker: string
+}
 
-    return baseName
-  },
-  // Only production workers can have a Cloudflare Custom Domain bound in the
-  // dashboard (see websites/vandallabs/README.md) — PR-preview and staging
-  // workers are always plain `*.workers.dev`. Keyed by the worker's base name
-  // (wrangler.json's `name` field), not the CLI target string.
-  CUSTOM_DOMAINS: Record<string, string> = {
-    vandallabs: "https://vandallabs.com.br",
-  },
-  // wrangler's combined stdout/stderr contains its own deploy-confirmation
-  // line (`https://<name>.<subdomain>.workers.dev`) but may also print other
-  // https:// URLs (docs links, warnings, etc.) before or after it. Anchor
-  // specifically on the `.workers.dev` suffix instead of grabbing the last
-  // https:// token in the whole output, and prefer a match containing the
-  // deployed worker name so an unrelated workers.dev URL can't be picked up.
-  resolvePreviewUrl = (
-    output: string | undefined,
-    workerNameDeployed: string
-  ): string | undefined => {
-    const matches = output?.match(/https:\/\/\S+\.workers\.dev\S*/g) ?? []
-    return (
-      matches.find(url => url.includes(`${workerNameDeployed}.`)) ??
-      matches.at(-1)
+// Only production workers can have a Cloudflare Custom Domain bound in the
+// dashboard (see websites/vandallabs/README.md). Keyed by the base Worker name
+// (wrangler.json's `name` field), not the CLI target string.
+const CUSTOM_DOMAINS: Record<string, string> = {
+  vandallabs: "https://vandallabs.com.br",
+}
+
+const UUID_PATTERN =
+  /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
+
+const requirePr = (pr: number | undefined): number => {
+  if (!pr) {
+    throw new Error(
+      "Preview deploys and cleanup require --pr <N> (the pull request number)."
     )
   }
 
+  return pr
+}
+
+const previewJsonSchema = v.object({
+  preview: v.object({ urls: v.pipe(v.array(v.string()), v.minLength(1)) }),
+})
+
+// wrangler prints notices (e.g. "Using redirected Wrangler configuration.")
+// to stdout ahead of the --json payload, so parse from the line that opens it.
+const resolvePreviewUrl = (stdout: string): string => {
+  const parsed = v.safeParse(
+    v.pipe(v.string(), v.parseJson(), previewJsonSchema),
+    stdout.slice(Math.max(stdout.search(/^\{/m), 0))
+  )
+
+  if (!parsed.success) {
+    throw new Error(
+      `Could not read a Preview URL from wrangler preview --json output: ${stdout.slice(0, 200)}`
+    )
+  }
+
+  return parsed.output.preview.urls[0]!
+}
+
+// Workers Previews do not provision KV, so each PR gets its own SESSION
+// namespace, bound only in the `previews` block. Top-level config stays the
+// persistent Worker's.
+const deployPreview = async (
+  {
+    siteDir,
+    generatedConfigPath,
+    worker,
+    pr,
+    vars,
+  }: PreviewTarget & {
+    vars: Record<string, string>
+  },
+  deps: DeployDeps
+): Promise<string> => {
+  const prNumber = requirePr(pr)
+  const namespace = await deps.kv.findOrCreate(`${worker}-pr-${prNumber}`)
+  const generatedConfig = JSON.parse(
+    await deps.files.read(generatedConfigPath)
+  ) as WranglerConfig
+
+  await deps.files.write(
+    generatedConfigPath,
+    JSON.stringify(
+      {
+        ...generatedConfig,
+        previews: {
+          ...generatedConfig.previews,
+          vars,
+          kv_namespaces: [{ binding: "SESSION", id: namespace.id }],
+        },
+      },
+      null,
+      2
+    )
+  )
+
+  const { stdout } = await deps.exec(
+    [
+      "wrangler",
+      "preview",
+      "--name",
+      `pr-${prNumber}`,
+      "--worker-name",
+      worker,
+      "--json",
+    ],
+    { cwd: siteDir }
+  )
+
+  return resolvePreviewUrl(stdout)
+}
+
+const cleanupPreview = async (
+  { siteDir, worker, pr }: Omit<PreviewTarget, "generatedConfigPath">,
+  deps: DeployDeps
+): Promise<{ previewDeleted: boolean; kvDeleted: boolean }> => {
+  const prNumber = requirePr(pr)
+  // Idempotent: the Preview may never have been created for this PR.
+  const { exitCode } = await deps.exec(
+    [
+      "wrangler",
+      "preview",
+      "delete",
+      "--name",
+      `pr-${prNumber}`,
+      "--worker-name",
+      worker,
+      "--skip-confirmation",
+    ],
+    { cwd: siteDir, reject: false }
+  )
+  const kvDeleted = await deps.kv.deleteByTitle(`${worker}-pr-${prNumber}`)
+
+  return { previewDeleted: exitCode === 0, kvDeleted }
+}
+
+// Uploads, never deploys, a Version built from `artifactDir`. The artifact is
+// copied first so its bytes, and therefore its digest, never carry Stage
+// config; only the disposable copy gets the Stage vars and SESSION binding.
+const versionUpload = async (
+  {
+    worker,
+    artifactDir,
+    vars,
+    previewAlias,
+  }: VersionTarget & {
+    artifactDir: string
+    vars: Record<string, string>
+    previewAlias?: string
+  },
+  deps: DeployDeps
+): Promise<{ versionId: string; previewAliasUrl: string | undefined }> => {
+  const namespace = await deps.kv.findOrCreate(worker)
+  const uploadDir = await deps.files.tempDir()
+  await deps.files.copyDir(artifactDir, uploadDir)
+
+  const configPath = join(uploadDir, "server/wrangler.json")
+  const config = JSON.parse(await deps.files.read(configPath)) as WranglerConfig
+
+  if (!config.kv_namespaces?.length) {
+    throw new Error(
+      `${configPath} has no kv_namespaces entry; is ${artifactDir} a website build?`
+    )
+  }
+
+  await deps.files.write(
+    configPath,
+    JSON.stringify(
+      {
+        ...config,
+        vars: { ...config.vars, ...vars },
+        kv_namespaces: [{ binding: "SESSION", id: namespace.id }],
+      },
+      null,
+      2
+    )
+  )
+
+  const { stdout } = await deps.exec(
+    [
+      "wrangler",
+      "versions",
+      "upload",
+      "--name",
+      worker,
+      "-c",
+      configPath,
+      ...(previewAlias ? ["--preview-alias", previewAlias] : []),
+    ],
+    { cwd: uploadDir }
+  )
+  const versionId = stdout.match(
+    new RegExp(`Worker Version ID:\\s*(?<id>${UUID_PATTERN.source})`, "i")
+  )?.groups?.["id"]
+
+  if (!versionId) {
+    throw new Error(
+      "Could not determine Worker Version ID from wrangler output."
+    )
+  }
+
+  return {
+    versionId,
+    previewAliasUrl: stdout.match(/Version Preview Alias URL:\s*(?<url>\S+)/)
+      ?.groups?.["url"],
+  }
+}
+
+const versionDeploy = async (
+  { siteDir, worker, versionId }: VersionTarget & { versionId: string },
+  deps: DeployDeps
+): Promise<void> => {
+  if (!new RegExp(`^${UUID_PATTERN.source}$`, "i").test(versionId))
+    throw new Error(`Not a Worker Version ID: "${versionId}".`)
+
+  await deps.exec(
+    [
+      "wrangler",
+      "versions",
+      "deploy",
+      `${versionId}@100%`,
+      "--name",
+      worker,
+      "--yes",
+    ],
+    { cwd: siteDir }
+  )
+}
+
+// Content digest of a build output: every file (hidden ones included), by
+// relative path and bytes, in sorted path order.
+const digestDirectory = async (dir: string): Promise<string> => {
+  const entries = await readdir(dir, { recursive: true, withFileTypes: true })
+  const paths = entries
+    .filter(entry => entry.isFile())
+    .map(entry => relative(dir, join(entry.parentPath, entry.name)))
+    .toSorted()
+  const hash = createHash("sha256")
+
+  for (const path of paths) {
+    // oxlint-disable-next-line no-await-in-loop -- digest order must follow sorted paths
+    const content = await readFile(join(dir, path))
+    hash.update(
+      `${path}\0${createHash("sha256").update(content).digest("hex")}\n`
+    )
+  }
+
+  return hash.digest("hex")
+}
+
+const appendGitHubFile = async (variable: string, content: string) => {
+  const path = process.env[variable]
+  if (path) await writeFile(path, content, { flag: "a" })
+}
+
+const nodeFiles: DeployDeps["files"] = {
+  read: path => readFile(path, "utf-8"),
+  write: (path, content) => writeFile(path, content),
+  copyDir: (from, to) => cp(from, to, { recursive: true }),
+  tempDir: () => mkdtemp(join(tmpdir(), "website-upload-")),
+}
+
+const realDeps: DeployDeps = {
+  exec: async (args, { cwd, reject = true }) => {
+    const proc = execa("bunx", args, { cwd, reject })
+    proc.stdout?.pipe(process.stdout)
+    proc.stderr?.pipe(process.stderr)
+    const { stdout, exitCode } = await proc
+    return { stdout: String(stdout), exitCode: exitCode ?? 1 }
+  },
+  kv: {
+    findOrCreate: async title => {
+      const { namespace, created } = await findOrCreateKvNamespace(title)
+      return { id: namespace.id, created }
+    },
+    deleteByTitle: deleteKvNamespaceByTitle,
+  },
+  files: nodeFiles,
+}
+
 if (import.meta.main) {
   const availableTargets = await queryTargets(),
-    parseArgs = (argv: string[]) =>
-      yargs(hideBin(argv))
-        .scriptName("deploy")
-        .version("1.0.0")
-        .command("$0 <target>", "Deploy a target", builder =>
-          builder.positional("target", {
-            describe: "The command target name",
-            type: "string",
-            choices: Object.keys(availableTargets),
-            required: true,
-          })
-        )
-        .command(
-          "cleanup <target>",
-          "Tear down a PR preview deployment",
-          builder =>
-            builder.positional("target", {
-              describe: "The command target name",
-              type: "string",
-              choices: Object.keys(availableTargets),
-              required: true,
+    targetPositional = {
+      describe: "The website target name",
+      type: "string",
+      choices: Object.keys(availableTargets),
+      demandOption: true,
+    } as const,
+    prOption = {
+      type: "number",
+      describe: "Pull request number; names Preview pr-<N>",
+      demandOption: true,
+    } as const,
+    args = await yargs(hideBin(process.argv))
+      .scriptName("deploy")
+      .command(
+        "preview <target>",
+        "Create or update Workers Preview pr-<N> of the target's Worker",
+        builder =>
+          builder.positional("target", targetPositional).option("pr", prOption)
+      )
+      .command(
+        "cleanup <target>",
+        "Delete Workers Preview pr-<N> and its KV namespace",
+        builder =>
+          builder.positional("target", targetPositional).option("pr", prOption)
+      )
+      .command(
+        "version-upload <target>",
+        "Upload (not deploy) a Version from a built dist with one Stage's config",
+        builder =>
+          builder
+            .positional("target", targetPositional)
+            .option("stage", {
+              choices: ["staging", "production"] as const,
+              demandOption: true,
             })
-        )
-        .option("env", {
-          type: "string",
-          alias: "e",
-          default: "preview",
-          describe: "Deploy environment",
-          coerce: input => v.parse(v.picklist(envChoices), input),
-          choices: envChoices,
-          required: false,
-        })
-        .option("pr", {
-          type: "number",
-          describe:
-            "Pull request number (required for preview deploys/cleanup)",
-          required: false,
-        })
-        .option("dry-run", {
-          type: "boolean",
-          default: false,
-          describe: "Print commands without executing.",
-        })
-        .option("debug", {
-          type: "boolean",
-          default: false,
-          describe: "Enable verbose debug logging",
-        })
-        .usage("Usage: $0 <target> [options]")
-        .example("$0 <target> --env preview --pr 123", "Deploy a PR preview")
-        .example("$0 <target> --env staging", "Deploy staging")
-        .example("$0 <target> --env production", "Deploy production")
-        .example("$0 cleanup <target> --pr 123", "Tear down a PR preview")
-        .help()
-        .demandCommand(1, "You must provide a <target> argument.")
-        .parse()
+            .option("artifact-dir", {
+              type: "string",
+              describe: "Restored website dist directory (client/ and server/)",
+              demandOption: true,
+            })
+            .option("preview-alias", {
+              type: "string",
+              describe: "Version Preview alias, e.g. staging",
+            })
+      )
+      .command(
+        "version-deploy <target>",
+        "Send 100% of traffic to an uploaded Version",
+        builder =>
+          builder.positional("target", targetPositional).option("version-id", {
+            type: "string",
+            demandOption: true,
+          })
+      )
+      .command(
+        "digest <dir>",
+        "Print the content digest of a build output directory",
+        builder =>
+          builder.positional("dir", { type: "string", demandOption: true })
+      )
+      .example("$0 preview vandallabs --pr 123", "Create Preview pr-123")
+      .example("$0 cleanup vandallabs --pr 123", "Delete Preview pr-123")
+      .example(
+        "$0 version-upload vandallabs --stage staging --artifact-dir websites/vandallabs/dist --preview-alias staging",
+        "Upload the staging Version"
+      )
+      .example(
+        "$0 version-deploy vandallabs --version-id <uuid>",
+        "Promote a production-configured Version"
+      )
+      .demandCommand(1)
+      .strict()
+      .help()
+      .parse()
 
   try {
-    const args = await parseArgs(process.argv),
-      { env, pr, debug: isDebug, target, dryRun, _: command } = args
+    const [command] = args._
 
-    if (isDebug) consola.level = 5
+    if (command === "digest") {
+      console.log(await digestDirectory(resolve(`${args["dir"]}`)))
+      process.exit(0)
+    }
 
-    const isCleanup = command[0] === "cleanup",
-      project = availableTargets[`${target}`]
+    const project = availableTargets[`${args["target"]}`]
 
     if (!project) throw new Error(`Target not found.`)
 
     const siteDir = resolve(repoRoot, ...project.location),
-      wranglerConfigPath = resolve(siteDir, "wrangler.json"),
-      wranglerConfig = JSON.parse(
-        await readFile(wranglerConfigPath, "utf-8")
+      { name: worker } = JSON.parse(
+        await readFile(resolve(siteDir, "wrangler.json"), "utf-8")
       ) as WranglerConfig,
-      name = workerName(wranglerConfig.name, isCleanup ? "preview" : env, pr)
+      pr = args["pr"] as number | undefined
 
-    if (isCleanup) {
-      if (!pr)
-        throw new Error("Cleanup requires --pr <N> (the pull request number).")
-
-      if (dryRun) {
-        consola.info(
-          `[DRY-MODE] Would delete worker "${name}" and its KV namespace`
-        )
-      } else {
-        consola.info(`Deleting worker "${name}"...`)
-        await execa("bunx", ["wrangler", "delete", name, "--force"], {
-          cwd: siteDir,
-          reject: false,
-          stdio: "inherit",
-        })
-
-        consola.info(`Deleting KV namespace "${name}"...`)
-        const deleted = await deleteKvNamespaceByTitle(name)
-
-        consola[deleted ? "success" : "info"](
-          deleted
-            ? `Deleted KV namespace "${name}".`
-            : `KV namespace "${name}" not found, nothing to delete.`
-        )
-      }
-
-      process.exit(0)
-    }
-
-    const envVars = resolveTargetEnvVars(
-      project.location,
-      env as "preview" | "staging" | "production"
-    )
-
-    if (dryRun) {
-      consola.info(
-        "[DRY-MODE] Deploying...",
-        `worker "${name}" (find-or-create KV namespace "${name}")`
+    if (command === "cleanup") {
+      const { previewDeleted, kvDeleted } = await cleanupPreview(
+        { siteDir, worker, pr },
+        realDeps
       )
-      console.debug("With environment variables:", envVars)
-      process.exit(0)
-    }
+      const lines = [
+        `Preview "pr-${pr}" of Worker "${worker}": ${previewDeleted ? "deleted" : "not deleted (absent or failed, see log)"}`,
+        `KV namespace "${worker}-pr-${pr}": ${kvDeleted ? "deleted" : "not found"}`,
+      ]
 
-    consola.info(`Resolving KV namespace "${name}"...`)
-    const { namespace, created } = await findOrCreateKvNamespace(name)
-
-    consola[created ? "success" : "info"](
-      created
-        ? `Created KV namespace "${name}" (${namespace.id}).`
-        : `Reusing existing KV namespace "${name}" (${namespace.id}).`
-    )
-
-    const generatedConfigPath = resolve(
-        repoRoot,
-        ...project.location,
-        "dist/server/wrangler.json"
-      ),
-      generatedConfig = JSON.parse(
-        await readFile(generatedConfigPath, "utf-8")
-      ) as WranglerConfig
-
-    if (!generatedConfig.kv_namespaces?.length) {
-      throw new Error(
-        `${generatedConfigPath} has no kv_namespaces entry — did the build run?`
+      for (const line of lines) consola.info(line)
+      await appendGitHubFile(
+        "GITHUB_STEP_SUMMARY",
+        `### Cleanup: \`${worker}\`\n${lines.map(line => `- ${line}`).join("\n")}\n\n`
       )
     }
 
-    generatedConfig.kv_namespaces[0]!.id = namespace.id
-    generatedConfig.vars = { ...generatedConfig.vars, ...envVars }
-    await writeFile(
-      generatedConfigPath,
-      JSON.stringify(generatedConfig, null, 2)
-    )
+    if (command === "preview") {
+      const url = await deployPreview(
+        {
+          siteDir,
+          generatedConfigPath: resolve(siteDir, "dist/server/wrangler.json"),
+          worker,
+          pr,
+          vars: resolveTargetEnvVars(project.location, "preview"),
+        },
+        realDeps
+      )
 
-    consola.info("Deploying...", `worker "${name}"`)
-    console.debug("With environment variables:", envVars)
+      consola.success(`Preview deployed to: ${url}`)
+      await appendGitHubFile("GITHUB_OUTPUT", `deploy-url=${url}\n`)
+      await appendGitHubFile(
+        "GITHUB_STEP_SUMMARY",
+        `### Preview: \`${worker}\` pr-${pr}\n- Preview URL: ${url}\n\n`
+      )
+    }
 
-    const proc = execa("bunx", ["wrangler", "deploy", "--name", name], {
-      cwd: siteDir,
-      env: { ...process.env, ...envVars },
-      all: true,
-    })
+    if (command === "version-upload") {
+      const stage = args["stage"] as "staging" | "production",
+        { versionId, previewAliasUrl } = await versionUpload(
+          {
+            siteDir,
+            worker,
+            artifactDir: resolve(`${args["artifactDir"]}`),
+            vars: resolveTargetEnvVars(project.location, stage),
+            previewAlias: args["previewAlias"] as string | undefined,
+          },
+          realDeps
+        )
 
-    proc.all?.pipe(process.stdout)
+      consola.success(
+        `Uploaded ${stage} Version ${versionId} of "${worker}"${previewAliasUrl ? ` at ${previewAliasUrl}` : ""}`
+      )
+      await appendGitHubFile(
+        "GITHUB_OUTPUT",
+        `version-id=${versionId}\n${previewAliasUrl ? `deploy-url=${previewAliasUrl}\n` : ""}`
+      )
+      await appendGitHubFile(
+        "GITHUB_STEP_SUMMARY",
+        `### ${stage} Version: \`${worker}\`\n- Version ID: ${versionId}\n${previewAliasUrl ? `- Version Preview: ${previewAliasUrl}\n` : ""}\n`
+      )
+    }
 
-    const { all: output } = await proc,
-      url = resolvePreviewUrl(output, name),
-      customDomain =
-        env === "production" ? CUSTOM_DOMAINS[wranglerConfig.name] : undefined
+    if (command === "version-deploy") {
+      const versionId = `${args["versionId"]}`,
+        customDomain = CUSTOM_DOMAINS[worker]
 
-    if (url) {
-      consola.success(`Deployed to: ${url}`)
+      await versionDeploy({ siteDir, worker, versionId }, realDeps)
+      consola.success(
+        `Version ${versionId} of "${worker}" serves 100% of traffic.`
+      )
       if (customDomain) {
         consola.info(
           `Production custom domain (dashboard-managed): ${customDomain}`
         )
       }
 
-      if (process.env["GITHUB_OUTPUT"]) {
-        await writeFile(
-          process.env["GITHUB_OUTPUT"]!,
-          `deploy-url=${url}\n${customDomain ? `custom-domain=${customDomain}\n` : ""}`,
-          { flag: "a" }
-        )
-      }
-
-      if (process.env["GITHUB_STEP_SUMMARY"]) {
-        const summaryLines = [
-          `### Deploy: \`${name}\``,
-          `- Preview URL: ${url}`,
-          ...(customDomain ? [`- Production domain: ${customDomain}`] : []),
-          "",
-        ]
-        await writeFile(
-          process.env["GITHUB_STEP_SUMMARY"]!,
-          `${summaryLines.join("\n")}\n`,
-          { flag: "a" }
-        )
-      }
-    } else {
-      consola.warn(
-        "Could not find a workers.dev deploy URL in wrangler's output."
+      await appendGitHubFile(
+        "GITHUB_OUTPUT",
+        customDomain ? `custom-domain=${customDomain}\n` : ""
+      )
+      await appendGitHubFile(
+        "GITHUB_STEP_SUMMARY",
+        `### Production: \`${worker}\`\n- Deployed Version: ${versionId} (100%)\n${customDomain ? `- Production domain: ${customDomain}\n` : ""}\n`
       )
     }
   } catch (err) {
@@ -271,4 +509,13 @@ if (import.meta.main) {
   }
 }
 
-export { resolvePreviewUrl }
+export {
+  cleanupPreview,
+  deployPreview,
+  digestDirectory,
+  nodeFiles,
+  resolvePreviewUrl,
+  versionDeploy,
+  versionUpload,
+}
+export type { DeployDeps }

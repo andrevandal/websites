@@ -31,16 +31,17 @@ Create one Moon application at `websites/<slug>`. Start from current repository 
 
 | Area | Result |
 | --- | --- |
-| Site | `websites/<slug>/` with `package.json`, `moon.yml`, strict Astro TS config, Cloudflare SSR config, Wrangler config, `.env.example`, `Layout.astro`, `index.astro`, Tailwind CSS, favicon, and README. |
-| Dependencies | Catalog references only. `@vandal-websites/sun-ui` uses `workspace:*`; `@astrojs/svelte` and `svelte` use `catalog:svelte`. Never add direct framework versions. |
-| Moon | `layer: application`, `language: astro`, `cloudflare` tag. Shared Astro application task config supplies Wrangler type generation. |
-| Deploy | release-please config and manifest, release production matrix, all CI `ENV_VARS_<NAME>` blocks, root README website list, manual-deploy choice. Moon discovers the target automatically. |
+| Site | `websites/<slug>/` with `package.json`, `config.json`, `moon.yml`, strict Astro TS config, Cloudflare SSR config, Wrangler config, `Layout.astro`, `index.astro`, Tailwind CSS, favicon, and README. |
+| Configuration | `config.json`: `canonicalHost` `https://<slug>`, the `preview`/`staging`/`production` Stage `vars` (`IMAGES_BASE_URL`, `PUBLIC_GOOGLE_*`, `ENABLE_PARTYTOWN: "false"`), and empty `secretKeys`. The layout reads them at request time with `runtimeGtag(getSecret)`; nothing is read at build time. |
+| Dependencies | Catalog references only. `@vandal-websites/sun-ui` and `@vandal-websites/robots-sitemap` use `workspace:*`; `@astrojs/svelte` and `svelte` use `catalog:svelte`. Never add direct framework versions. |
+| Moon | `layer: application`, `language: astro`, `cloudflare` tag, no Stage-variable build inputs and no deploy task. Shared Astro application task config supplies Wrangler type generation. |
+| Deploy | One Worker named after the slug's first dot label (`acme.com.br` deploys as `acme`). Registers the site in `SITE_IDS`, `CUSTOM_DOMAINS` (`https://<slug>`), the Preview cleanup matrix, the manual-deploy choice, the release workflow's released-websites list, release-please config and manifest, and the root README website list. Moon discovers the target automatically. |
 
-Use `bun run website:new <slug> --dry-run` before writing when validating a name or expected registrations. The command rejects an existing `websites/<slug>` or a slug that would share another site's `ENV_VARS_<NAME>` before changing root files. |
+Use `bun run website:new <slug> --dry-run` before writing when validating a name or expected registrations. The command writes nothing when `websites/<slug>` exists, when the slug is already in any registration, or when another website already uses its Worker name.
 
 ## SSR and Assets
 
-Keep `output: "server"`, the Cloudflare adapter, `nodejs_compat`, and the `SESSION` KV binding. Keep `IMAGES_BASE_URL` wired through `SunUIAstroIntegration`; use the shared image service for remote bitmap transforms. `SITE_URL` is the canonical and sitemap base. Do not switch to static output or create a separate Cloudflare Pages project.
+Keep `output: "server"`, the Cloudflare adapter, `nodejs_compat`, and the `SESSION` KV binding. `SunPicture` reads `IMAGES_BASE_URL` at request time; use the shared image service for remote bitmap transforms. The `CANONICAL_SITE_URL` constant in `astro.config.js` matches `canonicalHost` and feeds `robotsSitemap()`, which serves `/robots.txt` and `/sitemap-index.xml` per request. Do not switch to static output or create a separate Cloudflare Pages project.
 
 Do not create `marketing/<slug>`, `wrangler.toml`, a root workspace entry, a new per-site workflow, or a new Tailwind integration. Existing conventions are `websites/<slug>`, `wrangler.json`, automatic workspace discovery, one deploy matrix, and `@tailwindcss/vite`.
 
@@ -52,9 +53,9 @@ Use CSS and native HTML first: semantic links/forms, `details`, `dialog`, checkb
 
 Add a Svelte island only when the design spec names a user-visible stateful interaction that requires hydration, such as a virtualized search combobox, drag interaction, or stateful carousel. Hydrate the smallest island with the narrowest Astro client directive. Do not hydrate a mobile menu, accordion, tabs, theme toggle, or animation that native HTML/CSS can deliver.
 
-## After Cloudflare Domain Provisioning
+## Before the Production Domain Exists
 
-The generator deliberately does not set a custom domain. After the production domain exists in Cloudflare, add its exact URL to `CUSTOM_DOMAINS` in `scripts/deploy.ts`. Preview workers remain `<slug>-pr-<N>`, staging is `<slug>-staging`, and production is `<slug>`.
+`config.json` `canonicalHost`, `CANONICAL_SITE_URL`, and `CUSTOM_DOMAINS` all assume the production domain `https://<slug>`. Bind that Custom Domain to the Worker in the Cloudflare dashboard before the first release, or correct all three together. Pull requests get Workers Preview `pr-<N>` of the Worker (KV namespace `<worker>-pr-<N>`), staging is a Version of it behind Version Preview alias `staging`, and production is a production-configured Version of the same build.
 
 ## Common Mistakes
 

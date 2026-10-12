@@ -1,0 +1,83 @@
+name: "Promote"
+description: "Upload a website's staging build from Main CI as a production-configured Version, then send it 100% of traffic. Never rebuilds."
+
+inputs:
+  target:
+    description: "The website to promote (ex: vandallabs)"
+    required: true
+  sha:
+    description: "Commit whose Main CI build artifact (website-dist-<target>-<sha>) is promoted"
+    required: true
+  github-token:
+    description: "Token with actions: read, used to find the Main CI run and download its artifact"
+    required: true
+
+outputs:
+  version-id:
+    description: "The production Version now serving 100% of traffic"
+    value: ${{ steps.upload.outputs.version-id }}
+  custom-domain:
+    description: "The site's dashboard-managed production custom domain, when configured"
+    value: ${{ steps.deploy.outputs.custom-domain }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Wait for Main CI
+      id: main-ci
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        SHA: ${{ inputs.sha }}
+      run: |
+        failure="Main CI did not complete successfully for ${SHA}; no staging artifact is available for production promotion."
+        deadline=$((SECONDS + 1800))
+        while :; do
+          run=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow main.yml --commit "$SHA" --event push \
+            --json databaseId,status,conclusion --limit 1 --jq '.[0] // empty')
+          if [ -n "$run" ] && [ "$(jq -r .status <<<"$run")" = "completed" ]; then
+            if [ "$(jq -r .conclusion <<<"$run")" = "success" ]; then
+              echo "run-id=$(jq -r .databaseId <<<"$run")" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "::error::$failure"
+            exit 1
+          fi
+          if [ "$SECONDS" -ge "$deadline" ]; then
+            echo "::error::$failure"
+            exit 1
+          fi
+          sleep 30
+        done
+
+    - name: Download staging build
+      uses: actions/download-artifact@v4
+      with:
+        name: website-dist-${{ inputs.target }}-${{ inputs.sha }}
+        run-id: ${{ steps.main-ci.outputs.run-id }}
+        github-token: ${{ inputs.github-token }}
+        path: ${{ runner.temp }}/website-dist
+
+    - name: Verify build digest
+      shell: bash
+      run: |
+        expected=$(cat "$RUNNER_TEMP/website-dist/dist.sha256")
+        actual=$(bun scripts/deploy.ts digest "$RUNNER_TEMP/website-dist/dist")
+        if [ "$expected" != "$actual" ]; then
+          echo "::error::Restored build digest $actual does not match the Main CI digest $expected."
+          exit 1
+        fi
+        echo "Build digest $actual matches Main CI."
+
+    - name: Upload production Version
+      id: upload
+      shell: bash
+      run: >-
+        bun scripts/deploy.ts version-upload ${{ inputs.target }}
+        --stage production
+        --artifact-dir "$RUNNER_TEMP/website-dist/dist"
+
+    - name: Deploy production Version
+      id: deploy
+      shell: bash
+      run: bun scripts/deploy.ts version-deploy ${{ inputs.target }} --version-id ${{ steps.upload.outputs.version-id }}

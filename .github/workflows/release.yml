@@ -60,6 +60,8 @@ jobs:
             --ref main \
             -f environment=production
 
+  # Production never rebuilds: it re-uploads Main CI's staging build for this
+  # commit with production config, then promotes that new Version.
   deploy-websites-production:
     needs: release
     if: ${{ needs.release.outputs.websites_released != '[]' }}
@@ -80,8 +82,9 @@ jobs:
       - name: Init
         uses: ./.github/actions/init
 
-      - name: Deploy
-        uses: ./.github/actions/deploy
+      - name: Promote staging build to production
+        uses: ./.github/actions/promote
         with:
-          env: production
           target: ${{ matrix.target }}
+          sha: ${{ github.sha }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

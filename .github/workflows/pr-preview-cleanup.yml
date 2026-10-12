@@ -12,7 +12,9 @@ concurrency:
 
 jobs:
   cleanup:
-    name: Delete PR preview deployments
+    name: Delete Workers Preview pr-${{ github.event.pull_request.number }}
+    # Matches main.yml: fork PRs never get a Preview or Cloudflare credentials.
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -33,4 +35,4 @@ jobs:
         uses: ./.github/actions/init
 
       - name: Cleanup
-        run: bun scripts/deploy.ts cleanup ${{ matrix.target }} --pr ${{ github.event.pull_request.number }} --no-dry-run
+        run: bun scripts/deploy.ts cleanup ${{ matrix.target }} --pr ${{ github.event.pull_request.number }}

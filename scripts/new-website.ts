@@ -1,4 +1,4 @@
-import { access, mkdir, readFile, writeFile } from "node:fs/promises"
+import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join, relative } from "node:path"
 import { consola } from "consola"
 import yargs from "yargs"
@@ -28,8 +28,12 @@ const validateSlug = (slug: string) => {
   }
 }
 
-const envVarNameForSlug = (slug: string): string =>
-  `ENV_VARS_${slug.toUpperCase().split(/[.-]/)[0]}`
+// Cloudflare Worker names allow only lowercase letters, digits, and hyphens, so
+// a domain-style slug deploys as its first label (as clinicamauricioaraujo.com.br does).
+const workerNameForSlug = (slug: string): string => slug.split(".")[0]!
+
+const fontVariable = (font: string) =>
+  `--font-${font.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}`
 
 const resolveOptions = (options: WebsiteOptions): ResolvedOptions => {
   validateSlug(options.slug)
@@ -53,7 +57,7 @@ const renderPackageJson = (options: ResolvedOptions) => {
     "@astrojs/check": "catalog:astro",
     "@astrojs/cloudflare": "catalog:astro",
     "@astrojs/partytown": "catalog:astro",
-    "@astrojs/sitemap": "catalog:astro",
+    "@vandal-websites/robots-sitemap": "workspace:*",
     "@astrojs/ts-plugin": "catalog:astro",
     "@vandal-websites/sun-ui": "workspace:*",
     "@tailwindcss/typography": "catalog:tailwind",
@@ -62,7 +66,6 @@ const renderPackageJson = (options: ResolvedOptions) => {
     "astro-iconset": "catalog:astro",
     tailwindcss: "catalog:tailwind",
     typescript: "catalog:typescript",
-    valibot: "catalog:utils",
   })
   const devDependencies = sortObject({
     "@astrojs/svelte": "catalog:svelte",
@@ -79,6 +82,27 @@ const renderPackageJson = (options: ResolvedOptions) => {
       type: "module",
       dependencies,
       devDependencies,
+    },
+    null,
+    2
+  )}\n`
+}
+
+const renderConfig = (options: ResolvedOptions) => {
+  const stageVars = {
+    IMAGES_BASE_URL: "",
+    PUBLIC_GOOGLE_ANALYTICS_ID: "",
+    PUBLIC_GOOGLE_ADS_CONVERSION_ID: "",
+    PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: "",
+    ENABLE_PARTYTOWN: "false",
+  }
+
+  return `${JSON.stringify(
+    {
+      siteId: options.slug,
+      canonicalHost: `https://${options.slug}`,
+      vars: { preview: stageVars, staging: stageVars, production: stageVars },
+      secretKeys: [],
     },
     null,
     2
@@ -122,12 +146,6 @@ tasks:
       - "@globs(typescript)"
       - "/packages/sun-ui/src/**/*"
       - "./astro.config.js"
-      - "$SITE_URL"
-      - "$IMAGES_BASE_URL"
-      - "$ENABLE_PARTYTOWN"
-      - "$PUBLIC_GOOGLE_ANALYTICS_ID"
-      - "$PUBLIC_GOOGLE_ADS_CONVERSION_ID"
-      - "$PUBLIC_GOOGLE_ADS_CONVERSION_LABEL"
     outputs:
       - dist
     dependsOn:
@@ -143,11 +161,6 @@ tasks:
     dependsOn:
       - build
 
-  deploy:
-    command: bunx wrangler deploy
-    dependsOn:
-      - build
-
   test:
     command: "bun test --isolate --pass-with-no-tests"
     inputs:
@@ -156,7 +169,6 @@ tasks:
       - "@globs(sources)"
       - "bunfig.toml"
       - "/bunfig.toml"
-      - "/happydom.ts"
       - "/packages/sun-ui/src/**/*"
 
   typecheck:
@@ -177,98 +189,46 @@ workspace:
 
 const renderAstroConfig = (
   options: ResolvedOptions
-) => `import { defineConfig, envField, fontProviders } from "astro/config"
-import { loadEnv } from "vite"
+) => `import { defineConfig, fontProviders } from "astro/config"
 import sunUIAstroIntegration from "@vandal-websites/sun-ui/astro-integration"
-import sitemap from "@astrojs/sitemap"
+import { robotsSitemap } from "@vandal-websites/robots-sitemap"
 import partytown from "@astrojs/partytown"
 import cloudflare from "@astrojs/cloudflare"
 import tailwindcss from "@tailwindcss/vite"
-// oxlint-disable-next-line import/no-namespace
-import * as v from "valibot"
 
-const env = loadEnv(import.meta.env.MODE, process.cwd(), "")
-if (env.IMAGES_BASE_URL === "") delete env.IMAGES_BASE_URL
-
-const {
-  SITE_URL,
-  IMAGES_BASE_URL,
-  ENABLE_PARTYTOWN: isPartytownEnabled,
-} = v.parse(
-  v.object({
-    SITE_URL: v.optional(v.pipe(v.string(), v.url("SITE_URL must be a URL."))),
-    IMAGES_BASE_URL: v.optional(
-      v.pipe(v.string(), v.url("IMAGES_BASE_URL must be a URL."))
-    ),
-    ENABLE_PARTYTOWN: v.pipe(
-      v.optional(v.string(), "false"),
-      v.transform(value => value === "true")
-    ),
-  }),
-  env
-)
+const CANONICAL_SITE_URL = "https://${options.slug}"
 
 export default defineConfig({
   output: "server",
   adapter: cloudflare({
     sessionKVBindingName: "SESSION",
-    imageService: IMAGES_BASE_URL ? "custom" : "passthrough",
+    imageService: "passthrough",
     prerenderEnvironment: "node",
   }),
-  env: {
-    schema: {
-      SITE_URL: envField.string({ context: "client", access: "public", optional: true }),
-      IMAGES_BASE_URL: envField.string({ context: "server", access: "secret", optional: true }),
-      ENABLE_PARTYTOWN: envField.boolean({
-        context: "server",
-        access: "secret",
-        optional: true,
-        default: false,
-      }),
-      PUBLIC_GOOGLE_ANALYTICS_ID: envField.string({
-        context: "client",
-        access: "public",
-        optional: true,
-      }),
-      PUBLIC_GOOGLE_ADS_CONVERSION_ID: envField.string({
-        context: "client",
-        access: "public",
-        optional: true,
-      }),
-      PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: envField.string({
-        context: "client",
-        access: "public",
-        optional: true,
-      }),
-    },
-    validateSecrets: true,
-  },
   fonts: [
     {
       name: ${JSON.stringify(options.font)},
       provider: fontProviders.google(),
-      cssVariable: "--font-${options.font.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}",
+      cssVariable: "${fontVariable(options.font)}",
       weights: ["400", "500", "600", "700"],
     },
   ],
   integrations: [
     sunUIAstroIntegration({
-      imageServiceBaseUrl: IMAGES_BASE_URL,
       svelte: true,
     }),
-    sitemap(),
-    isPartytownEnabled &&
-      partytown({
-        config: {
-          forward: [
-            ["dataLayer.push", { preserveBehavior: true }],
-            ["gtag", { preserveBehavior: true }],
-          ],
-        },
-      }),
+    robotsSitemap({ canonicalHost: CANONICAL_SITE_URL }),
+    partytown({
+      config: {
+        forward: [
+          ["dataLayer.push", { preserveBehavior: true }],
+          ["gtag", { preserveBehavior: true }],
+        ],
+      },
+    }),
   ],
   trailingSlash: "ignore",
-  site: SITE_URL,
+  site: CANONICAL_SITE_URL,
   vite: {
     plugins: [tailwindcss()],
   },
@@ -295,7 +255,10 @@ const renderTsConfig = (options: ResolvedOptions) =>
       },
       include: [".astro/types.d.ts", "**/*"],
       exclude: ["dist", "astro.config.js"],
-      references: [{ path: "../../packages/sun-ui" }],
+      references: [
+        { path: "../../packages/robots-sitemap" },
+        { path: "../../packages/sun-ui" },
+      ],
     },
     null,
     2
@@ -305,7 +268,7 @@ const renderWrangler = (options: ResolvedOptions) =>
   `${JSON.stringify(
     {
       $schema: "./node_modules/wrangler/config-schema.json",
-      name: options.slug,
+      name: workerNameForSlug(options.slug),
       compatibility_flags: ["nodejs_compat"],
       compatibility_date: "2025-01-01",
       assets: { directory: "./dist" },
@@ -319,7 +282,7 @@ const renderGlobalCss = (options: ResolvedOptions) => `@import "tailwindcss";
 @source "../../../../packages/sun-ui/src";
 
 @theme {
-  --font-sans: var(--font-${options.font.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(${fontVariable(options.font)}), ui-sans-serif, system-ui, sans-serif;
 }
 
 @utility container {
@@ -341,7 +304,8 @@ const renderGlobalCss = (options: ResolvedOptions) => `@import "tailwindcss";
 const renderLayout = (options: ResolvedOptions) => `---
 import "@/styles/global.css"
 import { Font } from "astro:assets"
-import { SunLayout } from "@vandal-websites/sun-ui/astro"
+import { getSecret } from "astro:env/server"
+import { SunLayout, runtimeGtag } from "@vandal-websites/sun-ui/astro"
 
 interface Props {
   title: string
@@ -357,8 +321,9 @@ const { title, description, image = "/og-image.png" } = Astro.props
   description={description}
   image={new URL(image, Astro.url).toString()}
   url={Astro.url}
+  gtag={runtimeGtag(getSecret)}
 >
-  <Font cssVariable="--font-${options.font.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}" preload slot="close-head" />
+  <Font cssVariable="${fontVariable(options.font)}" preload slot="close-head" />
   <slot />
 </SunLayout>
 `
@@ -401,6 +366,7 @@ websites/${options.slug}/
 │   ├── pages/index.astro
 │   └── styles/global.css
 ├── astro.config.js
+├── config.json
 ├── moon.yml
 ├── tsconfig.json
 └── wrangler.json
@@ -417,18 +383,25 @@ moon run ${options.slug}:typecheck
 moon run ${options.slug}:build
 \`\`\`
 
-## Environment variables
+## Configuration
+
+\`config.json\` holds the canonical host and the non-secret variables for each
+Stage (\`preview\`, \`staging\`, \`production\`). Deploys attach the Stage's
+values to the Worker, and the site reads them at request time through
+\`getSecret\`, so one build serves every Stage.
 
 | Variable | Purpose |
 | --- | --- |
-| \`SITE_URL\` | Absolute canonical URL and sitemap base. |
 | \`IMAGES_BASE_URL\` | Optional \`apps/images\` transform-service base URL. |
 | \`PUBLIC_GOOGLE_ANALYTICS_ID\` | Optional Google Analytics measurement ID. |
 | \`PUBLIC_GOOGLE_ADS_CONVERSION_ID\` | Optional Google Ads conversion ID. |
 | \`PUBLIC_GOOGLE_ADS_CONVERSION_LABEL\` | Optional Google Ads conversion label. |
-| \`ENABLE_PARTYTOWN\` | Enables Partytown only when \`true\`. |
+| \`ENABLE_PARTYTOWN\` | Loads Gtag through Partytown only when \`true\`. |
 
-CI passes these through \`${envVarNameForSlug(options.slug)}\`.
+List secret names in \`secretKeys\` and set their values with Wrangler, never in
+\`config.json\`. The \`CANONICAL_SITE_URL\` constant in \`astro.config.js\`
+matches \`canonicalHost\`. \`@vandal-websites/robots-sitemap\` serves \`/robots.txt\`
+(crawlable only on that host) and \`/sitemap-index.xml\`.
 
 ## Client-side policy
 
@@ -440,15 +413,17 @@ Replace the scaffold favicon before release. Put brand images in \`public/\` or 
 
 ## Deployment
 
-\`wrangler.json\` defines the stable worker name \`${options.slug}\`. The root deploy command provisions and binds \`SESSION\` KV:
+Every Stage is the one Cloudflare Worker \`${workerNameForSlug(options.slug)}\` (\`wrangler.json\`):
 
-\`\`\`sh
-bun scripts/deploy.ts ${options.slug} --env preview --pr 123 --no-dry-run
-bun scripts/deploy.ts ${options.slug} --env staging --no-dry-run
-bun scripts/deploy.ts ${options.slug} --env production --no-dry-run
-\`\`\`
+| Stage | Deployed as | KV namespace |
+| --- | --- | --- |
+| Pull request | Workers Preview \`pr-<N>\` of \`${workerNameForSlug(options.slug)}\` | \`${workerNameForSlug(options.slug)}-pr-<N>\` |
+| Staging | Uploaded Version, Version Preview alias \`staging\` | \`${workerNameForSlug(options.slug)}\` |
+| Production | The same build re-uploaded with production config, at 100% traffic | \`${workerNameForSlug(options.slug)}\` |
 
-Worker names are \`${options.slug}-pr-<N>\` for previews, \`${options.slug}-staging\` for staging, and \`${options.slug}\` for production. Add a production custom domain in Cloudflare first, then add its URL to \`CUSTOM_DOMAINS\` in \`scripts/deploy.ts\`.
+CI runs \`scripts/deploy.ts\`: pull requests create and delete the Preview, a push
+to \`main\` builds once and uploads the staging Version, and a release promotes
+that build to production without rebuilding.
 `
 
 const favicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#18181b"/><path fill="#fff" d="M32 14 48 48H16z"/></svg>\n`
@@ -462,21 +437,19 @@ const exists = async (path: string) => {
   }
 }
 
-const readExisting = async (root: string, paths: string[]) => {
-  const candidates = await Promise.all(
-    paths.map(async path => {
-      const absolutePath = join(root, path)
-      return { absolutePath, exists: await exists(absolutePath) }
-    })
+const readRoot = async (root: string, path: string) => ({
+  path: join(root, path),
+  content: await readFile(join(root, path), "utf8"),
+})
+
+const alreadyRegistered = (slug: string) =>
+  new Error(
+    `Website websites/${slug} is already registered without a site directory. Resolve the stale registration first.`
   )
-  const candidate = candidates.find(entry => entry.exists)
-  if (candidate) {
-    return {
-      path: candidate.absolutePath,
-      content: await readFile(candidate.absolutePath, "utf8"),
-    }
-  }
-  throw new Error(`Expected one of: ${paths.join(", ")}`)
+
+const sortedWebsites = (websites: string[], slug: string) => {
+  if (websites.includes(slug)) throw alreadyRegistered(slug)
+  return [...websites, slug].toSorted((a, b) => a.localeCompare(b))
 }
 
 const sortWebsiteEntries = <T>(
@@ -517,75 +490,103 @@ const registeredWebsiteSlugs = (content: string) => {
   )
 }
 
-const ensureUniqueEnvironmentVariable = (
-  slug: string,
-  releaseConfig: string
-) => {
-  const variable = envVarNameForSlug(slug)
-  const conflictingSlug = registeredWebsiteSlugs(releaseConfig).find(
-    registeredSlug =>
-      registeredSlug !== slug && envVarNameForSlug(registeredSlug) === variable
+const ensureUniqueWorkerName = async (root: string, slug: string) => {
+  const worker = workerNameForSlug(slug)
+  const sites = await readdir(join(root, "websites"))
+  const workers = await Promise.all(
+    sites.map(async site => {
+      const path = join(root, "websites", site, "wrangler.json")
+      if (!(await exists(path))) return { site, name: undefined }
+      const { name } = JSON.parse(await readFile(path, "utf8")) as {
+        name: string
+      }
+      return { site, name }
+    })
   )
-  if (conflictingSlug) {
+  const conflict = workers.find(entry => entry.name === worker)
+  if (conflict) {
     throw new Error(
-      `Website slug "${slug}" conflicts with "${conflictingSlug}": both use ${variable}. Choose a distinct first dot or hyphen segment.`
+      `Website slug "${slug}" would deploy as Worker "${worker}", which websites/${conflict.site} already uses. Choose a distinct first dot segment.`
     )
   }
 }
 
-const insertEnvVar = (content: string, variable: string) => {
-  if (content.includes(`${variable}:`)) return content
-  const lines = content.split("\n")
-  const entries = lines.flatMap((line, index) => {
-    const match = line.match(
-      /^(?<indentation>\s*)(?<variable>ENV_VARS_[A-Z0-9_]+):/
-    )
-    if (!match?.groups) return []
-    return [
-      {
-        index,
-        indentation: match.groups.indentation,
-        variable: match.groups.variable,
-      },
-    ]
-  })
-  if (entries.length === 0)
-    throw new Error("Workflow has no ENV_VARS_* entries.")
-  const [{ indentation }] = entries
-  const insertion = entries.find(
-    entry => entry.variable.localeCompare(variable) > 0
+const updateSiteIds = (content: string, slug: string) => {
+  const match = content.match(/const SITE_IDS = \[(?<ids>[^\]]*)\]/)
+  if (!match?.groups) throw new Error("site-config.ts has no SITE_IDS list.")
+  const ids = [...match.groups["ids"]!.matchAll(/"(?<id>[^"]+)"/g)].map(
+    entry => entry.groups!["id"]!
   )
-  const index = insertion?.index ?? entries.at(-1)!.index + 1
-  lines.splice(index, 0, `${indentation}${variable}: \${{ vars.${variable} }}`)
-  return lines.join("\n")
+  const list = sortedWebsites(ids, slug)
+    .map(id => `  ${JSON.stringify(id)},`)
+    .join("\n")
+  return content.replace(match[0], `const SITE_IDS = [\n${list}\n]`)
 }
 
-const updateManualTargets = (content: string, slug: string) => {
-  const match = content.match(/options:\s*\[(?<targets>[\s\S]*?)\]/)
-  if (!match || match.index === undefined || !match.groups)
-    throw new Error("Manual deploy workflow has no target options.")
-  const targets = match.groups.targets
-    .split(",")
+const updateCustomDomains = (content: string, slug: string) => {
+  const worker = workerNameForSlug(slug)
+  const match = content.match(
+    /const CUSTOM_DOMAINS: Record<string, string> = \{\n(?<entries>[\s\S]*?)\}/
+  )
+  if (!match?.groups) throw new Error("deploy.ts has no CUSTOM_DOMAINS record.")
+  const key = /^[a-z_$][a-z0-9_$]*$/.test(worker)
+    ? worker
+    : JSON.stringify(worker)
+  if (new RegExp(`^\\s*"?${worker}"?:`, "m").test(match.groups["entries"]!))
+    throw alreadyRegistered(slug)
+  return content.replace(
+    match[0],
+    `${match[0].slice(0, -1)}  ${key}: ${JSON.stringify(`https://${slug}`)},\n}`
+  )
+}
+
+const replaceTargetList = (
+  content: string,
+  pattern: RegExp,
+  slug: string,
+  label: string
+) => {
+  const match = content.match(pattern)
+  if (!match?.groups || match.index === undefined)
+    throw new Error(`${label} has no target list.`)
+  const targets = match.groups["targets"]!.split(",")
     .map(value => value.trim())
     .filter(Boolean)
-  if (!targets.includes(slug)) targets.push(slug)
   const fixed = targets.filter(target => target === "images")
-  const websites = targets
-    .filter(target => target !== "images")
-    .sort((a, b) => a.localeCompare(b))
-  const [matchedOptions] = match
-  return `${content.slice(0, match.index)}options: [${[...fixed, ...websites].join(", ")}]${content.slice(match.index + matchedOptions.length)}`
+  const websites = sortedWebsites(
+    targets.filter(target => target !== "images"),
+    slug
+  )
+  const [matched] = match
+  return `${content.slice(0, match.index)}${match.groups["prefix"]}[${[...fixed, ...websites].join(", ")}]${content.slice(match.index + matched.length)}`
 }
 
+const updateManualTargets = (content: string, slug: string) =>
+  replaceTargetList(
+    content,
+    /(?<prefix>target:[\s\S]*?options:\s*)\[(?<targets>[^\]]*)\]/,
+    slug,
+    "Manual deploy workflow"
+  )
+
+const updateCleanupMatrix = (content: string, slug: string) =>
+  replaceTargetList(
+    content,
+    /(?<prefix>target:\s*)\[(?<targets>[^\]]*)\]/,
+    slug,
+    "Preview cleanup workflow"
+  )
+
 const updateReleaseWorkflow = (content: string, slug: string) => {
-  if (content.includes(`websites/${slug}--release_created`)) return content
+  if (content.includes(`websites/${slug}--release_created`))
+    throw alreadyRegistered(slug)
   const match = content.match(/^(?<indentation>\s*)'(?<entries>\[.*\])'\)$/m)
   if (!match?.groups)
     throw new Error("Release workflow has no released websites list.")
   const alias = `site_${slug.replaceAll(/[^a-z0-9]/g, "_")}`
   const { indentation, entries } = match.groups
   const releaseArg = `${indentation}--argjson ${alias} "$([ "\${{ steps.release.outputs['websites/${slug}--release_created'] }}" = "true" ] && echo true || echo false)" \\`
-  const releasedEntries = `${entries.slice(0, -1)}, if $${alias} then "${slug}" else empty end]`
+  const releasedEntries = `${entries!.slice(0, -1)}, if $${alias} then "${slug}" else empty end]`
   return content.replace(
     match[0],
     `${releaseArg}\n${indentation}'${releasedEntries}')`
@@ -604,12 +605,11 @@ const updateReadme = (content: string, slug: string) => {
       /^- \*\*`websites\/(?<siteSlug>[^`]+)`\*\*.*(?:\n  .*)*/gm
     ),
   ].map(match => ({ slug: match.groups?.siteSlug ?? "", text: match[0] }))
-  if (!entries.some(entry => entry.slug === slug)) {
-    entries.push({
-      slug,
-      text: `- **\`websites/${slug}\`** - Astro site, deployed to Cloudflare Workers.`,
-    })
-  }
+  if (entries.some(entry => entry.slug === slug)) throw alreadyRegistered(slug)
+  entries.push({
+    slug,
+    text: `- **\`websites/${slug}\`** - Astro site, deployed to Cloudflare Workers.`,
+  })
   entries.sort((a, b) => a.slug.localeCompare(b.slug))
   const replacement = `${heading}\n\n${entries.map(entry => entry.text).join("\n")}\n`
   return `${content.slice(0, start)}${replacement}${content.slice(end)}`
@@ -624,44 +624,42 @@ const createWebsite = async (root: string, rawOptions: WebsiteOptions) => {
     )
   }
 
-  const releaseConfig = await readExisting(root, ["release-please-config.json"])
-  const manifest = await readExisting(root, [".release-please-manifest.json"])
-  const registrationKey = `websites/${options.slug}`
+  const releaseConfig = await readRoot(root, "release-please-config.json")
+  const manifest = await readRoot(root, ".release-please-manifest.json")
   const manifestEntries = JSON.parse(manifest.content) as Record<string, string>
   if (
     registeredWebsiteSlugs(releaseConfig.content).includes(options.slug) ||
-    Object.hasOwn(manifestEntries, registrationKey)
-  ) {
-    throw new Error(
-      `Website ${registrationKey} is already registered without a site directory. Resolve the stale release registration first.`
-    )
-  }
-  const ciWorkflow = await readExisting(root, [
-    ".github/workflows/main.yml",
-    ".github-workflow-main.yml",
-  ])
-  const manualWorkflow = await readExisting(root, [
-    ".github/workflows/deploy-manual.yml",
-    ".github-workflow-manual.yml",
-  ])
-  const readme = await readExisting(root, ["README.md"])
-  const releaseWorkflow = await readExisting(root, [
-    ".github/workflows/release.yml",
-    ".github-workflow-release.yml",
-  ])
-  ensureUniqueEnvironmentVariable(options.slug, releaseConfig.content)
-  const envVariable = envVarNameForSlug(options.slug)
+    Object.hasOwn(manifestEntries, `websites/${options.slug}`)
+  )
+    throw alreadyRegistered(options.slug)
+  await ensureUniqueWorkerName(root, options.slug)
+  const [
+    manualWorkflow,
+    cleanupWorkflow,
+    releaseWorkflow,
+    readme,
+    siteConfig,
+    deployScript,
+  ] = await Promise.all(
+    [
+      ".github/workflows/deploy-manual.yml",
+      ".github/workflows/pr-preview-cleanup.yml",
+      ".github/workflows/release.yml",
+      "README.md",
+      "scripts/site-config.ts",
+      "scripts/deploy.ts",
+    ].map(path => readRoot(root, path))
+  )
 
+  // Every registration is computed before anything is written, so a slug
+  // already present in any of them leaves the repository untouched.
   const writes: [string, string][] = [
     [join(siteRoot, "package.json"), renderPackageJson(options)],
+    [join(siteRoot, "config.json"), renderConfig(options)],
     [join(siteRoot, "moon.yml"), renderMoon(options)],
     [join(siteRoot, "astro.config.js"), renderAstroConfig(options)],
     [join(siteRoot, "tsconfig.json"), renderTsConfig(options)],
     [join(siteRoot, "wrangler.json"), renderWrangler(options)],
-    [
-      join(siteRoot, ".env.example"),
-      "SITE_URL=\nIMAGES_BASE_URL=\nPUBLIC_GOOGLE_ANALYTICS_ID=\nPUBLIC_GOOGLE_ADS_CONVERSION_ID=\nPUBLIC_GOOGLE_ADS_CONVERSION_LABEL=\nENABLE_PARTYTOWN=false\n",
-    ],
     [join(siteRoot, "src/styles/global.css"), renderGlobalCss(options)],
     [join(siteRoot, "src/layouts/Layout.astro"), renderLayout(options)],
     [join(siteRoot, "src/pages/index.astro"), renderIndex(options)],
@@ -672,22 +670,24 @@ const createWebsite = async (root: string, rawOptions: WebsiteOptions) => {
       updateReleaseConfig(releaseConfig.content, options.slug),
     ],
     [manifest.path, updateManifest(manifest.content, options.slug)],
-    [ciWorkflow.path, insertEnvVar(ciWorkflow.content, envVariable)],
     [
-      manualWorkflow.path,
-      updateManualTargets(
-        insertEnvVar(manualWorkflow.content, envVariable),
-        options.slug
-      ),
+      manualWorkflow!.path,
+      updateManualTargets(manualWorkflow!.content, options.slug),
     ],
     [
-      releaseWorkflow.path,
-      insertEnvVar(
-        updateReleaseWorkflow(releaseWorkflow.content, options.slug),
-        envVariable
-      ),
+      cleanupWorkflow!.path,
+      updateCleanupMatrix(cleanupWorkflow!.content, options.slug),
     ],
-    [readme.path, updateReadme(readme.content, options.slug)],
+    [
+      releaseWorkflow!.path,
+      updateReleaseWorkflow(releaseWorkflow!.content, options.slug),
+    ],
+    [readme!.path, updateReadme(readme!.content, options.slug)],
+    [siteConfig!.path, updateSiteIds(siteConfig!.content, options.slug)],
+    [
+      deployScript!.path,
+      updateCustomDomains(deployScript!.content, options.slug),
+    ],
   ]
 
   const paths = writes.map(([path]) => relative(root, path))
@@ -735,7 +735,7 @@ if (import.meta.main) {
   try {
     const root = join(import.meta.dir, "..")
     const writes = await createWebsite(root, {
-      slug: args.slug,
+      slug: `${args.slug}`,
       title: args.title,
       description: args.description,
       font: args.font,
@@ -752,5 +752,5 @@ if (import.meta.main) {
   }
 }
 
-export { createWebsite, envVarNameForSlug, validateSlug }
+export { createWebsite, validateSlug }
 export type { WebsiteOptions }

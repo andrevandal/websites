@@ -52,8 +52,11 @@ moon run transportugal:preview
 ## Environment variables
 
 Configured in `.env.example`: `IMAGES_BASE_URL`, `PUBLIC_GOOGLE_ANALYTICS_ID`,
-`PUBLIC_GOOGLE_ADS_CONVERSION_ID`, `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL`. The
-canonical site URL is the `CANONICAL_SITE_URL` constant in `astro.config.js`.
+`PUBLIC_GOOGLE_ADS_CONVERSION_ID`, `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL`, and
+`ENABLE_PARTYTOWN` (Gtag loads through Partytown only when it is `true`).
+Deployed values come from `config.json` for the Stage and are read at request
+time through `getSecret`. The canonical site URL is the `CANONICAL_SITE_URL`
+constant in `astro.config.js`.
 
 ## Icons
 
@@ -84,12 +87,8 @@ frames per the project's design spec
 
 ## Deployment
 
-Cloudflare Workers, matching the `vandallabs`/`clinicamauricioaraujo.com.br`
-naming convention (production domain TBD — not yet provisioned in the
-Cloudflare dashboard).
-
-```sh
-bun scripts/deploy.ts transportugal --env preview --pr 123 --no-dry-run
-bun scripts/deploy.ts transportugal --env staging --no-dry-run
-bun scripts/deploy.ts transportugal --env production --no-dry-run
-```
+Cloudflare Workers, one persistent Worker `transportugal`, like
+`vandallabs`/`clinicamauricioaraujo.com.br` (production domain TBD, not yet
+provisioned in the Cloudflare dashboard). See `websites/vandallabs/README.md`
+for how pull requests get Workers Previews and how releases promote the staging
+build.

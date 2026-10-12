@@ -64,16 +64,17 @@ The dev server defaults to Astro's local port. If another server is already runn
 
 Configured in `.env.example`:
 
-| Variable                             | Purpose                                   |
-| ------------------------------------ | ----------------------------------------- |
-| `PUBLIC_GOOGLE_ANALYTICS_ID`         | Optional Google Analytics measurement id. |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_ID`    | Optional Google Ads conversion id.        |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional Google Ads conversion label.     |
+| Variable                             | Purpose                                              |
+| ------------------------------------ | ---------------------------------------------------- |
+| `PUBLIC_GOOGLE_ANALYTICS_ID`         | Optional Google Analytics measurement id.            |
+| `PUBLIC_GOOGLE_ADS_CONVERSION_ID`    | Optional Google Ads conversion id.                   |
+| `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional Google Ads conversion label.                |
+| `ENABLE_PARTYTOWN`                   | Loads Gtag through Partytown only when it is `true`. |
 
-CI reads the non-secret values from `config.json` for the requested Stage before
-the build. The same values are written to the deployed Worker's `wrangler.json`
-`vars`. Store a sensitive value only on the Worker with `wrangler secret put`;
-do not add it to `config.json`.
+CI reads the non-secret values from `config.json` for the requested Stage and
+writes them to the deployed Worker's `wrangler.json` `vars`. The layout reads
+them at request time through `getSecret`. Store a sensitive value only on the
+Worker with `wrangler secret put`; do not add it to `config.json`.
 
 ## Icons
 
@@ -116,23 +117,33 @@ Cloudflare custom domains are managed in the Cloudflare dashboard, not in `wrang
 - compatibility flags/date
 - static assets directory
 
-The root deploy script provisions KV namespaces and deploys Workers by name:
+CI runs the root deploy script; every Stage is the one `vandallabs` Worker:
 
 ```sh
-bun scripts/deploy.ts vandallabs --env preview --pr 123 --no-dry-run
-bun scripts/deploy.ts vandallabs --env staging --no-dry-run
-bun scripts/deploy.ts vandallabs --env production --no-dry-run
-bun scripts/deploy.ts cleanup vandallabs --pr 123 --no-dry-run
+# pull request: Workers Preview pr-123
+bun scripts/deploy.ts preview vandallabs --pr 123
+bun scripts/deploy.ts cleanup vandallabs --pr 123
+# push to main: staging Version from the build in dist/, aliased staging
+bun scripts/deploy.ts version-upload vandallabs --stage staging --artifact-dir websites/vandallabs/dist --preview-alias staging
+# release: same build, production config, then all traffic
+bun scripts/deploy.ts version-upload vandallabs --stage production --artifact-dir <restored dist>
+bun scripts/deploy.ts version-deploy vandallabs --version-id <uuid>
 ```
 
-Naming convention:
+| Stage      | Deployed as                                                       | KV namespace        |
+| ---------- | ----------------------------------------------------------------- | ------------------- |
+| PR preview | Workers Preview `pr-<N>` of `vandallabs`                          | `vandallabs-pr-<N>` |
+| Staging    | Uploaded Version of `vandallabs`, Version Preview alias `staging` | `vandallabs`        |
+| Production | A production-configured Version of `vandallabs` at 100% traffic   | `vandallabs`        |
 
-| Environment | Worker and KV namespace name |
-| ----------- | ---------------------------- |
-| PR preview  | `vandallabs-pr-<PR_NUMBER>`  |
-| Staging     | `vandallabs-staging`         |
-| Production  | `vandallabs`                 |
+No Stage creates a separately named Worker. Staging is a Version Preview
+(`staging-vandallabs.<subdomain>.workers.dev`), never deployed. A release
+re-uploads the identical staging build with production config and deploys that
+new Version. It never deploys the staging Version itself and never rebuilds.
+A Preview gets its own `SESSION` namespace because Workers Previews do not
+provision KV. Staging and production share the Worker's namespace.
 
-All deployments bind the Cloudflare KV namespace as `SESSION`. The namespace resource itself is separated by Worker name, not by binding name.
-
-Manual deploys support only `staging` and `production`. PR previews are created only from pull request CI and cleaned up when the PR closes.
+Manual website deploys (`deploy-manual.yml`) only promote an existing Main CI
+build (`artifact-sha`) to production. Previews are created only from
+same-repository pull request CI and deleted, with their namespace, when the PR
+closes.

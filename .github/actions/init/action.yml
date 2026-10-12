@@ -8,7 +8,18 @@ runs:
       with:
         auto-install: true
         cache-base: main
-        cache-version: ${{ hashFiles('.prototools') }}
+        cache-version: v2-${{ hashFiles('.prototools') }}
+
+    # proto lists a tool as installed from its manifest even when an
+    # interrupted unpack left the executable missing (proto::locate::
+    # missing_executable), and auto-install never repairs that. Reinstall
+    # any pinned tool whose binary is absent.
+    - name: Verify toolchain
+      shell: bash
+      run: |
+        for tool in node bun moon; do
+          proto bin "$tool" > /dev/null 2>&1 || proto install "$tool" --force
+        done
 
     - name: Cache Bun dependencies
       uses: actions/cache@v6

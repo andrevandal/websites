@@ -19,19 +19,36 @@ Client websites and a shared image service. TypeScript monorepo managed with moo
 ### Packages
 
 - **`packages/sun-ui`** — Shared UI components (used by the Astro websites).
+- **`packages/robots-sitemap`** - Astro integration every website registers
+  as `robotsSitemap({ canonicalHost: CANONICAL_SITE_URL })`. It injects
+  `/robots.txt` and `/sitemap-index.xml` as request-time endpoints. Robots
+  allows crawling only when the request origin is the canonical host (the
+  site's `config.json` `canonicalHost`), so Workers Preview origins are
+  disallowed. Both endpoints always name canonical URLs. The sitemap lists the
+  site's static pages.
 
 ## Deploy environments
 
 CI (`.github/workflows/main.yml`) runs `moon ci` on every push/PR — only the
 projects a change actually affects are linted, typechecked, and tested — then
 
-- `main` branch → **staging**
-- pull requests → **preview**
+- `main` branch → each affected website is built once. The build is saved as
+  artifact `website-dist-<site>-<sha>` (with its content digest) and uploaded
+  as a **staging Version** of the site's one persistent Worker, under Version
+  Preview alias `staging` (`https://staging-<worker>.<subdomain>.workers.dev`).
+  Staging is never deployed to live traffic.
+- same-repository pull requests → a **Workers Preview** named `pr-<N>`,
+  scoped to each affected site's one persistent Worker (`wrangler preview`).
+  Closing the PR deletes the Preview and its `<worker>-pr-<N>` KV namespace.
+  Fork pull requests get checks but no Preview (no Cloudflare credentials).
 - `apps/images` deploys via a reusable workflow (`container.yml`) that builds
   a Docker image, pushes it to GHCR, and triggers a Coolify webhook
   (staging on push to `main`, production via `release.yml`'s dispatch —
   pull requests never trigger a container build, unlike the websites below).
-- The websites deploy straight to Cloudflare Workers via `wrangler deploy`.
+- On a website release, `release.yml` waits for that commit's Main CI and
+  downloads its saved build. It checks the digest, uploads the identical bytes
+  as a new Version with production config, and runs
+  `wrangler versions deploy <id>@100%`. Production never rebuilds.
 
 ## Setup
 
@@ -80,21 +97,24 @@ Make sure you have the AWS CLI installed and configured with the necessary crede
 ## Common commands
 
 - `bun moon sync projects` or `bun sync` - Sync all project dependencies and configurations. Specially typescript references.
-- `bun run deploy <target> --env <preview|staging|production>` - Deploy a single app/website target manually.
+- `bun run deploy <preview|cleanup|version-upload|version-deploy|digest> ...` - The website deploy commands CI runs; `bun run deploy --help` lists their options.
 
 ### Bootstrap a website
 
 ```sh
-bun run website:new acme-consulting --title "Acme Consulting"
+bun run website:new acme-consulting.com.br --title "Acme Consulting"
 bun install
-moon run acme-consulting:check
-moon run acme-consulting:typecheck
-moon run acme-consulting:build
+moon run acme-consulting.com.br:check
+moon run acme-consulting.com.br:typecheck
+moon run acme-consulting.com.br:build
 ```
 
-The generator registers release, CI environment passthrough, and manual deploy
-selection. It does not provision a Cloudflare custom domain. Add that only
-after its domain exists in Cloudflare.
+The generator writes the site, its `config.json` (canonical host
+`https://<slug>` and empty Stage vars), and every registration the deploy and
+release tooling enumerates: `SITE_IDS`, `CUSTOM_DOMAINS`, the Preview cleanup
+matrix, the manual-deploy choice, the release workflow, release-please, and the
+website list above. It does not provision the Cloudflare Custom Domain; bind it
+in the dashboard before the site's first release.
 
 ## Package Management
 

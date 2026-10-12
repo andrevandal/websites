@@ -1,37 +1,59 @@
-﻿name: "Deploy"
-description: "Checkout code, install Node.js and bun, then install dependencies"
+name: "Deploy"
+description: "Build a website once, then create its Workers Preview (pull requests) or upload its staging Version and save the build for production promotion"
 
 inputs:
-  env:
-    description: "The environment to deploy to (ex: preview [default], staging, production)"
-    required: false
+  mode:
+    description: "preview (pull request) or staging (push to main)"
+    required: true
   target:
-    description: "The app or website to deploy (ex: clinicamauricioaraujo.com.br)"
+    description: "The website to deploy (ex: clinicamauricioaraujo.com.br)"
     required: true
   pr:
-    description: "Pull request number (required when env=preview)"
+    description: "Pull request number (required when mode=preview; names Preview pr-<N>)"
     required: false
 
 outputs:
   url:
-    description: "The deployed worker's URL (workers.dev, or its production custom domain when one is configured)"
-    value: ${{ steps.deploy.outputs.deploy-url }}
-  custom-domain:
-    description: "The worker's production custom domain, when one is configured (production env only)"
-    value: ${{ steps.deploy.outputs.custom-domain }}
+    description: "The Workers Preview URL, or the staging Version Preview alias URL"
+    value: ${{ steps.preview.outputs.deploy-url || steps.staging.outputs.deploy-url }}
 
 runs:
   using: "composite"
   steps:
-    - name: Prepare build environment
-      shell: bash
-      run: bun run prepare-build-env ${{ inputs.target }} --env ${{ inputs.env }}
-
+    # The build reads no Stage values; every Stage's config is attached at
+    # upload time, so the same dist can become staging and production.
     - name: Build
       shell: bash
       run: moon run ${{ inputs.target }}:build
 
-    - name: Deploy
-      id: deploy
+    - name: Create Workers Preview
+      id: preview
+      if: inputs.mode == 'preview'
       shell: bash
-      run: bun run deploy ${{ inputs.target }} --env ${{ inputs.env }} ${{ inputs.pr && format('--pr {0}', inputs.pr) || '' }} --no-dry-run
+      run: bun scripts/deploy.ts preview ${{ inputs.target }} --pr ${{ inputs.pr }}
+
+    - name: Record build digest
+      if: inputs.mode == 'staging'
+      shell: bash
+      run: bun scripts/deploy.ts digest websites/${{ inputs.target }}/dist > websites/${{ inputs.target }}/dist.sha256
+
+    - name: Save build for production promotion
+      if: inputs.mode == 'staging'
+      uses: actions/upload-artifact@v4
+      with:
+        name: website-dist-${{ inputs.target }}-${{ github.sha }}
+        path: |
+          websites/${{ inputs.target }}/dist
+          websites/${{ inputs.target }}/dist.sha256
+        include-hidden-files: true
+        if-no-files-found: error
+
+    - name: Upload staging Version
+      id: staging
+      if: inputs.mode == 'staging'
+      shell: bash
+      run: >-
+        bun scripts/deploy.ts version-upload ${{ inputs.target }}
+        --stage staging
+        --artifact-dir websites/${{ inputs.target }}/dist
+        --preview-alias staging

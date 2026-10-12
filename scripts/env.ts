@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto"
 import { resolve } from "node:path"
 import { resolveSiteConfig } from "./site-config"
 import type { Stage } from "./site-config"
@@ -21,14 +20,6 @@ const resolveTargetEnvVars = (
 ): Record<string, string> =>
   resolveSiteConfig(extractSiteIdFromLocation(siteLocation), stage).vars
 
-const formatGitHubEnvironmentFile = (vars: Record<string, string>): string =>
-  Object.entries(vars)
-    .map(([key, value]) => {
-      const delimiter = `ghadelim_${randomUUID()}`
-      return `${key}<<${delimiter}\n${value}\n${delimiter}`
-    })
-    .join("\n") + (Object.keys(vars).length > 0 ? "\n" : "")
-
 const resolveDbUrl = (url: string | undefined): string | undefined => {
   if (!url) return undefined
 
@@ -39,9 +30,4 @@ const resolveDbUrl = (url: string | undefined): string | undefined => {
   return url
 }
 
-export {
-  formatGitHubEnvironmentFile,
-  repoRoot,
-  resolveDbUrl,
-  resolveTargetEnvVars,
-}
+export { repoRoot, resolveDbUrl, resolveTargetEnvVars }
