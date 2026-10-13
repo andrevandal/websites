@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/andrevandal/websites/compare/images-app-v1.1.1...images-app-v1.2.0) (2026-10-13)
+
+
+### Features
+
+* **images:** add /healthy/deep with an image fetch and decode check
+
+
+### Bug Fixes
+
+* **images:** surface a banned proxy in health checks, add /healthy/deep
+
 ## [1.1.1](https://github.com/andrevandal/websites/compare/images-app-v1.1.0...images-app-v1.1.1) (2026-10-13)
 
 

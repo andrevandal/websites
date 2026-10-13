@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/andrevandal/websites/compare/brunabraz-v1.4.0...brunabraz-v1.4.1) (2026-10-13)
+
+
+### Bug Fixes
+
+* **websites:** route image proxies by deployment stage
+* **websites:** route image proxies by deployment stage
+
 ## [1.4.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.3.0...brunabraz-v1.4.0) (2026-10-13)
 
 

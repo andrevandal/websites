@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.5.0](https://github.com/andrevandal/websites/compare/v1.4.0...v1.5.0) (2026-10-13)
+
+
+### Features
+
+* **images:** add /healthy/deep with an image fetch and decode check
+
+
+### Bug Fixes
+
+* **ci:** read MOON_REMOTE_HOST from secrets, not vars
+* **ci:** read MOON_REMOTE_HOST from secrets, not vars
+* **ci:** scope the images container concurrency group per environment
+* **ci:** scope the images container concurrency group per environment
+* **ci:** use POST for the Coolify deployment webhook
+* **ci:** use POST for the Coolify deployment webhook
+* **images:** surface a banned proxy in health checks, add /healthy/deep
+* **websites:** route image proxies by deployment stage
+* **websites:** route image proxies by deployment stage
+
 ## [1.4.0](https://github.com/andrevandal/websites/compare/v1.3.0...v1.4.0) (2026-10-13)
 
 
