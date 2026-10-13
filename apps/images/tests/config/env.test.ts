@@ -28,6 +28,7 @@ const CONFIG_KEYS = [
   "RATE_LIMIT_MAX",
   "TRUST_CLOUDFLARE_IPS",
   "TRUSTED_PROXY_CIDRS",
+  "HEALTH_IMAGE_URL",
 ]
 
 const loadFreshEnvModule = async (env: Record<string, string | undefined>) => {
@@ -149,6 +150,30 @@ describe("config/env: bot defense", () => {
     } finally {
       // the import threw before loadFreshEnvModule could hand back cleanup()
       delete process.env.TRUSTED_PROXY_CIDRS
+    }
+  })
+
+  test("trims HEALTH_IMAGE_URL and defaults it to empty", async () => {
+    const empty = await loadFreshEnvModule({})
+    const defaultUrl = empty.loadConfig().healthImageUrl
+    empty.cleanup()
+    const set = await loadFreshEnvModule({
+      HEALTH_IMAGE_URL: " https://files.example/a.png ",
+    })
+    const url = set.loadConfig().healthImageUrl
+    set.cleanup()
+
+    expect(defaultUrl).toBe("")
+    expect(url).toBe("https://files.example/a.png")
+  })
+
+  test("rejects a malformed HEALTH_IMAGE_URL at startup", async () => {
+    try {
+      await expect(
+        loadFreshEnvModule({ HEALTH_IMAGE_URL: "not a url" })
+      ).rejects.toThrow("Invalid HEALTH_IMAGE_URL")
+    } finally {
+      delete process.env.HEALTH_IMAGE_URL
     }
   })
 })

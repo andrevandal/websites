@@ -77,4 +77,11 @@ const blocklistMiddleware: MiddlewareHandler = async (c, next) => {
   return c.json({ status: 404, error: "Not Found" }, 404)
 }
 
-export { banGateMiddleware, blocklistMiddleware, rateLimitMiddleware }
+const getActiveBanIps = (): string[] => banTracker.getActiveBanIps()
+
+export {
+  banGateMiddleware,
+  blocklistMiddleware,
+  getActiveBanIps,
+  rateLimitMiddleware,
+}

@@ -11,7 +11,7 @@ const { member, ...rest } = Astro.props
 ---
 
 <ImageCard
-  image={getImageUrl(member.image, "w_430,h_400,fit_cover")}
+  image={getImageUrl(member.image, "w_430,h_400,mode_crop")}
   alt={member.name}
   aspectClass="aspect-[4/4.3]"
   {...rest}

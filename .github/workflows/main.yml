@@ -52,13 +52,13 @@ jobs:
           bun scripts/coverage-allowlist-guard.ts
 
       # Writes moon's `remote:` block into this runner's ephemeral checkout.
-      # Never committed. Fork PRs can read repository variables
-      # but do not receive repository secrets, so test all three values before
+      # Never committed. Fork PRs receive no repository secrets, so test
+      # all three values before
       # invoking the strict config writer; missing credentials degrade to local
       # execution instead of breaking the PR.
       - name: Configure remote cache
         env:
-          MOON_REMOTE_HOST: ${{ vars.MOON_REMOTE_HOST }}
+          MOON_REMOTE_HOST: ${{ secrets.MOON_REMOTE_HOST }}
           BAZEL_REMOTE_BASIC_AUTH_USERNAME: ${{ secrets.BAZEL_REMOTE_BASIC_AUTH_USERNAME }}
           BAZEL_REMOTE_BASIC_AUTH_PASSWORD: ${{ secrets.BAZEL_REMOTE_BASIC_AUTH_PASSWORD }}
         run: |

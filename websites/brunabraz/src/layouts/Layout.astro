@@ -6,15 +6,48 @@ import TheFooter from "@/components/TheFooter.astro"
 
 import { Font } from "astro:assets"
 import type { ComponentProps } from "astro/types"
+import { getSecret } from "astro:env/server"
+import { runtimeEnv } from "@vandal-websites/sun-ui/astro/runtime-env"
+import { buildImageUrl } from "@vandal-websites/sun-ui/astro-image-service"
 
 type Props = ComponentProps<typeof SunLayout> & {
   noCallToAction?: boolean
 }
 
 const { image = "", noCallToAction, ...props } = Astro.props
+const imageServiceBaseUrl = runtimeEnv(getSecret, "IMAGES_BASE_URL")
+const patternSource = "https://files.vandal.services/brunabraz/images"
+const waveSource = `${patternSource}/pattern-wave.png`
+const sunSource = `${patternSource}/pattern-sun.png`
+const waveUrl = imageServiceBaseUrl
+  ? buildImageUrl(imageServiceBaseUrl, {
+      src: waveSource,
+      width: 100,
+      quality: 90,
+      format: "auto",
+    })
+  : waveSource
+const sunUrl = imageServiceBaseUrl
+  ? buildImageUrl(imageServiceBaseUrl, {
+      src: sunSource,
+      width: 236,
+      height: 304,
+      quality: 90,
+      format: "auto",
+    })
+  : sunSource
 ---
 
-<SunLayout image={image} lang="pt-BR" class="no-js" {...props}>
+<SunLayout
+  image={image}
+  lang="pt-BR"
+  class="no-js"
+  {...props}
+  style={{
+    "--pattern-wave-image": `url("${waveUrl}")`,
+    "--pattern-sun-image": `url("${sunUrl}")`,
+  }}
+>
   <Fragment slot="close-head">
     <script is:inline>
       document.documentElement.classList.replace("no-js", "js")

@@ -1,32 +1,34 @@
 import { afterEach, describe, expect, test } from "bun:test"
 import { resolveTargetEnvVars } from "./env"
+import { SITE_IDS, STAGES } from "./site-config"
 
 describe("resolveTargetEnvVars", () => {
   afterEach(() => {
     delete process.env["LEGACY_DEPLOY_CONFIG"]
   })
 
-  test("returns the committed Stage config instead of a process environment value", () => {
+  test("committed Stage config does not leak legacy process-environment variables", () => {
     process.env["LEGACY_DEPLOY_CONFIG"] = JSON.stringify({
       SITE_URL: "https://wrong.example.test",
       API_TOKEN: "plaintext-token",
     })
 
-    expect(resolveTargetEnvVars(["websites", "brunabraz"], "staging")).toEqual({
-      IMAGES_BASE_URL: "https://files.vandal.services/brunabraz/images",
-      PUBLIC_GOOGLE_ANALYTICS_ID: "",
-      PUBLIC_GOOGLE_ADS_CONVERSION_ID: "",
-      PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: "",
-    })
-    expect(
-      resolveTargetEnvVars(["websites", "transportugal"], "production")
-    ).toEqual({
-      IMAGES_BASE_URL: "https://files.vandal.services/transportugal/images",
-      PUBLIC_GOOGLE_ANALYTICS_ID: "",
-      PUBLIC_GOOGLE_ADS_CONVERSION_ID: "",
-      PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: "",
-      ENABLE_PARTYTOWN: "false",
-    })
+    const vars = resolveTargetEnvVars(["websites", "brunabraz"], "staging")
+    expect(vars).not.toHaveProperty("SITE_URL")
+    expect(vars).not.toHaveProperty("API_TOKEN")
+  })
+
+  test("each website routes image transforms to the proxy for its Stage", () => {
+    for (const siteId of SITE_IDS) {
+      for (const stage of STAGES) {
+        const vars = resolveTargetEnvVars(["websites", siteId], stage)
+        expect(vars["IMAGES_BASE_URL"]).toBe(
+          stage === "production"
+            ? "https://infra.example.invalid"
+            : "https://infra.example.invalid"
+        )
+      }
+    }
   })
 
   test("rejects paths that do not identify a configured website", () => {

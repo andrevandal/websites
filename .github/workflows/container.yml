@@ -20,8 +20,11 @@ permissions:
   contents: read
   packages: write
 
+# Keyed by environment too: Main CI's staging build and release.yml's
+# production dispatch both run on refs/heads/main, and a shared group let the
+# staging run cancel the production deploy.
 concurrency:
-  group: images-container-${{ github.event.pull_request.number || github.ref }}
+  group: images-container-${{ inputs.environment }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -71,10 +74,18 @@ jobs:
       # in production ("No space left on device" mid-build) -- none of the
       # removed toolchains are used by this job (it only runs Docker Buildx,
       # no local Bun/Node build step).
+      #
+      # Only the fast, high-yield removals are kept (Android 11GiB in ~40s,
+      # .NET 5.7GiB, Haskell 3.6GiB: ~20GiB freed). `large-packages` (apt
+      # remove, ~50s for 4.5GiB) and `docker-images` (~15s for 1.9GiB) cost
+      # about a minute for ~6GiB, so they stay off.
       - name: Free disk space
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
           tool-cache: false
+          large-packages: false
+          docker-images: false
+          swap-storage: false
 
       - name: Checkout code
         uses: actions/checkout@v7
@@ -145,7 +156,7 @@ jobs:
           cache-from: type=gha,scope=${{ env.BUILD_CACHE_SCOPE }}
           cache-to: type=gha,mode=max,scope=${{ env.BUILD_CACHE_SCOPE }}
           secrets: |
-            moon_remote_host=${{ vars.MOON_REMOTE_HOST }}
+            moon_remote_host=${{ secrets.MOON_REMOTE_HOST }}
             moon_remote_user=${{ secrets.BAZEL_REMOTE_BASIC_AUTH_USERNAME }}
             moon_remote_pass=${{ secrets.BAZEL_REMOTE_BASIC_AUTH_PASSWORD }}
 
@@ -169,7 +180,7 @@ jobs:
             exit 1
           fi
 
-          http_status=$(curl -sS -X GET "$WEBHOOK_URL" \
+          http_status=$(curl -sS -X POST "$WEBHOOK_URL" \
             -H "Authorization: Bearer $COOLIFY_TOKEN" \
             -H "X-Coolify-Deploy-Bypass: $CF_BYPASS_SECRET" \
             -o /tmp/coolify-response.json \

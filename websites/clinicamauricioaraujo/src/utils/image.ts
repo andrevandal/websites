@@ -1,4 +1,6 @@
-﻿const IPX_ENDPOINT = "https://infra.example.invalid"
+﻿import { getSecret } from "astro:env/server"
+import { runtimeEnv } from "@vandal-websites/sun-ui/astro/runtime-env"
+
 const BUCKET_ENDPOINT = "https://files.vandal.services"
 const BUCKET_NAME = "clinicamauricioaraujo"
 
@@ -10,13 +12,17 @@ const screens = {
 } as Record<string, string>
 
 type Sizes = Record<string, string>
-// https://infra.example.invalid/_/https://files.vandal.services/clinicamauricioaraujo/images/footer.png
-export const getImageUrl = (imagePath: string, transform = "_") =>
-  `${IPX_ENDPOINT}/${transform}/${BUCKET_ENDPOINT}/${BUCKET_NAME}/${imagePath}`.replace(
+export const getImageUrl = (imagePath: string, transform = "_") => {
+  const source = `${BUCKET_ENDPOINT}/${BUCKET_NAME}/${imagePath}`.replace(
     // oxlint-disable-next-line prefer-named-capture-group
     /([^:]\/)\/+/g,
     "$1"
   )
+  const base = runtimeEnv(getSecret, "IMAGES_BASE_URL")
+  return base
+    ? `${base.replace(/\/+$/, "")}/${transform}/${encodeURIComponent(source)}`
+    : source
+}
 
 export const parseSizes = (sizes: string) => {
   const sizePairs = sizes.split(" ")

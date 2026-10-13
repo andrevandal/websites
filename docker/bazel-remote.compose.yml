@@ -15,7 +15,7 @@
 # here — created directly on the host, not derived from this repo.
 #
 # GitHub Actions secrets (BAZEL_REMOTE_BASIC_AUTH_USERNAME/PASSWORD) and
-# the MOON_REMOTE_HOST repository variable matching this htpasswd entry
+# the MOON_REMOTE_HOST secret matching this htpasswd entry
 # are set directly in CI.
 services:
   bazel-cache:

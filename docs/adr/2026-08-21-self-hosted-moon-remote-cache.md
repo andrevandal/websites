@@ -27,8 +27,8 @@ Decision:
   immediately before moon runs - on the CI runner and inside the Docker
   builder stage, never committed, never pushed.
 - The GitHub Actions secrets (`BAZEL_REMOTE_BASIC_AUTH_USERNAME`/
-  `BAZEL_REMOTE_BASIC_AUTH_PASSWORD`) and the `MOON_REMOTE_HOST`
-  repository variable are set directly in CI by the repo owner, matching
+  `BAZEL_REMOTE_BASIC_AUTH_PASSWORD`) and `MOON_REMOTE_HOST`
+  are set directly in CI by the repo owner, matching
   the `.htpasswd` entry created directly on the VPS - neither this repo
   nor this ADR's author ever handled the raw credential.
 - Build-time delivery of that credential to `docker build` is a BuildKit
@@ -68,6 +68,6 @@ Consequences:
   running a bigger volume on the shared VPS. Revisit the size if hit
   rate proves too low in practice (the CI summary's cache hit/miss
   counts give the real data to decide with).
-- If the cache proves unreliable, unsetting the `MOON_REMOTE_HOST`
-  variable disables it everywhere with no code change, and reverting
+- If the cache proves unreliable, deleting the `MOON_REMOTE_HOST`
+  secret disables it everywhere with no code change, and reverting
   the cache work leaves the affected-scoping fully standing.

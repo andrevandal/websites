@@ -46,10 +46,38 @@ projects a change actually affects are linted, typechecked, and tested — then
   a Docker image, pushes it to GHCR, and triggers a Coolify webhook
   (staging on push to `main`, production via `release.yml`'s dispatch —
   pull requests never trigger a container build, unlike the websites below).
+  The trigger sends an authenticated `POST` to `COOLIFY_IMAGES_WEBHOOK`,
+  preserving its `uuid`/`force` query parameters and Cloudflare bypass header.
+  Coolify rejects the former `GET` request with HTTP 405.
 - On a website release, `release.yml` waits for that commit's Main CI and
   downloads its saved build. It checks the digest, uploads the identical bytes
   as a new Version with production config, and runs
   `wrangler versions deploy <id>@100%`. Production never rebuilds.
+
+### Website image routing
+
+`websites/<site>/config.json` sets `IMAGES_BASE_URL` at Worker request time.
+It is the transform proxy, not an asset bucket:
+
+| Stage               | `IMAGES_BASE_URL`                        |
+| ------------------- | ---------------------------------------- |
+| Production          | `https://infra.example.invalid`         |
+| Preview and staging | `https://infra.example.invalid` |
+
+Image sources remain in each site's own `files.vandal.services` bucket:
+
+| Website                 | Source bucket                     |
+| ----------------------- | --------------------------------- |
+| Bruna Braz              | `brunabraz`                       |
+| Transportugal           | `transportugal`                   |
+| Bellypao                | `bellypao.com.br`                 |
+| Clinica Mauricio Araujo | `clinicamauricioaraujo`           |
+| Vandallabs              | No remote image sources currently |
+
+The proxy receives the full source URL after the transform modifiers, URL-encoded.
+Local development with an unset `IMAGES_BASE_URL` uses raw source images.
+Bruna's background patterns and the clinic's image helper use the same runtime
+proxy variable as the shared image components. No bucket names or objects change.
 
 ## Setup
 

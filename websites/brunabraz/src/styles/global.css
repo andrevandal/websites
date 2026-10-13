@@ -235,11 +235,11 @@
 }
 
 @utility bg-pattern-wave {
-  background-image: url("https://infra.example.invalid/f_auto,q_90,w_100_63/https://files.vandal.services/brunabraz/images/pattern-wave.png");
+  background-image: var(--pattern-wave-image);
   background-size: 100px 63px;
 }
 @utility bg-pattern-sun {
-  background-image: url("https://infra.example.invalid/f_auto,q_90,w_236,h_304/https://files.vandal.services/brunabraz/images/pattern-sun.png");
+  background-image: var(--pattern-sun-image);
   background-size: 236px 304px;
 }
 @keyframes fade-scale-up {

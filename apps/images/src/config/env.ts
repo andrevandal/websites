@@ -29,6 +29,7 @@ type ImagesConfig = {
   rateLimitMax: number
   trustCloudflareIps: boolean
   trustedProxyCidrs: string[]
+  healthImageUrl: string
 }
 
 const parseBooleanString = (val: string): boolean => {
@@ -155,6 +156,15 @@ const configSchema = v.object({
     v.string(),
     v.transform(val => parseBooleanString(val))
   ),
+  healthImageUrl: v.pipe(
+    v.string(),
+    v.transform(val => {
+      const url = val.trim()
+      if (url && !URL.canParse(url))
+        throw new Error(`Invalid HEALTH_IMAGE_URL: ${url}`)
+      return url
+    })
+  ),
   trustedProxyCidrs: v.pipe(
     v.string(),
     v.transform(val => {
@@ -195,6 +205,7 @@ const loadConfig = (): ImagesConfig => {
     rateLimitMax: process.env.RATE_LIMIT_MAX || "300",
     trustCloudflareIps: process.env.TRUST_CLOUDFLARE_IPS || "true",
     trustedProxyCidrs: process.env.TRUSTED_PROXY_CIDRS || "",
+    healthImageUrl: process.env.HEALTH_IMAGE_URL || "",
   }
 
   const result = v.safeParse(configSchema, env)
@@ -231,6 +242,7 @@ const loadConfig = (): ImagesConfig => {
     rateLimitMax: result.output.rateLimitMax,
     trustCloudflareIps: result.output.trustCloudflareIps,
     trustedProxyCidrs: result.output.trustedProxyCidrs,
+    healthImageUrl: result.output.healthImageUrl,
   }
 }
 

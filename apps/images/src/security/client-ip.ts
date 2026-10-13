@@ -172,4 +172,10 @@ const getClientIp = (
   return remoteAddress
 }
 
-export { getClientIp, isCloudflareIp, isValidCidr, UNKNOWN_CLIENT_IP }
+export {
+  getClientIp,
+  isCloudflareIp,
+  isInCidrs,
+  isValidCidr,
+  UNKNOWN_CLIENT_IP,
+}

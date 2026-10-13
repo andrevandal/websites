@@ -30,8 +30,8 @@ paths to that step when they appear.
 directly on the host — HTTP REST API via Coolify's TLS-terminated
 domain, Basic Auth via `--htpasswd_file`.
 
-- Repository variable `MOON_REMOTE_HOST` — the cache base URL
-  (`https://infra.example.invalid`), no trailing slash. Unset it
+- Secret `MOON_REMOTE_HOST` — the cache base URL
+  (`https://infra.example.invalid`), no trailing slash. Delete it
   to disable the cache everywhere, instantly.
 - Secrets `BAZEL_REMOTE_BASIC_AUTH_USERNAME` /
   `BAZEL_REMOTE_BASIC_AUTH_PASSWORD` — must match the `.htpasswd` entry

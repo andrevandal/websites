@@ -60,7 +60,19 @@ tasks:
       - "/bunfig.toml"
       - "/packages/sun-ui/src/**/*"
 
+  sync:
+    command: astro sync
+    inputs:
+      - "./astro.config.js"
+      - "@globs(typescript)"
+    outputs:
+      - .astro
+    dependsOn:
+      - ^:build
+
   typecheck:
+    dependsOn:
+      - sync
     inputs:
       - "@globs(typescript)"
       - "@globs(sources)"
