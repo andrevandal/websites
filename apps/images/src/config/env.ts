@@ -1,5 +1,6 @@
 import { consola } from "consola"
 import * as v from "valibot"
+import { isValidCidr } from "../security/client-ip"
 
 type ImagesConfig = {
   httpDomains: string[]
@@ -27,6 +28,7 @@ type ImagesConfig = {
   rateLimitWindowMs: number
   rateLimitMax: number
   trustCloudflareIps: boolean
+  trustedProxyCidrs: string[]
 }
 
 const parseBooleanString = (val: string): boolean => {
@@ -153,6 +155,18 @@ const configSchema = v.object({
     v.string(),
     v.transform(val => parseBooleanString(val))
   ),
+  trustedProxyCidrs: v.pipe(
+    v.string(),
+    v.transform(val => {
+      const cidrs = val
+        .split(",")
+        .map(cidr => cidr.trim())
+        .filter(Boolean)
+      const invalid = cidrs.find(cidr => !isValidCidr(cidr))
+      if (invalid) throw new Error(`Invalid proxy CIDR: ${invalid}`)
+      return cidrs
+    })
+  ),
 })
 
 const loadConfig = (): ImagesConfig => {
@@ -180,6 +194,7 @@ const loadConfig = (): ImagesConfig => {
     rateLimitWindowMs: process.env.RATE_LIMIT_WINDOW_MS || "300000",
     rateLimitMax: process.env.RATE_LIMIT_MAX || "300",
     trustCloudflareIps: process.env.TRUST_CLOUDFLARE_IPS || "true",
+    trustedProxyCidrs: process.env.TRUSTED_PROXY_CIDRS || "",
   }
 
   const result = v.safeParse(configSchema, env)
@@ -215,6 +230,7 @@ const loadConfig = (): ImagesConfig => {
     rateLimitWindowMs: result.output.rateLimitWindowMs,
     rateLimitMax: result.output.rateLimitMax,
     trustCloudflareIps: result.output.trustCloudflareIps,
+    trustedProxyCidrs: result.output.trustedProxyCidrs,
   }
 }
 
@@ -249,6 +265,7 @@ logger.debug("resolved config", {
   rateLimitWindowMs: config.rateLimitWindowMs,
   rateLimitMax: config.rateLimitMax,
   trustCloudflareIps: config.trustCloudflareIps,
+  trustedProxyCidrs: config.trustedProxyCidrs,
 })
 
 export type { ImagesConfig }

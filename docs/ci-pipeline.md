@@ -258,3 +258,11 @@ justification in the PR. Read the number off the summary table instead of
 observing it by hand. Note that a `cached` or `cached-from-remote` row
 reports hydration time, not execution time — compare like with like, i.e. a
 `passed` row against the `passed` baseline.
+
+### Images Docker workspace (2026-10-13)
+
+`container.yml` runs `moon docker scaffold images` before the build, and
+`docker/images.Dockerfile` installs from the generated `.moon/docker/configs`
+(workspace manifests and lockfile) instead of a hand-kept `COPY` list. A new
+workspace package or website no longer breaks the frozen install (main CI
+failure on #182: `Workspace dependency "@vandal-websites/robots-sitemap" not found`).

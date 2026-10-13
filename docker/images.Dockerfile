@@ -2,12 +2,10 @@ FROM oven/bun:1.3.14-alpine AS base
 WORKDIR /app
 
 FROM base AS deps
-COPY package.json bun.lock ./
+# Pruned workspace manifests + lockfile, generated before the build by
+# `moon docker scaffold images` (see .github/workflows/container.yml).
+COPY .moon/docker/configs ./
 COPY patches ./patches
-COPY apps/images/package.json ./apps/images/package.json
-COPY packages/sun-ui/package.json ./packages/sun-ui/package.json
-COPY websites/brunabraz/package.json ./websites/brunabraz/package.json
-COPY websites/vandallabs/package.json ./websites/vandallabs/package.json
 RUN bun install --frozen-lockfile --ignore-scripts
 
 FROM base AS sharp-deps

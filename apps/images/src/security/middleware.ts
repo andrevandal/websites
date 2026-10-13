@@ -33,7 +33,11 @@ const clientIpFor = (c: Context): string =>
   getClientIp(
     rawPeerAddress(c),
     c.req.header("cf-connecting-ip"),
-    config.trustCloudflareIps
+    config.trustCloudflareIps,
+    {
+      trustedProxyCidrs: config.trustedProxyCidrs,
+      forwardedFor: c.req.header("x-forwarded-for"),
+    }
   )
 
 // Rebuilt fresh per request: hono's ipRestriction snapshots denyList at

@@ -87,6 +87,7 @@ cp .env.example .env
 | `RATE_LIMIT_WINDOW_MS` | `300000` (5m)              | Rate limiter window per client                                                                                                                                                                                                                                                       |
 | `RATE_LIMIT_MAX`       | `300`                      | Max requests per client per rate-limit window before `429`                                                                                                                                                                                                                           |
 | `TRUST_CLOUDFLARE_IPS` | `true`                     | Trust `CF-Connecting-IP` only when the raw TCP peer is a real Cloudflare edge IP — see [Bot defense](#bot-defense) below                                                                                                                                                             |
+| `TRUSTED_PROXY_CIDRS`  | _(empty)_                  | Comma-separated CIDRs of reverse proxies whose `X-Forwarded-For` is trusted to identify the visitor (needed behind Traefik/Coolify so a scanner does not get the proxy banned) - see [Bot defense](#bot-defense) below                                                               |
 
 ## Running
 
@@ -206,6 +207,8 @@ Exploit scanners routinely probe image proxies for `.git/config`, `.env`, `wp-ad
 - **Rate limiting** — `hono-rate-limiter`, `RATE_LIMIT_MAX` requests per client per `RATE_LIMIT_WINDOW_MS`, `429` past that. Independent of the ban list — this catches high-volume abuse that never touches a blocklisted path.
 
 **Client identity**: the raw TCP peer address is authoritative. `CF-Connecting-IP` is only trusted when that raw peer is itself a real Cloudflare edge IP (checked against Cloudflare's published ranges) — this matters because the service can be hit either through Cloudflare or directly at the origin; trusting the header unconditionally would let a direct request forge any IP and dodge (or frame) a ban. Set `TRUST_CLOUDFLARE_IPS=false` to always use the raw peer address instead. `/healthy` is never gated — an orchestrator health check must never be rate-limited or banned.
+
+**Behind a reverse proxy** (Traefik, Coolify): the raw peer is the proxy for every visitor, so one scanner's strikes would ban the proxy and every request would get `403 Forbidden` for the ban duration. Set `TRUSTED_PROXY_CIDRS` to the proxy's network (for Docker, the private range, e.g. `172.16.0.0/12`). For peers in those ranges the client is the last `X-Forwarded-For` hop, the address the proxy itself saw. `CF-Connecting-IP` is then used only if that hop is a Cloudflare edge, so it still cannot be forged by a direct request. The proxy must overwrite `X-Forwarded-For` for untrusted sources, which Traefik does by default. Leave it empty when the service is not behind a proxy.
 
 ## Placeholder
 

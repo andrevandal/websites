@@ -27,6 +27,7 @@ const CONFIG_KEYS = [
   "RATE_LIMIT_WINDOW_MS",
   "RATE_LIMIT_MAX",
   "TRUST_CLOUDFLARE_IPS",
+  "TRUSTED_PROXY_CIDRS",
 ]
 
 const loadFreshEnvModule = async (env: Record<string, string | undefined>) => {
@@ -120,5 +121,34 @@ describe("config/env: bot defense", () => {
     cleanup()
 
     expect(config.trustCloudflareIps).toBe(false)
+  })
+
+  test("defaults TRUSTED_PROXY_CIDRS to none", async () => {
+    const { loadConfig, cleanup } = await loadFreshEnvModule({})
+    const config = loadConfig()
+    cleanup()
+
+    expect(config.trustedProxyCidrs).toEqual([])
+  })
+
+  test("parses a comma-separated TRUSTED_PROXY_CIDRS list", async () => {
+    const { loadConfig, cleanup } = await loadFreshEnvModule({
+      TRUSTED_PROXY_CIDRS: " 172.16.0.0/12 , fd00::/8 ",
+    })
+    const config = loadConfig()
+    cleanup()
+
+    expect(config.trustedProxyCidrs).toEqual(["172.16.0.0/12", "fd00::/8"])
+  })
+
+  test("rejects an invalid TRUSTED_PROXY_CIDRS entry at startup", async () => {
+    try {
+      await expect(
+        loadFreshEnvModule({ TRUSTED_PROXY_CIDRS: "172.16.0.0/12,not-a-cidr" })
+      ).rejects.toThrow("Invalid proxy CIDR: not-a-cidr")
+    } finally {
+      // the import threw before loadFreshEnvModule could hand back cleanup()
+      delete process.env.TRUSTED_PROXY_CIDRS
+    }
   })
 })

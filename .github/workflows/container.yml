@@ -79,6 +79,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      - name: Init
+        uses: ./.github/actions/init
+
+      # Writes the workspace manifests and lockfile images.Dockerfile
+      # installs from, so the Dockerfile needs no hand-kept package list.
+      - name: Scaffold Docker workspace
+        run: moon docker scaffold images
+
       - name: Set environment
         id: env
         shell: bash
