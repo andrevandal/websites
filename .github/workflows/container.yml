@@ -36,7 +36,7 @@ env:
 jobs:
   verify:
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -60,13 +60,13 @@ jobs:
         run: moon run images:build
 
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: verify
     if: always() && (needs.verify.result == 'success' || needs.verify.result == 'skipped')
     outputs:
       environment: ${{ steps.env.outputs.environment }}
     steps:
-      # GitHub-hosted ubuntu-latest runners have preinstalled toolchains
+      # GitHub-hosted ubuntu-26.04 runners have preinstalled toolchains
       # (Android SDK, .NET, Haskell, etc.) consuming a large chunk of the
       # ~14GB nominally free disk. This monorepo's multi-stage Docker build
       # plus `cache-to: type=gha,mode=max` (which materializes every layer
@@ -75,14 +75,14 @@ jobs:
       # removed toolchains are used by this job (it only runs Docker Buildx,
       # no local Bun/Node build step).
       #
-      # Only the fast, high-yield removals are kept (Android 11GiB in ~40s,
-      # .NET 5.7GiB, Haskell 3.6GiB: ~20GiB freed). `large-packages` (apt
-      # remove, ~50s for 4.5GiB) and `docker-images` (~15s for 1.9GiB) cost
-      # about a minute for ~6GiB, so they stay off.
+      # Only the fast, high-yield removals are kept. Earlier runner measurements:
+      # Android 11GiB in ~40s, .NET 5.7GiB, Haskell 3.6GiB: ~20GiB freed.
+      # `large-packages` (apt remove, ~50s for 4.5GiB) and `docker-images`
+      # (~15s for 1.9GiB) cost about a minute for ~6GiB, so they stay off.
       - name: Free disk space
-        uses: jlumbroso/free-disk-space@v1.3.1
+        uses: jlumbroso/free-disk-space@v2
         with:
-          tool-cache: false
+          preinstalled-runtimes: false
           large-packages: false
           docker-images: false
           swap-storage: false
@@ -130,6 +130,7 @@ jobs:
             {
               echo "tags<<EOF"
               echo "$image:$tag"
+              echo "$image:staging"
               echo "EOF"
             } >> "$GITHUB_OUTPUT"
           fi
@@ -161,7 +162,7 @@ jobs:
             moon_remote_pass=${{ secrets.BAZEL_REMOTE_BASIC_AUTH_PASSWORD }}
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: build-and-push
     if: needs.build-and-push.outputs.environment != 'preview'
     environment:

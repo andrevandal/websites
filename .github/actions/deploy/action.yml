@@ -39,7 +39,7 @@ runs:
 
     - name: Save build for production promotion
       if: inputs.mode == 'staging'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: website-dist-${{ inputs.target }}-${{ github.sha }}
         path: |

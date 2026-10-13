@@ -15,7 +15,7 @@ jobs:
     name: Delete Workers Preview pr-${{ github.event.pull_request.number }}
     # Matches main.yml: fork PRs never get a Preview or Cloudflare credentials.
     if: github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:

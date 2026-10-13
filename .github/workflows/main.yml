@@ -19,7 +19,7 @@ concurrency:
 jobs:
   check-all:
     name: Check all affected apps and packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       affected_apps: ${{ steps.affecteds.outputs.apps_affected }}
       container_apps_affected: ${{ steps.affecteds.outputs.container_apps_affected }}
@@ -103,7 +103,7 @@ jobs:
       needs.check-all.outputs.affected_apps != '[]' &&
       (github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:
@@ -143,7 +143,7 @@ jobs:
 
       - name: Comment preview URL on the PR
         if: github.event_name == 'pull_request' && steps.deploy.outputs.url != ''
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: preview-url-${{ matrix.app }}
           message: |

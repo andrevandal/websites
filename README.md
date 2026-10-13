@@ -30,6 +30,13 @@ Client websites and a shared image service. TypeScript monorepo managed with moo
 
 ## Deploy environments
 
+Full GitHub-hosted jobs explicitly use `ubuntu-26.04` rather than following
+the rolling `ubuntu-latest` label. PR-title validation keeps the lightweight
+`ubuntu-slim` runner. Disk cleanup uses `jlumbroso/free-disk-space@v2`;
+compatible minor/patch updates follow when upstream moves that major tag.
+Action upgrades retain the zipped website artifact layout, including hidden
+build files and the promotion digest check.
+
 CI (`.github/workflows/main.yml`) runs `moon ci` on every push/PR — only the
 projects a change actually affects are linted, typechecked, and tested — then
 
@@ -49,6 +56,11 @@ projects a change actually affects are linted, typechecked, and tested — then
   The trigger sends an authenticated `POST` to `COOLIFY_IMAGES_WEBHOOK`,
   preserving its `uuid`/`force` query parameters and Cloudflare bypass header.
   Coolify rejects the former `GET` request with HTTP 405.
+  Staging builds publish `:<version>-staging` and the floating `:staging` alias;
+  production builds publish `:<version>` and `:latest`. Set the staging Coolify
+  image to `ghcr.io/andrevandal/websites/images-app:staging` to follow successful
+  staging builds without editing the version. A pull and redeploy is still
+  required; changing the registry tag does not update running containers.
 - On a website release, `release.yml` waits for that commit's Main CI and
   downloads its saved build. It checks the digest, uploads the identical bytes
   as a new Version with production config, and runs
@@ -254,7 +266,7 @@ If you want to add new workflows, but do not want them to run on release-please 
 ```yaml
 jobs:
   your-job:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     # Skip if PR has any autorelease label
     if: |
       !contains(github.event.pull_request.labels.*.name, 'autorelease: pending') &&
@@ -266,7 +278,7 @@ And for push ignores, you can use:
 ```yaml
 jobs:
   your-job:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     # Skip if commit message indicates a release-please release
     if: |
       !startsWith(github.event.head_commit.message, 'chore: release') &&
