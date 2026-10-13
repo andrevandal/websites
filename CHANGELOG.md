@@ -1,5 +1,48 @@
 # Changelog
 
+## [1.4.0](https://github.com/andrevandal/websites/compare/v1.3.0...v1.4.0) (2026-10-13)
+
+
+### Features
+
+* **bellypao:** add Belly Pao website
+* **bellypao:** add Belly Pao website
+* **bellypao:** set production Google Analytics id
+* **deploy:** add per-site worker config
+* **deploy:** add per-site worker config
+* **deploy:** build once, upload staging Versions, promote the same build to production
+* **deploy:** deploy pull requests as Workers Previews of one persistent Worker
+* **deploy:** per-site worker config and runtime image-service binding
+* **robots-sitemap:** add request-time robots and sitemap integration
+* **scripts:** generate websites in the final Workers Preview and Version shape
+* **scripts:** generate websites in the final Workers Preview and Version shape (), closes [#150](https://github.com/andrevandal/websites/issues/150) [#143](https://github.com/andrevandal/websites/issues/143)
+* **scripts:** register bellypao in site config, deploy and release tooling
+* **sun-ui:** image-service base URL as Cloudflare runtime binding
+* **sun-ui:** image-service base URL as Cloudflare runtime binding
+* **websites:** serve robots and sitemap from @vandal-websites/robots-sitemap
+* **websites:** stage-agnostic site identity
+* **websites:** stage-agnostic site identity
+
+
+### Bug Fixes
+
+* **ci:** drop orphaned deployment key from deploy strategy
+* **ci:** drop orphaned deployment key from deploy strategy
+* **ci:** drop orphaned deployment key from deploy strategy
+* **ci:** reinstall pinned tools whose proto executable is missing
+* **ci:** restore bun on PATH after toolchain setup
+* **deploy:** parse wrangler preview JSON after banner lines
+* **deploy:** parse wrangler preview JSON after banner lines
+* **images:** build docker deps from moon docker scaffold
+* **images:** build docker deps from moon docker scaffold
+* **images:** identify visitors behind a trusted reverse proxy
+* **images:** identify visitors behind a trusted reverse proxy
+* **scripts:** coverage-allowlist-guard shouldn't flag a deleted project as a regression
+* **websites:** drop SITE_URL and ENABLE_PARTYTOWN leftovers
+* **websites:** read Worker vars through getSecret and restore Partytown gate
+* **websites:** remove dangling imageServiceBaseUrl wiring and stale image.service config
+* **websites:** stage-agnostic site identity and dead env var cleanup
+
 ## [1.3.0](https://github.com/andrevandal/websites/compare/v1.2.0...v1.3.0) (2026-10-01)
 
 

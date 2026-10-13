@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/andrevandal/websites/compare/images-app-v1.1.0...images-app-v1.1.1) (2026-10-13)
+
+
+### Bug Fixes
+
+* **ci:** drop orphaned deployment key from deploy strategy
+* **images:** identify visitors behind a trusted reverse proxy
+* **images:** identify visitors behind a trusted reverse proxy
+
 ## [1.1.0](https://github.com/andrevandal/websites/compare/images-app-v1.0.0...images-app-v1.1.0) (2026-10-01)
 
 

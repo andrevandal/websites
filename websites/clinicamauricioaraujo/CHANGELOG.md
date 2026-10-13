@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.3.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.2.0...clinicamauricioaraujo-v1.3.0) (2026-10-13)
+
+
+### Features
+
+* **deploy:** add per-site worker config
+* **deploy:** add per-site worker config
+* **deploy:** build once, upload staging Versions, promote the same build to production
+* **deploy:** per-site worker config and runtime image-service binding
+* **robots-sitemap:** add request-time robots and sitemap integration
+* **scripts:** generate websites in the final Workers Preview and Version shape
+* **websites:** serve robots and sitemap from @vandal-websites/robots-sitemap
+* **websites:** stage-agnostic site identity
+* **websites:** stage-agnostic site identity
+
+
+### Bug Fixes
+
+* **ci:** drop orphaned deployment key from deploy strategy
+* **websites:** drop SITE_URL and ENABLE_PARTYTOWN leftovers
+* **websites:** read Worker vars through getSecret and restore Partytown gate
+* **websites:** stage-agnostic site identity and dead env var cleanup
+
 ## [1.2.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.1.0...clinicamauricioaraujo-v1.2.0) (2026-10-01)
 
 

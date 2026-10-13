@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.4.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.3.0...vandallabs-v1.4.0) (2026-10-13)
+
+
+### Features
+
+* **deploy:** add per-site worker config
+* **deploy:** add per-site worker config
+* **deploy:** build once, upload staging Versions, promote the same build to production
+* **deploy:** deploy pull requests as Workers Previews of one persistent Worker
+* **deploy:** per-site worker config and runtime image-service binding
+* **scripts:** generate websites in the final Workers Preview and Version shape
+* **websites:** serve robots and sitemap from @vandal-websites/robots-sitemap
+* **websites:** stage-agnostic site identity
+* **websites:** stage-agnostic site identity
+
+
+### Bug Fixes
+
+* **ci:** drop orphaned deployment key from deploy strategy
+* **websites:** drop SITE_URL and ENABLE_PARTYTOWN leftovers
+* **websites:** read Worker vars through getSecret and restore Partytown gate
+* **websites:** stage-agnostic site identity and dead env var cleanup
+
 ## [1.3.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.2.0...vandallabs-v1.3.0) (2026-10-01)
 
 

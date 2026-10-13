@@ -1,8 +1,8 @@
 {
-  ".": "1.3.0",
-  "apps/images": "1.1.0",
-  "websites/bellypao": "0.1.0",
-  "websites/brunabraz": "1.3.0",
-  "websites/transportugal": "0.2.0",
-  "websites/vandallabs": "1.3.0"
+  ".": "1.4.0",
+  "apps/images": "1.1.1",
+  "websites/bellypao": "0.2.0",
+  "websites/brunabraz": "1.4.0",
+  "websites/transportugal": "0.3.0",
+  "websites/vandallabs": "1.4.0"
 }
