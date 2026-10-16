@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0](https://github.com/andrevandal/websites/compare/images-app-v1.2.0...images-app-v1.3.0) (2026-10-16)
+
+
+### Features
+
+* **images:** allow *.suffix wildcard entries in HTTP_DOMAINS
+* **images:** allow *.suffix wildcard entries in HTTP_DOMAINS
+* **images:** optionally redirect unallowed http sources instead of rejecting
+* **images:** optionally redirect unallowed http sources instead of rejecting
+
 ## [1.2.0](https://github.com/andrevandal/websites/compare/images-app-v1.1.1...images-app-v1.2.0) (2026-10-13)
 
 

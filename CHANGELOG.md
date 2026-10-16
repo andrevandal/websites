@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.6.0](https://github.com/andrevandal/websites/compare/v1.5.0...v1.6.0) (2026-10-16)
+
+
+### Features
+
+* **images:** allow *.suffix wildcard entries in HTTP_DOMAINS
+* **images:** allow *.suffix wildcard entries in HTTP_DOMAINS
+* **images:** optionally redirect unallowed http sources instead of rejecting
+* **images:** optionally redirect unallowed http sources instead of rejecting
+
+
+### Bug Fixes
+
+* **ci:** migrate runners to Ubuntu 26.04
+* **ci:** migrate to Ubuntu 26.04 and refresh actions
+* **ci:** pin runners and refresh actions
+* **ci:** publish a floating staging image tag
+* **ci:** publish a floating staging image tag
+
 ## [1.5.0](https://github.com/andrevandal/websites/compare/v1.4.0...v1.5.0) (2026-10-13)
 
 
