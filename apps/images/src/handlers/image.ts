@@ -58,6 +58,10 @@ const imageHandler = async (c: Context) => {
 
   const resolved = await resolveSource(sourceRaw)
   if (!resolved.ok) {
+    if (resolved.error.redirectTo && config.httpRedirectUnallowed) {
+      finish("unallowed-redirect", 307)
+      return c.redirect(resolved.error.redirectTo, 307)
+    }
     finish("source-rejected", resolved.error.status)
     return c.json(
       { status: resolved.error.status, error: resolved.error.message },

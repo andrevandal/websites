@@ -29,6 +29,7 @@ const CONFIG_KEYS = [
   "TRUST_CLOUDFLARE_IPS",
   "TRUSTED_PROXY_CIDRS",
   "HEALTH_IMAGE_URL",
+  "HTTP_REDIRECT_UNALLOWED",
 ]
 
 const loadFreshEnvModule = async (env: Record<string, string | undefined>) => {
@@ -124,6 +125,16 @@ describe("config/env: bot defense", () => {
     expect(config.trustCloudflareIps).toBe(false)
   })
 
+  test("rejects a malformed HTTP_DOMAINS wildcard at startup", async () => {
+    try {
+      await expect(
+        loadFreshEnvModule({ HTTP_DOMAINS: "cdn.example.com,*.com" })
+      ).rejects.toThrow("Invalid HTTP_DOMAINS entry: *.com")
+    } finally {
+      delete process.env.HTTP_DOMAINS
+    }
+  })
+
   test("defaults TRUSTED_PROXY_CIDRS to none", async () => {
     const { loadConfig, cleanup } = await loadFreshEnvModule({})
     const config = loadConfig()
@@ -175,5 +186,19 @@ describe("config/env: bot defense", () => {
     } finally {
       delete process.env.HEALTH_IMAGE_URL
     }
+  })
+})
+
+describe("config/env: HTTP_REDIRECT_UNALLOWED", () => {
+  test("defaults to false and reads override", async () => {
+    const a = await loadFreshEnvModule({})
+    const off = a.loadConfig()
+    a.cleanup()
+    const b = await loadFreshEnvModule({ HTTP_REDIRECT_UNALLOWED: "true" })
+    const on = b.loadConfig()
+    b.cleanup()
+
+    expect(off.httpRedirectUnallowed).toBe(false)
+    expect(on.httpRedirectUnallowed).toBe(true)
   })
 })

@@ -33,6 +33,12 @@ domain, Basic Auth via `--htpasswd_file`.
 - Secret `MOON_REMOTE_HOST` — the cache base URL
   (`https://infra.example.invalid`), no trailing slash. Delete it
   to disable the cache everywhere, instantly.
+- Secret `MOON_REMOTE_API` — optional; `http` (default when empty or unset)
+  or `grpc`. It selects the protocol moon uses against `MOON_REMOTE_HOST`
+  and must match that URL's scheme: `https://...` with `http`, or
+  `grpc://host:9092` / `grpcs://host:9092` with `grpc`. Changing either
+  value invalidates every cached entry once, because both are written into
+  the hashed `.moon/workspace.yml`.
 - Secrets `BAZEL_REMOTE_BASIC_AUTH_USERNAME` /
   `BAZEL_REMOTE_BASIC_AUTH_PASSWORD` — must match the `.htpasswd` entry
   on the VPS. Set directly in CI by the repo owner; rotating them

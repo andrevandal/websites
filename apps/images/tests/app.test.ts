@@ -148,3 +148,27 @@ describe("bot defense: rate limiting", () => {
     expect(lastStatus).toBe(429)
   })
 })
+
+describe("unallowed http source", () => {
+  const path = "/w=100/https://not-allowed.example/pic.jpg"
+
+  test("answers 400 by default", async () => {
+    const response = await app.request(path)
+
+    expect(response.status).toBe(400)
+  })
+
+  test("redirects to the source when HTTP_REDIRECT_UNALLOWED is on", async () => {
+    config.httpRedirectUnallowed = true
+    try {
+      const response = await app.request(path, { redirect: "manual" })
+
+      expect(response.status).toBe(307)
+      expect(response.headers.get("location")).toBe(
+        "https://not-allowed.example/pic.jpg"
+      )
+    } finally {
+      config.httpRedirectUnallowed = false
+    }
+  })
+})

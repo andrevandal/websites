@@ -59,6 +59,7 @@ jobs:
       - name: Configure remote cache
         env:
           MOON_REMOTE_HOST: ${{ secrets.MOON_REMOTE_HOST }}
+          MOON_REMOTE_API: ${{ secrets.MOON_REMOTE_API }}
           BAZEL_REMOTE_BASIC_AUTH_USERNAME: ${{ secrets.BAZEL_REMOTE_BASIC_AUTH_USERNAME }}
           BAZEL_REMOTE_BASIC_AUTH_PASSWORD: ${{ secrets.BAZEL_REMOTE_BASIC_AUTH_PASSWORD }}
         run: |

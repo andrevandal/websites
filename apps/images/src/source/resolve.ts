@@ -3,6 +3,7 @@ import fs from "node:fs"
 import path from "node:path"
 import { consola } from "consola"
 import { config } from "../config/env"
+import { isAllowedDomain } from "./domains"
 
 const logger = consola.withTag("source")
 
@@ -22,7 +23,9 @@ type SourceRef =
   | { kind: "http"; id: string; url: string }
   | { kind: "fs"; id: string; absolutePath: string; mtime: Date }
 
-type SourceError = { status: 400 | 404; message: string }
+// redirectTo is set only for a well-formed http(s) URL whose domain is not
+// allowlisted, so the handler can pass it through instead of rejecting.
+type SourceError = { status: 400 | 404; message: string; redirectTo?: string }
 
 // NOTE: Per Bun.Image documentation, path strings are filesystem paths —
 // do not pass user-controlled strings directly to Bun.file/Bun.Image.
@@ -39,14 +42,15 @@ const resolveSource = async (
       const url = new URL(sourceRaw)
       const hostname = url.hostname.toLowerCase()
 
-      // Exact-match hostname against allowlist (case-insensitive)
-      if (!config.httpDomains.includes(hostname)) {
+      // Exact or `*.suffix` match against the allowlist (case-insensitive)
+      if (!isAllowedDomain(hostname, config.httpDomains)) {
         logger.debug(`http source rejected: domain not allowed: ${hostname}`)
         return {
           ok: false,
           error: {
             status: 400,
             message: `domain not allowed: ${hostname}`,
+            redirectTo: url.href,
           },
         }
       }

@@ -1,6 +1,7 @@
 import { consola } from "consola"
 import * as v from "valibot"
 import { isValidCidr } from "../security/client-ip"
+import { isValidDomainEntry } from "../source/domains"
 
 type ImagesConfig = {
   httpDomains: string[]
@@ -30,6 +31,7 @@ type ImagesConfig = {
   trustCloudflareIps: boolean
   trustedProxyCidrs: string[]
   healthImageUrl: string
+  httpRedirectUnallowed: boolean
 }
 
 const parseBooleanString = (val: string): boolean => {
@@ -41,12 +43,15 @@ const parseBooleanString = (val: string): boolean => {
 const configSchema = v.object({
   httpDomains: v.pipe(
     v.string(),
-    v.transform(val =>
-      val
+    v.transform(val => {
+      const domains = val
         .split(",")
         .map(domain => domain.trim().toLowerCase())
         .filter(Boolean)
-    )
+      const invalid = domains.find(domain => !isValidDomainEntry(domain))
+      if (invalid) throw new Error(`Invalid HTTP_DOMAINS entry: ${invalid}`)
+      return domains
+    })
   ),
   httpMaxAge: v.pipe(
     v.string(),
@@ -156,6 +161,10 @@ const configSchema = v.object({
     v.string(),
     v.transform(val => parseBooleanString(val))
   ),
+  httpRedirectUnallowed: v.pipe(
+    v.string(),
+    v.transform(val => parseBooleanString(val))
+  ),
   healthImageUrl: v.pipe(
     v.string(),
     v.transform(val => {
@@ -206,6 +215,7 @@ const loadConfig = (): ImagesConfig => {
     trustCloudflareIps: process.env.TRUST_CLOUDFLARE_IPS || "true",
     trustedProxyCidrs: process.env.TRUSTED_PROXY_CIDRS || "",
     healthImageUrl: process.env.HEALTH_IMAGE_URL || "",
+    httpRedirectUnallowed: process.env.HTTP_REDIRECT_UNALLOWED || "false",
   }
 
   const result = v.safeParse(configSchema, env)
@@ -243,6 +253,7 @@ const loadConfig = (): ImagesConfig => {
     trustCloudflareIps: result.output.trustCloudflareIps,
     trustedProxyCidrs: result.output.trustedProxyCidrs,
     healthImageUrl: result.output.healthImageUrl,
+    httpRedirectUnallowed: result.output.httpRedirectUnallowed,
   }
 }
 
