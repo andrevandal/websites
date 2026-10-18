@@ -43,6 +43,9 @@
     ".next/",
     "out/",
 
+    // EmDash-generated types, rewritten by the dev server
+    "emdash-env.d.ts",
+
     // Environment variables
     ".env",
     ".env.local",

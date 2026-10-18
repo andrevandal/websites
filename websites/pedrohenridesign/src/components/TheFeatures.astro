@@ -1,0 +1,43 @@
+---
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import type { Category } from "../../emdash-env"
+
+type Props = {
+  title?: string
+  features?: Category["features"]
+}
+
+const { title, features } = Astro.props
+---
+
+<>
+  {
+    !!features?.length && !!title && (
+      <div class="">
+        <h3 class="text-2xl leading-7.5 font-extrabold text-gray-900 lg:text-[2rem] lg:leading-[2.78rem]">
+          {title}
+        </h3>
+        <div class="mt-4 flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:gap-6 xl:grid-cols-4">
+          {features.map(feature => (
+            <div class="flex flex-col items-start justify-center gap-4 rounded-lg border border-solid border-gray-100 p-6 text-gray-900">
+              <SunIcon
+                name={feature.icon}
+                width={24}
+                height={24}
+                class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-50 p-3"
+              />
+              <div class="flex flex-col gap-2">
+                <h4 class="text-2xl leading-[2.085rem] font-bold">
+                  {feature.title}
+                </h4>
+                <p class="text-base leading-5 font-medium text-balance text-gray-500">
+                  {feature.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</>

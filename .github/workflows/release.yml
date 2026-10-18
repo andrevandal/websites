@@ -44,7 +44,8 @@ jobs:
             --argjson tp "$([ "${{ steps.release.outputs['websites/transportugal--release_created'] }}" = "true" ] && echo true || echo false)" \
             --argjson vl "$([ "${{ steps.release.outputs['websites/vandallabs--release_created'] }}" = "true" ] && echo true || echo false)" \
             --argjson site_bellypao "$([ "${{ steps.release.outputs['websites/bellypao--release_created'] }}" = "true" ] && echo true || echo false)" \
-            '[if $br then "brunabraz" else empty end, if $cl then "clinicamauricioaraujo.com.br" else empty end, if $tp then "transportugal" else empty end, if $vl then "vandallabs" else empty end, if $site_bellypao then "bellypao" else empty end]')
+            --argjson site_pedrohenri "$([ "${{ steps.release.outputs['websites/pedrohenri--release_created'] }}" = "true" ] && echo true || echo false)" \
+            '[if $br then "brunabraz" else empty end, if $cl then "clinicamauricioaraujo.com.br" else empty end, if $tp then "transportugal" else empty end, if $vl then "vandallabs" else empty end, if $site_bellypao then "bellypao" else empty end, if $site_pedrohenri then "pedrohenri" else empty end]')
           echo "released=$json" >> "$GITHUB_OUTPUT"
 
   deploy-images-production:
@@ -67,6 +68,8 @@ jobs:
     needs: release
     if: ${{ needs.release.outputs.websites_released != '[]' }}
     runs-on: ubuntu-26.04
+    # Environment secrets (<SITE>_SECRETS) come from the production environment.
+    environment: production
     strategy:
       fail-fast: false
       matrix:
@@ -89,3 +92,4 @@ jobs:
           target: ${{ matrix.target }}
           sha: ${{ github.sha }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          site-secrets: ${{ secrets[format('{0}_SECRETS', matrix.target)] }}

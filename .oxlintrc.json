@@ -58,7 +58,12 @@
     "promise",
     "node"
   ],
-  "ignorePatterns": ["dist/", "test/snapshots/**", "coverage/"],
+  "ignorePatterns": [
+    "dist/",
+    "test/snapshots/**",
+    "coverage/",
+    "emdash-env.d.ts"
+  ],
   "overrides": [
     {
       "files": ["**/*.tsx", "**/*.ts"],

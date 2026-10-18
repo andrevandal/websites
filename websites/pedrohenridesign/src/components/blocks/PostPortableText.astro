@@ -1,0 +1,13 @@
+---
+import type { PortableTextBlock } from "emdash"
+import { PortableText } from "emdash/ui"
+import PTImage from "./PTImage.astro"
+
+type Props = {
+  value: PortableTextBlock[]
+}
+
+const { value } = Astro.props
+---
+
+<PortableText value={value} components={{ type: { image: PTImage } }} />

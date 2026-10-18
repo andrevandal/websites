@@ -1,0 +1,28 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import BaseButton from "@/components/BaseButton.astro"
+
+const title = "Página não encontrada - Pedro Henri Design"
+const description = "A página que você está procurando não foi encontrada."
+const url = new URL(Astro.request.url)
+---
+
+<Layout title={title} description={description} image="/favicon.png" url={url}>
+  <main class="flex flex-1 items-center justify-center">
+    <div
+      class="container flex flex-col items-center justify-center gap-y-6 py-20"
+    >
+      <h1
+        class="text-center text-[2rem] leading-9 font-bold tracking-[-0.1rem] text-gray-900 lg:text-[3rem] lg:leading-13.5 lg:tracking-[-0.15rem]"
+      >
+        Página não encontrada
+      </h1>
+      <p class="text-center text-xl text-gray-600 lg:text-2xl">
+        Desculpe, a página que você está procurando não existe.
+      </p>
+      <BaseButton href="/" variant="primary" class="mt-4">
+        Voltar para a página inicial
+      </BaseButton>
+    </div>
+  </main>
+</Layout>

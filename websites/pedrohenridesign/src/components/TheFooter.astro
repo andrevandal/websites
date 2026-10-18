@@ -1,0 +1,98 @@
+---
+import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { DENSITIES, fileUrl } from "@/utils/images"
+import BaseButton from "@/components/BaseButton.astro"
+
+const currentYear = new Date().getFullYear()
+---
+
+<footer class="flex flex-col gap-y-12">
+  <slot />
+  <div class="container">
+    <div
+      class="flex flex-col gap-6 rounded-lg bg-gray-900 p-4 sm:p-6 lg:grid lg:grid-cols-12 lg:items-center lg:justify-between lg:gap-x-6 lg:px-8 lg:py-8"
+    >
+      <div class="lg:order-2 lg:col-span-5 lg:col-start-8 lg:flex-1">
+        <SunPicture
+          src={fileUrl("images/footer.png")}
+          width={311}
+          height={311}
+          alt="Pedro Henrique sorrindo com as mãos cruzadas à frente, vestido socialmente."
+          breakpoints={[
+            { minWidth: 640, width: 448 },
+            { minWidth: 1024, width: 362 },
+            { minWidth: 1280, width: 469 },
+          ]}
+          densities={DENSITIES}
+          class="aspect-square h-auto w-full rounded-lg"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-y-4 text-center lg:order-1 lg:col-span-7 lg:col-start-1 lg:flex-1 lg:items-start lg:justify-center lg:text-left"
+      >
+        <h2
+          class="max-w-[38ch] text-[2rem] leading-9 font-bold tracking-[-0.1rem] text-gray-50 lg:text-[3rem] lg:leading-13.5 lg:tracking-[-0.15rem]"
+        >
+          Quer desenvolver o seu projeto comigo?
+        </h2>
+        <p class="max-w-[38ch] text-xl text-gray-50 lg:text-2xl">
+          Dê o primeiro passo agora.
+        </p>
+        <BaseButton
+          href="https://wa.me/5511965712919"
+          variant="secondary"
+          class="mt-2"
+          icon="chat-alt-2"
+        >
+          Solicite uma proposta
+        </BaseButton>
+      </div>
+    </div>
+  </div>
+  <div class="container mx-auto flex flex-col gap-y-4">
+    <div class="flex w-full justify-between">
+      <a href="/" class="transition-opacity hover:opacity-80 focus:opacity-60">
+        <span class="sr-only">Pedro Henrique Design</span>
+        <SunPicture
+          src={fileUrl("images/logo-horizontal.png")}
+          width={171}
+          height={32}
+          densities={DENSITIES}
+          class="h-full w-full"
+          wrapperClass="h-8 w-[171px]"
+          alt=""
+        />
+      </a>
+      <div class="flex gap-x-4 text-[2rem] text-gray-900">
+        <a
+          href="https://www.instagram.com/pedrohenri.design/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="transition-opacity hover:opacity-80 focus:opacity-60"
+        >
+          <span class="sr-only">Instagram</span>
+          <SunIcon name="instagram" width={24} height={24} />
+        </a>
+        <a
+          href="https://www.linkedin.com/in/pedro-henrique-92b806bb/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="transition-opacity hover:opacity-80 focus:opacity-60"
+        >
+          <span class="sr-only">LinkedIn</span>
+          <SunIcon name="linkedin" width={24} height={24} />
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="mx-auto flex h-12 w-full items-center justify-center border-t border-t-gray-100"
+    >
+      <span class="text-center text-base leading-4 text-gray-900"
+        >© {currentYear} | Pedro Henri Design</span
+      >
+    </div>
+  </div>
+</footer>

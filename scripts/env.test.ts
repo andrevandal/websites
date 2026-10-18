@@ -18,15 +18,17 @@ describe("resolveTargetEnvVars", () => {
     expect(vars).not.toHaveProperty("API_TOKEN")
   })
 
-  test("each website routes image transforms to the proxy for its Stage", () => {
+  test("each website routes image transforms to the proxy for its Stage, except Pedro preview", () => {
     for (const siteId of SITE_IDS) {
       for (const stage of STAGES) {
         const vars = resolveTargetEnvVars(["websites", siteId], stage)
-        expect(vars["IMAGES_BASE_URL"]).toBe(
-          stage === "production"
-            ? "https://infra.example.invalid"
-            : "https://infra.example.invalid"
-        )
+        const expected =
+          siteId === "pedrohenri" && stage === "preview"
+            ? ""
+            : stage === "production"
+              ? "https://infra.example.invalid"
+              : "https://infra.example.invalid"
+        expect(vars["IMAGES_BASE_URL"]).toBe(expected)
       }
     }
   })

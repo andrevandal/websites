@@ -20,6 +20,10 @@ const resolveTargetEnvVars = (
 ): Record<string, string> =>
   resolveSiteConfig(extractSiteIdFromLocation(siteLocation), stage).vars
 
+const resolveTargetSecretKeys = (siteLocation: string[]): string[] =>
+  resolveSiteConfig(extractSiteIdFromLocation(siteLocation), "staging")
+    .secretKeys
+
 const resolveDbUrl = (url: string | undefined): string | undefined => {
   if (!url) return undefined
 
@@ -30,4 +34,4 @@ const resolveDbUrl = (url: string | undefined): string | undefined => {
   return url
 }
 
-export { repoRoot, resolveDbUrl, resolveTargetEnvVars }
+export { repoRoot, resolveDbUrl, resolveTargetEnvVars, resolveTargetSecretKeys }

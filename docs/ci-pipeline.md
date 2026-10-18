@@ -23,6 +23,62 @@ JSON/YAML configs; then `bun run test:scripts`, `bun run docs` (docs, skills,
 and `AGENTS.md` checks), and the coverage contract guard. Add new root-level
 paths to that step when they appear.
 
+## Selected EmDash preview deployment
+
+The deploy action selects `EMDASH_BUILD_FLAVOR=preview` only for PR previews
+of `pedrohenri` and `brunabraz`. Their build and check task inputs track this
+flavor and `CF_ACCESS_TEAM_DOMAIN`; the GitHub team-domain secret is injected
+only into selected preview builds, never into standard staging/production.
+Missing or invalid team domain fails the selected preview build. Staging and
+production share the standard Turso/S3 artifact without rebuilding.
+
+Selected previews use native D1/R2 and Access with per-PR `SESSION` KV.
+Staging (`main` push) and production (merged release-please PR, or the manual
+`deploy-manual.yml` promotion, which runs in the `production` Environment) take
+the site's runtime secrets from its `<SITE>_SECRETS` JSON in the `staging` or
+`production` GitHub environment: `check-secrets` validates it before the build
+(failures name only the key, never a value) and `version-upload` passes it to
+`wrangler versions upload --secrets-file`. A rotated value takes effect on the
+next deployment of that site to that Stage, not on unrelated pushes. Preview
+Base and each existing Preview have their own effective settings.
+`pedrohenri` previews serve
+original images directly: `vars.preview.IMAGES_BASE_URL` is empty.
+The runtime audience is supplied manually as `CF_ACCESS_AUDIENCE` on Preview
+Base, not as a GitHub build secret; it is a preview-only key and is not part of
+the Stage secret JSON. Same-PR redeploys preserve resources and
+CMS state; PR close deletes only that Preview and its KV/D1/R2 resources,
+purging media before deleting its R2 bucket. Generic previews remain KV-only.
+CI does not provision Access policy coverage or create admins; see the
+[Access guide](./guides/cloudflare-access-for-previews.md). For `pedrohenri`,
+CI applies the core migrations of each database before the code that needs
+them gets traffic (`scripts/deploy.ts migrate`: the PR Preview's D1 before
+`wrangler preview`, the stage's Turso database from `PEDROHENRI_SECRETS`
+before the staging and production Version uploads), and its Worker only checks
+(`migrations.runtime: "check"`). Its PR Previews are also set up from CI
+(`setupPreview`): the bundled `seed/seed.json` goes through the public
+`/_emdash/api/setup` route with the Service Auth token, then
+`scripts/seed-extensions.ts` writes the SEO panels, default OG image and
+byline fields over D1 and R2. Setup is automatic and resumable: a fresh
+preview runs core setup then the extensions; a preview that is already
+configured (HTTP 409) skips core setup (content is never reseeded) but still
+runs the extension phase, which only inserts what is missing (SEO panels, the
+default OG image, byline fields), so a run that failed after core setup is
+retried by the next push without overwriting editor changes. The first Access
+login to it becomes admin. The step skips with a warning when
+`CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` are missing.
+Lighthouse CI audits those previews through a local proxy
+(`scripts/ci/access-proxy.ts`) that adds the Service Auth token
+(`CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET`), so the token never reaches
+the browser, other origins or the report: the proxy answers `400` to any request
+target that could select a different origin, checks the outbound origin before
+fetching, and rewrites only same-origin redirects, so external redirects carry
+no token. The step skips them with a warning when either secret is missing.
+Other sites' Lighthouse runs are unchanged.
+
+Required credentials/scopes, optional remote-cache credentials and protected
+native setup prerequisites are documented in the
+[provisioning guide](./guides/provision-new-site-and-rotate-secrets.md).
+
 ## Remote cache
 
 `bazel-remote` runs as a Coolify service on the VPS

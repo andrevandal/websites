@@ -1,0 +1,107 @@
+---
+import type { HTMLAttributes } from "astro/types"
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import type { Category } from "../../emdash-env"
+import { mediaSource, mediaFormat, type MediaValue } from "@/cms/media"
+import { DENSITIES } from "@/utils/images"
+import Figure from "./Figure.astro"
+import TheFeatures from "./TheFeatures.astro"
+import BaseButton from "./BaseButton.astro"
+
+type Props = {
+  id: string
+  name: string
+  ctaText?: string
+  featuresTitle?: string
+  features?: Category["features"]
+  shrink?: boolean
+  posts: {
+    id: string
+    title: string
+    cover: MediaValue
+  }[]
+} & HTMLAttributes<"section">
+
+const {
+  id,
+  name,
+  ctaText,
+  featuresTitle,
+  features,
+  shrink,
+  posts,
+  class: className,
+  ...props
+} = Astro.props
+---
+
+<section
+  id={id}
+  class:list={[
+    "flex flex-col gap-10 lg:flex-row lg:flex-wrap lg:items-center lg:gap-12",
+    className,
+  ]}
+  {...props}
+>
+  <div
+    class="flex flex-col gap-4 lg:w-full lg:flex-row lg:flex-wrap lg:items-center lg:gap-6"
+  >
+    <h2
+      class="order-1 block text-[2rem] leading-[2.421rem] font-bold text-gray-900 lg:mr-auto lg:text-[2.5rem] lg:leading-[3.026rem]"
+    >
+      {name}
+    </h2>
+    <div
+      class="order-2 flex flex-col gap-4 lg:order-3 lg:grid lg:w-full lg:grid-cols-2 xl:grid-cols-3"
+    >
+      {
+        posts.map(post => {
+          const displayWidth = 432
+          const displayHeight = Math.round(
+            (displayWidth * (post.cover.height || 1)) / (post.cover.width || 1)
+          )
+          return (
+            <a href={`/posts/${post.id}/`} class="block">
+              <Figure
+                caption={post.title}
+                class="group relative overflow-hidden rounded-lg"
+              >
+                <SunPicture
+                  src={mediaSource(post.cover, Astro)}
+                  width={displayWidth}
+                  height={displayHeight}
+                  format={mediaFormat(post.cover)}
+                  alt={post.cover.alt ?? ""}
+                  breakpoints={[
+                    { minWidth: 1024, width: 440 },
+                    { minWidth: 1280, width: 373 },
+                  ]}
+                  densities={DENSITIES}
+                  sizes="(min-width: 1280px) 373px, (min-width: 1024px) 440px, (min-width: 464px) 432px, calc(100vw - 32px)"
+                  class="h-auto w-full transition ease-in group-hover:scale-110"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </Figure>
+            </a>
+          )
+        })
+      }
+    </div>
+    {
+      !!ctaText && (
+        <div class="order-3 flex items-center sm:flex sm:justify-center lg:order-2 lg:my-1">
+          <BaseButton
+            href={`/categorias/${id}/`}
+            variant="primary-outline"
+            size="medium"
+            class="w-full! px-6! sm:w-fit!"
+          >
+            {ctaText}
+          </BaseButton>
+        </div>
+      )
+    }
+  </div>
+  <TheFeatures title={featuresTitle} features={features} />
+</section>

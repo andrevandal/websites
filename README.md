@@ -14,19 +14,23 @@ Client websites and a shared image service. TypeScript monorepo managed with moo
 - **`websites/bellypao`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/brunabraz`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/clinicamauricioaraujo.com.br`** - Astro site, deployed to Cloudflare Workers.
+- **`websites/pedrohenri`** - Astro site with EmDash CMS, deployed to Cloudflare Workers. Local development uses SQLite and `.data/uploads`; PR Previews use D1/R2 behind Access; staging and production use Turso, S3-compatible media and passkeys.
 - **`websites/transportugal`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/vandallabs`** - Astro site, deployed to Cloudflare Workers.
 
 ### Packages
 
 - **`packages/sun-ui`** — Shared UI components (used by the Astro websites).
-- **`packages/robots-sitemap`** - Astro integration every website registers
-  as `robotsSitemap({ canonicalHost: CANONICAL_SITE_URL })`. It injects
+- **`packages/robots-sitemap`** - Astro integration for static-content websites,
+  registered as `robotsSitemap({ canonicalHost: CANONICAL_SITE_URL })`. It injects
   `/robots.txt` and `/sitemap-index.xml` as request-time endpoints. Robots
   allows crawling only when the request origin is the canonical host (the
   site's `config.json` `canonicalHost`), so Workers Preview origins are
-  disallowed. Both endpoints always name canonical URLs. The sitemap lists the
-  site's static pages.
+  disallowed. Both endpoints always name canonical URLs; the sitemap lists
+  static pages. Pedro uses its own canonical-host robots endpoint and
+  CMS-backed sitemap (`websites/pedrohenri/src/cms/sitemap.ts`), listing
+  published categories and posts with trailing slashes like its internal links
+  and canonical URLs.
 
 ## Deploy environments
 
@@ -71,10 +75,11 @@ projects a change actually affects are linted, typechecked, and tested — then
 `websites/<site>/config.json` sets `IMAGES_BASE_URL` at Worker request time.
 It is the transform proxy, not an asset bucket:
 
-| Stage               | `IMAGES_BASE_URL`                        |
-| ------------------- | ---------------------------------------- |
-| Production          | `https://infra.example.invalid`         |
-| Preview and staging | `https://infra.example.invalid` |
+| Stage                         | `IMAGES_BASE_URL`                                          |
+| ----------------------------- | ---------------------------------------------------------- |
+| Production                    | `https://infra.example.invalid`                           |
+| Staging; other sites' Preview | `https://infra.example.invalid`                   |
+| Pedro Henri Preview           | empty: originals are served directly, no transform service |
 
 Image sources remain in each site's own `files.vandal.services` bucket:
 
@@ -87,7 +92,11 @@ Image sources remain in each site's own `files.vandal.services` bucket:
 | Vandallabs              | No remote image sources currently |
 
 The proxy receives the full source URL after the transform modifiers, URL-encoded.
-Local development with an unset `IMAGES_BASE_URL` uses raw source images.
+Local development with an unset `IMAGES_BASE_URL` uses raw source images. So does
+Pedro Henri's PR Preview (`vars.preview.IMAGES_BASE_URL` is empty, so no
+external transform service): it serves each original directly, never `/_image`
+or the staging image service. Pedro Henri's staging and production use the
+image service.
 Bruna's background patterns and the clinic's image helper use the same runtime
 proxy variable as the shared image components. No bucket names or objects change.
 

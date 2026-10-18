@@ -1,4 +1,4 @@
-name: Cleanup PR Preview
+name: Cleanup PR Preview Resources
 
 on:
   pull_request:
@@ -12,8 +12,9 @@ concurrency:
 
 jobs:
   cleanup:
-    name: Delete Workers Preview pr-${{ github.event.pull_request.number }}
+    name: Delete Preview and PR resources pr-${{ github.event.pull_request.number }}
     # Matches main.yml: fork PRs never get a Preview or Cloudflare credentials.
+    # Every target removes SESSION KV; Pedro and Bruna also remove D1 and nonempty R2.
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-26.04
     strategy:
@@ -24,6 +25,7 @@ jobs:
             bellypao,
             brunabraz,
             clinicamauricioaraujo.com.br,
+            pedrohenri,
             transportugal,
             vandallabs,
           ]
@@ -40,5 +42,5 @@ jobs:
       - name: Init
         uses: ./.github/actions/init
 
-      - name: Cleanup
+      - name: Cleanup Preview and PR resources
         run: bun scripts/deploy.ts cleanup ${{ matrix.target }} --pr ${{ github.event.pull_request.number }}

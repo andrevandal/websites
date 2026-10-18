@@ -1,0 +1,68 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import TheHomeCategoryListing from "@/components/TheHomeCategoryListing.astro"
+import { categoryWithPosts } from "@/cms/queries"
+import { mediaSource } from "@/cms/media"
+import { imageUrl } from "@/utils/images"
+import { getSeoMeta } from "emdash"
+
+const { slug } = Astro.params
+
+if (slug === undefined) {
+  throw new Error("Slug is required")
+}
+
+const category = await categoryWithPosts(slug)
+
+if (!category) {
+  return Astro.rewrite(new URL("/404", Astro.url), { status: 404 })
+}
+
+const { social_image } = category.category
+const socialImage = social_image
+  ? imageUrl(mediaSource(social_image, Astro), {
+      width: 1200,
+      height: 630,
+      format: "auto",
+      quality: 90,
+    })
+  : undefined
+
+// The SEO panel wins; the category name, description and social image are
+// the defaults, and the site's default social image the last fallback.
+const seo = getSeoMeta(category.entry, {
+  siteUrl: Astro.url.origin,
+  path: Astro.url.pathname,
+  defaultTitle: `${category.category.name} - Pedro Henri Design`,
+  defaultDescription: category.category.description,
+  defaultOgImage: socialImage,
+})
+
+const meta = {
+  title: seo.title,
+  description: seo.description ?? undefined,
+  image: seo.ogImage ?? undefined,
+  url: Astro.url,
+  content: {
+    collection: "categories",
+    id: category.category.id,
+    slug: category.slug,
+  },
+}
+---
+
+<Layout {...meta}>
+  <div class="container mx-auto flex flex-col pt-6 pb-8 lg:pt-10 lg:pb-12">
+    <TheHomeCategoryListing
+      id={category.slug}
+      name={category.category.name}
+      featuresTitle={category.category.features_title}
+      features={category.category.features}
+      posts={category.posts.map(post => ({
+        id: post.id,
+        title: post.data.title,
+        cover: post.data.cover,
+      }))}
+    />
+  </div>
+</Layout>

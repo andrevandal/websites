@@ -1,5 +1,4 @@
 ---
-import { Image } from "astro:assets"
 import { getSecret } from "astro:env/server"
 import type { SunPictureProps } from "./Picture.props.ts"
 import {
@@ -139,32 +138,12 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
           )
         })()
       )
-    ) : responsiveWidths ? (
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        quality={quality}
-        format={format}
-        fit={fit}
-        widths={responsiveWidths}
-        sizes={sizes}
-        loading={loading}
-        decoding={decoding}
-        class={cn("aspect-(--ratio)", className)}
-        {...rest}
-      />
     ) : (
-      <Image
+      <img
         src={src}
         alt={alt}
         width={width}
         height={height}
-        quality={quality}
-        format={format}
-        fit={fit}
-        densities={densities}
         loading={loading}
         decoding={decoding}
         class={cn("aspect-(--ratio)", className)}

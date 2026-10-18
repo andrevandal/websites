@@ -1,0 +1,157 @@
+---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { sanitizeHref } from "emdash"
+import { DENSITIES } from "@/utils/images"
+import { mediaUrl, text } from "@/cms/media"
+import { resolveImageLayout } from "./ptimage-layout"
+
+// A Portable Text image block as EmDash stores it: `asset._ref` is the media
+// id, `asset.url` the internal media URL or an external one. A seeded
+// `$media` asset can also carry the MediaValue shape (`id`, `src`, `meta`).
+type Props = {
+  node: {
+    asset?: {
+      _ref?: string
+      id?: string
+      url?: string
+      src?: string
+      meta?: Record<string, unknown>
+      alt?: string
+      width?: number
+      height?: number
+    }
+    alt?: string
+    width?: number
+    height?: number
+    caption?: string
+    title?: string
+    displayWidth?: number
+    displayHeight?: number
+    alignment?: "left" | "center" | "right" | "wide" | "full"
+    link?: string | { href: string; blank?: boolean }
+  }
+}
+
+const { node } = Astro.props
+const asset = node.asset ?? {}
+const src = mediaUrl(
+  {
+    url: text(asset.url) ?? text(asset.src),
+    storageKey: text(asset.meta?.storageKey),
+    id: text(asset._ref) ?? text(asset.id),
+  },
+  Astro
+)
+
+const layout = resolveImageLayout(node, asset, {
+  width: asset.meta?.width as number,
+  height: asset.meta?.height as number,
+})
+
+// Same link rules as EmDash's Image: legacy string or object, sanitized;
+// an unsafe URL leaves the image unlinked.
+const link = typeof node.link === "string" ? { href: node.link } : node.link
+const sanitizedHref = link ? sanitizeHref(link.href) : undefined
+// EmDash returns "#" for rejected links; retain only unchanged, safe input.
+const linkHref = sanitizedHref === link?.href ? sanitizedHref : undefined
+const newTab = !!linkHref && !linkHref.startsWith("#") && link?.blank === true
+
+const isGif = src.toLowerCase().endsWith(".gif")
+const alt = node.alt ?? asset.alt ?? ""
+---
+
+{
+  src && (
+    <figure
+      class:list={[
+        "not-prose my-0 w-full",
+        node.alignment && `image--align-${node.alignment}`,
+      ]}
+      style={layout.maxWidth ? `--cap: ${layout.maxWidth}px` : undefined}
+    >
+      {(() => {
+        const picture = (
+          <SunPicture
+            src={src}
+            alt={alt}
+            title={node.title}
+            width={layout.baseWidth}
+            height={layout.baseHeight}
+            breakpoints={layout.breakpoints}
+            sizes={layout.sizes}
+            densities={DENSITIES}
+            format={isGif ? "gif" : "auto"}
+            quality={90}
+            loading="lazy"
+            wrapperClass="not-prose my-0 w-full"
+            class="h-auto w-full"
+          />
+        )
+        return linkHref ? (
+          <a
+            href={linkHref}
+            target={newTab ? "_blank" : undefined}
+            rel={newTab ? "noopener noreferrer" : undefined}
+          >
+            {picture}
+          </a>
+        ) : (
+          picture
+        )
+      })()}
+      {node.caption && <figcaption>{node.caption}</figcaption>}
+    </figure>
+  )
+}
+
+<style>
+  figure {
+    margin: 1.5rem 0;
+    max-width: var(--cap, none);
+  }
+
+  figcaption {
+    font-size: 0.875rem;
+    color: var(--color-muted, #666);
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+
+  /* Alignment (WordPress-style), same semantics as EmDash's Image. */
+  .image--align-left,
+  .image--align-right {
+    width: fit-content;
+    max-width: min(50%, var(--cap, 50%));
+  }
+
+  .image--align-left {
+    float: left;
+    margin: 0 1.5rem 1rem 0;
+  }
+
+  .image--align-right {
+    float: right;
+    margin: 0 0 1rem 1.5rem;
+  }
+
+  .image--align-center {
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  .image--align-wide,
+  .image--align-full {
+    width: 100%;
+  }
+
+  /* On narrow screens, un-float left/right so the image is not cramped beside text. */
+  @media (max-width: 640px) {
+    .image--align-left,
+    .image--align-right {
+      float: none;
+      width: 100%;
+      max-width: min(100%, var(--cap, 100%));
+      margin-inline: 0;
+    }
+  }
+</style>

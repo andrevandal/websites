@@ -1,0 +1,36 @@
+{
+  "name": "@websites/pedrohenri",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@astrojs/check": "catalog:astro",
+    "@astrojs/cloudflare": "catalog:astro",
+    "@astrojs/partytown": "catalog:astro",
+    "@astrojs/react": "^7.0.0",
+    "@astrojs/ts-plugin": "catalog:astro",
+    "@aws-sdk/client-s3": "catalog:server",
+    "@aws-sdk/s3-request-presigner": "^3.948.0",
+    "@emdash-cms/cloudflare": "^1.2.0",
+    "@vandal-websites/emdash-plugin-analytics": "workspace:*",
+    "@vandal-websites/robots-sitemap": "workspace:*",
+    "@vandal-websites/sun-ui": "workspace:*",
+    "@tailwindcss/typography": "catalog:tailwind",
+    "@tailwindcss/vite": "catalog:tailwind",
+    "astro": "catalog:astro",
+    "astro-iconset": "catalog:astro",
+    "emdash": "^1.2.0",
+    "emdash-smtp": "^0.4.0",
+    "react": "catalog:react",
+    "react-dom": "catalog:react",
+    "tailwindcss": "catalog:tailwind",
+    "typescript": "catalog:typescript"
+  },
+  "devDependencies": {
+    "@astrojs/node": "^11.1.6",
+    "@astrojs/svelte": "catalog:svelte",
+    "svelte": "catalog:svelte",
+    "vite": "catalog:vite",
+    "wrangler": "catalog:tools"
+  }
+}

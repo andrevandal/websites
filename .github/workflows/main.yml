@@ -105,6 +105,9 @@ jobs:
       (github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-26.04
+    # Environment secrets (<SITE>_SECRETS) exist only for staging; previews
+    # use the empty preview environment.
+    environment: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
     strategy:
       fail-fast: false
       matrix:
@@ -130,15 +133,52 @@ jobs:
           mode: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
           target: ${{ matrix.app }}
           pr: ${{ github.event.pull_request.number }}
+          access-team-domain: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenri' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_TEAM_DOMAIN || '' }}
+          access-client-id: ${{ github.ref != 'refs/heads/main' && matrix.app == 'pedrohenri' && secrets.CF_ACCESS_CLIENT_ID || '' }}
+          access-client-secret: ${{ github.ref != 'refs/heads/main' && matrix.app == 'pedrohenri' && secrets.CF_ACCESS_CLIENT_SECRET || '' }}
+          site-secrets: ${{ github.ref == 'refs/heads/main' && secrets[format('{0}_SECRETS', matrix.app)] || '' }}
 
       - name: Lighthouse CI against the preview deploy
         id: lhci
         if: github.event_name == 'pull_request' && steps.deploy.outputs.url != ''
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+          # Selected EmDash previews sit behind Cloudflare Access. Lighthouse
+          # audits a local proxy that adds the Service Auth token, so the token
+          # never reaches the browser, other origins or the report.
+          ACCESS_PROTECTED: ${{ matrix.app == 'pedrohenri' || matrix.app == 'brunabraz' }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
-          bunx @lhci/cli@0.14.x autorun \
-            --collect.url="${{ steps.deploy.outputs.url }}" \
-            --upload.target=temporary-public-storage \
-            --outputDir=.lighthouseci | tee lhci-output.txt
+          audit_url="$PREVIEW_URL"
+          secret=""
+          if [ "$ACCESS_PROTECTED" = "true" ]; then
+            if [ -z "$CF_ACCESS_CLIENT_ID" ] || [ -z "$CF_ACCESS_CLIENT_SECRET" ]; then
+              echo "::warning::Skipping Lighthouse: ${{ matrix.app }} previews are behind Cloudflare Access and CF_ACCESS_CLIENT_ID / CF_ACCESS_CLIENT_SECRET are not set"
+              exit 0
+            fi
+            secret="$CF_ACCESS_CLIENT_SECRET"
+            ACCESS_PROXY_TARGET="$PREVIEW_URL" ACCESS_PROXY_PORT=8788 \
+              bun scripts/ci/access-proxy.ts &
+            proxy_pid=$!
+            trap 'kill "$proxy_pid"' EXIT
+            # only the proxy gets the token; Lighthouse and Chrome never see it
+            unset CF_ACCESS_CLIENT_ID CF_ACCESS_CLIENT_SECRET
+            for _ in $(seq 1 30); do
+              curl -s -o /dev/null http://127.0.0.1:8788/ && break
+              sleep 1
+            done
+            audit_url="http://127.0.0.1:8788/"
+          fi
+          bunx @lhci/cli@0.14.x collect --url="$audit_url"
+          # the report below goes to public storage: fail closed if the token
+          # is anywhere in the results
+          if [ -n "$secret" ] && grep -rqF -- "$secret" .lighthouseci; then
+            echo "::error::The Access service token is in the Lighthouse results; not uploading"
+            exit 1
+          fi
+          bunx @lhci/cli@0.14.x upload \
+            --upload.target=temporary-public-storage | tee lhci-output.txt
           report_url=$(grep -oE 'https://storage\.googleapis\.com/lighthouse[^ ]+\.html' lhci-output.txt | tail -1)
           echo "report-url=${report_url}" >> "$GITHUB_OUTPUT"
 

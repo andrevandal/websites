@@ -1,0 +1,59 @@
+---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { DENSITIES } from "@/utils/images"
+import { mediaSource, mediaFormat } from "@/cms/media"
+import { backgroundStyle, cornerClass, toneClass } from "@/cms/blocks"
+import PostPortableText from "./PostPortableText.astro"
+import type { PostContentPostSplitBlock } from "../../../emdash-env"
+
+type Props = {
+  value: PostContentPostSplitBlock
+}
+
+const { value } = Astro.props
+
+// base 384, breakpoints 408@1024 and 536@1280
+const width = 384
+const height = Math.round(
+  (width * (value.image.height || 1)) / (value.image.width || 1)
+)
+
+const isImageRight = value.image_position === "right"
+---
+
+<div
+  class:list={[
+    "flex w-full flex-wrap items-center gap-8 px-6 pb-12",
+    cornerClass(value.corners, "md"),
+  ]}
+  style={backgroundStyle(value.background)}
+>
+  <div
+    class:list={[
+      "flex min-w-full flex-1 flex-col justify-center sm:min-w-[250px]",
+      isImageRight && "order-last sm:order-none",
+      toneClass(value.tone),
+    ]}
+  >
+    <PostPortableText value={value.body} />
+  </div>
+
+  <div class="not-prose flex min-w-full flex-1 flex-col sm:min-w-[250px]">
+    <SunPicture
+      src={mediaSource(value.image, Astro)}
+      alt={value.image.alt ?? ""}
+      width={width}
+      height={height}
+      breakpoints={[
+        { minWidth: 1024, width: 408 },
+        { minWidth: 1280, width: 536 },
+      ]}
+      sizes="(min-width: 1280px) 536px, (min-width: 1024px) 408px, (min-width: 464px) 384px, calc(100vw - 80px)"
+      densities={DENSITIES}
+      format={mediaFormat(value.image)}
+      quality={90}
+      class="h-auto w-full"
+      wrapperClass="w-full rounded-lg"
+    />
+  </div>
+</div>

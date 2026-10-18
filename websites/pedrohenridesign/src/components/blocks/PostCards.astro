@@ -1,0 +1,44 @@
+---
+import { backgroundStyle, toneClass } from "@/cms/blocks"
+import type { PostContentPostCardsBlock } from "../../../emdash-env"
+
+type Props = {
+  value: PostContentPostCardsBlock
+}
+
+const { value } = Astro.props
+
+// blank lines split paragraphs, single newlines are line breaks
+const paragraphs = (body: string | null | undefined): string[][] =>
+  (body ?? "")
+    .split(/\n\s*\n/)
+    .map(paragraph => paragraph.trim())
+    .filter(Boolean)
+    .map(paragraph => paragraph.split("\n"))
+---
+
+<div class="flex w-full flex-wrap gap-4 pb-4">
+  {
+    (value.cards ?? []).map(card => (
+      <div
+        class:list={[
+          "prose flex min-w-full flex-1 flex-col rounded-md p-6 sm:min-w-[250px] sm:p-8",
+          toneClass(card.tone),
+        ]}
+        style={backgroundStyle(card.background)}
+      >
+        <h3>{card.title}</h3>
+        {paragraphs(card.body).map(lines => (
+          <p>
+            {lines.map((line, index) => (
+              <Fragment>
+                {index > 0 && <br />}
+                {line}
+              </Fragment>
+            ))}
+          </p>
+        ))}
+      </div>
+    ))
+  }
+</div>

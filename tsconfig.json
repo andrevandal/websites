@@ -4,6 +4,9 @@
   "files": [],
   "references": [
     {
+      "path": "./packages/emdash-plugin-analytics"
+    },
+    {
       "path": "./apps/images"
     },
     {

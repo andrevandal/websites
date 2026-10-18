@@ -1,0 +1,205 @@
+---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { DENSITIES, fileUrl } from "@/utils/images"
+import BaseButton from "@/components/BaseButton.astro"
+
+const navigation = [
+  {
+    name: "ID Visual",
+    href: "/categorias/identidade-visual/",
+  },
+  {
+    name: "Web Design",
+    href: "/categorias/web-design/",
+  },
+]
+
+const callToAction = {
+  name: "Contato",
+  href: "https://wa.me/5511965712919",
+}
+---
+
+<header id="topo" class="block">
+  <div class="fixed top-0 z-20 my-2 w-full">
+    <div class="container">
+      <nav
+        class="grid grid-cols-[1fr_40px] flex-wrap gap-x-2 rounded-lg border border-gray-100 bg-white/50 py-3 pr-3 pl-4 backdrop-blur lg:flex lg:flex-row lg:justify-between"
+      >
+        <a href="/#topo" class="block">
+          <SunPicture
+            src={fileUrl("images/icon-pedrohenri.h160.png")}
+            width={36}
+            height={40}
+            densities={DENSITIES}
+            class="h-auto w-full"
+            wrapperClass="w-[33.33px] aspect-(--ratio)"
+            loading="lazy"
+            alt="Logo Pedro Henri Design"
+          />
+        </a>
+        <button
+          id="menu-button"
+          type="button"
+          aria-label="Menu principal"
+          aria-controls="menu"
+          aria-expanded="false"
+          class="menu-toggle"
+        >
+          <span class="icon" aria-hidden="true"></span>
+        </button>
+        <ul id="menu">
+          {
+            navigation.map(item => (
+              <li>
+                <a class="nav-link" href={item.href}>
+                  {item.name}
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <BaseButton
+              href={callToAction.href}
+              variant="primary-outline"
+              size="small"
+              block
+              centered
+            >
+              {callToAction.name}
+            </BaseButton>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+  <div class="container mt-20.5 gap-y-4">
+    <slot />
+  </div>
+</header>
+<script>
+  const fixedNavbar = document.querySelector("#topo nav")
+  const menuButton = document.getElementById("menu-button") as HTMLButtonElement
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 0) return fixedNavbar?.classList.add("actived")
+    return fixedNavbar?.classList.remove("actived")
+  })
+
+  const setMenuOpen = (open: boolean) => {
+    menuButton.setAttribute("aria-expanded", open ? "true" : "false")
+  }
+
+  const closeMenu = () => {
+    setMenuOpen(false)
+  }
+
+  menuButton.addEventListener("click", () => {
+    const isExpanded = menuButton.getAttribute("aria-expanded") === "true"
+    setMenuOpen(!isExpanded)
+  })
+
+  const menuLinks = Array.from(
+    document.querySelectorAll("#menu a")
+  ) as HTMLLinkElement[]
+  menuLinks.forEach(menuLink => {
+    menuLink.addEventListener("click", () => closeMenu())
+  })
+
+  // Click outside
+  document.addEventListener(
+    "click",
+    event => {
+      const target = event.target as HTMLElement
+      if (
+        !target.closest("#menu") &&
+        !target.closest("#menu-button") &&
+        menuButton.getAttribute("aria-expanded") === "true"
+      ) {
+        closeMenu()
+      }
+    },
+    false
+  )
+
+  // Escape closes menu and returns focus to button
+  document.addEventListener("keydown", event => {
+    if (
+      event.key === "Escape" &&
+      menuButton.getAttribute("aria-expanded") === "true"
+    ) {
+      closeMenu()
+      menuButton.focus()
+    }
+  })
+</script>
+<style>
+  @reference "../styles/global.css";
+
+  #menu-button {
+    @apply inline-flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end rounded-lg border border-transparent p-2 select-none;
+    @apply lg:hidden;
+  }
+
+  #menu-button:focus-visible {
+    @apply outline-2 outline-offset-2 outline-gray-900;
+  }
+
+  .icon {
+    @apply relative block h-[2px] w-[21.33px] rounded-full bg-gray-900 transition-colors ease-out;
+  }
+
+  .icon:before,
+  .icon:after {
+    @apply absolute block h-full w-full rounded-full bg-gray-900 transition-all ease-out content-[''];
+  }
+
+  .icon:before {
+    @apply top-2;
+  }
+
+  .icon:after {
+    @apply -top-2;
+  }
+
+  #menu {
+    @apply invisible col-span-2 clear-both box-border max-h-0 overflow-hidden transition-[max-height] duration-200 ease-out will-change-auto;
+    @apply lg:visible lg:flex lg:max-h-fit lg:items-center lg:justify-center lg:gap-x-2 lg:pt-0;
+  }
+
+  #menu li:last-of-type {
+    @apply mt-2 lg:mt-0 lg:ml-4;
+  }
+  #menu li:last-of-type a {
+    @apply h-10;
+  }
+
+  #menu-button[aria-expanded="true"] ~ #menu {
+    @apply visible max-h-fit pt-4 pb-3 lg:p-0;
+  }
+
+  #menu-button[aria-expanded="true"] .icon {
+    @apply bg-transparent;
+  }
+
+  #menu-button[aria-expanded="true"] .icon:before {
+    @apply top-0 -rotate-45;
+  }
+
+  #menu-button[aria-expanded="true"] .icon:after {
+    @apply top-0 rotate-45;
+  }
+
+  .nav-link {
+    @apply inline-flex h-12 w-full items-center rounded-lg px-2 font-semibold text-gray-900 transition-colors ease-out hover:bg-gray-900/15;
+    @apply lg:h-10 lg:w-fit lg:px-6 lg:py-3;
+  }
+
+  #topo nav.actived {
+    @apply bg-white/50 backdrop-blur;
+  }
+
+  #topo nav:has(#menu-button[aria-expanded="true"]) {
+    @apply rounded-b-lg bg-white/50 backdrop-blur;
+  }
+</style>

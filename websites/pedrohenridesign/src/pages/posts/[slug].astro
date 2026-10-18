@@ -1,0 +1,72 @@
+---
+import { publishedPost } from "@/cms/queries"
+import { mediaSource } from "@/cms/media"
+import { imageUrl } from "@/utils/images"
+import { getSeoMeta } from "emdash"
+import Layout from "@/layouts/Layout.astro"
+import PostBlocks from "@/components/blocks/PostBlocks.astro"
+
+const { slug } = Astro.params
+
+// Fetch post by slug (SSR, no prerender)
+const postData = await publishedPost(slug!)
+
+// Handle 404
+if (!postData) {
+  return Astro.rewrite("/404")
+}
+
+const { entry, post, category, categorySlug } = postData
+
+// Default share image: the post's social image, else its cover, resized for
+// 1200x630; the SEO panel image wins, then the site's default social image.
+const socialImageSrc = post.social_image
+  ? mediaSource(post.social_image, { url: Astro.url, locals: Astro.locals })
+  : post.cover
+    ? mediaSource(post.cover, { url: Astro.url, locals: Astro.locals })
+    : ""
+
+const seo = getSeoMeta(entry, {
+  siteUrl: Astro.url.origin,
+  path: Astro.url.pathname,
+  defaultTitle: `${post.title} - Pedro Henri Design`,
+  defaultDescription: post.description,
+  defaultOgImage: socialImageSrc
+    ? imageUrl(socialImageSrc, {
+        width: 1200,
+        height: 630,
+        format: "auto",
+        quality: 90,
+      })
+    : undefined,
+})
+---
+
+<Layout
+  title={seo.title}
+  description={seo.description ?? undefined}
+  image={seo.ogImage ?? undefined}
+  url={Astro.url}
+  content={{ collection: "posts", id: post.id, slug: entry.id }}
+>
+  <article class="container mx-auto flex flex-col pt-6 pb-8 lg:pt-10 lg:pb-12">
+    <header class="flex flex-col pb-4">
+      {
+        category && (
+          <a
+            href={`/categorias/${categorySlug}/`}
+            class="text-sm leading-[1.059rem] text-gray-500 uppercase"
+          >
+            {category.name}
+          </a>
+        )
+      }
+      <h1 class="text-[2rem] leading-[2.421rem] font-bold text-gray-900">
+        {post.title}
+      </h1>
+    </header>
+    <div class="prose w-full max-w-full">
+      <PostBlocks blocks={post.content ?? []} />
+    </div>
+  </article>
+</Layout>

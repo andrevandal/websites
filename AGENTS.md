@@ -32,6 +32,28 @@ file (`bun test <path>`), then the project (`moon run <project>:test`), then
 `coverage.config.ts` sets per-project coverage thresholds. Its allowlist only
 shrinks; each entry cites the issue that removes it.
 
+## Images
+
+Start a website locally from its example file:
+
+```sh
+cp websites/<site>/.env.example websites/<site>/.env
+```
+
+It points `IMAGES_BASE_URL` at the staging image service, so pages render the
+same markup (`srcset`, `sizes`, placeholders) as deployed Stages. Do not leave
+it empty.
+
+The image service (`apps/images`) serves 1x, 1.5x, 2x, 2.5x and 3x from one
+bucket original and never upscales. Originals should be at least 3x the widest
+CSS width they render at. Do not re-export or resize images to fit; the
+service returns the exact size.
+
+After adding or resizing images on any website page, run
+`bun scripts/audit-images.ts <url...> -v <viewport widths>` against the dev
+server or a preview and report what it flags. It is a local tool, not part of
+CI.
+
 ## Code style
 
 - Arrow functions only, `type` over `interface`; oxlint enforces both.
@@ -69,7 +91,8 @@ shrinks; each entry cites the issue that removes it.
   deprecated path.
 - Ask before changing root configs (`.moon/`, `tsconfig*.json`,
   `lefthook.yml`, root `package.json` scripts) or `.github/`.
-- Keep secrets out of git; `.env.example` lists every key, values omitted.
+- Keep secrets out of git; `.env.example` lists every key, with secret values
+  omitted and non-secret local defaults (`IMAGES_BASE_URL`) filled in.
 
 ## Planning and decisions
 

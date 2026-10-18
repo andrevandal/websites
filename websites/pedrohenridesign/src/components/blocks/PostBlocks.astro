@@ -1,0 +1,32 @@
+---
+import type { PostContentBlock } from "../../../emdash-env"
+import PostText from "./PostText.astro"
+import PostImage from "./PostImage.astro"
+import PostSplit from "./PostSplit.astro"
+import PostCards from "./PostCards.astro"
+
+type Props = {
+  blocks: PostContentBlock[]
+}
+
+const { blocks } = Astro.props
+---
+
+<>
+  {
+    blocks.map(block => {
+      switch (block._type) {
+        case "post_text":
+          return <PostText value={block} />
+        case "post_image":
+          return <PostImage value={block} />
+        case "post_split":
+          return <PostSplit value={block} />
+        case "post_cards":
+          return <PostCards value={block} />
+        default:
+          return null
+      }
+    })
+  }
+</>

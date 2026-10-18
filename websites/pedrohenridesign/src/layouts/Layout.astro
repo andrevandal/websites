@@ -1,0 +1,103 @@
+---
+import "@/styles/global.css"
+import { getSecret } from "astro:env/server"
+import type { HTMLAttributes } from "astro/types"
+import { SunLayout, runtimeBoolean } from "@vandal-websites/sun-ui/astro"
+import { getSiteSettings } from "emdash"
+import { loadAnalyticsSettings } from "@vandal-websites/emdash-plugin-analytics/settings"
+import { EmDashHead, EmDashBodyStart, EmDashBodyEnd } from "emdash/ui"
+import { createPublicPageContext } from "emdash/page"
+import TheHeader from "@/components/TheHeader.astro"
+import { fileUrl, imageUrl } from "@/utils/images"
+import TheFooter from "@/components/TheFooter.astro"
+
+type Props = {
+  title?: string
+  description?: string
+  // Absolute URL or site-relative path; without one, EmDashHead falls back to
+  // the default social image in the site settings.
+  image?: string
+  url: URL
+  links?: HTMLAttributes<"link">[]
+  content?: { collection: string; id: string; slug?: string | null }
+}
+
+const { title, description, image, url, links, content } = Astro.props
+
+// EmDashHead renders the SEO tags. Title and description fall back to the
+// site title and tagline, so no page renders empty share metadata.
+const site = await getSiteSettings()
+const pageTitle = title || site.title || ""
+const pageDescription = description || site.tagline || ""
+
+// Tracking IDs are edited in the admin's Analytics page (plugin "analytics");
+// the Partytown gate is the ENABLE_PARTYTOWN Stage var.
+const gtag = {
+  ...(await loadAnalyticsSettings()),
+  partytown: runtimeBoolean(getSecret, "ENABLE_PARTYTOWN"),
+}
+
+// Pages without their own share image use the site's default social image
+// (Settings > SEO) when one is set and resolves, else the bucket's imagem-social.png.
+const defaultOgImageUrl = site.seo?.defaultOgImage?.url
+const shareImage =
+  image ||
+  (defaultOgImageUrl
+    ? undefined
+    : imageUrl(fileUrl("images/imagem-social.png"), {
+        width: 1200,
+        height: 630,
+        format: "auto",
+        quality: 90,
+      }))
+
+// Build canonical from pathname
+const canonicalUrl = new URL(import.meta.env.SITE)
+canonicalUrl.pathname = `${url.pathname.replace(/\/+$/, "")}/`
+canonicalUrl.search = ""
+canonicalUrl.hash = ""
+
+const page = createPublicPageContext({
+  Astro,
+  kind: content ? "content" : "custom",
+  pageType: "website",
+  title: pageTitle,
+  description: pageDescription,
+  canonical: canonicalUrl.toString(),
+  siteName: site.title,
+  siteUrl: import.meta.env.SITE,
+  // Absolute URLs pass through; site-relative paths resolve against the page.
+  image: shareImage ? new URL(shareImage, url).toString() : undefined,
+  content,
+})
+---
+
+<SunLayout
+  title={pageTitle}
+  description={pageDescription}
+  url={url}
+  links={links}
+  gtag={gtag}
+  seoTags={false}
+  class="font-stara scroll-p-20.5"
+>
+  <Fragment slot="close-head">
+    <link
+      href="/css/fonts.css"
+      rel="preload"
+      as="style"
+      onload="this.rel='stylesheet'"
+    />
+    <noscript><link rel="stylesheet" href="/css/fonts.css" /></noscript>
+    <EmDashHead page={page} />
+  </Fragment>
+  <EmDashBodyStart page={page} slot="open-body" />
+  <TheHeader>
+    <slot name="header" />
+  </TheHeader>
+  <slot />
+  <TheFooter>
+    <slot name="footer" />
+  </TheFooter>
+  <EmDashBodyEnd page={page} slot="close-body" />
+</SunLayout>

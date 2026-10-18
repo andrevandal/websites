@@ -1,0 +1,52 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import TheHomeHero from "@/components/TheHomeHero.astro"
+import TheHomeCategoryListing from "@/components/TheHomeCategoryListing.astro"
+import { getSeoMeta } from "emdash"
+import { homePage, showcaseCategories } from "@/cms/queries"
+
+const [categories, home] = await Promise.all([showcaseCategories(), homePage()])
+
+// Title, description and share image come from the home entry's SEO panel;
+// without the entry, Layout falls back to the site title and tagline.
+const seo = home
+  ? getSeoMeta(home, { siteUrl: Astro.url.origin, path: Astro.url.pathname })
+  : undefined
+
+const meta = {
+  title: seo?.title,
+  description: seo?.description ?? undefined,
+  image: seo?.ogImage ?? undefined,
+  url: Astro.url,
+  content: home && {
+    collection: "pages",
+    id: home.data.id,
+    slug: home.id,
+  },
+}
+---
+
+<Layout {...meta}>
+  <TheHomeHero slot="header" />
+  <div
+    class="container mx-auto flex flex-col gap-y-16 py-16 lg:gap-y-22 lg:py-22"
+  >
+    {
+      categories.map(cat => (
+        <TheHomeCategoryListing
+          id={cat.slug}
+          name={cat.category.name}
+          ctaText={cat.category.cta_text}
+          featuresTitle={cat.category.features_title}
+          features={cat.category.features}
+          shrink
+          posts={cat.posts.slice(0, 7).map(post => ({
+            id: post.id,
+            title: post.data.title,
+            cover: post.data.cover,
+          }))}
+        />
+      ))
+    }
+  </div>
+</Layout>

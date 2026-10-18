@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pedrohenri",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "nodejs_compat_populate_process_env"
+  ],
+  "compatibility_date": "2025-01-01",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+    "redact_query_string": false,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true
+    },
+    "issues": {
+      "enabled": true
+    }
+  },
+  "previews": {
+    "observability": {
+      "enabled": false,
+      "logs": { "enabled": false },
+      "traces": { "enabled": false },
+      "issues": { "enabled": false }
+    }
+  },
+  "assets": {
+    "directory": "./dist"
+  }
+}

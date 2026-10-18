@@ -9,17 +9,13 @@ const baseUrl = "https://www.googletagmanager.com"
 const attrs = ENABLE_PARTYTOWN ? { type: "text/partytown" } : {}
 
 const gtagDataLayerInit = `window.dataLayer=window.dataLayer||[],window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};`
+const gtagSrc = `${baseUrl}/gtag/js?id=${encodeURIComponent(gtagId ?? "")}`
 ---
 
 {
   placement === "head" && gtagId && (
     <Fragment>
-      <script
-        is:inline
-        async
-        src={`${baseUrl}/gtag/js?id=${gtagId}`}
-        {...attrs}
-      />
+      <script is:inline async src={gtagSrc} {...attrs} />
       <script is:inline {...attrs} set:html={gtagDataLayerInit} />
       {ENABLE_PARTYTOWN && <script is:inline set:html={gtagDataLayerInit} />}
       {Astro.props.placement === "head" &&
@@ -27,12 +23,12 @@ const gtagDataLayerInit = `window.dataLayer=window.dataLayer||[],window.gtag=win
         Astro.props.conversionLabel && (
           <script
             is:inline
-            set:html={`window.gtag_report_conversion=function(){window.gtag("event","conversion",{send_to:'${Astro.props.conversionId}/${Astro.props.conversionLabel}',value:1,currency:"BRL"})};`}
+            set:html={`window.gtag_report_conversion=function(){window.gtag("event","conversion",{send_to:${JSON.stringify(Astro.props.conversionId + "/" + Astro.props.conversionLabel).replaceAll("<", "\\u003c")},value:1,currency:"BRL"})};`}
           />
         )}
       <script
         is:inline
-        set:html={`window.gtagInit=function(){gtag("js",new Date),gtag("config","${gtagId}"),gtag("consent","default",{ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",analytics_storage:"denied"})},window.gtagInit(),window.__ga_after_swap_added||(window.__ga_after_swap_added=!0,document.addEventListener("astro:after-swap",function(){window.gtagInit()}));`}
+        set:html={`window.gtagInit=function(){gtag("js",new Date),gtag("config",${JSON.stringify(gtagId ?? "").replaceAll("<", "\\u003c")}),gtag("consent","default",{ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",analytics_storage:"denied"})},window.gtagInit(),window.__ga_after_swap_added||(window.__ga_after_swap_added=!0,document.addEventListener("astro:after-swap",function(){window.gtagInit()}));`}
       />
       <script
         is:inline
@@ -45,7 +41,7 @@ const gtagDataLayerInit = `window.dataLayer=window.dataLayer||[],window.gtag=win
   placement === "body" && gtagId && (
     <noscript>
       <iframe
-        src={`${baseUrl}/gtag/js?id=${gtagId}`}
+        src={gtagSrc}
         height="0"
         width="0"
         style="display:none;visibility:hidden"

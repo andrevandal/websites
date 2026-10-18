@@ -1,0 +1,3715 @@
+{
+  "$schema": "https://emdashcms.com/seed.schema.json",
+  "version": "1",
+  "defaultLocale": "pt-BR",
+  "meta": {
+    "name": "Pedro Henri Design",
+    "description": "Portfolio of Pedro Henri Design",
+    "author": "websites"
+  },
+  "settings": {
+    "title": "Pedro Henri Design",
+    "tagline": "O poder do design que se destaca em um mundo de ruídos. Crio identidades visuais, sites e experiências de UI/UX para marcas que visam o crescimento e inovação.",
+    "social": {
+      "instagram": "https://www.instagram.com/pedrohenri.design/",
+      "linkedin": "https://www.linkedin.com/in/pedro-henrique-92b806bb/"
+    },
+    "seo": {
+      "defaultOgImage": {
+        "$media": {
+          "url": "https://files.vandal.services/pedrohenridesign/images/imagem-social.png",
+          "filename": "imagem-social.png",
+          "alt": "Pedro Henri Design - Inovação em cada pixel"
+        }
+      }
+    }
+  },
+  "taxonomies": [
+    {
+      "name": "category",
+      "label": "Categories",
+      "labelSingular": "Category",
+      "hierarchical": true,
+      "collections": []
+    },
+    {
+      "name": "tag",
+      "label": "Tags",
+      "labelSingular": "Tag",
+      "hierarchical": false,
+      "collections": []
+    }
+  ],
+  "blockTypes": [
+    {
+      "slug": "post_cards",
+      "label": "Colored cards",
+      "category": "Content",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "cards",
+              "label": "Cards",
+              "type": "repeater",
+              "validation": {
+                "minItems": 1,
+                "maxItems": 6,
+                "subFields": [
+                  {
+                    "slug": "title",
+                    "label": "Title",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "body",
+                    "label": "Text (blank line splits paragraphs)",
+                    "type": "text",
+                    "required": true
+                  },
+                  {
+                    "slug": "background",
+                    "label": "Background color (hex)",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "tone",
+                    "label": "Text color",
+                    "type": "select",
+                    "options": ["light", "dark"]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "post_image",
+      "label": "Image",
+      "category": "Content",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "image",
+              "label": "Image",
+              "type": "image",
+              "required": true
+            },
+            {
+              "slug": "background",
+              "type": "string",
+              "label": "Background color (hex, optional)"
+            },
+            {
+              "slug": "corners",
+              "label": "Rounded corners",
+              "type": "select",
+              "required": true,
+              "defaultValue": "none",
+              "validation": {
+                "options": ["none", "top", "bottom", "both"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "post_split",
+      "label": "Text and image",
+      "category": "Content",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "body",
+              "label": "Text",
+              "type": "portableText",
+              "required": true
+            },
+            {
+              "slug": "image",
+              "label": "Image",
+              "type": "image",
+              "required": true
+            },
+            {
+              "slug": "image_position",
+              "label": "Image position",
+              "type": "select",
+              "required": true,
+              "defaultValue": "right",
+              "validation": {
+                "options": ["left", "right"]
+              }
+            },
+            {
+              "slug": "tone",
+              "label": "Text color",
+              "type": "select",
+              "required": true,
+              "defaultValue": "light",
+              "validation": {
+                "options": ["light", "dark"]
+              }
+            },
+            {
+              "slug": "background",
+              "type": "string",
+              "label": "Background color (hex, optional)"
+            },
+            {
+              "slug": "corners",
+              "label": "Rounded corners",
+              "type": "select",
+              "required": true,
+              "defaultValue": "none",
+              "validation": {
+                "options": ["none", "top", "bottom", "both"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "post_text",
+      "label": "Text",
+      "category": "Content",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "body",
+              "label": "Text",
+              "type": "portableText",
+              "required": true
+            },
+            {
+              "slug": "tone",
+              "label": "Text color",
+              "type": "select",
+              "required": true,
+              "defaultValue": "light",
+              "validation": {
+                "options": ["light", "dark"]
+              }
+            },
+            {
+              "slug": "background",
+              "type": "string",
+              "label": "Background color (hex, optional)"
+            },
+            {
+              "slug": "corners",
+              "label": "Rounded corners",
+              "type": "select",
+              "required": true,
+              "defaultValue": "none",
+              "validation": {
+                "options": ["none", "top", "bottom", "both"]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "slug": "pages",
+      "label": "Pages",
+      "labelSingular": "Page",
+      "supports": ["drafts", "revisions", "preview", "seo"],
+      "routable": false,
+      "sortOrder": 0,
+      "titleField": "title",
+      "description": "The home page. Its SEO panel sets the home page title, description and share image.",
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "slug": "categories",
+      "label": "Categories",
+      "labelSingular": "Category",
+      "supports": ["drafts", "revisions", "preview", "seo"],
+      "urlPattern": "/categorias/{slug}",
+      "sortOrder": 1,
+      "titleField": "name",
+      "fields": [
+        {
+          "slug": "name",
+          "label": "Name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "description",
+          "label": "Description",
+          "type": "text",
+          "required": true
+        },
+        {
+          "slug": "social_image",
+          "label": "Share image",
+          "type": "image"
+        },
+        {
+          "slug": "posts",
+          "label": "Posts",
+          "type": "reference",
+          "validation": {
+            "relation": "posts_category",
+            "relationSide": "child",
+            "targetCollection": "posts"
+          }
+        },
+        {
+          "slug": "showcase",
+          "label": "Home page position (0 hides it from the home page)",
+          "type": "integer",
+          "required": true,
+          "defaultValue": 0
+        },
+        {
+          "slug": "cta_text",
+          "label": "Home page button text",
+          "type": "string"
+        },
+        {
+          "slug": "features_title",
+          "label": "Process title",
+          "type": "string"
+        },
+        {
+          "slug": "features",
+          "label": "Process steps",
+          "type": "repeater",
+          "validation": {
+            "maxItems": 8,
+            "subFields": [
+              {
+                "slug": "icon",
+                "label": "Icon",
+                "type": "select",
+                "required": true,
+                "options": [
+                  "apresentacao",
+                  "codificacao",
+                  "concepcao",
+                  "descoberta",
+                  "entrega",
+                  "mapeamento",
+                  "otimizacao-seo",
+                  "prototipo"
+                ]
+              },
+              {
+                "slug": "title",
+                "label": "Title",
+                "type": "string",
+                "required": true
+              },
+              {
+                "slug": "description",
+                "label": "Description",
+                "type": "text",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "posts",
+      "label": "Posts",
+      "labelSingular": "Post",
+      "supports": ["drafts", "revisions", "preview", "seo"],
+      "urlPattern": "/posts/{slug}",
+      "sortOrder": 2,
+      "titleField": "title",
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "description",
+          "label": "Description",
+          "type": "text",
+          "required": true
+        },
+        {
+          "slug": "cover",
+          "label": "Cover",
+          "type": "image",
+          "required": true
+        },
+        {
+          "slug": "social_image",
+          "label": "Share image",
+          "type": "image"
+        },
+        {
+          "slug": "category",
+          "label": "Category",
+          "type": "reference",
+          "required": true,
+          "validation": {
+            "relation": "posts_category",
+            "relationSide": "parent",
+            "targetCollection": "categories"
+          }
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "blocks",
+          "validation": {
+            "allowedTypes": [
+              "post_text",
+              "post_image",
+              "post_split",
+              "post_cards"
+            ],
+            "retiredTypes": [],
+            "minItems": 0,
+            "maxItems": 60
+          }
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "slug": "posts_category",
+      "parentCollection": "posts",
+      "childCollection": "categories",
+      "parentLabel": "Posts",
+      "parentLabelSingular": "Post",
+      "childLabel": "Category",
+      "childLabelSingular": "Category",
+      "maxChildrenPerParent": 1,
+      "maxParentsPerChild": null
+    }
+  ],
+  "content": {
+    "pages": [
+      {
+        "id": "page-home",
+        "slug": "inicio",
+        "status": "published",
+        "data": {
+          "title": "Pedro Henri Design - Inovação em cada pixel"
+        },
+        "seo": {
+          "title": "Pedro Henri Design - Inovação em cada pixel",
+          "description": "O poder do design que se destaca em um mundo de ruídos. Crio identidades visuais, sites e experiências de UI/UX para marcas que visam o crescimento e inovação.",
+          "image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/images/imagem-social.png",
+              "filename": "imagem-social.png",
+              "alt": "Pedro Henri Design - Inovação em cada pixel"
+            }
+          }
+        }
+      }
+    ],
+    "categories": [
+      {
+        "id": "category-arquivado",
+        "slug": "arquivado",
+        "status": "draft",
+        "data": {
+          "name": "Arquivo",
+          "description": "Mussum Ipsum, cacilds vidis litro abertis. Mauris nec dolor in eros commodo tempor. Aenean aliquam molestie leo, vitae iaculis nisl.",
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/100-960x538.jpg",
+              "filename": "100-960x538.jpg"
+            }
+          },
+          "showcase": 0,
+          "features": []
+        }
+      },
+      {
+        "id": "category-identidade-visual",
+        "slug": "identidade-visual",
+        "status": "published",
+        "data": {
+          "name": "Identidade Visual",
+          "description": "Criação de Identidade Visual profissional para marcas. Transformo ideias em identidades únicas com um processo estratégico que une pesquisa, análise de mercado, criatividade e design funcional.",
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/images/imagem-social.png",
+              "filename": "imagem-social.png"
+            }
+          },
+          "showcase": 2,
+          "cta_text": "Portfólio completo",
+          "features_title": "Processo pensado para fortalecer sua marca",
+          "features": [
+            {
+              "icon": "descoberta",
+              "title": "1. Imersão",
+              "description": "A essência da sua marca é coletada por meio de um briefing detalhado, capturando os valores e objetivos que guiarão todo o projeto."
+            },
+            {
+              "icon": "concepcao",
+              "title": "2. Concepção",
+              "description": "É analisado o mercado e referências visuais, alinhando a estratégia ao que sua marca precisa comunicar, sempre com foco em inovação e relevância."
+            },
+            {
+              "icon": "apresentacao",
+              "title": "3. Apresentação",
+              "description": "Você recebe o projeto final com explicações claras sobre cada escolha criativa, entendendo como chegamos à identidade perfeita para sua marca."
+            },
+            {
+              "icon": "entrega",
+              "title": "4. Entrega",
+              "description": "É enviado a você todos os arquivos necessários e guias práticas para a aplicação da nova identidade em qualquer mídia."
+            }
+          ]
+        }
+      },
+      {
+        "id": "category-web-design",
+        "slug": "web-design",
+        "status": "published",
+        "data": {
+          "name": "Web Design",
+          "description": "Desenvolvimento de sites e landing pages com foco em alta conversão e performance. Nosso design garante uma experiência do usuário intuitiva, carregamento rápido, e otimização SEO para aumentar sua visibilidade online e trazer vantagem competitiva.",
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/images/imagem-social.png",
+              "filename": "imagem-social.png"
+            }
+          },
+          "showcase": 1,
+          "cta_text": "Portfólio completo",
+          "features_title": "Processo pensado para gerar resultado",
+          "features": [
+            {
+              "icon": "mapeamento",
+              "title": "1. Mapeamento",
+              "description": "Os dados indispensáveis para o desenvolvimento da interface é reunido através de um briefing detalhado."
+            },
+            {
+              "icon": "prototipo",
+              "title": "2. Protótipo",
+              "description": "É feito um protótipo interativo focado na experiência do usuário, permitindo uma prévia clara antes do desenvolvimento."
+            },
+            {
+              "icon": "codificacao",
+              "title": "3. Desenvolvimento",
+              "description": "Após a aprovação, transformamos o design em um site funcional e completo, focado em gerar resultado."
+            },
+            {
+              "icon": "otimizacao-seo",
+              "title": "4. Otimizações",
+              "description": "Executamos a otimização para assegurar velocidade, acessibilidade e SEO para maximizar sua visibilidade."
+            }
+          ]
+        }
+      }
+    ],
+    "posts": [
+      {
+        "id": "post-idv_advanced-circuit-ctp",
+        "slug": "idv_advanced-circuit-ctp",
+        "status": "published",
+        "data": {
+          "title": "Advanced Circuit CTP - Identidade Visual",
+          "description": "A marca Advanced Circuit representa uma abordagem dinâmica e exclusiva à atividade física. Sua identidade visual capta a essência de ser mais do que uma academia comum – é um campo onde individualidade e adaptação são os princípios de cada atividade.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk1",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b3",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2",
+                      "text": "A marca Advanced Circuit representa uma abordagem dinâmica e exclusiva à atividade física.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b5",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s4",
+                      "text": "Sua identidade visual capta a essência de ser mais do que uma academia comum – é um campo onde individualidade e adaptação são os princípios de cada atividade.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/idv_advanced-circuit_01.png",
+                  "filename": "idv_advanced-circuit_01.png"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/idv_advanced-circuit_03.png",
+                  "filename": "idv_advanced-circuit_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/idv_advanced-circuit_04.png",
+                  "filename": "idv_advanced-circuit_04.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk9",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/idv_advanced-circuit_05.png",
+                  "filename": "idv_advanced-circuit_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blka",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/idv_advanced-circuit_06.png",
+                  "filename": "idv_advanced-circuit_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blkb",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/idv_advanced-circuit_07.png",
+                  "filename": "idv_advanced-circuit_07.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blkc",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/idv_advanced-circuit_08.png",
+                  "filename": "idv_advanced-circuit_08.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blkd",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_advanced-circuit/idv_advanced-circuit_09.png",
+                  "filename": "idv_advanced-circuit_09.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      },
+      {
+        "id": "post-text2",
+        "slug": "text2",
+        "status": "draft",
+        "data": {
+          "title": "Teste página privada",
+          "description": "Mussum Ipsum, cacilds vidis litro abertis. Mauris nec dolor in eros commodo tempor. Aenean aliquam molestie leo, vitae iaculis nisl.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/180-960x538.jpg",
+              "filename": "180-960x538.jpg"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/180-960x538.jpg",
+              "filename": "180-960x538.jpg"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blke",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "bg",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sf",
+                      "text": "Mussum Ipsum, cacilds vidis litro abertis. Mauris nec dolor in eros commodo tempor. Aenean aliquam molestie leo, vitae iaculis nisl. Delegadis gente finis, bibendum egestas augue arcu ut est. Suco de cevadiss, é um leite divinis, qui tem lupuliz, matis, aguis e fermentis. Quem num gosta di mé, boa gentis num é.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "bi",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sh",
+                      "text": "Quem num gosta di mim que vai caçá sua turmis! Nullam volutpat risus nec leo commodo, ut interdum diam laoreet. Sed non consequat odio. Pra lá, depois divoltis porris, paradis. Leite de capivaris, leite de mula manquis sem cabeça.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "bk",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sj",
+                      "text": "Hoje é sexta-feris, dia da maldadis! Pellentesque nec nulla ligula. Donec gravida turpis a vulputate ultricies. Casamentiss faiz malandris se pirulitá. Não sou faixa preta cumpadi, sou preto inteiris, inteiris.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "bm",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sl",
+                      "text": "Heading 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "bo",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sn",
+                      "text": "Leite de capivaris, leite de mula manquis sem cabeça. Aenean aliquam molestie leo, vitae iaculis nisl. Ô gente finis, pode baixar uma ampolis que hoje é sexta-feris! Delegadis gente finis, bibendum egestas augue arcu ut est.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "bq",
+                  "style": "h3",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sp",
+                      "text": "Heading 3",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "bs",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sr",
+                      "text": "Interessantiss quisso pudia ce receita de bolis, mais bolis eu num gostis. Per aumento de cachacis, eu reclamis. Nec orci ornare consequat. Praesent lacinia ultrices consectetur. Sed non ipsum felis. Copo furadis é disculpa de bebadis, arcu quam euismod magna.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "bu",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "st",
+                      "text": "Cevadis im ampola pa arma uma pindureta. Leite de capivaris, leite de mula manquis sem cabeça. Copo furadis é disculpa de bebadis, arcu quam euismod magna. Nulla id gravida magna, ut semper sapien.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "bw",
+                  "style": "h4",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sv",
+                      "text": "Heading 4",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "by",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sx",
+                      "text": "Atirei o pau no gatis, per gatis num morreus. Nullam volutpat risus nec leo commodo, ut interdum diam laoreet. Sed non consequat odio. Suco de cevadiss, é um leite divinis, qui tem lupuliz, matis, aguis e fermentis. Bota 1 metro de cachacis aí pra viagem!",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b10",
+                  "style": "h5",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "sz",
+                      "text": "Heading 5",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b12",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s11",
+                      "text": "Paisis, filhis, espiritis santis. Mais vale um bebadis conhecidiss, que um alcoolatra anonimis. Posuere libero varius. Nullam a nisl ut ante blandit hendrerit. Aenean sit amet nisi. Negão é teu passadis, eu sou faxa pretis.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b14",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s13",
+                      "text": "Heading 2 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b16",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s15",
+                      "text": "Leite de capivaris, leite de mula manquis sem cabeça. Aenean aliquam molestie leo, vitae iaculis nisl. Ô gente finis, pode baixar uma ampolis que hoje é sexta-feris! Delegadis gente finis, bibendum egestas augue arcu ut est.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b18",
+                  "style": "h3",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s17",
+                      "text": "Heading 3 2",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b1a",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s19",
+                      "text": "Interessantiss quisso pudia ce receita de bolis, mais bolis eu num gostis. Per aumento de cachacis, eu reclamis. Nec orci ornare consequat. Praesent lacinia ultrices consectetur. Sed non ipsum felis. Copo furadis é disculpa de bebadis, arcu quam euismod magna.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b1c",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s1b",
+                      "text": "Cevadis im ampola pa arma uma pindureta. Leite de capivaris, leite de mula manquis sem cabeça. Copo furadis é disculpa de bebadis, arcu quam euismod magna. Nulla id gravida magna, ut semper sapien.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            }
+          ],
+          "category": "$ref:category-web-design"
+        }
+      },
+      {
+        "id": "post-lp-lucas-ribeiro",
+        "slug": "lp-lucas-ribeiro",
+        "status": "published",
+        "data": {
+          "title": "Lucas Ribeiro - Landing Page",
+          "description": "Lucas Ribeiro é um programador web especializado em SEO e performance, dedicado a otimizar sites para melhorar a visibilidade online, a experiência do usuário e a conversão, garantindo que empresas alcance novos patamares de sucesso na web.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1n",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/lp_lucas-ribeiro_01.png",
+                  "filename": "lp_lucas-ribeiro_01.png"
+                }
+              },
+              "corners": "top"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1o",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/lp_lucas-ribeiro_02.png",
+                  "filename": "lp_lucas-ribeiro_02.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1p",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/lp_lucas-ribeiro_03.png",
+                  "filename": "lp_lucas-ribeiro_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1q",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/lp_lucas-ribeiro_04.png",
+                  "filename": "lp_lucas-ribeiro_04.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1r",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/lp_lucas-ribeiro_05.png",
+                  "filename": "lp_lucas-ribeiro_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1s",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/lp_lucas-ribeiro_06.png",
+                  "filename": "lp_lucas-ribeiro_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1t",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_lucas-ribeiro/lp_lucas-ribeiro_07.png",
+                  "filename": "lp_lucas-ribeiro_07.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-web-design"
+        }
+      },
+      {
+        "id": "post-institucional-gru-ice",
+        "slug": "institucional-gru-ice",
+        "status": "published",
+        "data": {
+          "title": "Gru Ice - Site Institucional",
+          "description": "Gru Ice é uma fábrica de gelo que distribui seus produtos no atacado e varejo, em Guarulhos e região.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1d",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_01.png",
+                  "filename": "lp_gru-ice_01.png"
+                }
+              },
+              "corners": "top"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1e",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_02.png",
+                  "filename": "lp_gru-ice_02.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1f",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_03.png",
+                  "filename": "lp_gru-ice_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1g",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_04.png",
+                  "filename": "lp_gru-ice_04.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1h",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_05.png",
+                  "filename": "lp_gru-ice_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1i",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_06.png",
+                  "filename": "lp_gru-ice_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1j",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_07.png",
+                  "filename": "lp_gru-ice_07.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1k",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_08.png",
+                  "filename": "lp_gru-ice_08.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1l",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_09.png",
+                  "filename": "lp_gru-ice_09.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1m",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_gru-ice/lp_gru-ice_10.png",
+                  "filename": "lp_gru-ice_10.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-web-design"
+        }
+      },
+      {
+        "id": "post-lp-paula-van-dal",
+        "slug": "lp-paula-van-dal",
+        "status": "published",
+        "data": {
+          "title": "Paula Van Dal - Landing Page",
+          "description": "O trabalho de Paula Van Dal é focado em ajudar líderes e gestores de empresas a alcançar resultados mais assertivos. Por meio de formações e treinamentos personalizados, Paula orienta suas equipes para atingir sua máxima performance.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1u",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/lp_paula-van-dal_01.png",
+                  "filename": "lp_paula-van-dal_01.png"
+                }
+              },
+              "corners": "top"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1v",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/lp_paula-van-dal_02.png",
+                  "filename": "lp_paula-van-dal_02.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1w",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/lp_paula-van-dal_03.png",
+                  "filename": "lp_paula-van-dal_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1x",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/lp_paula-van-dal_04.png",
+                  "filename": "lp_paula-van-dal_04.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1y",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/lp_paula-van-dal_05.png",
+                  "filename": "lp_paula-van-dal_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk1z",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/lp_paula-van-dal_06.png",
+                  "filename": "lp_paula-van-dal_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk20",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_paula-van-dal/lp_paula-van-dal_07.png",
+                  "filename": "lp_paula-van-dal_07.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-web-design"
+        }
+      },
+      {
+        "id": "post-belly-pao-institucional",
+        "slug": "belly-pao-institucional",
+        "status": "published",
+        "data": {
+          "title": "Belly Pão - Site Institucional",
+          "description": "A Belly Pão é uma padaria familiar localizada no bairro Cidade Jardim Cumbica, especializando-se na arte de criar pães, bolos e salgados de alta qualidade para cafés da manhã e lanches.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_belly-pao/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk21",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_belly-pao/lp_belly-pao_01.png",
+                  "filename": "lp_belly-pao_01.png"
+                }
+              },
+              "corners": "top"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk22",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_belly-pao/lp_belly-pao_02.png",
+                  "filename": "lp_belly-pao_02.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk23",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_belly-pao/lp_belly-pao_03.png",
+                  "filename": "lp_belly-pao_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk24",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_belly-pao/lp_belly-pao_04.png",
+                  "filename": "lp_belly-pao_04.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk25",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_belly-pao/lp_belly-pao_05.png",
+                  "filename": "lp_belly-pao_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk26",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_belly-pao/lp_belly-pao_06.png",
+                  "filename": "lp_belly-pao_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk27",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/ui-design_belly-pao/lp_belly-pao_07.png",
+                  "filename": "lp_belly-pao_07.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-web-design"
+        }
+      },
+      {
+        "id": "post-idv-paula-van-dal",
+        "slug": "idv-paula-van-dal",
+        "status": "published",
+        "data": {
+          "title": "Paula Van Dal - Identidade Visual",
+          "description": "O trabalho da Paula é focado em ajudar líderes e gestores de empresas a alcançar resultados mais assertivos. Por meio de formações e treinamentos personalizados, Paula orienta suas equipes para atingir sua máxima performance. Com uma abordagem única, que combina neurociência, processos otimizados e liderança saudável, ela se destaca na vanguarda da discussão sobre a atuação da liderança em prol de resultados.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2n",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/idv_paula-van-dal_01.png",
+                  "filename": "idv_paula-van-dal_01.png"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk2o",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b2q",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2p",
+                      "text": "A marca",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b2s",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2r",
+                      "text": "O trabalho da Paula é focado em ajudar líderes e gestores de empresas a alcançar resultados mais assertivos. Por meio de formações e treinamentos personalizados, Paula orienta suas equipes para atingir sua máxima performance.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b2u",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2t",
+                      "text": "Com uma abordagem única, que combina neurociência, processos otimizados e liderança saudável, ela se destaca na vanguarda da discussão sobre a atuação da liderança em prol de resultados.\n",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2v",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/idv_paula-van-dal_03.png",
+                  "filename": "idv_paula-van-dal_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk2w",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b2y",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2x",
+                      "text": "Criação do símbolo",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b30",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2z",
+                      "text": "A ideia durante o processo de criação do símbolo, foi além de destaca-lá da concorrência, trazer significado para a marca.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b3a",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s31",
+                      "text": "Sendo assim, criamos um símbolo que representa o trabalho transformador realizado por Paula. Assim, utilizamos a figura de uma borboleta - símbolo universal de transformação – que também carrega de forma subjetiva em suas formas as iniciais '",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s32",
+                      "text": "p",
+                      "marks": ["strong"]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s33",
+                      "text": "', '",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s34",
+                      "text": "v",
+                      "marks": ["strong"]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s35",
+                      "text": "' e '",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s36",
+                      "text": "d",
+                      "marks": ["strong"]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s37",
+                      "text": "' do nome ",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s38",
+                      "text": "Paula Van Dal",
+                      "marks": ["strong"]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s39",
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b3c",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s3b",
+                      "text": "Esta representação dual, simultaneamente sutil e impactante, condensa a essência da marca: uma transformação profunda e personalizada, centrada na individualidade de cada um.\n",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3d",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/idv_paula-van-dal_05.png",
+                  "filename": "idv_paula-van-dal_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3e",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/idv_paula-van-dal_06.png",
+                  "filename": "idv_paula-van-dal_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3f",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/idv_paula-van-dal_07.png",
+                  "filename": "idv_paula-van-dal_07.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3g",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/idv_paula-van-dal_08.png",
+                  "filename": "idv_paula-van-dal_08.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3h",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/idv_paula-van-dal_09.png",
+                  "filename": "idv_paula-van-dal_09.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3i",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_paula-van-dal/idv_paula-van-dal_10.png",
+                  "filename": "idv_paula-van-dal_10.png"
+                }
+              },
+              "corners": "bottom"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk3j",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b3o",
+                  "style": "normal",
+                  "markDefs": [
+                    {
+                      "_type": "link",
+                      "_key": "l3l",
+                      "href": "/posts/lp-paula-van-dal/"
+                    }
+                  ],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s3k",
+                      "text": "Também trabalhei no desenvolvimento do blog da Paula, você pode conferir ",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s3m",
+                      "text": "clicando aqui",
+                      "marks": ["l3l"]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s3n",
+                      "text": ".",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      },
+      {
+        "id": "post-idv-ana-longhini",
+        "slug": "idv-ana-longhini",
+        "status": "published",
+        "data": {
+          "title": "Ana Longhini - Identidade Visual",
+          "description": "Ana Longhini é uma profissional especialista em marketing digital, com foco em tráfego pago e gestão de redes sociais. Com estratégias eficazes e personalizadas, e via consultorias, ajuda empreendedores a alcançarem o máximo do seu potencial online.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1social-image.png",
+              "filename": "1social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk28",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1idv_ana-longhini_01.png",
+                  "filename": "1idv_ana-longhini_01.png"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk29",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b2b",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2a",
+                      "text": "A marca",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b2d",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2c",
+                      "text": "Ana Longhini é uma profissional especialista em marketing digital, com foco em tráfego pago e gestão de redes sociais. Com estratégias eficazes e personalizadas, e através de consultorias, ajuda empreendedores a alcançarem o máximo do seu potencial online.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b2f",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s2e",
+                      "text": "A marca de Ana Longhini é uma extensão direta de seus valores e trabalho. Ela representa profissionalismo, empatia, inovação, aprendizado contínuo e parceria, refletindo seu compromisso em fornecer serviços de alta qualidade com padrões éticos elevados.\n",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2g",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1idv_ana-longhini_03.png",
+                  "filename": "1idv_ana-longhini_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2h",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1idv_ana-longhini_04.png",
+                  "filename": "1idv_ana-longhini_04.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2i",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1idv_ana-longhini_05.png",
+                  "filename": "1idv_ana-longhini_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2j",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1idv_ana-longhini_06.png",
+                  "filename": "1idv_ana-longhini_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2k",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1idv_ana-longhini_07.png",
+                  "filename": "1idv_ana-longhini_07.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2l",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1idv_ana-longhini_08.png",
+                  "filename": "1idv_ana-longhini_08.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk2m",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_ana-longhini/1idv_ana-longhini_09.png",
+                  "filename": "1idv_ana-longhini_09.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      },
+      {
+        "id": "post-idv_belly-pao",
+        "slug": "idv_belly-pao",
+        "status": "published",
+        "data": {
+          "title": "Belly Pão - Identidade Visual",
+          "description": "A Belly Pão é uma padaria familiar localizada no bairro Cidade Jardim Cumbica, especializando-se na arte de criar pães, bolos e salgados de alta qualidade para cafés da manhã e lanches.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk3p",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b3r",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s3q",
+                      "text": "A Belly Pão é uma padaria familiar localizada no bairro Cidade Jardim Cumbica, especializando-se na arte de criar pães, bolos e salgados de alta qualidade para cafés da manhã e lanches.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b3t",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s3s",
+                      "text": "Fundada com amor e dedicação, cada item é feito com ingredientes frescos e selecionados, garantindo uma experiência saborosa e autêntica. Com um comprometimento inabalável com a satisfação do cliente, a Belly Pão se dedica a combinar métodos tradicionais com a inovação constante para fornecer produtos que não só nutrem o corpo, mas também aquecem o coração.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3u",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/idv_belly-pao_01.png",
+                  "filename": "idv_belly-pao_01.png"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3v",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/1idv_belly-pao_03.png",
+                  "filename": "1idv_belly-pao_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3w",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/1idv_belly-pao_04.png",
+                  "filename": "1idv_belly-pao_04.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3x",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/1idv_belly-pao_05.png",
+                  "filename": "1idv_belly-pao_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3y",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/1idv_belly-pao_06.png",
+                  "filename": "1idv_belly-pao_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk3z",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/1idv_belly-pao_07.png",
+                  "filename": "1idv_belly-pao_07.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk40",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/1idv_belly-pao_08.png",
+                  "filename": "1idv_belly-pao_08.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk41",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/1idv_belly-pao_09.png",
+                  "filename": "1idv_belly-pao_09.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk42",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_belly-pao/1idv_belly-pao_10.png",
+                  "filename": "1idv_belly-pao_10.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      },
+      {
+        "id": "post-idv-santo-espeto",
+        "slug": "idv-santo-espeto",
+        "status": "published",
+        "data": {
+          "title": "Santo Espeto - Identidade Visual",
+          "description": "Perfeito para os amantes de um bom espeto e chopp gelado, Santo Espeto é um local para quem busca uma experiência gastronômica descontraída e cheia de sabor. Pensado especialmente para o público que preza por um ambiente aconchegante e extrovertido, a Santo Espeto promete ser o próximo hotspot para os amigos se reunirem e criarem memórias inesquecíveis.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/cover5.png",
+              "filename": "cover5.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk43",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/idv_santo-espeto_01.png",
+                  "filename": "idv_santo-espeto_01.png"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk44",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b46",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s45",
+                      "text": "Sobre a marca",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b48",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s47",
+                      "text": "Perfeito para os amantes de um bom espeto e chopp gelado, Santo Espeto é um local para quem busca uma experiência gastronômica descontraída e cheia de sabor. Pensado especialmente para o público que preza por um ambiente aconchegante e extrovertido, a Santo Espeto promete ser o próximo hotspot para os amigos se reunirem e criarem memórias inesquecíveis.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b4a",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s49",
+                      "text": "O símbolo",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b4c",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s4b",
+                      "text": "O símbolo que acompanha o logotipo são ilustrações de um espetinho juntamente com uma caneca de chopp, ambos ícones simbolizam a experiência oferecida pela marca.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b4e",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s4d",
+                      "text": "No topo da caneca, uma espuma generosa e uma auréola brincam com o nome, transmitindo a qualidade divina da marca.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4f",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/1idv_santo-espeto_02.png",
+                  "filename": "1idv_santo-espeto_02.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk4g",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b4i",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s4h",
+                      "text": "O logotipo",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b4m",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s4j",
+                      "text": "A fonte, com seu design levemente serifado e arredondado, foi selecionada para trazer ",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s4k",
+                      "text": "diferenciação",
+                      "marks": ["strong"]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s4l",
+                      "text": ", mantendo uma presença moderna e sofisticada.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b4o",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s4n",
+                      "text": "A leveza das formas arredondadas da tipografia comunica a abordagem alegre e amigável da marca, enquanto as sutis serifas adicionam um toque de elegância. Este equilíbrio tipográfico é uma homenagem à essência da Santo Espeto: um espaço onde a modernidade e a leveza coexistem, criando um ambiente extrovertido e aconchegante para todos os visitantes.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b4q",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s4p",
+                      "text": "Através do logotipo, estabelecemos um ponto de partida visual que é tanto distintivo quanto acolhedor, convidando todos a desfrutar da experiência Santo Espeto.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4r",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/1idv_santo-espeto_03.png",
+                  "filename": "1idv_santo-espeto_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4s",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/1idv_santo-espeto_04.png",
+                  "filename": "1idv_santo-espeto_04.png"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_cards",
+              "_version": 1,
+              "_key": "blk4t",
+              "cards": [
+                {
+                  "title": "O amarelo",
+                  "body": "Vibrante e convidativo, o amarelo é a cor do estímulo e da energia, escolhido meticulosamente pela sua capacidade comprovada de despertar o apetite.\n\nEssa escolha transcende a funcionalidade: ressoa com a tonalidade dourada do chopp servido com perfeição, um convite visual à degustação que espera pelo cliente.",
+                  "background": "#F0C030",
+                  "tone": "light"
+                },
+                {
+                  "title": "O marrom escuro",
+                  "body": "Este tom quase preto é a base perfeita para a nossa paleta. Ele não apenas realça o brilho do amarelo, garantindo uma leitura fácil e agradável, como também evoca a textura e o sabor dos espetos grelhados que são a assinatura da casa.\n\nEsse marrom representa a robustez e a profundidade dos sabores que o cliente encontrará em cada petisco.",
+                  "background": "#221C1C",
+                  "tone": "dark"
+                },
+                {
+                  "title": "O Azul",
+                  "body": "Um toque de estratégia, o azul traz à nossa identidade o elemento da diferenciação. Em um mar de concorrentes que apelam para os tons quentes, nosso azul se destaca com confiança e frescor.\n\nO uso deste tom não só diferencia, mas dialoga com um estilo neon e moderno, integrando-se harmoniosamente à energia da noite e atraindo os olhares para o alternativo e o excepcional.",
+                  "background": "#303FC8",
+                  "tone": "dark"
+                }
+              ]
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4u",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/color-variation_vertical-logo.gif",
+                  "filename": "color-variation_vertical-logo.gif"
+                }
+              },
+              "corners": "top"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4v",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/1idv_santo-espeto_05.png",
+                  "filename": "1idv_santo-espeto_05.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4w",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/1idv_santo-espeto_06.png",
+                  "filename": "1idv_santo-espeto_06.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4x",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/1idv_santo-espeto_07.png",
+                  "filename": "1idv_santo-espeto_07.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4y",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/1idv_santo-espeto_08.png",
+                  "filename": "1idv_santo-espeto_08.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk4z",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_santo-espeto/1idv_santo-espeto_09.png",
+                  "filename": "1idv_santo-espeto_09.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      },
+      {
+        "id": "post-idv-liryo-kids",
+        "slug": "idv-liryo-kids",
+        "status": "published",
+        "data": {
+          "title": "Liryo Kids - Identidade Visual",
+          "description": "A Liryo Kids é uma marca de acessórios infantis que une a delicadeza da infância com a alegria do cotidiano. Com produtos exclusivos e uma identidade visual vibrante, busca proporcionar beleza, estilo e praticidade às famílias, inspirando confiança e sorrisos em cada momento.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/cover-motion.gif",
+              "filename": "cover-motion.gif"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk50",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/colorfull-motion_logo.gif",
+                  "filename": "colorfull-motion_logo.gif"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk51",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b53",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s52",
+                      "text": "Sobre a marca",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b55",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s54",
+                      "text": "A Liryo Kids é uma marca de acessórios infantis que une a delicadeza da infância com a alegria do cotidiano. Com produtos exclusivos e uma identidade visual vibrante, busca proporcionar beleza, estilo e praticidade às famílias, inspirando confiança e sorrisos em cada momento.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b57",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s56",
+                      "text": "O símbolo",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b59",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s58",
+                      "text": "O símbolo foi desenvolvido baseado em uma flor de lírio, cuja sonoridade da marca nos remete. Não somente a sonoridade, o significado atribuído ao lírio se encaixa de forma perfeita com a marca.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b5b",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s5a",
+                      "text": "A flor de lírio é conhecida por representar sentimentos de pureza, inocência e amor puro, características que se alinham com a proposta da marca de oferecer acessórios que tragam beleza e estilo aos que detêm.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b5d",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s5c",
+                      "text": "Assim, o símbolo representa não apenas a identidade visual da marca, mas também os valores e a essência enraizados na sua concepção.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "dark",
+              "corners": "none",
+              "background": "#355b94"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5e",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/idv_liryo-kids_01-1.png",
+                  "filename": "idv_liryo-kids_01-1.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk5f",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b5h",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s5g",
+                      "text": "O logotipo",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b5j",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s5i",
+                      "text": "O “L” em manuscrito transmite a alegria de uma forma fluida e descontraída, enquanto lembra a forma de um laço, adicionando uma camada de significado que se conecta diretamente com um dos produtos da marca.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b5l",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s5k",
+                      "text": "As demais letras, em uma fonte sem serifa com bordas arredondadas, expressam modernidade e uma abordagem amigável, reforçando a essência contemporânea e acolhedora da marca.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b5n",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s5m",
+                      "text": "Juntas, essas características visuais formam um logotipo distintivo e memorável, que captura a personalidade e os valores da Liryo Kids.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5o",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/idv_liryo-kids_02-1.png",
+                  "filename": "idv_liryo-kids_02-1.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5p",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/color-motion.gif",
+                  "filename": "color-motion.gif"
+                }
+              },
+              "corners": "top"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5q",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/idv_liryo-kids_03.png",
+                  "filename": "idv_liryo-kids_03.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5r",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/idv_liryo-kids_04.png",
+                  "filename": "idv_liryo-kids_04.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5s",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/fhd_caneca.png",
+                  "filename": "fhd_caneca.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5t",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/fhd_instagram.png",
+                  "filename": "fhd_instagram.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5u",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/fhd_embalagem.png",
+                  "filename": "fhd_embalagem.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5v",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/fhd_etiqueta.png",
+                  "filename": "fhd_etiqueta.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5w",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/fhd_sacola.png",
+                  "filename": "fhd_sacola.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5x",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_liryo-kids/fhd_quadros.png",
+                  "filename": "fhd_quadros.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      },
+      {
+        "id": "post-idv-estudio-yona-matias",
+        "slug": "idv-estudio-yona-matias",
+        "status": "published",
+        "data": {
+          "title": "Estúdio Yoná Matias - Identidade Visual",
+          "description": "O Estúdio Yoná Matias é um espaço dedicado a eternizar memórias através de fotografias leves, espontâneas e cheias de significado. Cada detalhe, cada olhar e cada história são capturados com sensibilidade e verdade.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/cover1.png",
+              "filename": "cover1.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk5y",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/01_cover.png",
+                  "filename": "01_cover.png"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk5z",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b61",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s60",
+                      "text": "O Estúdio Yoná Matias inicia um novo capítulo da sua história",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b63",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s62",
+                      "text": "Uma identidade visual que nasce do olhar sensível e acolhedor de quem entende que cada fotografia carrega luz, essência e memórias eternas.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b65",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s64",
+                      "text": "Mais do que um símbolo, um manifesto visual sobre capturar o brilho das pessoas, registrar momentos reais e transformar instantes em histórias que ficam.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b67",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s66",
+                      "text": "Naturalidade. Pureza. Harmonia. Acolhimento.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b69",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s68",
+                      "text": "Cada detalhe deste projeto foi pensado para refletir o que o Estúdio é e sempre será: um espaço de conexão verdadeira, de presença e de eternização da vida.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b6b",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s6a",
+                      "text": "É tudo sobre luz.\nÉ tudo sobre pessoas.\nÉ tudo sobre memórias que duram além do instante.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6c",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/02_simbolo2.gif",
+                  "filename": "02_simbolo2.gif"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6d",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/05_cores.png",
+                  "filename": "05_cores.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6e",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/03_logotipo2.gif",
+                  "filename": "03_logotipo2.gif"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6f",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/06_cartao-de-visitas.png",
+                  "filename": "06_cartao-de-visitas.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6g",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/07_poster.png",
+                  "filename": "07_poster.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6h",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/08_escritorio.png",
+                  "filename": "08_escritorio.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6i",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/09_caixa.png",
+                  "filename": "09_caixa.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6j",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/10_garrafa.png",
+                  "filename": "10_garrafa.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6k",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/11_catalogo.png",
+                  "filename": "11_catalogo.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6l",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/12_bordado.png",
+                  "filename": "12_bordado.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6m",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_yona-matias/13_outdoor.png",
+                  "filename": "13_outdoor.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      },
+      {
+        "id": "post-idv-teacher-ana-ju",
+        "slug": "idv-teacher-ana-ju",
+        "status": "published",
+        "data": {
+          "title": "Teacher Ana Ju - Identidade Visual",
+          "description": "Ensinar um idioma vai muito além das regras gramaticais. É sobre criar um espaço onde errar não gera medo — gera progresso. Onde cada voz é respeitada no seu tempo, no seu tom, no seu jeito de falar. Essa identidade visual nasce para expressar a leveza de um método que acredita no acolhimento como ferramenta de ensino, e no afeto como ponto de partida da confiança.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/00-01_cover.jpg",
+              "filename": "00-01_cover.jpg"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk6n",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/01.jpg",
+                  "filename": "01.jpg"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk6o",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b6q",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s6p",
+                      "text": "Sobre a marca",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b6s",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s6r",
+                      "text": "Ensinar um idioma vai muito além das regras gramaticais. É sobre criar um espaço onde errar não gera medo — gera progresso. Onde cada voz é respeitada no seu tempo, no seu tom, no seu jeito de falar.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b6u",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s6t",
+                      "text": "Essa identidade visual nasce para expressar a leveza de um método que acredita no acolhimento como ferramenta de ensino, e no afeto como ponto de partida da confiança.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b6w",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s6v",
+                      "text": "Fluência não é correr. É se permitir caminhar com segurança.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b6y",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s6x",
+                      "text": "Do traço à cor, da tipografia ao tom: tudo foi pensado para refletir a energia vibrante de uma aula que inspira, estimula e escuta.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b70",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s6z",
+                      "text": "A nova marca traduz a proposta de uma professora que ensina como quem cuida — com alegria, com presença e com verdade.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk71",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b73",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s72",
+                      "text": "O logotipo",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b75",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s74",
+                      "text": "O logotipo é composto por uma tipografia em letras minúsculas e de formas arredondadas, que reforça uma comunicação acessível, direta e sem formalidades desnecessárias. A escolha visual reflete a proposta da marca: aproximar, simplificar e criar conexão real com quem está aprendendo.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b77",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s76",
+                      "text": "O “J” foi desenhado do zero, com traços inspirados na escrita manual. Um detalhe que adiciona autenticidade.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b79",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s78",
+                      "text": "A divisão entre “Ana” e “Ju” também tem função: enquanto o primeiro nome sustenta a autoridade profissional, o apelido aproxima. Juntos, traduzem uma marca que ensina com método, mas também com empatia.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "top",
+              "background": "#e9eff2"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7a",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/02.png",
+                  "filename": "02.png"
+                }
+              },
+              "corners": "none",
+              "background": "#e9eff2"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7b",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/02-01.gif",
+                  "filename": "02-01.gif"
+                }
+              },
+              "corners": "none",
+              "background": "#e9eff2"
+            },
+            {
+              "_type": "post_split",
+              "_version": 1,
+              "_key": "blk7c",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b7e",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s7d",
+                      "text": "Versão compacta, mesma identidade",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b7g",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s7f",
+                      "text": "O ícone da marca foi pensado como uma solução versátil para espaços reduzidos — ideal para uso em formatos como avatares, favicons e botões. Ele condensa a identidade tipográfica em uma versão mais enxuta, mantendo traços essenciais para garantir legibilidade e reconhecimento visual mesmo em escalas menores. Uma adaptação estratégica que preserva o caráter da marca sem perder sua força ou personalidade.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/03.png",
+                  "filename": "03.png"
+                }
+              },
+              "image_position": "right",
+              "tone": "light",
+              "corners": "both",
+              "background": "#e9eff2"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk7h",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b7j",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s7i",
+                      "text": "Cores que falam com clareza",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b7l",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s7k",
+                      "text": "A paleta foi definida para refletir a energia e a proximidade que fazem parte da proposta da Teacher Ana Ju. As cores escolhidas criam um ambiente leve e acolhedor, que convida o aluno a se expressar sem medo e se sentir parte do processo.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b7n",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s7m",
+                      "text": "Mais do que agradáveis, as cores ajudam a posicionar a marca de forma clara: longe da rigidez dos cursos tradicionais e próxima de quem busca uma experiência de aprendizado mais humana, dinâmica e estimulante.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7o",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/04_01.jpg",
+                  "filename": "04_01.jpg"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7p",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/04_02.jpg",
+                  "filename": "04_02.jpg"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7q",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/04_03.jpg",
+                  "filename": "04_03.jpg"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7r",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/05_01.jpg",
+                  "filename": "05_01.jpg"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7s",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/05_02.jpg",
+                  "filename": "05_02.jpg"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7t",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/06.jpg",
+                  "filename": "06.jpg"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7u",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/07.jpg",
+                  "filename": "07.jpg"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7v",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_teacher-ana-julia/final.jpg",
+                  "filename": "final.jpg"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      },
+      {
+        "id": "post-idv-jcar-oliveira",
+        "slug": "idv-jcar-oliveira",
+        "status": "published",
+        "data": {
+          "title": "JCar Oliveira - Identidade Visual",
+          "description": "Com mais de uma década de atuação no mercado de serviços automotivos, a JCar Oliveira dá um passo decisivo em direção à profissionalização da sua marca, preparando o terreno para seu plano de expansão e consolidação no setor.",
+          "cover": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/00_cover.png",
+              "filename": "00_cover.png"
+            }
+          },
+          "social_image": {
+            "$media": {
+              "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/social-image.png",
+              "filename": "social-image.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk7w",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/01_capa.png",
+                  "filename": "01_capa.png"
+                }
+              },
+              "corners": "both"
+            },
+            {
+              "_type": "post_text",
+              "_version": 1,
+              "_key": "blk7x",
+              "body": [
+                {
+                  "_type": "block",
+                  "_key": "b7z",
+                  "style": "h2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s7y",
+                      "text": "Sobre a marca",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b81",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s80",
+                      "text": "Com mais de uma década de atuação no mercado de serviços automotivos, a JCar Oliveira dá um passo decisivo em direção à profissionalização da sua marca, preparando o terreno para seu plano de expansão e consolidação no setor.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b83",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s82",
+                      "text": "Mais do que uma nova estética, esta identidade visual foi construída sobre os pilares que sustentam o trabalho da JCar desde o primeiro dia: confiança, eficiência e transparência. Elementos que refletem o cuidado com cada detalhe — da retífica de um motor à clareza na comunicação com os clientes — e que agora se transformam também em linguagem visual.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b85",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s84",
+                      "text": "Cada escolha foram guiados por um objetivo claro: transmitir aquilo que a JCar entrega todos os dias — soluções técnicas de qualidade, atendimento humanizado e visão de futuro.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b87",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s86",
+                      "text": "Confiança. Eficiência. Transparência. Tecnologia. Evolução. \nEste projeto foi pensado para refletir a JCar de hoje — e preparar o caminho para o que ela será amanhã. Uma identidade que acompanha a empresa em sua expansão, sem perder de vista aquilo que sempre a diferenciou: o respeito pelo cliente e o compromisso com o que é bem feito.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "_key": "b89",
+                  "style": "normal",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s88",
+                      "text": "É sobre confiança. É sobre respeito ao cliente. É sobre fazer bem feito — sempre.",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "tone": "light",
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8a",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/02_palavras-chave.png",
+                  "filename": "02_palavras-chave.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8b",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/03_construction-simbol.png",
+                  "filename": "03_construction-simbol.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8c",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/04_morph-simbol.gif",
+                  "filename": "04_morph-simbol.gif"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8d",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/05_guides-simbol.gif",
+                  "filename": "05_guides-simbol.gif"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8e",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/06_logotipo.png",
+                  "filename": "06_logotipo.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8f",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/07_cores.png",
+                  "filename": "07_cores.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8g",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/08_mockup.png",
+                  "filename": "08_mockup.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8h",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/09_mockup.png",
+                  "filename": "09_mockup.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8i",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/10_mockup.png",
+                  "filename": "10_mockup.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8j",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/11_mockup.png",
+                  "filename": "11_mockup.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8k",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/12_mockup.png",
+                  "filename": "12_mockup.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8l",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/13_mockup.png",
+                  "filename": "13_mockup.png"
+                }
+              },
+              "corners": "none"
+            },
+            {
+              "_type": "post_image",
+              "_version": 1,
+              "_key": "blk8m",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/pedrohenridesign/posts/idv_jcar-oliveira/14_mockup.png",
+                  "filename": "14_mockup.png"
+                }
+              },
+              "corners": "bottom"
+            }
+          ],
+          "category": "$ref:category-identidade-visual"
+        }
+      }
+    ]
+  }
+}

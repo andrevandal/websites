@@ -1,0 +1,89 @@
+layer: "application"
+language: "astro"
+tags:
+  - "cloudflare"
+  - "emdash"
+
+project:
+  title: "pedrohenri"
+  description: "Crio identidades visuais, sites e experiências de UI/UX para marcas que visam o crescimento e inovação."
+tasks:
+  astro:
+    command: astro
+
+  dev:
+    command: astro dev
+    preset: server
+    dependsOn:
+      - typegen
+      - ^:build
+
+  check:
+    command: astro check
+    inputs:
+      - "@globs(typescript)"
+      - "@globs(sources)"
+      - "./astro.config.js"
+      - "./emdash-env.d.ts"
+      - "./wrangler.json"
+      - "./vite-aws-sdk-browser-field.js"
+      - "$EMDASH_BUILD_FLAVOR"
+      - "$CF_ACCESS_TEAM_DOMAIN"
+      - "/packages/sun-ui/src/**/*"
+    dependsOn:
+      - ^:build
+
+  build:
+    command: astro build
+    inputs:
+      - "@globs(sources)"
+      - "@globs(public)"
+      - "@globs(typescript)"
+      - "/packages/sun-ui/src/**/*"
+      - "seed/**/*"
+      - "./astro.config.js"
+      - "./emdash-env.d.ts"
+      - "./wrangler.json"
+      - "./vite-aws-sdk-browser-field.js"
+      - "$EMDASH_BUILD_FLAVOR"
+      - "$CF_ACCESS_TEAM_DOMAIN"
+    outputs:
+      - dist
+    dependsOn:
+      - check
+
+  preview:
+    command: astro preview
+    preset: server
+
+  preview-wrangler:
+    command: wrangler pages dev ./dist
+    preset: server
+    dependsOn:
+      - build
+
+  test:
+    command: "bun test --isolate --pass-with-no-tests"
+    inputs:
+      - "@globs(tests)"
+      - "@globs(typescript)"
+      - "@globs(sources)"
+      - "bunfig.toml"
+      - "/bunfig.toml"
+      - "/packages/sun-ui/src/**/*"
+
+  typecheck:
+    inputs:
+      - "@globs(typescript)"
+      - "@globs(sources)"
+      - "@globs(tests)"
+      - "./emdash-env.d.ts"
+      - "/packages/sun-ui/src/**/*"
+    dependsOn:
+      - check
+
+workspace:
+  inheritedTasks:
+    # Client sites are not in coverage.config.ts; their tests still run in `test`.
+    exclude:
+      - coverage

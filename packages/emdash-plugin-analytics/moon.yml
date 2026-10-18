@@ -1,0 +1,29 @@
+layer: "library"
+language: "typescript"
+
+project:
+  title: "EmDash Plugin Analytics"
+  description: "EmDash plugin: Analytics admin page for the Google tag and Google Ads conversion IDs"
+  channel: ""
+  owner: ""
+  maintainers: []
+
+tasks:
+  build:
+    command: "tsdown"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+      - "tsconfig.json"
+      - "tsdown.config.ts"
+      - "/tsconfig.json"
+      - "/tsconfig.options.json"
+      - "/tsconfig.bundler.json"
+    outputs:
+      - dist
+
+workspace:
+  inheritedTasks:
+    # Not in coverage.config.ts; its tests still run in `test`.
+    exclude:
+      - coverage

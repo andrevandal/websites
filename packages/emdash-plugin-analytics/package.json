@@ -1,0 +1,36 @@
+{
+  "name": "@vandal-websites/emdash-plugin-analytics",
+  "version": "0.0.0",
+  "private": true,
+  "description": "EmDash plugin: Analytics admin page for the Google tag and Google Ads conversion IDs",
+  "license": "UNLICENSED",
+  "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./plugin": "./dist/plugin.mjs",
+    "./admin": "./dist/admin.mjs",
+    "./settings": "./dist/settings.mjs",
+    "./package.json": "./package.json"
+  },
+  "devDependencies": {
+    "@cloudflare/kumo": "^2.6.0",
+    "@types/bun": "catalog:types",
+    "@types/node": "catalog:types",
+    "@types/react": "catalog:types",
+    "emdash": "^1.0.1",
+    "publint": "catalog:tools",
+    "react": "catalog:react",
+    "tsdown": "catalog:tools",
+    "typescript": "catalog:typescript"
+  },
+  "peerDependencies": {
+    "@cloudflare/kumo": "^2.6.0",
+    "emdash": "^1.0.1",
+    "react": "catalog:react"
+  },
+  "packageManager": "bun@1.3.6"
+}

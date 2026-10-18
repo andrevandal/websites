@@ -9,22 +9,36 @@ import { hideBin } from "yargs/helpers"
 
 import { consola } from "consola"
 import { execa } from "execa"
-import { repoRoot, resolveTargetEnvVars } from "./env"
+import { repoRoot, resolveTargetEnvVars, resolveTargetSecretKeys } from "./env"
 import { queryTargets } from "./utils"
 import {
+  deleteD1DatabaseByName,
   deleteKvNamespaceByTitle,
+  deleteR2BucketByName,
+  findOrCreateD1Database,
   findOrCreateKvNamespace,
+  findOrCreateR2Bucket,
+  putR2Object,
+  queryD1,
 } from "./utils/cloudflare"
+import { applySeedExtensions } from "./seed-extensions"
+import type { PutMedia, Seed, SeedDb } from "./seed-extensions"
 
 type KvBinding = { binding: string; id?: string }
+type D1Binding = { binding: string; database_name: string; database_id: string }
+type R2Binding = { binding: string; bucket_name: string }
 
 type WranglerConfig = {
   name: string
   kv_namespaces?: KvBinding[]
+  d1_databases?: D1Binding[]
+  r2_buckets?: R2Binding[]
   vars?: Record<string, string>
   previews?: {
     vars?: Record<string, string>
     kv_namespaces?: KvBinding[]
+    d1_databases?: D1Binding[]
+    r2_buckets?: R2Binding[]
   }
 }
 
@@ -32,11 +46,19 @@ type DeployDeps = {
   // Runs `bunx <args>`; `reject: false` returns a failed exit code instead of throwing.
   exec: (
     args: string[],
-    options: { cwd: string; reject?: boolean }
+    options: { cwd: string; reject?: boolean; env?: Record<string, string> }
   ) => Promise<{ stdout: string; exitCode: number }>
   kv: {
     findOrCreate: (title: string) => Promise<{ id: string; created: boolean }>
     deleteByTitle: (title: string) => Promise<boolean>
+  }
+  d1: {
+    findOrCreate: (name: string) => Promise<{ id: string; created: boolean }>
+    deleteByName: (name: string) => Promise<boolean>
+  }
+  r2: {
+    findOrCreate: (name: string) => Promise<{ name: string; created: boolean }>
+    deleteByName: (name: string) => Promise<boolean>
   }
   files: {
     read: (path: string) => Promise<string>
@@ -44,6 +66,14 @@ type DeployDeps = {
     copyDir: (from: string, to: string) => Promise<void>
     tempDir: () => Promise<string>
   }
+}
+
+// What setupPreview needs on top of the deploy deps: the preview's HTTP
+// surface plus D1 and R2 access for the seed extensions.
+type SetupDeps = DeployDeps & {
+  fetch: typeof fetch
+  seedDb: (databaseId: string) => SeedDb
+  putMedia: (bucket: string) => PutMedia
 }
 
 type PreviewTarget = {
@@ -66,15 +96,16 @@ type VersionTarget = {
 const CUSTOM_DOMAINS: Record<string, string> = {
   vandallabs: "https://vandallabs.com.br",
   bellypao: "https://bellypao.com.br",
+  pedrohenri: "https://pedrohenridesign.com.br",
 }
 
 const UUID_PATTERN =
   /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
 
 const requirePr = (pr: number | undefined): number => {
-  if (!pr) {
+  if (pr === undefined || !Number.isInteger(pr) || pr <= 0) {
     throw new Error(
-      "Preview deploys and cleanup require --pr <N> (the pull request number)."
+      "Preview deploys and cleanup require --pr <N> (a positive integer pull request number)."
     )
   }
 
@@ -102,9 +133,74 @@ const resolvePreviewUrl = (stdout: string): string => {
   return parsed.output.preview.urls[0]!
 }
 
-// Workers Previews do not provision KV, so each PR gets its own SESSION
-// namespace, bound only in the `previews` block. Top-level config stays the
-// persistent Worker's.
+// Sites whose EmDash core migrations CI applies; their Worker runs
+// `migrations.runtime: "check"` and never migrates (or locks) itself.
+const CI_MIGRATED_SITES = new Set(["pedrohenri"])
+
+const migrationStatusSchema = v.object({
+  target: v.object({ fingerprint: v.string(), label: v.string() }),
+  pending: v.array(v.string()),
+  unknownApplied: v.array(v.string()),
+})
+
+// `emdash migrate --status --json` prints header lines to stderr and one JSON
+// object to stdout, but exec pipes both through, so parse from the opening line.
+const parseMigrationStatus = (stdout: string) => {
+  const parsed = v.safeParse(
+    v.pipe(v.string(), v.parseJson(), migrationStatusSchema),
+    stdout.slice(Math.max(stdout.search(/^\{/m), 0))
+  )
+
+  if (!parsed.success) {
+    throw new Error(
+      `Could not read emdash migrate --status --json output: ${stdout.slice(0, 200)}`
+    )
+  }
+
+  return parsed.output
+}
+
+// Applies the build's pending core migrations to the target `targetArgs`
+// selects, pinned to the fingerprint the status call just reported so the
+// apply cannot land on a different database. Returns the applied names.
+const applyCoreMigrations = async (
+  {
+    cwd,
+    targetArgs,
+    env,
+  }: { cwd: string; targetArgs: string[]; env?: Record<string, string> },
+  deps: DeployDeps
+): Promise<string[]> => {
+  const { stdout } = await deps.exec(
+    ["emdash", "migrate", "--status", "--json", ...targetArgs],
+    { cwd, env }
+  )
+  const report = parseMigrationStatus(stdout)
+
+  if (report.unknownApplied.length > 0) {
+    throw new Error(
+      `Database ${report.target.label} has migration records unknown to this build: ${report.unknownApplied.join(", ")}. Not migrating.`
+    )
+  }
+  if (report.pending.length === 0) return []
+
+  await deps.exec(
+    [
+      "emdash",
+      "migrate",
+      "--json",
+      "--expected-target-fingerprint",
+      report.target.fingerprint,
+      ...targetArgs,
+    ],
+    { cwd, env }
+  )
+
+  return report.pending
+}
+
+// PR resources bind only under previews; the persistent Worker's config stays
+// untouched. Selected native EmDash previews add isolated CMS data and media.
 const deployPreview = async (
   {
     siteDir,
@@ -116,9 +212,50 @@ const deployPreview = async (
     vars: Record<string, string>
   },
   deps: DeployDeps
-): Promise<string> => {
+): Promise<{
+  url: string
+  databaseId?: string | undefined
+  bucketName?: string | undefined
+}> => {
   const prNumber = requirePr(pr)
   const namespace = await deps.kv.findOrCreate(`${worker}-pr-${prNumber}`)
+  const nativeBindings: {
+    d1_databases?: D1Binding[]
+    r2_buckets?: R2Binding[]
+  } = {}
+  let databaseId: string | undefined
+  let bucketName: string | undefined
+  if (worker === "pedrohenri" || worker === "brunabraz") {
+    const databaseName = `${worker}-pr-${prNumber}-cms`
+    const database = await deps.d1.findOrCreate(databaseName)
+    if (CI_MIGRATED_SITES.has(worker)) {
+      const accountId = process.env["CLOUDFLARE_ACCOUNT_ID"]
+      if (!accountId) {
+        throw new Error(
+          `CLOUDFLARE_ACCOUNT_ID is required to migrate ${databaseName}.`
+        )
+      }
+      const applied = await applyCoreMigrations(
+        {
+          cwd: siteDir,
+          targetArgs: ["--d1", database.id, "--account-id", accountId],
+        },
+        deps
+      )
+      consola.info(
+        applied.length > 0
+          ? `Applied ${applied.length} EmDash migrations to ${databaseName}: ${applied.join(", ")}`
+          : `No pending EmDash migrations for ${databaseName}`
+      )
+    }
+    const bucket = await deps.r2.findOrCreate(`${worker}-pr-${prNumber}-media`)
+    databaseId = database.id
+    bucketName = bucket.name
+    nativeBindings.d1_databases = [
+      { binding: "DB", database_name: databaseName, database_id: database.id },
+    ]
+    nativeBindings.r2_buckets = [{ binding: "MEDIA", bucket_name: bucket.name }]
+  }
   const generatedConfig = JSON.parse(
     await deps.files.read(generatedConfigPath)
   ) as WranglerConfig
@@ -132,6 +269,7 @@ const deployPreview = async (
           ...generatedConfig.previews,
           vars,
           kv_namespaces: [{ binding: "SESSION", id: namespace.id }],
+          ...nativeBindings,
         },
       },
       null,
@@ -152,13 +290,108 @@ const deployPreview = async (
     { cwd: siteDir }
   )
 
-  return resolvePreviewUrl(stdout)
+  return { url: resolvePreviewUrl(stdout), databaseId, bucketName }
+}
+
+type SetupSeed = Seed & { settings: { title: string; tagline?: string } }
+
+const SETUP_MAX_REQUESTS = 20
+
+// Runs EmDash setup on a fresh Preview from CI: the bundled seed through the
+// Worker's public setup route (repeated until it reports the seed complete),
+// then the extras the seed format cannot carry. A 409 means a human or an
+// earlier run already configured it; that data is left alone.
+const setupPreview = async (
+  {
+    siteDir,
+    url,
+    databaseId,
+    bucketName,
+    accessClientId,
+    accessClientSecret,
+  }: {
+    siteDir: string
+    url: string
+    databaseId: string
+    bucketName: string
+    accessClientId: string
+    accessClientSecret: string
+  },
+  deps: SetupDeps
+): Promise<"configured" | "already-configured"> => {
+  const seed = JSON.parse(
+    await deps.files.read(join(siteDir, "seed/seed.json"))
+  ) as SetupSeed
+  const body = JSON.stringify({
+    title: seed.settings.title,
+    tagline: seed.settings.tagline,
+    includeContent: true,
+  })
+
+  let seeded = false
+  let alreadyConfigured = false
+  for (let request = 0; request < SETUP_MAX_REQUESTS && !seeded; request += 1) {
+    // oxlint-disable-next-line no-await-in-loop -- each request resumes where the last stopped
+    const response = await deps.fetch(`${url}/_emdash/api/setup`, {
+      method: "POST",
+      redirect: "manual",
+      headers: {
+        "Content-Type": "application/json",
+        "X-EmDash-Request": "1",
+        "CF-Access-Client-Id": accessClientId,
+        "CF-Access-Client-Secret": accessClientSecret,
+      },
+      body,
+    })
+    if (response.status >= 300 && response.status < 400) {
+      throw new Error(
+        `Access did not accept the service token for ${url}; add the Service Auth policy (docs/guides/cloudflare-access-for-previews.md)`
+      )
+    }
+    if (response.status === 409) {
+      alreadyConfigured = true
+      break
+    }
+    // oxlint-disable-next-line no-await-in-loop -- read once per request
+    const text = await response.text()
+    if (!response.ok) {
+      throw new Error(
+        `Preview setup failed (${response.status}): ${text.slice(0, 300)}`
+      )
+    }
+    const payload = JSON.parse(text) as { data?: { seedComplete?: boolean } }
+    seeded = payload.data?.seedComplete === true
+  }
+  if (!seeded && !alreadyConfigured) {
+    throw new Error(
+      `Preview setup did not finish seeding after ${SETUP_MAX_REQUESTS} requests.`
+    )
+  }
+
+  const db = deps.seedDb(databaseId)
+  const { settings, entries, bylines, failed } = await applySeedExtensions({
+    seed,
+    db,
+    putMedia: deps.putMedia(bucketName),
+  })
+  consola.info(`Settings media resolved: ${settings.join(", ") || "none"}`)
+  consola.info(`SEO panels seeded: ${entries.join(", ") || "none"}`)
+  consola.info(`Bylines updated: ${bylines.join(", ") || "none"}`)
+  for (const failedUrl of failed)
+    consola.warn(`Media download failed: ${failedUrl}`)
+
+  return alreadyConfigured ? "already-configured" : "configured"
 }
 
 const cleanupPreview = async (
   { siteDir, worker, pr }: Omit<PreviewTarget, "generatedConfigPath">,
   deps: DeployDeps
-): Promise<{ previewDeleted: boolean; kvDeleted: boolean }> => {
+): Promise<{
+  previewDeleted: boolean
+  kvDeleted: boolean
+  d1Deleted?: boolean
+  r2Deleted?: boolean
+}> => {
   const prNumber = requirePr(pr)
   // Idempotent: the Preview may never have been created for this PR.
   const { exitCode } = await deps.exec(
@@ -175,22 +408,91 @@ const cleanupPreview = async (
     { cwd: siteDir, reject: false }
   )
   const kvDeleted = await deps.kv.deleteByTitle(`${worker}-pr-${prNumber}`)
+  if (worker === "pedrohenri" || worker === "brunabraz") {
+    const d1Deleted = await deps.d1.deleteByName(`${worker}-pr-${prNumber}-cms`)
+    const r2Deleted = await deps.r2.deleteByName(
+      `${worker}-pr-${prNumber}-media`
+    )
+    return { previewDeleted: exitCode === 0, kvDeleted, d1Deleted, r2Deleted }
+  }
 
   return { previewDeleted: exitCode === 0, kvDeleted }
 }
 
+// Preview Base holds this one; staging and production never receive it.
+const PREVIEW_ONLY_SECRET_KEYS = new Set(["CF_ACCESS_AUDIENCE"])
+
+type StageSecretsTarget = {
+  stage: "staging" | "production"
+  // GitHub environment secret holding the JSON, e.g. PEDROHENRI_SECRETS.
+  secretName: string
+  secretKeys: string[]
+}
+
+// Exactly the site's runtime secrets, all non-empty. A missing key would make
+// `wrangler versions upload` keep the previous Version's value, so production
+// would inherit staging's database; an unknown key is a typo. Both fail here.
+const stageSecretsSchema = (secretKeys: string[]) =>
+  v.strictObject(
+    Object.fromEntries(
+      secretKeys
+        .filter(key => !PREVIEW_ONLY_SECRET_KEYS.has(key))
+        .map(key => [key, v.pipe(v.string(), v.nonEmpty("is empty"))])
+    )
+  )
+
+// Parses `<SITE>_SECRETS`, the JSON object kept in the stage's GitHub
+// environment, against `secretKeys`. Sites without runtime secrets return {}.
+const parseStageSecrets = (
+  { stage, secretName, secretKeys }: StageSecretsTarget,
+  raw: string | undefined
+): Record<string, string> => {
+  if (secretKeys.every(key => PREVIEW_ONLY_SECRET_KEYS.has(key))) return {}
+  const fail = (reason: string): never => {
+    throw new Error(
+      `${secretName} in the "${stage}" GitHub environment ${reason}`
+    )
+  }
+
+  let json: unknown
+  try {
+    json = JSON.parse(raw || "")
+  } catch {
+    return fail("is missing or is not valid JSON.")
+  }
+  const result = v.safeParse(stageSecretsSchema(secretKeys), json)
+  if (!result.success) {
+    return fail(
+      "is invalid; expected exactly the declared runtime-secret keys with nonempty string values."
+    )
+  }
+  return result.output
+}
+
+const stageSecretsTarget = (
+  siteLocation: string[],
+  stage: StageSecretsTarget["stage"]
+): StageSecretsTarget => ({
+  stage,
+  secretName: `${siteLocation[1]?.toUpperCase()}_SECRETS`,
+  secretKeys: resolveTargetSecretKeys(siteLocation),
+})
+
 // Uploads, never deploys, a Version built from `artifactDir`. The artifact is
 // copied first so its bytes, and therefore its digest, never carry Stage
-// config; only the disposable copy gets the Stage vars and SESSION binding.
+// config or secrets; only the disposable copy gets the Stage vars and SESSION
+// binding, and `secrets` go to wrangler through a separate --secrets-file.
 const versionUpload = async (
   {
     worker,
     artifactDir,
     vars,
+    secrets = {},
     previewAlias,
   }: VersionTarget & {
     artifactDir: string
     vars: Record<string, string>
+    secrets?: Record<string, string>
     previewAlias?: string
   },
   deps: DeployDeps
@@ -221,6 +523,13 @@ const versionUpload = async (
     )
   )
 
+  // Outside the upload copy, so the secrets never sit next to the artifact.
+  let secretsPath: string | undefined
+  if (Object.keys(secrets).length > 0) {
+    secretsPath = join(await deps.files.tempDir(), "secrets.json")
+    await deps.files.write(secretsPath, JSON.stringify(secrets))
+  }
+
   const { stdout } = await deps.exec(
     [
       "wrangler",
@@ -231,6 +540,7 @@ const versionUpload = async (
       "-c",
       configPath,
       ...(previewAlias ? ["--preview-alias", previewAlias] : []),
+      ...(secretsPath ? ["--secrets-file", secretsPath] : []),
     ],
     { cwd: uploadDir }
   )
@@ -272,6 +582,65 @@ const versionDeploy = async (
   )
 }
 
+type EmdashManifest = {
+  database: { executorEntrypoint: string; executorConfig: object }
+}
+
+// Applies the build's pending core migrations to the stage's Turso database.
+// The manifest was built without TURSO_DATABASE_URL, so a copy outside the
+// artifact (like secrets.json) carries the stage's real URL; the auth token
+// reaches the libSQL executor through the env var the manifest names.
+const migrateStage = async (
+  {
+    siteDir,
+    manifestPath,
+    secrets,
+  }: {
+    siteDir: string
+    manifestPath: string
+    secrets: Record<string, string>
+  },
+  deps: DeployDeps
+): Promise<string[]> => {
+  const manifest = JSON.parse(
+    await deps.files.read(manifestPath)
+  ) as EmdashManifest
+  const { executorEntrypoint } = manifest.database
+  if (executorEntrypoint !== "emdash/internal/db/libsql-migrations") {
+    throw new Error(
+      `${manifestPath} is not a libSQL build manifest (executor ${executorEntrypoint}).`
+    )
+  }
+  const url = secrets["TURSO_DATABASE_URL"]
+  const authToken = secrets["TURSO_AUTH_TOKEN"]
+  if (!url || !authToken) {
+    throw new Error(
+      "TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are required to migrate the stage database."
+    )
+  }
+
+  const tempManifestPath = join(await deps.files.tempDir(), "migrations.json")
+  await deps.files.write(
+    tempManifestPath,
+    JSON.stringify({
+      ...manifest,
+      database: {
+        ...manifest.database,
+        executorConfig: { ...manifest.database.executorConfig, url },
+      },
+    })
+  )
+
+  return applyCoreMigrations(
+    {
+      cwd: siteDir,
+      targetArgs: ["--manifest", tempManifestPath],
+      env: { TURSO_AUTH_TOKEN: authToken },
+    },
+    deps
+  )
+}
+
 // Content digest of a build output: every file (hidden ones included), by
 // relative path and bytes, in sorted path order.
 const digestDirectory = async (dir: string): Promise<string> => {
@@ -305,9 +674,9 @@ const nodeFiles: DeployDeps["files"] = {
   tempDir: () => mkdtemp(join(tmpdir(), "website-upload-")),
 }
 
-const realDeps: DeployDeps = {
-  exec: async (args, { cwd, reject = true }) => {
-    const proc = execa("bunx", args, { cwd, reject })
+const realDeps: SetupDeps = {
+  exec: async (args, { cwd, reject = true, env }) => {
+    const proc = execa("bunx", args, { cwd, reject, env })
     proc.stdout?.pipe(process.stdout)
     proc.stderr?.pipe(process.stderr)
     const { stdout, exitCode } = await proc
@@ -320,7 +689,33 @@ const realDeps: DeployDeps = {
     },
     deleteByTitle: deleteKvNamespaceByTitle,
   },
+  d1: {
+    findOrCreate: async name => {
+      const { database, created } = await findOrCreateD1Database(name)
+      return { id: database.uuid, created }
+    },
+    deleteByName: deleteD1DatabaseByName,
+  },
+  r2: {
+    findOrCreate: async name => {
+      const { bucket, created } = await findOrCreateR2Bucket(name)
+      return { name: bucket.name, created }
+    },
+    deleteByName: deleteR2BucketByName,
+  },
   files: nodeFiles,
+  fetch,
+  seedDb: databaseId => ({
+    get: async <T>(sql: string, params: unknown[]) =>
+      (await queryD1<T>(databaseId, sql, params)).results[0],
+    all: async <T>(sql: string, params: unknown[]) =>
+      (await queryD1<T>(databaseId, sql, params)).results,
+    run: async (sql, params) => ({
+      changes: (await queryD1(databaseId, sql, params)).changes,
+    }),
+  }),
+  putMedia: bucket => (key, body, mimeType) =>
+    putR2Object(bucket, key, body, mimeType),
 }
 
 if (import.meta.main) {
@@ -346,7 +741,7 @@ if (import.meta.main) {
       )
       .command(
         "cleanup <target>",
-        "Delete Workers Preview pr-<N> and its KV namespace",
+        "Delete Workers Preview pr-<N> and its KV, plus selected sites' D1 and R2 resources",
         builder =>
           builder.positional("target", targetPositional).option("pr", prOption)
       )
@@ -371,6 +766,15 @@ if (import.meta.main) {
             })
       )
       .command(
+        "check-secrets <target>",
+        "Validate the stage's secrets JSON (env STAGE_SECRETS) without uploading",
+        builder =>
+          builder.positional("target", targetPositional).option("stage", {
+            choices: ["staging", "production"] as const,
+            demandOption: true,
+          })
+      )
+      .command(
         "version-deploy <target>",
         "Send 100% of traffic to an uploaded Version",
         builder =>
@@ -378,6 +782,22 @@ if (import.meta.main) {
             type: "string",
             demandOption: true,
           })
+      )
+      .command(
+        "migrate <target>",
+        "Apply the build's pending EmDash core migrations to a stage's Turso database (env STAGE_SECRETS)",
+        builder =>
+          builder
+            .positional("target", targetPositional)
+            .option("stage", {
+              choices: ["staging", "production"] as const,
+              demandOption: true,
+            })
+            .option("manifest", {
+              type: "string",
+              describe: "EmDash build manifest (.emdash/migrations.json)",
+              demandOption: true,
+            })
       )
       .command(
         "digest <dir>",
@@ -419,14 +839,22 @@ if (import.meta.main) {
       pr = args["pr"] as number | undefined
 
     if (command === "cleanup") {
-      const { previewDeleted, kvDeleted } = await cleanupPreview(
-        { siteDir, worker, pr },
-        realDeps
-      )
+      const { previewDeleted, kvDeleted, d1Deleted, r2Deleted } =
+        await cleanupPreview({ siteDir, worker, pr }, realDeps)
       const lines = [
         `Preview "pr-${pr}" of Worker "${worker}": ${previewDeleted ? "deleted" : "not deleted (absent or failed, see log)"}`,
         `KV namespace "${worker}-pr-${pr}": ${kvDeleted ? "deleted" : "not found"}`,
       ]
+      if (d1Deleted !== undefined) {
+        lines.push(
+          `D1 database "${worker}-pr-${pr}-cms": ${d1Deleted ? "deleted" : "not found"}`
+        )
+      }
+      if (r2Deleted !== undefined) {
+        lines.push(
+          `R2 bucket "${worker}-pr-${pr}-media": ${r2Deleted ? "emptied and deleted" : "not found"}`
+        )
+      }
 
       for (const line of lines) consola.info(line)
       await appendGitHubFile(
@@ -436,7 +864,7 @@ if (import.meta.main) {
     }
 
     if (command === "preview") {
-      const url = await deployPreview(
+      const { url, databaseId, bucketName } = await deployPreview(
         {
           siteDir,
           generatedConfigPath: resolve(siteDir, "dist/server/wrangler.json"),
@@ -453,6 +881,74 @@ if (import.meta.main) {
         "GITHUB_STEP_SUMMARY",
         `### Preview: \`${worker}\` pr-${pr}\n- Preview URL: ${url}\n\n`
       )
+
+      if (CI_MIGRATED_SITES.has(worker) && databaseId && bucketName) {
+        const accessClientId = process.env["CF_ACCESS_CLIENT_ID"],
+          accessClientSecret = process.env["CF_ACCESS_CLIENT_SECRET"]
+        if (!accessClientId || !accessClientSecret) {
+          consola.warn(
+            "Skipping preview setup: CF_ACCESS_CLIENT_ID / CF_ACCESS_CLIENT_SECRET are not set"
+          )
+        } else {
+          const outcome = await setupPreview(
+            {
+              siteDir,
+              url,
+              databaseId,
+              bucketName,
+              accessClientId,
+              accessClientSecret,
+            },
+            realDeps
+          )
+          await appendGitHubFile(
+            "GITHUB_STEP_SUMMARY",
+            outcome === "configured"
+              ? "- CMS setup: configured from seed/seed.json\n\n"
+              : "- CMS setup: already configured\n\n"
+          )
+        }
+      }
+    }
+
+    if (command === "check-secrets") {
+      const stage = args["stage"] as "staging" | "production"
+      const secrets = parseStageSecrets(
+        stageSecretsTarget(project.location, stage),
+        process.env["STAGE_SECRETS"]
+      )
+      // Keeps secret values out of every later log line of the job, e.g. the
+      // Turso URL `emdash migrate` prints as its target label.
+      if (process.env["GITHUB_ACTIONS"] === "true") {
+        for (const value of Object.values(secrets))
+          console.log(`::add-mask::${value}`)
+      }
+      consola.success(`${stage} secrets for "${worker}" are valid.`)
+    }
+
+    if (command === "migrate") {
+      const stage = args["stage"] as "staging" | "production",
+        applied = await migrateStage(
+          {
+            siteDir,
+            manifestPath: resolve(`${args["manifest"]}`),
+            secrets: parseStageSecrets(
+              stageSecretsTarget(project.location, stage),
+              process.env["STAGE_SECRETS"]
+            ),
+          },
+          realDeps
+        )
+
+      consola.success(
+        applied.length > 0
+          ? `Applied ${applied.length} EmDash migrations to the ${stage} database of "${worker}": ${applied.join(", ")}`
+          : `No pending EmDash migrations for the ${stage} database of "${worker}"`
+      )
+      await appendGitHubFile(
+        "GITHUB_STEP_SUMMARY",
+        `### ${stage} migrations: \`${worker}\`\n${applied.length > 0 ? applied.map(name => `- ${name}`).join("\n") : "- none pending"}\n\n`
+      )
     }
 
     if (command === "version-upload") {
@@ -463,6 +959,10 @@ if (import.meta.main) {
             worker,
             artifactDir: resolve(`${args["artifactDir"]}`),
             vars: resolveTargetEnvVars(project.location, stage),
+            secrets: parseStageSecrets(
+              stageSecretsTarget(project.location, stage),
+              process.env["STAGE_SECRETS"]
+            ),
             previewAlias: args["previewAlias"] as string | undefined,
           },
           realDeps
@@ -511,12 +1011,16 @@ if (import.meta.main) {
 }
 
 export {
+  applyCoreMigrations,
   cleanupPreview,
   deployPreview,
   digestDirectory,
+  migrateStage,
   nodeFiles,
+  parseStageSecrets,
   resolvePreviewUrl,
+  setupPreview,
   versionDeploy,
   versionUpload,
 }
-export type { DeployDeps }
+export type { DeployDeps, SetupDeps }

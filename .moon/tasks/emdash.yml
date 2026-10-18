@@ -1,0 +1,22 @@
+$schema: https://moonrepo.dev/schemas/tasks.json
+
+# Tasks for every EmDash site (project tag `emdash`).
+# Workflow: docs/guides/emdash-local-development.md
+inheritedBy:
+  tag: emdash
+
+tasks:
+  # Applies seed/seed.json (schema and content) to the local dev database in
+  # .data/, moves seeded bylines to the seed's defaultLocale (the CLI always
+  # writes them at "en"), then applies what the CLI cannot (`$media` site
+  # settings, per-entry `seo` panels, byline fields, avatars and custom field
+  # values). Existing rows are skipped.
+  seed:
+    script: mkdir -p .data/uploads && bun ../../scripts/fix-seed-byline-locale.ts capture && emdash seed seed/seed.json --database ./.data/emdash.db --uploads-dir ./.data/uploads && bun ../../scripts/fix-seed-byline-locale.ts && bun ../../scripts/seed-extensions.ts
+    inputs:
+      - "seed/**/*"
+      - "/scripts/fix-seed-byline-locale.ts"
+      - "/scripts/seed-extensions.ts"
+    options:
+      cache: false
+      runInCI: false

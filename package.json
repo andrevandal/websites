@@ -154,6 +154,7 @@
     "skills:update": "bunx skills update -p -y"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "catalog:server",
     "@commitlint/cli": "catalog:tools",
     "@commitlint/config-conventional": "catalog:tools",
     "@prettier/plugin-oxc": "catalog:linting",
@@ -176,6 +177,7 @@
     "lefthook": "catalog:tools",
     "oxfmt": "catalog:linting",
     "oxlint": "catalog:linting",
+    "playwright": "^1.64.1",
     "png-to-ico": "^3.0.1",
     "prettier": "catalog:linting",
     "prettier-plugin-astro": "catalog:linting",

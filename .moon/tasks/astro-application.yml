@@ -14,3 +14,20 @@ tasks:
       - "wrangler.json"
     outputs:
       - "worker-configuration.d.ts"
+
+  # Generates .astro/types.d.ts (e.g. the `astro:content` module). A clean
+  # checkout has no .astro/, so tsc needs it first. It loads astro.config.js,
+  # which imports built workspace packages such as sun-ui.
+  sync:
+    command: astro sync
+    inputs:
+      - "@globs(sources)"
+      - "./astro.config.js"
+    dependsOn:
+      - ^:build
+    outputs:
+      - ".astro"
+
+  typecheck:
+    dependsOn:
+      - sync

@@ -11,6 +11,9 @@ inputs:
   github-token:
     description: "Token with actions: read, used to find the Main CI run and download its artifact"
     required: true
+  site-secrets:
+    description: "The site's runtime secrets JSON (the <SITE>_SECRETS secret of the production environment); required when the site declares secrets"
+    required: false
 
 outputs:
   version-id:
@@ -23,6 +26,13 @@ outputs:
 runs:
   using: "composite"
   steps:
+    # Fails before waiting for Main CI when the production secrets JSON is absent or wrong.
+    - name: Validate production secrets
+      shell: bash
+      env:
+        STAGE_SECRETS: ${{ inputs.site-secrets }}
+      run: bun scripts/deploy.ts check-secrets ${{ inputs.target }} --stage production
+
     - name: Wait for Main CI
       id: main-ci
       shell: bash
@@ -69,9 +79,23 @@ runs:
         fi
         echo "Build digest $actual matches Main CI."
 
+    # Core migrations run before the new Version exists, so a Worker that only
+    # checks (migrations.runtime: "check") never meets an unmigrated database.
+    - name: Apply EmDash migrations (production)
+      if: inputs.target == 'pedrohenri'
+      shell: bash
+      env:
+        STAGE_SECRETS: ${{ inputs.site-secrets }}
+      run: >-
+        bun scripts/deploy.ts migrate ${{ inputs.target }}
+        --stage production
+        --manifest "$RUNNER_TEMP/website-dist/.emdash/migrations.json"
+
     - name: Upload production Version
       id: upload
       shell: bash
+      env:
+        STAGE_SECRETS: ${{ inputs.site-secrets }}
       run: >-
         bun scripts/deploy.ts version-upload ${{ inputs.target }}
         --stage production
