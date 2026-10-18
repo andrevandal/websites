@@ -97,7 +97,7 @@ Do not put secret values in `config.json`, `.env.example`, a generated
 
 1. Generate or obtain the replacement value from the secret's provider.
 2. Replace the secret only where its provider is used: for `pedrohenri`, edit
-   the key in `PEDROHENRI_SECRETS` of the GitHub `staging` and/or `production`
+   the key under `/websites/pedrohenri` in the Infisical `staging` and/or `production`
    environment; for other sites `wrangler secret put`; and `wrangler preview
 base-config secret put` for the selected preview's Access audience. For generic sites, update
    Preview Base only when their preview provider uses that credential.
@@ -161,30 +161,31 @@ finishes it; an unprotected setup can be claimed by anyone reaching it.
 
 For `pedrohenri`, the standard runtime secrets are `TURSO_DATABASE_URL`,
 `TURSO_AUTH_TOKEN`, `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID` and
-`S3_SECRET_ACCESS_KEY`. They are one JSON object in the `PEDROHENRI_SECRETS`
-secret of each GitHub environment (`staging`: the `main` push; `production`:
-the merged release-please PR), so each Stage has its own database and bucket:
+`S3_SECRET_ACCESS_KEY`. They are plain secrets under the `/websites/pedrohenri` path of the Infisical
+environments `staging` (the `main` push) and `production` (the merged
+release-please PR), so each Stage has its own database and bucket.
 
-```json
-{
-  "TURSO_DATABASE_URL": "libsql://...",
-  "TURSO_AUTH_TOKEN": "...",
-  "S3_ENDPOINT": "https://...",
-  "S3_BUCKET": "...",
-  "S3_ACCESS_KEY_ID": "...",
-  "S3_SECRET_ACCESS_KEY": "..."
-}
-```
+One-time Infisical setup:
 
-`bun scripts/deploy.ts check-secrets <site> --stage <stage>` validates it
-(env `STAGE_SECRETS`) before the build; the upload then passes it to
-`wrangler versions upload --secrets-file`. The schema is exact (every key in
-`secretKeys` except `CF_ACCESS_AUDIENCE`, all non-empty, no others), because a
-key left out is inherited from the previous Version. Do not set these with
-`wrangler secret put`: the next upload overwrites them. A key dropped from the
-JSON stays on the Worker until `wrangler secret delete`. Rotating a value means
-editing the GitHub secret and running the next deploy. Preview Base needs only
-`CF_ACCESS_AUDIENCE`.
+1. Create a project and the `staging` and `production` environments.
+2. Add the six keys under `/websites/pedrohenri` in each environment.
+3. Create a machine identity with OIDC auth bound to this repository (subject
+   `repo:andrevandal/websites:environment:staging` and `...:production`;
+   audience defaults to the Infisical domain) and give it read access to
+   `/websites/pedrohenri` in both environments.
+4. Set the repository variables `INFISICAL_IDENTITY_ID`,
+   `INFISICAL_PROJECT_SLUG` and, for EU or self-hosted instances,
+   `INFISICAL_DOMAIN`. They are not secrets.
+
+`bun scripts/deploy.ts check-secrets <site> --stage <stage>` fails when a
+declared key (every key in `secretKeys` except `CF_ACCESS_AUDIENCE`) is missing
+or empty in the environment where the Infisical action exported them; the
+upload then passes them to `wrangler versions upload --secrets-file`. A key
+left out would be inherited from the previous Version, which is why it is
+checked. Do not set these with `wrangler secret put`: the next upload
+overwrites them. A key removed from Infisical stays on the Worker until
+`wrangler secret delete`. Rotating a value means editing it in Infisical and
+running the next deploy. Preview Base needs only `CF_ACCESS_AUDIENCE`.
 
 SMTP host, port, security, user, password and sender belong to `emdash-smtp`
 plugin admin settings, not invented `SMTP_*` environment variables. Configure

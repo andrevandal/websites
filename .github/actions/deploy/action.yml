@@ -20,8 +20,14 @@ inputs:
   access-client-secret:
     description: "Cloudflare Access service token secret used to run the EmDash setup on selected previews"
     required: false
-  site-secrets:
-    description: "The site's runtime secrets JSON (the <SITE>_SECRETS secret of the staging environment); required when mode=staging and the site declares secrets"
+  infisical-identity-id:
+    description: "Infisical machine identity (OIDC auth) that may read the staging secrets of the site; required when the site declares secrets"
+    required: false
+  infisical-project-slug:
+    description: "Infisical project slug holding the sites' runtime secrets under /websites/<target>"
+    required: false
+  infisical-domain:
+    description: "Infisical instance URL; empty for https://app.infisical.com"
     required: false
 
 outputs:
@@ -32,14 +38,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # Fails before the build when the stage's secrets JSON is absent or wrong.
-    - name: Validate staging secrets
-      if: inputs.mode == 'staging'
-      shell: bash
-      env:
-        STAGE_SECRETS: ${{ inputs.site-secrets }}
-      run: bun scripts/deploy.ts check-secrets ${{ inputs.target }} --stage staging
-
     # Pedro and Bruna previews use native providers and Access; their standard
     # build remains the shared staging/production artifact with config at upload.
     - name: Build
@@ -48,6 +46,24 @@ runs:
         EMDASH_BUILD_FLAVOR: ${{ (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz') && (inputs.mode == 'preview' && 'preview' || 'standard') || '' }}
         CF_ACCESS_TEAM_DOMAIN: ${{ inputs.mode == 'preview' && (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz') && inputs.access-team-domain || '' }}
       run: moon run ${{ inputs.target }}:build
+
+    # After the build so the runtime secrets never reach it; the action exports
+    # them as masked env vars for the steps below.
+    - name: Fetch staging secrets from Infisical
+      if: inputs.mode == 'staging' && inputs.target == 'pedrohenri'
+      uses: Infisical/secrets-action@v1.0.18
+      with:
+        method: oidc
+        identity-id: ${{ inputs.infisical-identity-id }}
+        project-slug: ${{ inputs.infisical-project-slug }}
+        domain: ${{ inputs.infisical-domain || 'https://app.infisical.com' }}
+        env-slug: staging
+        secret-path: /websites/${{ inputs.target }}
+
+    - name: Validate staging secrets
+      if: inputs.mode == 'staging'
+      shell: bash
+      run: bun scripts/deploy.ts check-secrets ${{ inputs.target }} --stage staging
 
     - name: Create Workers Preview
       id: preview
@@ -80,8 +96,6 @@ runs:
     - name: Apply EmDash migrations (staging)
       if: inputs.mode == 'staging' && inputs.target == 'pedrohenri'
       shell: bash
-      env:
-        STAGE_SECRETS: ${{ inputs.site-secrets }}
       run: >-
         bun scripts/deploy.ts migrate ${{ inputs.target }}
         --stage staging
@@ -91,8 +105,6 @@ runs:
       id: staging
       if: inputs.mode == 'staging'
       shell: bash
-      env:
-        STAGE_SECRETS: ${{ inputs.site-secrets }}
       run: >-
         bun scripts/deploy.ts version-upload ${{ inputs.target }}
         --stage staging

@@ -68,8 +68,14 @@ jobs:
     needs: release
     if: ${{ needs.release.outputs.websites_released != '[]' }}
     runs-on: ubuntu-26.04
-    # Environment secrets (<SITE>_SECRETS) come from the production environment.
+    # Runtime secrets come from Infisical over OIDC (id-token).
     environment: production
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: write
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -92,4 +98,6 @@ jobs:
           target: ${{ matrix.target }}
           sha: ${{ github.sha }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          site-secrets: ${{ secrets[format('{0}_SECRETS', matrix.target)] }}
+          infisical-identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          infisical-project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          infisical-domain: ${{ vars.INFISICAL_DOMAIN }}

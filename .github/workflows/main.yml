@@ -105,8 +105,13 @@ jobs:
       (github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-26.04
-    # Environment secrets (<SITE>_SECRETS) exist only for staging; previews
-    # use the empty preview environment.
+    # id-token: Infisical OIDC login on main; previews fetch no secrets.
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
+      id-token: write
     environment: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
     strategy:
       fail-fast: false
@@ -136,7 +141,9 @@ jobs:
           access-team-domain: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenri' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_TEAM_DOMAIN || '' }}
           access-client-id: ${{ github.ref != 'refs/heads/main' && matrix.app == 'pedrohenri' && secrets.CF_ACCESS_CLIENT_ID || '' }}
           access-client-secret: ${{ github.ref != 'refs/heads/main' && matrix.app == 'pedrohenri' && secrets.CF_ACCESS_CLIENT_SECRET || '' }}
-          site-secrets: ${{ github.ref == 'refs/heads/main' && secrets[format('{0}_SECRETS', matrix.app)] || '' }}
+          infisical-identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          infisical-project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          infisical-domain: ${{ vars.INFISICAL_DOMAIN }}
 
       - name: Lighthouse CI against the preview deploy
         id: lhci

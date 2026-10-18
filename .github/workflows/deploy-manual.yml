@@ -52,6 +52,11 @@ jobs:
     name: Promote website build to production
     if: inputs.target != 'images'
     environment: production
+    permissions:
+      contents: read
+      packages: write
+      actions: read
+      id-token: write
     runs-on: ubuntu-26.04
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -85,5 +90,7 @@ jobs:
         with:
           target: ${{ inputs.target }}
           sha: ${{ inputs.artifact-sha }}
-          site-secrets: ${{ secrets[format('{0}_SECRETS', inputs.target)] }}
+          infisical-identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          infisical-project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          infisical-domain: ${{ vars.INFISICAL_DOMAIN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

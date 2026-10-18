@@ -1150,7 +1150,6 @@ const PEDRO_SECRET_KEYS = [
 ]
 const pedroTarget = {
   stage: "production",
-  secretName: "PEDROHENRI_SECRETS",
   secretKeys: PEDRO_SECRET_KEYS,
 } as const
 const completeSecrets = Object.fromEntries(
@@ -1161,108 +1160,56 @@ const completeSecrets = Object.fromEntries(
 )
 
 describe("parseStageSecrets", () => {
-  test("returns the complete JSON without the preview-only audience", () => {
+  test("returns the declared keys without the preview-only audience or other env", () => {
     expect(
-      parseStageSecrets(pedroTarget, JSON.stringify(completeSecrets))
+      parseStageSecrets(pedroTarget, {
+        ...completeSecrets,
+        CF_ACCESS_AUDIENCE: "aud",
+        PATH: "/bin",
+      })
     ).toEqual(completeSecrets)
   })
 
-  test("rejects a missing key, which the upload would silently inherit from the previous Version", () => {
+  test("rejects a missing or empty key, naming it but never a value", () => {
     const { S3_BUCKET: _bucket, ...incomplete } = completeSecrets
-    expect(() =>
-      parseStageSecrets(pedroTarget, JSON.stringify(incomplete))
-    ).toThrow(
-      "is invalid; expected exactly the declared runtime-secret keys with nonempty string values"
+    expect(() => parseStageSecrets(pedroTarget, incomplete)).toThrow(
+      "Infisical production secrets are missing or empty: S3_BUCKET."
     )
-  })
-
-  test("rejects an empty value, an unknown key and the preview-only audience", () => {
-    for (const bad of [
-      { ...completeSecrets, S3_BUCKET: "" },
-      { ...completeSecrets, TURSO_TOKEN: "typo" },
-      { ...completeSecrets, CF_ACCESS_AUDIENCE: "aud" },
-    ]) {
-      expect(() => parseStageSecrets(pedroTarget, JSON.stringify(bad))).toThrow(
-        "is invalid; expected exactly the declared runtime-secret keys with nonempty string values"
-      )
-    }
-  })
-
-  test("rejects an absent or non-JSON secret", () => {
-    for (const raw of [undefined, "", "not json"]) {
-      expect(() => parseStageSecrets(pedroTarget, raw)).toThrow(
-        "is missing or is not valid JSON"
-      )
-    }
-  })
-
-  test("does not echo secret values in the error", () => {
     expect(() =>
-      parseStageSecrets(
-        pedroTarget,
-        JSON.stringify({ ...completeSecrets, EXTRA: "super-secret-value" })
-      )
-    ).toThrow(/^((?!super-secret-value).)*$/s)
+      parseStageSecrets(pedroTarget, {
+        ...completeSecrets,
+        S3_BUCKET: "",
+        TURSO_AUTH_TOKEN: "",
+      })
+    ).toThrow("missing or empty: TURSO_AUTH_TOKEN, S3_BUCKET.")
   })
 
   test("a site without runtime secrets needs none", () => {
-    expect(
-      parseStageSecrets(
-        { stage: "staging", secretName: "BELLYPAO_SECRETS", secretKeys: [] },
-        undefined
-      )
-    ).toEqual({})
+    expect(parseStageSecrets({ stage: "staging", secretKeys: [] }, {})).toEqual(
+      {}
+    )
   })
 })
 
 describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
-  const sentinel = "issue197-rejected-sentinel"
   const { S3_BUCKET: _bucket, ...missingKey } = completeSecrets
   const cases = [
-    { name: "malformed JSON", raw: `{"secret":"${sentinel}"`, malformed: true },
-    {
-      name: "double-encoded JSON",
-      raw: JSON.stringify(JSON.stringify(completeSecrets)),
-    },
-    { name: "null root", raw: "null" },
-    { name: "array root", raw: JSON.stringify([sentinel]) },
-    { name: "string root", raw: JSON.stringify(sentinel) },
-    {
-      name: "unknown key and value",
-      raw: JSON.stringify({ ...completeSecrets, [sentinel]: sentinel }),
-    },
-    { name: "missing key", raw: JSON.stringify(missingKey) },
-    {
-      name: "non-string field",
-      raw: JSON.stringify({
-        ...completeSecrets,
-        S3_BUCKET: { value: sentinel },
-      }),
-    },
-    {
-      name: "empty field",
-      raw: JSON.stringify({ ...completeSecrets, S3_BUCKET: "" }),
-    },
-    {
-      name: "preview-only audience",
-      raw: JSON.stringify({ ...completeSecrets, CF_ACCESS_AUDIENCE: sentinel }),
-    },
-    {
-      name: "valid exact-six-key object",
-      raw: JSON.stringify(completeSecrets),
-      valid: true,
-    },
+    { name: "missing key", secrets: missingKey },
+    { name: "empty key", secrets: { ...completeSecrets, S3_BUCKET: "" } },
+    { name: "all declared keys", secrets: completeSecrets, valid: true },
   ]
 
   describe.each([false, true])("GITHUB_ACTIONS=%s", githubActions => {
     test.each(cases)(
       "$name",
-      async ({ raw, malformed, valid }) => {
+      async ({ secrets, valid }) => {
         const env: NodeJS.ProcessEnv = {
           ...process.env,
-          STAGE_SECRETS: raw,
+          ...secrets,
           NO_COLOR: "1",
         }
+        for (const key of Object.keys(completeSecrets))
+          if (!(key in secrets)) delete env[key]
         delete env.GITHUB_ACTIONS
         delete env.GITHUB_OUTPUT
         delete env.GITHUB_STEP_SUMMARY
@@ -1288,7 +1235,6 @@ describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
           new Response(child.stderr).text(),
           child.exited,
         ])
-        const output = stdout + stderr
         const masks = stdout
           .split("\n")
           .filter(line => line.startsWith("::add-mask::"))
@@ -1298,7 +1244,6 @@ describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
             .filter(line => !line.startsWith("::add-mask::"))
             .join("\n") + stderr
         expect(code).toBe(valid ? 0 : 1)
-        expect(output).not.toContain(sentinel)
         expect(masks).toEqual(
           valid && githubActions
             ? Object.values(completeSecrets).map(
@@ -1308,15 +1253,10 @@ describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
         )
         for (const value of Object.values(completeSecrets))
           expect(normalOutput).not.toContain(value)
-
         if (!valid) {
-          const reason = malformed
-            ? "is missing or is not valid JSON."
-            : "is invalid; expected exactly the declared runtime-secret keys with nonempty string values."
           expect(normalOutput).toContain(
-            `PEDROHENRI_SECRETS in the "${stage}" GitHub environment ${reason}`
+            `Infisical ${stage} secrets are missing or empty: S3_BUCKET.`
           )
-          expect(normalOutput.trimEnd().endsWith(reason)).toBe(true)
         }
       },
       30_000

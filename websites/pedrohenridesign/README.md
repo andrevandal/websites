@@ -185,22 +185,22 @@ the admin's **Analytics** page (the `@vandal-websites/emdash-plugin-analytics`
 plugin, registered in every environment). Empty IDs disable tracking.
 
 Runtime secrets are never in `config.json` (it lists their names in
-`secretKeys`). Staging and production each get their own values from one JSON
-secret, `PEDROHENRI_SECRETS`, in the GitHub `staging` and `production`
-environments; CI validates it and injects it at upload (see below). Standard
+`secretKeys`). Staging and production each get their own values from Infisical
+(`/websites/pedrohenri`, environments `staging` and `production`); CI checks them and
+injects them at upload (see below). Standard
 builds read database and media settings from these values.
 PR previews instead use native `DB` (D1) and `MEDIA` (R2) bindings.
 `astro dev` ignores deployed providers and uses `.data/`, even when preview
 build environment variables are present.
 
-| Key in `PEDROHENRI_SECRETS` | Purpose                          |
-| --------------------------- | -------------------------------- |
-| `TURSO_DATABASE_URL`        | libSQL database (`libsql://...`) |
-| `TURSO_AUTH_TOKEN`          | Turso auth token                 |
-| `S3_ENDPOINT`               | Media bucket endpoint            |
-| `S3_BUCKET`                 | Media bucket                     |
-| `S3_ACCESS_KEY_ID`          | Media bucket credentials         |
-| `S3_SECRET_ACCESS_KEY`      | Media bucket credentials         |
+| Secret in Infisical    | Purpose                          |
+| ---------------------- | -------------------------------- |
+| `TURSO_DATABASE_URL`   | libSQL database (`libsql://...`) |
+| `TURSO_AUTH_TOKEN`     | Turso auth token                 |
+| `S3_ENDPOINT`          | Media bucket endpoint            |
+| `S3_BUCKET`            | Media bucket                     |
+| `S3_ACCESS_KEY_ID`     | Media bucket credentials         |
+| `S3_SECRET_ACCESS_KEY` | Media bucket credentials         |
 
 `S3_REGION` (default `auto`) and `S3_PUBLIC_URL` (CDN base URL) are optional,
 non-secret Stage vars: add them under a Stage in `config.json` when needed.
@@ -219,7 +219,7 @@ Standard staging/production builds read Turso and S3 settings from `process.env`
 leave a migration lock behind, and it answers 503 while migrations are pending.
 CI applies the core migrations first: `bun scripts/deploy.ts migrate pedrohenri`
 runs `emdash migrate` against the stage's Turso database (the `TURSO_*` values
-of the stage's `PEDROHENRI_SECRETS`) before the Version is uploaded, on `main`
+of the stage's Infisical secrets) before the Version is uploaded, on `main`
 pushes (staging) and releases (production). A job cancelled mid-migration leaves
 a lock; release it by hand with `bunx emdash migrate --status`, then
 `--release-lock <id> --expected-target-fingerprint <fp>`, from
@@ -253,20 +253,20 @@ Wrangler `previews.observability` override disables observability for PR preview
 CI runs `scripts/deploy.ts`: selected PR previews build with
 `EMDASH_BUILD_FLAVOR=preview`; `main` builds the standard artifact once for
 staging, and a release promotes that artifact to production without rebuilding.
-Secrets are set per Stage, not with `wrangler secret put`: put the JSON object
-above in the `PEDROHENRI_SECRETS` secret of the GitHub `staging` environment
-(used by the `main` push) and of the `production` environment (used when the
-release-please PR is merged). Before building, CI runs
-`scripts/deploy.ts check-secrets`, which validates it with a Valibot schema:
-exactly the six keys, all non-empty, no unknown keys; a missing or invalid JSON
-fails the job. The upload passes it to `wrangler versions upload
---secrets-file`, so each Version carries its own Stage values. A key left out
-would be inherited from the previous Version (production would get staging's
-database), which is why the schema is exact. A value set by hand with
-`wrangler secret put` is overwritten by the next upload, and a key removed from
-the JSON stays on the Worker until you delete it with `wrangler secret delete`.
-`CF_ACCESS_AUDIENCE` is the only other secret: it lives on Preview Base, not in
-this JSON.
+Secrets are set per Stage, not with `wrangler secret put`: add the six secrets
+above under `/websites/pedrohenri` in the Infisical `staging` environment (used by the
+`main` push) and `production` environment (used when the release-please PR is
+merged); see the
+[provisioning guide](../../docs/guides/provision-new-site-and-rotate-secrets.md).
+After the build, CI fetches them over OIDC and runs
+`scripts/deploy.ts check-secrets`: all six must be non-empty, or the job fails.
+The upload passes them to `wrangler versions upload --secrets-file`, so each
+Version carries its own Stage values. A key left out would be inherited from
+the previous Version (production would get staging's database), which is why
+it is checked. A value set by hand with `wrangler secret put` is overwritten by
+the next upload, and a key removed from Infisical stays on the Worker until you
+delete it with `wrangler secret delete`. `CF_ACCESS_AUDIENCE` is the only other
+secret: it lives on Preview Base, not in Infisical.
 
 Each PR binds `SESSION` to `pedrohenri-pr-<N>`, `DB` to D1 database
 `pedrohenri-pr-<N>-cms`, and `MEDIA` to R2 bucket `pedrohenri-pr-<N>-media`.

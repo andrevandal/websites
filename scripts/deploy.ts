@@ -424,49 +424,25 @@ const PREVIEW_ONLY_SECRET_KEYS = new Set(["CF_ACCESS_AUDIENCE"])
 
 type StageSecretsTarget = {
   stage: "staging" | "production"
-  // GitHub environment secret holding the JSON, e.g. PEDROHENRI_SECRETS.
-  secretName: string
   secretKeys: string[]
 }
 
-// Exactly the site's runtime secrets, all non-empty. A missing key would make
-// `wrangler versions upload` keep the previous Version's value, so production
-// would inherit staging's database; an unknown key is a typo. Both fail here.
-const stageSecretsSchema = (secretKeys: string[]) =>
-  v.strictObject(
-    Object.fromEntries(
-      secretKeys
-        .filter(key => !PREVIEW_ONLY_SECRET_KEYS.has(key))
-        .map(key => [key, v.pipe(v.string(), v.nonEmpty("is empty"))])
-    )
-  )
-
-// Parses `<SITE>_SECRETS`, the JSON object kept in the stage's GitHub
-// environment, against `secretKeys`. Sites without runtime secrets return {}.
+// Reads the site's runtime secrets from `env`, where the Infisical action
+// exports them. A missing key would make `wrangler versions upload` keep the
+// previous Version's value, so production would inherit staging's database:
+// every declared key must be present and non-empty. Only names are reported.
 const parseStageSecrets = (
-  { stage, secretName, secretKeys }: StageSecretsTarget,
-  raw: string | undefined
+  { stage, secretKeys }: StageSecretsTarget,
+  env: NodeJS.ProcessEnv
 ): Record<string, string> => {
-  if (secretKeys.every(key => PREVIEW_ONLY_SECRET_KEYS.has(key))) return {}
-  const fail = (reason: string): never => {
+  const keys = secretKeys.filter(key => !PREVIEW_ONLY_SECRET_KEYS.has(key))
+  const missing = keys.filter(key => !env[key])
+  if (missing.length > 0) {
     throw new Error(
-      `${secretName} in the "${stage}" GitHub environment ${reason}`
+      `Infisical ${stage} secrets are missing or empty: ${missing.join(", ")}.`
     )
   }
-
-  let json: unknown
-  try {
-    json = JSON.parse(raw || "")
-  } catch {
-    return fail("is missing or is not valid JSON.")
-  }
-  const result = v.safeParse(stageSecretsSchema(secretKeys), json)
-  if (!result.success) {
-    return fail(
-      "is invalid; expected exactly the declared runtime-secret keys with nonempty string values."
-    )
-  }
-  return result.output
+  return Object.fromEntries(keys.map(key => [key, env[key] as string]))
 }
 
 const stageSecretsTarget = (
@@ -474,7 +450,6 @@ const stageSecretsTarget = (
   stage: StageSecretsTarget["stage"]
 ): StageSecretsTarget => ({
   stage,
-  secretName: `${siteLocation[1]?.toUpperCase()}_SECRETS`,
   secretKeys: resolveTargetSecretKeys(siteLocation),
 })
 
@@ -767,7 +742,7 @@ if (import.meta.main) {
       )
       .command(
         "check-secrets <target>",
-        "Validate the stage's secrets JSON (env STAGE_SECRETS) without uploading",
+        "Check the stage's Infisical secrets are in the environment, without uploading",
         builder =>
           builder.positional("target", targetPositional).option("stage", {
             choices: ["staging", "production"] as const,
@@ -785,7 +760,7 @@ if (import.meta.main) {
       )
       .command(
         "migrate <target>",
-        "Apply the build's pending EmDash core migrations to a stage's Turso database (env STAGE_SECRETS)",
+        "Apply the build's pending EmDash core migrations to a stage's Turso database (secrets from the environment)",
         builder =>
           builder
             .positional("target", targetPositional)
@@ -915,7 +890,7 @@ if (import.meta.main) {
       const stage = args["stage"] as "staging" | "production"
       const secrets = parseStageSecrets(
         stageSecretsTarget(project.location, stage),
-        process.env["STAGE_SECRETS"]
+        process.env
       )
       // Keeps secret values out of every later log line of the job, e.g. the
       // Turso URL `emdash migrate` prints as its target label.
@@ -934,7 +909,7 @@ if (import.meta.main) {
             manifestPath: resolve(`${args["manifest"]}`),
             secrets: parseStageSecrets(
               stageSecretsTarget(project.location, stage),
-              process.env["STAGE_SECRETS"]
+              process.env
             ),
           },
           realDeps
@@ -961,7 +936,7 @@ if (import.meta.main) {
             vars: resolveTargetEnvVars(project.location, stage),
             secrets: parseStageSecrets(
               stageSecretsTarget(project.location, stage),
-              process.env["STAGE_SECRETS"]
+              process.env
             ),
             previewAlias: args["previewAlias"] as string | undefined,
           },

@@ -35,9 +35,12 @@ production share the standard Turso/S3 artifact without rebuilding.
 Selected previews use native D1/R2 and Access with per-PR `SESSION` KV.
 Staging (`main` push) and production (merged release-please PR, or the manual
 `deploy-manual.yml` promotion, which runs in the `production` Environment) take
-the site's runtime secrets from its `<SITE>_SECRETS` JSON in the `staging` or
-`production` GitHub environment: `check-secrets` validates it before the build
-(failures name only the key, never a value) and `version-upload` passes it to
+the site's runtime secrets from Infisical (project `INFISICAL_PROJECT_SLUG`,
+path `/websites/<site>`, environment `staging` or `production`, OIDC login as the
+`INFISICAL_IDENTITY_ID` machine identity). The Infisical action exports them as
+masked env vars after the build; `check-secrets` fails the job when a declared
+key is missing or empty (it names only the key, never a value) and
+`version-upload` passes them to
 `wrangler versions upload --secrets-file`. A rotated value takes effect on the
 next deployment of that site to that Stage, not on unrelated pushes. Preview
 Base and each existing Preview have their own effective settings.
@@ -45,14 +48,14 @@ Base and each existing Preview have their own effective settings.
 original images directly: `vars.preview.IMAGES_BASE_URL` is empty.
 The runtime audience is supplied manually as `CF_ACCESS_AUDIENCE` on Preview
 Base, not as a GitHub build secret; it is a preview-only key and is not part of
-the Stage secret JSON. Same-PR redeploys preserve resources and
+the Stage secrets in Infisical. Same-PR redeploys preserve resources and
 CMS state; PR close deletes only that Preview and its KV/D1/R2 resources,
 purging media before deleting its R2 bucket. Generic previews remain KV-only.
 CI does not provision Access policy coverage or create admins; see the
 [Access guide](./guides/cloudflare-access-for-previews.md). For `pedrohenri`,
 CI applies the core migrations of each database before the code that needs
 them gets traffic (`scripts/deploy.ts migrate`: the PR Preview's D1 before
-`wrangler preview`, the stage's Turso database from `PEDROHENRI_SECRETS`
+`wrangler preview`, the stage's Turso database from Infisical
 before the staging and production Version uploads), and its Worker only checks
 (`migrations.runtime: "check"`). Its PR Previews are also set up from CI
 (`setupPreview`): the bundled `seed/seed.json` goes through the public

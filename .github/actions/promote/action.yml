@@ -11,8 +11,14 @@ inputs:
   github-token:
     description: "Token with actions: read, used to find the Main CI run and download its artifact"
     required: true
-  site-secrets:
-    description: "The site's runtime secrets JSON (the <SITE>_SECRETS secret of the production environment); required when the site declares secrets"
+  infisical-identity-id:
+    description: "Infisical machine identity (OIDC auth) that may read the production secrets of the site; required when the site declares secrets"
+    required: false
+  infisical-project-slug:
+    description: "Infisical project slug holding the sites' runtime secrets under /websites/<target>"
+    required: false
+  infisical-domain:
+    description: "Infisical instance URL; empty for https://app.infisical.com"
     required: false
 
 outputs:
@@ -26,11 +32,20 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # Fails before waiting for Main CI when the production secrets JSON is absent or wrong.
+    # Fails before waiting for Main CI when a production secret is absent.
+    - name: Fetch production secrets from Infisical
+      if: inputs.target == 'pedrohenri'
+      uses: Infisical/secrets-action@v1.0.18
+      with:
+        method: oidc
+        identity-id: ${{ inputs.infisical-identity-id }}
+        project-slug: ${{ inputs.infisical-project-slug }}
+        domain: ${{ inputs.infisical-domain || 'https://app.infisical.com' }}
+        env-slug: production
+        secret-path: /websites/${{ inputs.target }}
+
     - name: Validate production secrets
       shell: bash
-      env:
-        STAGE_SECRETS: ${{ inputs.site-secrets }}
       run: bun scripts/deploy.ts check-secrets ${{ inputs.target }} --stage production
 
     - name: Wait for Main CI
@@ -84,8 +99,6 @@ runs:
     - name: Apply EmDash migrations (production)
       if: inputs.target == 'pedrohenri'
       shell: bash
-      env:
-        STAGE_SECRETS: ${{ inputs.site-secrets }}
       run: >-
         bun scripts/deploy.ts migrate ${{ inputs.target }}
         --stage production
@@ -94,8 +107,6 @@ runs:
     - name: Upload production Version
       id: upload
       shell: bash
-      env:
-        STAGE_SECRETS: ${{ inputs.site-secrets }}
       run: >-
         bun scripts/deploy.ts version-upload ${{ inputs.target }}
         --stage production
