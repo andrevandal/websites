@@ -4,10 +4,13 @@
   "files": [],
   "references": [
     {
+      "path": "./apps/images"
+    },
+    {
       "path": "./packages/emdash-plugin-analytics"
     },
     {
-      "path": "./apps/images"
+      "path": "./packages/emdash-plugin-jmap"
     },
     {
       "path": "./packages/robots-sitemap"

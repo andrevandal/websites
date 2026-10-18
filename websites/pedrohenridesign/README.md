@@ -193,14 +193,15 @@ PR previews instead use native `DB` (D1) and `MEDIA` (R2) bindings.
 `astro dev` ignores deployed providers and uses `.data/`, even when preview
 build environment variables are present.
 
-| Secret in Infisical    | Purpose                          |
-| ---------------------- | -------------------------------- |
-| `TURSO_DATABASE_URL`   | libSQL database (`libsql://...`) |
-| `TURSO_AUTH_TOKEN`     | Turso auth token                 |
-| `S3_ENDPOINT`          | Media bucket endpoint            |
-| `S3_BUCKET`            | Media bucket                     |
-| `S3_ACCESS_KEY_ID`     | Media bucket credentials         |
-| `S3_SECRET_ACCESS_KEY` | Media bucket credentials         |
+| Secret in Infisical     | Purpose                                                              |
+| ----------------------- | -------------------------------------------------------------------- |
+| `TURSO_DATABASE_URL`    | libSQL database (`libsql://...`)                                     |
+| `TURSO_AUTH_TOKEN`      | Turso auth token                                                     |
+| `S3_ENDPOINT`           | Media bucket endpoint                                                |
+| `S3_BUCKET`             | Media bucket                                                         |
+| `S3_ACCESS_KEY_ID`      | Media bucket credentials                                             |
+| `S3_SECRET_ACCESS_KEY`  | Media bucket credentials                                             |
+| `EMDASH_ENCRYPTION_KEY` | Encrypts plugin secret settings (JMAP credential); one key per Stage |
 
 `S3_REGION` (default `auto`) and `S3_PUBLIC_URL` (CDN base URL) are optional,
 non-secret Stage vars: add them under a Stage in `config.json` when needed.
@@ -227,11 +228,17 @@ a lock; release it by hand with `bunx emdash migrate --status`, then
 also creates the first admin and, with **include sample content** checked,
 loads the content and downloads the images.
 
-Email goes through the `emdash-smtp` plugin, loaded in builds only: `astro dev`
-keeps EmDash's console email provider, so magic links print to the dev server
-log. SMTP host, port, security, user, password and sender are plugin settings,
-entered in the admin under Plugins, not `SMTP_*` environment variables; then
-pick the provider under Settings -> Email.
+Email goes through the `@vandal-websites/emdash-plugin-jmap` plugin, loaded in builds
+only: `astro dev` keeps EmDash's console email provider, so magic links print to
+the dev server log. Server URL, authentication (username and password, or a
+bearer token), credential, sender address and name, and Reply-To are plugin
+settings, entered in the admin under Plugins -> JMAP, not environment
+variables. The same page has a "Send test email" action (it uses the saved
+settings) and Plugins -> JMAP log lists the last deliveries (status, recipient,
+subject, error; never the body). Then pick "jmap-email" under Settings ->
+Email. The sender address must match a JMAP identity on the account. The
+credential is encrypted with `EMDASH_ENCRYPTION_KEY`, which must be set in the
+deployment environment.
 
 Passkeys work only on the hostname that registered them, so register the admin
 on `https://pedrohenridesign.com.br`. Until the wizard has run, anyone who reaches an
@@ -253,13 +260,13 @@ Wrangler `previews.observability` override disables observability for PR preview
 CI runs `scripts/deploy.ts`: selected PR previews build with
 `EMDASH_BUILD_FLAVOR=preview`; `main` builds the standard artifact once for
 staging, and a release promotes that artifact to production without rebuilding.
-Secrets are set per Stage, not with `wrangler secret put`: add the six secrets
+Secrets are set per Stage, not with `wrangler secret put`: add the seven secrets
 above under `/websites/pedrohenri` in the Infisical `staging` environment (used by the
 `main` push) and `production` environment (used when the release-please PR is
 merged); see the
 [provisioning guide](../../docs/guides/provision-new-site-and-rotate-secrets.md).
 After the build, CI fetches them over OIDC and runs
-`scripts/deploy.ts check-secrets`: all six must be non-empty, or the job fails.
+`scripts/deploy.ts check-secrets`: all seven must be non-empty, or the job fails.
 The upload passes them to `wrangler versions upload --secrets-file`, so each
 Version carries its own Stage values. A key left out would be inherited from
 the previous Version (production would get staging's database), which is why

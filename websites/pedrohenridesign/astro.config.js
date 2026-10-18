@@ -7,7 +7,7 @@ import node from "@astrojs/node"
 import react from "@astrojs/react"
 import tailwindcss from "@tailwindcss/vite"
 import emdash from "emdash/astro"
-import { emdashSmtp } from "emdash-smtp"
+import { jmapEmailPlugin } from "@vandal-websites/emdash-plugin-jmap"
 import { analyticsPlugin } from "@vandal-websites/emdash-plugin-analytics"
 import { mkdirSync } from "node:fs"
 import { loadEnv } from "vite"
@@ -52,7 +52,7 @@ export default defineConfig({
       // Analytics loads in every environment. Only the email plugin is
       // build-only: dev leaves EmDash's console email provider as the only
       // one, so it is auto-selected and magic links print to the terminal.
-      plugins: [analyticsPlugin(), ...(isDev ? [] : [emdashSmtp()])],
+      plugins: [analyticsPlugin(), ...(isDev ? [] : [jmapEmailPlugin()])],
       // The admin ships every locale catalog into the Worker unless this is
       // set (about 6 MB of the bundle). "en" is always included.
       admin: { locales: ["pt-BR"] },

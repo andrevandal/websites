@@ -25,6 +25,9 @@
       "path": "../../packages/emdash-plugin-analytics"
     },
     {
+      "path": "../../packages/emdash-plugin-jmap"
+    },
+    {
       "path": "../../packages/robots-sitemap"
     },
     {

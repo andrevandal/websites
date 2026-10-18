@@ -41,8 +41,10 @@ process.argv.includes("dev")` selects the Node adapter, `sqlite()` at
   Cloudflare adapter, the production database and `s3()` storage otherwise.
 - **Email plugins load in builds only.** EmDash auto-selects its dev console
   provider only when it is the sole `email:deliver` provider, so any email
-  plugin is registered as `plugins: isDev ? [] : [<emailPlugin>()]`. Loading
-  one in dev makes magic links fail with `EMAIL_NOT_CONFIGURED`.
+  plugin (`jmapEmailPlugin()` on `pedrohenri`; `emdashSmtp()` is the SMTP
+  alternative) is registered as `plugins: isDev ? [] : [<emailPlugin>()]`.
+  Loading one in
+  dev makes magic links fail with `EMAIL_NOT_CONFIGURED`.
 - **The site's `moon.yml` has the `emdash` tag** (next to `cloudflare`). The
   tag inherits the shared tasks; nothing is copied per site:
   - `seed` (`.moon/tasks/emdash.yml`): `scripts/fix-seed-byline-locale.ts

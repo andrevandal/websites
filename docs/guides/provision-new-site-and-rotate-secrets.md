@@ -122,7 +122,8 @@ Stage has received and exercised the replacement.
 `pedrohenri` and `brunabraz` PR previews build with
 `EMDASH_BUILD_FLAVOR=preview`, native D1/R2 and Access. Staging and production
 share the standard Turso/S3 artifact without rebuilding, with default passkeys
-and the `emdash-smtp` plugin. Local development remains SQLite/local without
+and the JMAP email plugin (`@vandal-websites/emdash-plugin-jmap`). Local development
+remains SQLite/local without
 Access or deployed credentials, even with preview build variables present.
 
 For Worker `<worker>` and positive PR number `<N>`, preview bindings are
@@ -160,15 +161,15 @@ finishes it; an unprotected setup can be claimed by anyone reaching it.
 ### Standard runtime inventory
 
 For `pedrohenri`, the standard runtime secrets are `TURSO_DATABASE_URL`,
-`TURSO_AUTH_TOKEN`, `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID` and
-`S3_SECRET_ACCESS_KEY`. They are plain secrets under the `/websites/pedrohenri` path of the Infisical
+`TURSO_AUTH_TOKEN`, `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`,
+`S3_SECRET_ACCESS_KEY` and `EMDASH_ENCRYPTION_KEY`. They are plain secrets under the `/websites/pedrohenri` path of the Infisical
 environments `staging` (the `main` push) and `production` (the merged
 release-please PR), so each Stage has its own database and bucket.
 
 One-time Infisical setup:
 
 1. Create a project and the `staging` and `production` environments.
-2. Add the six keys under `/websites/pedrohenri` in each environment.
+2. Add the seven keys under `/websites/pedrohenri` in each environment.
 3. Create a machine identity with OIDC auth bound to this repository (subject
    `repo:andrevandal/websites:environment:staging` and `...:production`;
    audience defaults to the Infisical domain) and give it read access to
@@ -187,6 +188,9 @@ overwrites them. A key removed from Infisical stays on the Worker until
 `wrangler secret delete`. Rotating a value means editing it in Infisical and
 running the next deploy. Preview Base needs only `CF_ACCESS_AUDIENCE`.
 
-SMTP host, port, security, user, password and sender belong to `emdash-smtp`
-plugin admin settings, not invented `SMTP_*` environment variables. Configure
-the plugin in the admin and select it under Settings -> Email.
+The JMAP plugin (`jmap-email`) keeps its server URL, authentication mode,
+credential and sender in admin settings under Plugins -> JMAP, not in
+environment variables. Configure it in the admin and select it under
+Settings -> Email. The credential is encrypted with `EMDASH_ENCRYPTION_KEY`
+(one per Stage, generated with `bunx emdash secrets generate`; losing it
+makes the stored credential unreadable, so re-enter it in the admin).
