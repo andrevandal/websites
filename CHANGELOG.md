@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.8.0](https://github.com/andrevandal/websites/compare/v1.7.0...v1.8.0) (2026-10-18)
+
+
+### Features
+
+* **emdash-plugin-jmap:** add JMAP email transport plugin
+* **pedrohenri:** require EMDASH_ENCRYPTION_KEY as a Stage secret
+* **pedrohenri:** send email through a JMAP plugin
+* **pedrohenri:** send email through the JMAP plugin
+
 ## [1.7.0](https://github.com/andrevandal/websites/compare/v1.6.0...v1.7.0) (2026-10-18)
 
 

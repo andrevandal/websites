@@ -233,7 +233,7 @@
     },
     "websites/pedrohenridesign": {
       "name": "@websites/pedrohenri",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "@astrojs/check": "catalog:astro",
         "@astrojs/cloudflare": "catalog:astro",
