@@ -147,7 +147,7 @@
     },
     "websites/brunabraz": {
       "name": "@websites/brunabraz",
-      "version": "1.4.1",
+      "version": "1.5.0",
       "dependencies": {
         "@iconify-json/heroicons": "catalog:icons",
         "@iconify-json/heroicons-outline": "catalog:icons",
@@ -179,7 +179,7 @@
     },
     "websites/clinicamauricioaraujo": {
       "name": "@websites/clinicamauricioaraujo.com.br",
-      "version": "1.3.1",
+      "version": "1.4.0",
       "dependencies": {
         "@astro-community/astro-embed-youtube": "catalog:astro",
         "@astrojs/check": "catalog:astro",
@@ -210,7 +210,7 @@
     },
     "websites/pedrohenridesign": {
       "name": "@websites/pedrohenri",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dependencies": {
         "@astrojs/check": "catalog:astro",
         "@astrojs/cloudflare": "catalog:astro",
@@ -244,7 +244,7 @@
     },
     "websites/transportugal": {
       "name": "@websites/transportugal",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "dependencies": {
         "@astrojs/check": "catalog:astro",
         "@astrojs/cloudflare": "catalog:astro",
@@ -270,7 +270,7 @@
     },
     "websites/vandallabs": {
       "name": "@websites/vandallabs",
-      "version": "1.4.1",
+      "version": "1.5.0",
       "dependencies": {
         "@iconify-json/heroicons": "catalog:icons",
         "@iconify-json/heroicons-outline": "catalog:icons",

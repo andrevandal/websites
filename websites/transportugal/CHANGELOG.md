@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/andrevandal/websites/compare/transportugal-v0.3.1...transportugal-v0.4.0) (2026-10-18)
+
+
+### Features
+
+* **pedrohenri:** add Pedro Henri Design website
+* **websites:** default local images to the staging image service
+
 ## [0.3.1](https://github.com/andrevandal/websites/compare/transportugal-v0.3.0...transportugal-v0.3.1) (2026-10-13)
 
 

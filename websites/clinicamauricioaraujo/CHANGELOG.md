@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.3.1...clinicamauricioaraujo-v1.4.0) (2026-10-18)
+
+
+### Features
+
+* **pedrohenri:** add Pedro Henri Design website
+* **websites:** default local images to the staging image service
+
 ## [1.3.1](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.3.0...clinicamauricioaraujo-v1.3.1) (2026-10-13)
 
 

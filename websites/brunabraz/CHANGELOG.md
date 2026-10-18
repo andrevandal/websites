@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.4.1...brunabraz-v1.5.0) (2026-10-18)
+
+
+### Features
+
+* **pedrohenri:** add Pedro Henri Design website
+* **websites:** default local images to the staging image service
+
 ## [1.4.1](https://github.com/andrevandal/websites/compare/brunabraz-v1.4.0...brunabraz-v1.4.1) (2026-10-13)
 
 

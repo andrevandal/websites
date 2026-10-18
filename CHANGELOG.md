@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.0](https://github.com/andrevandal/websites/compare/v1.6.0...v1.7.0) (2026-10-18)
+
+
+### Features
+
+* **ci:** fetch pedrohenri runtime secrets from Infisical over OIDC
+* **ci:** fetch pedrohenri runtime secrets from Infisical over OIDC
+* **pedrohenri:** add Pedro Henri Design website
+
+
+### Bug Fixes
+
+* **ci:** read Infisical secrets from /websites/&lt;site&gt;
+
 ## [1.6.0](https://github.com/andrevandal/websites/compare/v1.5.0...v1.6.0) (2026-10-16)
 
 
