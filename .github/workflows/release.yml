@@ -24,6 +24,11 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          # checkout stores this token as git's credential for every later
+          # push (including the grouping step's), so a bot token here makes
+          # those pushes run as github-actions[bot], which GitHub holds for
+          # approval.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Init
         uses: ./.github/actions/init
@@ -32,7 +37,48 @@ jobs:
         uses: googleapis/release-please-action@v5
         id: release
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # A PAT-authored release PR runs Main CI without the manual "approve
+          # workflows" gate GitHub puts on github-actions[bot] PRs.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      # A merge commit and its branch commits both become changelog lines, so
+      # each merged PR is listed twice. Group them in the release PR's
+      # changelogs and body (the body becomes the release notes): the merge
+      # commit's line stays, its branch commits nest under it.
+      - name: Group merge-commit entries in the release PR
+        if: ${{ steps.release.outputs.pr != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          PR: ${{ fromJson(steps.release.outputs.pr || '{}').number }}
+          BRANCH: ${{ fromJson(steps.release.outputs.pr || '{}').headBranchName }}
+        run: |
+          # Copied out first: the release branch may predate the script.
+          cp scripts/release-group-merges.ts "$RUNNER_TEMP/group.ts"
+          git fetch origin "$BRANCH"
+          git switch -C "$BRANCH" "origin/$BRANCH"
+          mapfile -t changelogs < <(git ls-files '*CHANGELOG.md')
+          bun "$RUNNER_TEMP/group.ts" "${changelogs[@]}"
+          if ! git diff --quiet; then
+            # Authored as the PAT's owner: GitHub holds workflows triggered by a
+            # github-actions[bot] commit for approval. A GITHUB_TOKEN has no
+            # user, so it keeps the bot identity.
+            if owner=$(gh api user --jq '"\(.login) \(.id)"' 2>/dev/null); then
+              git config user.name "${owner% *}"
+              git config user.email "${owner#* }+${owner% *}@users.noreply.github.com"
+            else
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            fi
+            git commit -am "chore: group merge-commit entries in the changelog"
+            git push origin "HEAD:$BRANCH"
+          fi
+          gh pr view "$PR" --json body --jq .body > "$RUNNER_TEMP/body.md"
+          cp "$RUNNER_TEMP/body.md" "$RUNNER_TEMP/body.orig.md"
+          bun "$RUNNER_TEMP/group.ts" "$RUNNER_TEMP/body.md"
+          if ! cmp -s "$RUNNER_TEMP/body.md" "$RUNNER_TEMP/body.orig.md"; then
+            gh pr edit "$PR" --body-file "$RUNNER_TEMP/body.md"
+          fi
 
       - name: Compute released websites
         id: websites

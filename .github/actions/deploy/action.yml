@@ -32,8 +32,8 @@ inputs:
 
 outputs:
   url:
-    description: "The Workers Preview URL, or the staging Version Preview alias URL"
-    value: ${{ steps.preview.outputs.deploy-url || steps.staging.outputs.deploy-url }}
+    description: "The Workers Preview URL (pull requests only)"
+    value: ${{ steps.preview.outputs.deploy-url }}
 
 runs:
   using: "composite"
@@ -109,4 +109,11 @@ runs:
         bun scripts/deploy.ts version-upload ${{ inputs.target }}
         --stage staging
         --artifact-dir websites/${{ inputs.target }}/dist
-        --preview-alias staging
+
+    - name: Deploy staging Version
+      if: inputs.mode == 'staging'
+      shell: bash
+      run: >-
+        bun scripts/deploy.ts version-deploy ${{ inputs.target }}
+        --stage staging
+        --version-id ${{ steps.staging.outputs.version-id }}

@@ -117,31 +117,33 @@ Cloudflare custom domains are managed in the Cloudflare dashboard, not in `wrang
 - compatibility flags/date
 - static assets directory
 
-CI runs the root deploy script; every Stage is the one `vandallabs` Worker:
+CI runs the root deploy script; production is the `vandallabs` Worker, staging `vandallabs-staging`:
 
 ```sh
 # pull request: Workers Preview pr-123
 bun scripts/deploy.ts preview vandallabs --pr 123
 bun scripts/deploy.ts cleanup vandallabs --pr 123
-# push to main: staging Version from the build in dist/, aliased staging
-bun scripts/deploy.ts version-upload vandallabs --stage staging --artifact-dir websites/vandallabs/dist --preview-alias staging
+# push to main: staging Version of vandallabs-staging, then all traffic
+bun scripts/deploy.ts version-upload vandallabs --stage staging --artifact-dir websites/vandallabs/dist
+bun scripts/deploy.ts version-deploy vandallabs --stage staging --version-id <uuid>
 # release: same build, production config, then all traffic
 bun scripts/deploy.ts version-upload vandallabs --stage production --artifact-dir <restored dist>
-bun scripts/deploy.ts version-deploy vandallabs --version-id <uuid>
+bun scripts/deploy.ts version-deploy vandallabs --stage production --version-id <uuid>
 ```
 
-| Stage      | Deployed as                                                       | KV namespace        |
-| ---------- | ----------------------------------------------------------------- | ------------------- |
-| PR preview | Workers Preview `pr-<N>` of `vandallabs`                          | `vandallabs-pr-<N>` |
-| Staging    | Uploaded Version of `vandallabs`, Version Preview alias `staging` | `vandallabs`        |
-| Production | A production-configured Version of `vandallabs` at 100% traffic   | `vandallabs`        |
+| Stage      | Deployed as                                                     | KV namespace         |
+| ---------- | --------------------------------------------------------------- | -------------------- |
+| PR preview | Workers Preview `pr-<N>` of `vandallabs`                        | `vandallabs-pr-<N>`  |
+| Staging    | Version of `vandallabs-staging` at 100% traffic                 | `vandallabs-staging` |
+| Production | A production-configured Version of `vandallabs` at 100% traffic | `vandallabs`         |
 
-No Stage creates a separately named Worker. Staging is a Version Preview
-(`staging-vandallabs.<subdomain>.workers.dev`), never deployed. A release
-re-uploads the identical staging build with production config and deploys that
-new Version. It never deploys the staging Version itself and never rebuilds.
+Staging is its own Worker, `vandallabs-staging`
+(`vandallabs-staging.<subdomain>.workers.dev`); main CI uploads the build there
+and deploys it at 100%. A release re-uploads the identical staging build with
+production config to the `vandallabs` Worker and deploys that new Version. It
+never deploys the staging Version itself and never rebuilds.
 A Preview gets its own `SESSION` namespace because Workers Previews do not
-provision KV. Staging and production share the Worker's namespace.
+provision KV. Staging has its own namespace (`vandallabs-staging`).
 
 Manual website deploys (`deploy-manual.yml`) only promote an existing Main CI
 build (`artifact-sha`) to production. Previews are created only from

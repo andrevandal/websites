@@ -71,11 +71,11 @@ Replace the scaffold favicon before release. Put brand images in `public/` or us
 
 Every Stage is the one Cloudflare Worker `bellypao` (`wrangler.json`):
 
-| Stage        | Deployed as                                                        | KV namespace      |
-| ------------ | ------------------------------------------------------------------ | ----------------- |
-| Pull request | Workers Preview `pr-<N>` of `bellypao`                             | `bellypao-pr-<N>` |
-| Staging      | Uploaded Version, Version Preview alias `staging`                  | `bellypao`        |
-| Production   | The same build re-uploaded with production config, at 100% traffic | `bellypao`        |
+| Stage        | Deployed as                                                        | KV namespace       |
+| ------------ | ------------------------------------------------------------------ | ------------------ |
+| Pull request | Workers Preview `pr-<N>` of `bellypao`                             | `bellypao-pr-<N>`  |
+| Staging      | Version of `bellypao-staging` at 100%                              | `bellypao-staging` |
+| Production   | The same build re-uploaded with production config, at 100% traffic | `bellypao`         |
 
 CI runs `scripts/deploy.ts`: pull requests create and delete the Preview, a push
 to `main` builds once and uploads the staging Version, and a release promotes

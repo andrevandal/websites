@@ -102,6 +102,7 @@ jobs:
     # get a Workers Preview.
     if: >-
       needs.check-all.outputs.affected_apps != '[]' &&
+      github.head_ref != 'release-please--branches--main' &&
       (github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-26.04
@@ -199,6 +200,32 @@ jobs:
             :rocket: ${{ steps.deploy.outputs.url }}
 
             ${{ steps.lhci.outputs['report-url'] && format('Lighthouse report: {0}', steps.lhci.outputs['report-url']) || '' }}
+
+  # A release PR only bumps versions and changelogs, so main's staging deploy
+  # already holds its code: link that instead of building a Preview.
+  release-staging-links:
+    name: Link staging (release PR)
+    needs: check-all
+    if: >-
+      needs.check-all.outputs.affected_apps != '[]' &&
+      github.event_name == 'pull_request' &&
+      github.head_ref == 'release-please--branches--main'
+    runs-on: ubuntu-26.04
+    permissions:
+      pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.check-all.outputs.affected_apps) }}
+    steps:
+      - name: Comment staging URL on the PR
+        uses: marocchino/sticky-pull-request-comment@v3
+        with:
+          header: preview-url-${{ matrix.app }}
+          # shortcut: account workers.dev subdomain hardcoded, move to a repo var if it changes
+          message: |
+            ### Staging: `${{ matrix.app }}`
+            :rocket: https://${{ matrix.app }}-staging.account.workers.dev
 
   container:
     name: Container (images)

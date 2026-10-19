@@ -86,9 +86,13 @@ type PreviewTarget = {
 
 type VersionTarget = {
   siteDir: string
-  // The one persistent Worker; staging and production are Versions of it.
+  // Production is the base Worker; staging is its own `<worker>-staging`
+  // Worker, so its workers.dev host is `<site>-staging`.
   worker: string
 }
+
+const stageWorkerName = (worker: string, stage: "staging" | "production") =>
+  stage === "staging" ? `${worker}-staging` : worker
 
 // Only production workers can have a Cloudflare Custom Domain bound in the
 // dashboard (see websites/vandallabs/README.md). Keyed by the base Worker name
@@ -463,15 +467,13 @@ const versionUpload = async (
     artifactDir,
     vars,
     secrets = {},
-    previewAlias,
   }: VersionTarget & {
     artifactDir: string
     vars: Record<string, string>
     secrets?: Record<string, string>
-    previewAlias?: string
   },
   deps: DeployDeps
-): Promise<{ versionId: string; previewAliasUrl: string | undefined }> => {
+): Promise<{ versionId: string }> => {
   const namespace = await deps.kv.findOrCreate(worker)
   const uploadDir = await deps.files.tempDir()
   await deps.files.copyDir(artifactDir, uploadDir)
@@ -514,7 +516,6 @@ const versionUpload = async (
       worker,
       "-c",
       configPath,
-      ...(previewAlias ? ["--preview-alias", previewAlias] : []),
       ...(secretsPath ? ["--secrets-file", secretsPath] : []),
     ],
     { cwd: uploadDir }
@@ -529,11 +530,7 @@ const versionUpload = async (
     )
   }
 
-  return {
-    versionId,
-    previewAliasUrl: stdout.match(/Version Preview Alias URL:\s*(?<url>\S+)/)
-      ?.groups?.["url"],
-  }
+  return { versionId }
 }
 
 const versionDeploy = async (
@@ -735,10 +732,6 @@ if (import.meta.main) {
               describe: "Restored website dist directory (client/ and server/)",
               demandOption: true,
             })
-            .option("preview-alias", {
-              type: "string",
-              describe: "Version Preview alias, e.g. staging",
-            })
       )
       .command(
         "check-secrets <target>",
@@ -753,10 +746,16 @@ if (import.meta.main) {
         "version-deploy <target>",
         "Send 100% of traffic to an uploaded Version",
         builder =>
-          builder.positional("target", targetPositional).option("version-id", {
-            type: "string",
-            demandOption: true,
-          })
+          builder
+            .positional("target", targetPositional)
+            .option("stage", {
+              choices: ["staging", "production"] as const,
+              demandOption: true,
+            })
+            .option("version-id", {
+              type: "string",
+              demandOption: true,
+            })
       )
       .command(
         "migrate <target>",
@@ -783,11 +782,11 @@ if (import.meta.main) {
       .example("$0 preview vandallabs --pr 123", "Create Preview pr-123")
       .example("$0 cleanup vandallabs --pr 123", "Delete Preview pr-123")
       .example(
-        "$0 version-upload vandallabs --stage staging --artifact-dir websites/vandallabs/dist --preview-alias staging",
-        "Upload the staging Version"
+        "$0 version-upload vandallabs --stage staging --artifact-dir websites/vandallabs/dist",
+        "Upload the staging Version of Worker vandallabs-staging"
       )
       .example(
-        "$0 version-deploy vandallabs --version-id <uuid>",
+        "$0 version-deploy vandallabs --stage production --version-id <uuid>",
         "Promote a production-configured Version"
       )
       .demandCommand(1)
@@ -928,41 +927,41 @@ if (import.meta.main) {
 
     if (command === "version-upload") {
       const stage = args["stage"] as "staging" | "production",
-        { versionId, previewAliasUrl } = await versionUpload(
+        stageWorker = stageWorkerName(worker, stage),
+        { versionId } = await versionUpload(
           {
             siteDir,
-            worker,
+            worker: stageWorker,
             artifactDir: resolve(`${args["artifactDir"]}`),
             vars: resolveTargetEnvVars(project.location, stage),
             secrets: parseStageSecrets(
               stageSecretsTarget(project.location, stage),
               process.env
             ),
-            previewAlias: args["previewAlias"] as string | undefined,
           },
           realDeps
         )
 
       consola.success(
-        `Uploaded ${stage} Version ${versionId} of "${worker}"${previewAliasUrl ? ` at ${previewAliasUrl}` : ""}`
+        `Uploaded ${stage} Version ${versionId} of "${stageWorker}"`
       )
-      await appendGitHubFile(
-        "GITHUB_OUTPUT",
-        `version-id=${versionId}\n${previewAliasUrl ? `deploy-url=${previewAliasUrl}\n` : ""}`
-      )
+      await appendGitHubFile("GITHUB_OUTPUT", `version-id=${versionId}\n`)
       await appendGitHubFile(
         "GITHUB_STEP_SUMMARY",
-        `### ${stage} Version: \`${worker}\`\n- Version ID: ${versionId}\n${previewAliasUrl ? `- Version Preview: ${previewAliasUrl}\n` : ""}\n`
+        `### ${stage} Version: \`${stageWorker}\`\n- Version ID: ${versionId}\n\n`
       )
     }
 
     if (command === "version-deploy") {
       const versionId = `${args["versionId"]}`,
-        customDomain = CUSTOM_DOMAINS[worker]
+        stage = args["stage"] as "staging" | "production",
+        stageWorker = stageWorkerName(worker, stage),
+        customDomain =
+          stage === "production" ? CUSTOM_DOMAINS[worker] : undefined
 
-      await versionDeploy({ siteDir, worker, versionId }, realDeps)
+      await versionDeploy({ siteDir, worker: stageWorker, versionId }, realDeps)
       consola.success(
-        `Version ${versionId} of "${worker}" serves 100% of traffic.`
+        `Version ${versionId} of "${stageWorker}" serves 100% of traffic.`
       )
       if (customDomain) {
         consola.info(
@@ -976,7 +975,7 @@ if (import.meta.main) {
       )
       await appendGitHubFile(
         "GITHUB_STEP_SUMMARY",
-        `### Production: \`${worker}\`\n- Deployed Version: ${versionId} (100%)\n${customDomain ? `- Production domain: ${customDomain}\n` : ""}\n`
+        `### ${stage}: \`${stageWorker}\`\n- Deployed Version: ${versionId} (100%)\n${customDomain ? `- Production domain: ${customDomain}\n` : ""}\n`
       )
     }
   } catch (err) {
@@ -995,6 +994,7 @@ export {
   parseStageSecrets,
   resolvePreviewUrl,
   setupPreview,
+  stageWorkerName,
   versionDeploy,
   versionUpload,
 }

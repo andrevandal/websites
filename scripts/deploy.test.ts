@@ -13,6 +13,7 @@ import {
   parseStageSecrets,
   resolvePreviewUrl,
   setupPreview,
+  stageWorkerName,
   versionDeploy,
   versionUpload,
 } from "./deploy"
@@ -909,7 +910,7 @@ const createArtifact = async () => {
 }
 
 const createVersionDeps = (
-  stdout = `Uploaded transportugal (1.20 sec)\nWorker Version ID: ${VERSION_ID}\nVersion Preview Alias URL: https://staging-transportugal.account.workers.dev\n`
+  stdout = `Uploaded transportugal (1.20 sec)\nWorker Version ID: ${VERSION_ID}\n`
 ) => {
   const calls: string[][] = []
   const deps: DeployDeps = {
@@ -958,7 +959,6 @@ describe("versionUpload", () => {
             worker,
             artifactDir,
             vars: { STAGE: stage },
-            ...(stage === "staging" ? { previewAlias: stage } : {}),
           },
           deps
         )
@@ -980,7 +980,7 @@ describe("versionUpload", () => {
       }
     })
   }
-  test("uploads a staging Version of the persistent Worker from a configured copy, aliased staging and never deployed", async () => {
+  test("uploads a Version of the given Worker from a configured copy and never deploys it", async () => {
     const artifactDir = await createArtifact()
     const before = await digestDirectory(artifactDir)
     const { calls, deps } = createVersionDeps()
@@ -989,18 +989,14 @@ describe("versionUpload", () => {
     const result = await versionUpload(
       {
         siteDir: "/repo/websites/transportugal",
-        worker: "transportugal",
+        worker: "transportugal-staging",
         artifactDir,
         vars,
-        previewAlias: "staging",
       },
       deps
     )
 
-    expect(result).toEqual({
-      versionId: VERSION_ID,
-      previewAliasUrl: "https://staging-transportugal.account.workers.dev",
-    })
+    expect(result).toEqual({ versionId: VERSION_ID })
     expect(calls).toHaveLength(1)
     const [args] = calls as [string[]]
     const configPath = args[args.indexOf("-c") + 1]!
@@ -1009,56 +1005,45 @@ describe("versionUpload", () => {
       "versions",
       "upload",
       "--name",
-      "transportugal",
+      "transportugal-staging",
       "-c",
       configPath,
-      "--preview-alias",
-      "staging",
     ])
     expect(configPath.startsWith(artifactDir)).toBe(false)
     expect(await configAt(args)).toMatchObject({
       vars,
-      kv_namespaces: [{ binding: "SESSION", id: "id-of-transportugal" }],
+      kv_namespaces: [
+        { binding: "SESSION", id: "id-of-transportugal-staging" },
+      ],
     })
     expect(await digestDirectory(artifactDir)).toBe(before)
   })
 
-  test("uploads production from the same artifact with production vars and no alias", async () => {
+  test("uploads production from the same artifact with production vars", async () => {
     const artifactDir = await createArtifact()
     const before = await digestDirectory(artifactDir)
-    const staging = createVersionDeps()
     const production = createVersionDeps(`Worker Version ID: ${VERSION_ID}\n`)
-    const versionTarget = {
-      siteDir: "/repo/websites/transportugal",
-      worker: "transportugal",
-      artifactDir,
-    }
 
-    await versionUpload(
-      {
-        ...versionTarget,
-        vars: { STAGE_FLAG: "staging" },
-        previewAlias: "staging",
-      },
-      staging.deps
-    )
     const result = await versionUpload(
-      { ...versionTarget, vars: { STAGE_FLAG: "production" } },
+      {
+        siteDir: "/repo/websites/transportugal",
+        worker: "transportugal",
+        artifactDir,
+        vars: { STAGE_FLAG: "production" },
+      },
       production.deps
     )
 
-    expect(result).toEqual({
-      versionId: VERSION_ID,
-      previewAliasUrl: undefined,
-    })
+    expect(result).toEqual({ versionId: VERSION_ID })
     const [args] = production.calls as [string[]]
-    expect(args).not.toContain("--preview-alias")
     expect((await configAt(args)).vars).toEqual({ STAGE_FLAG: "production" })
     expect(await digestDirectory(artifactDir)).toBe(before)
-    for (const call of [...staging.calls, ...production.calls]) {
-      expect(call.join(" ")).not.toContain("transportugal-staging")
-      expect(call.slice(0, 2)).not.toEqual(["wrangler", "deploy"])
-    }
+    expect(args.slice(0, 2)).not.toEqual(["wrangler", "deploy"])
+  })
+
+  test("staging uploads to <worker>-staging, production to <worker>", () => {
+    expect(stageWorkerName("pedrohenri", "staging")).toBe("pedrohenri-staging")
+    expect(stageWorkerName("pedrohenri", "production")).toBe("pedrohenri")
   })
 
   test("fails when wrangler prints no Worker Version ID", async () => {

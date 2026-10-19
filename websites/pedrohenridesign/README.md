@@ -247,11 +247,11 @@ production deploy.
 
 Every Stage is the one Cloudflare Worker `pedrohenri` (`wrangler.json`):
 
-| Stage        | Deployed as                                                        | KV namespace        |
-| ------------ | ------------------------------------------------------------------ | ------------------- |
-| Pull request | Workers Preview `pr-<N>` of `pedrohenri`                           | `pedrohenri-pr-<N>` |
-| Staging      | Uploaded Version, Version Preview alias `staging`                  | `pedrohenri`        |
-| Production   | The same build re-uploaded with production config, at 100% traffic | `pedrohenri`        |
+| Stage        | Deployed as                                                        | KV namespace         |
+| ------------ | ------------------------------------------------------------------ | -------------------- |
+| Pull request | Workers Preview `pr-<N>` of `pedrohenri`                           | `pedrohenri-pr-<N>`  |
+| Staging      | Version of `pedrohenri-staging` at 100%                            | `pedrohenri-staging` |
+| Production   | The same build re-uploaded with production config, at 100% traffic | `pedrohenri`         |
 
 Staging and production enable persisted logs, invocation logs, traces, and
 real-time issues with 100% sampling. Query strings are not redacted. The

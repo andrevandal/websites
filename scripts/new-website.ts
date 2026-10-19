@@ -418,7 +418,7 @@ Every Stage is the one Cloudflare Worker \`${workerNameForSlug(options.slug)}\` 
 | Stage | Deployed as | KV namespace |
 | --- | --- | --- |
 | Pull request | Workers Preview \`pr-<N>\` of \`${workerNameForSlug(options.slug)}\` | \`${workerNameForSlug(options.slug)}-pr-<N>\` |
-| Staging | Uploaded Version, Version Preview alias \`staging\` | \`${workerNameForSlug(options.slug)}\` |
+| Staging | Version of \`${workerNameForSlug(options.slug)}-staging\` at 100% | \`${workerNameForSlug(options.slug)}-staging\` |
 | Production | The same build re-uploaded with production config, at 100% traffic | \`${workerNameForSlug(options.slug)}\` |
 
 CI runs \`scripts/deploy.ts\`: pull requests create and delete the Preview, a push

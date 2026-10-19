@@ -115,4 +115,4 @@ runs:
     - name: Deploy production Version
       id: deploy
       shell: bash
-      run: bun scripts/deploy.ts version-deploy ${{ inputs.target }} --version-id ${{ steps.upload.outputs.version-id }}
+      run: bun scripts/deploy.ts version-deploy ${{ inputs.target }} --stage production --version-id ${{ steps.upload.outputs.version-id }}

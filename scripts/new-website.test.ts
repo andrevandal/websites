@@ -194,7 +194,6 @@ describe("createWebsite", () => {
         "imageServiceBaseUrl",
         "@astrojs/sitemap",
         "wrangler deploy",
-        `${WORKER}-staging`,
         "Astro.locals.runtime",
       ])
         expect(content).not.toContain(forbidden)

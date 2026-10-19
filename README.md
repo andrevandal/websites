@@ -46,9 +46,9 @@ projects a change actually affects are linted, typechecked, and tested — then
 
 - `main` branch → each affected website is built once. The build is saved as
   artifact `website-dist-<site>-<sha>` (with its content digest) and uploaded
-  as a **staging Version** of the site's one persistent Worker, under Version
-  Preview alias `staging` (`https://staging-<worker>.<subdomain>.workers.dev`).
-  Staging is never deployed to live traffic.
+  as a Version of the site's own `<worker>-staging` Worker
+  (`https://<worker>-staging.<subdomain>.workers.dev`), then deployed at 100%.
+  Production stays on `<worker>`.
 - same-repository pull requests → a **Workers Preview** named `pr-<N>`,
   scoped to each affected site's one persistent Worker (`wrangler preview`).
   Closing the PR deletes the Preview and its `<worker>-pr-<N>` KV namespace.
@@ -250,6 +250,7 @@ For extra information, check the official documentation:
 Publishing happens automatically after release-please creates a release and tags it. The process:
 
 1. Release-please creates a PR with version bumps and changelog updates
+   The release workflow then runs `scripts/release-group-merges.ts` on that PR's branch and body. A merge commit (its body is the PR title) and the PR's branch commits would otherwise each become a changelog line, so each merge's line stays and its branch commits are nested under it.
 2. When merged to main, the release workflow runs
 3. If a release is created, the workflow executes `scripts/release.ts`
 4. The release script runs `moon run :publish --query "projectSource~packages/*"` to publish all packages
