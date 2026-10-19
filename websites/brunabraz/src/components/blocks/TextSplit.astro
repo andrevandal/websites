@@ -1,0 +1,46 @@
+---
+import Heading from "@components/Heading.astro"
+import Emphasis from "./Emphasis.astro"
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import { paragraphs } from "@/cms/text"
+import type { PageLayoutTextSplitBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutTextSplitBlock }
+
+const { value } = Astro.props
+---
+
+<section
+  id={value.anchor || undefined}
+  class="relative overflow-clip overflow-y-visible bg-white"
+>
+  <div
+    class="relative container flex flex-col items-center gap-6 py-14 sm:grid sm:grid-cols-2 sm:items-center sm:gap-4 sm:py-14 sm:text-left lg:py-16 xl:py-20"
+  >
+    <SunIcon
+      name="book-tilted"
+      width={154}
+      height={124}
+      aria-hidden="true"
+      class="text-cambridge/10 pointer-events-none absolute right-[-24px] bottom-[-24px] z-10 -scale-y-100 rotate-180 select-none sm:right-[unset] sm:bottom-[-24px] sm:left-[-16px] sm:scale-y-[unset] sm:rotate-[unset] lg:bottom-[-32px] xl:bottom-[-16px] xl:left-[-24px]"
+    />
+    <Heading
+      as="h2"
+      class="text-tobago text-section-heading max-w-[30ch] text-pretty"
+      data-animate
+    >
+      <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+    </Heading>
+    <div
+      class="text-brown-leather text-body max-w-[62ch]"
+      data-animate
+      data-delay="1"
+    >
+      {
+        paragraphs(value.body ?? "").map((text, index) => (
+          <p class:list={[index > 0 && "mt-4"]}>{text}</p>
+        ))
+      }
+    </div>
+  </div>
+</section>

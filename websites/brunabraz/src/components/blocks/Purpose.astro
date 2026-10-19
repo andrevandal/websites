@@ -1,0 +1,66 @@
+---
+import Heading from "@components/Heading.astro"
+import Button from "@components/Button.astro"
+import Emphasis from "./Emphasis.astro"
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import { buildWhatsAppLink } from "@/data/whatsapp"
+import type { PageLayoutPurposeBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutPurposeBlock }
+
+const { value } = Astro.props
+---
+
+<section
+  id={value.anchor || "meu-proposito"}
+  class="bg-white-chocolate overflow-x-clip"
+>
+  <div class="relative container flex flex-col gap-y-6 py-14 lg:py-20">
+    <Heading
+      as="h2"
+      class="text-tobago text-section-heading w-full max-w-[50ch] text-wrap"
+      data-animate
+    >
+      <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+    </Heading>
+    <p class="text-brown-leather text-body" data-animate>{value.body}</p>
+    {
+      value.eyebrow && (
+        <p class="text-brown-leather text-eyebrow" data-animate>
+          {value.eyebrow}
+        </p>
+      )
+    }
+    <ol class="flex flex-col gap-y-6">
+      {
+        value.items?.map(({ text }, index) => (
+          <li
+            class="flex flex-row items-center-safe gap-x-4"
+            data-animate
+            data-delay={(index % 3) + 1}
+          >
+            <span class="border-light-mushroom text-brown-leather text-body flex aspect-square size-10 items-center-safe justify-center-safe rounded-full border leading-[110%] font-semibold">
+              {index + 1}
+            </span>
+            <span class="text-tobago text-quote">{text}</span>
+          </li>
+        ))
+      }
+    </ol>
+    <Button
+      as="a"
+      variant="secondary"
+      href={buildWhatsAppLink(value.whatsapp_message ?? "")}
+      class="text-button relative z-10 mt-4"
+      iconName="whatsapp"
+      data-animate
+      data-delay="4">{value.cta_label}</Button
+    >
+    <SunIcon
+      name="compass"
+      width="11.125rem"
+      height="9.875rem"
+      class="xl:w-[24.3125]xl:h-[21.26413] absolute -right-2.75 bottom-[-2.00725rem] rotate-y-180 text-[#D8C5AC] select-none sm:right-0 sm:h-[16.14306rem] sm:w-74 lg:bottom-[-2.14rem] lg:h-[16.891rem] lg:w-77.25"
+    />
+  </div>
+</section>

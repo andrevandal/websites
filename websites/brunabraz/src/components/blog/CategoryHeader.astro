@@ -1,0 +1,55 @@
+---
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import Heading from "@components/Heading.astro"
+import type { TaxonomyTerm } from "emdash"
+
+type Props = { term: TaxonomyTerm; parent?: TaxonomyTerm }
+
+const { term, parent } = Astro.props
+---
+
+<header
+  class="border-light-mushroom/50 border-b bg-white pt-8 pb-6 xl:pt-12 xl:pb-10"
+>
+  <div class="container flex flex-col gap-2">
+    <nav aria-label="Trilha" class="font-sans text-sm font-medium xl:text-base">
+      {
+        parent ? (
+          <ol class="flex items-center gap-2">
+            <li>
+              <a
+                href={`/blog/categoria/${parent.slug}`}
+                class="text-giraffe-brown/70 hover:text-giraffe-brown transition-colors"
+              >
+                {parent.label}
+              </a>
+            </li>
+            <li aria-hidden="true" class="text-giraffe-brown/70">
+              &gt;
+            </li>
+            <li class="text-brown-leather" aria-current="page">
+              {term.label}
+            </li>
+          </ol>
+        ) : (
+          <span class="text-brown-leather">{term.label}</span>
+        )
+      }
+    </nav>
+    <div class="relative flex items-center justify-between gap-4">
+      <Heading
+        as="h1"
+        class="text-tobago font-serif text-2xl leading-[1.2] font-bold lg:text-[2.5rem]"
+      >
+        {term.label}
+      </Heading>
+      <SunIcon
+        name="book-open"
+        width={74}
+        height={32}
+        class="text-light-mushroom pointer-events-none shrink-0 translate-y-2 xl:h-20 xl:w-45.75 xl:translate-y-px"
+        aria-hidden="true"
+      />
+    </div>
+  </div>
+</header>

@@ -19,6 +19,45 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
 }
+@utility prose-blog {
+  /* Token mapping for Tailwind Typography's `prose` CSS custom properties,
+     so the blog post body uses the site's own colors instead of the
+     plugin's defaults. */
+  --tw-prose-body: var(--color-tobago);
+  --tw-prose-headings: var(--color-tobago);
+  --tw-prose-bold: var(--color-tobago);
+  --tw-prose-bullets: var(--color-light-mushroom);
+  --tw-prose-quotes: var(--color-tobago);
+  --tw-prose-links: var(--color-giraffe-brown);
+
+  & :where(p) {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  & :where(h2) {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.29;
+    margin-bottom: 1rem;
+  }
+
+  & :where(h3) {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  & :where(img) {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 30px;
+  }
+}
+
 @utility text-hero {
   font-family: var(--font-serif);
   font-size: 2rem;
@@ -52,6 +91,15 @@
 
 @utility underline-dotted {
   font-weight: 700;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-skip-ink: none;
+  text-decoration-thickness: 8%;
+  text-underline-offset: 16%;
+  text-underline-position: from-font;
+}
+
+@utility link-underline-dotted {
   text-decoration-line: underline;
   text-decoration-style: dotted;
   text-decoration-skip-ink: none;

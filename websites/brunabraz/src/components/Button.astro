@@ -5,7 +5,7 @@ import type { Polymorphic } from "astro/types"
 
 type AllowedTags = "button" | "a"
 type Variant = "primary" | "secondary" | "secondary-inverted"
-type AllowedIcons = "globe-outline" | "whatsapp"
+type AllowedIcons = "globe-outline" | "whatsapp" | "chevron-right"
 
 type Props<Tag extends AllowedTags = AllowedTags> = Polymorphic<{ as: Tag }> & {
   variant?: Variant

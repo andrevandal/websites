@@ -1,0 +1,56 @@
+---
+import Heading from "@components/Heading.astro"
+import Button from "@components/Button.astro"
+import Emphasis from "./Emphasis.astro"
+import { SunYoutube } from "@vandal-websites/sun-ui/astro"
+import { buildWhatsAppLink } from "@/data/whatsapp"
+import type { PageLayoutStoryVideoBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutStoryVideoBlock }
+
+const { value } = Astro.props
+---
+
+<section
+  id={value.anchor || "minha-trajetoria"}
+  class="bg-cambridge bg-pattern-wave pt-14 pb-12 lg:pt-20 lg:pb-14"
+>
+  <div class="container flex flex-col gap-10 lg:max-w-200.5">
+    <div class="flex flex-col gap-4" data-animate>
+      {
+        value.eyebrow && (
+          <Heading
+            as="h3"
+            class="text-white-chocolate text-eyebrow text-center"
+          >
+            {value.eyebrow}
+          </Heading>
+        )
+      }
+      <Heading
+        as="h2"
+        class="text-light-mushroom text-section-heading text-center"
+      >
+        <Emphasis text={value.heading} class="italic" />
+      </Heading>
+      <p class="text-white-chocolate text-body text-center">{value.body}</p>
+    </div>
+    <SunYoutube
+      videoId={value.youtube_id}
+      title={value.video_title ?? ""}
+      data-animate
+      data-delay="1"
+    />
+    <Button
+      as="a"
+      href={buildWhatsAppLink(value.whatsapp_message ?? "")}
+      variant="secondary"
+      class="text-button mx-auto"
+      iconName="whatsapp"
+      data-animate
+      data-delay="2"
+    >
+      {value.cta_label}
+    </Button>
+  </div>
+</section>

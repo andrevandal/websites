@@ -1,0 +1,28 @@
+---
+import PricingCalculator from "@components/PricingCalculator.astro"
+import type { PageLayoutPricingBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutPricingBlock }
+
+const { value } = Astro.props
+---
+
+<section
+  id={value.anchor || "planos"}
+  class="bg-cambridge/10 overflow-hidden py-14 sm:py-14 lg:pt-16 lg:pb-20 xl:py-20"
+>
+  <div class="relative container flex flex-col items-center">
+    <img
+      src="/images/illustrations/sansa.svg"
+      alt=""
+      width={388}
+      height={207}
+      class="pointer-events-none absolute right-[-7rem] bottom-[-5rem] z-0 hidden h-auto w-[17rem] select-none lg:block xl:right-[-9rem] xl:w-[388px]"
+      loading="lazy"
+      decoding="sync"
+    />
+    <div data-animate>
+      <PricingCalculator />
+    </div>
+  </div>
+</section>

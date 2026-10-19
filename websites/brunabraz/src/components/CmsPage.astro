@@ -1,0 +1,38 @@
+---
+import { getSeoMeta } from "emdash"
+import type { ContentEntry } from "emdash"
+import Layout from "@layouts/Layout.astro"
+import Navigation from "@components/Navigation.astro"
+import PageBlocks from "@components/blocks/PageBlocks.astro"
+import { loadSiteNavigation } from "@/cms/nav"
+import type { Page } from "../../emdash-env"
+
+type Props = { page: ContentEntry<Page> }
+
+const { page } = Astro.props
+// Title comes from the entry's built-in SEO panel; description/image/
+// canonical/robots are overlaid automatically by <EmDashHead> from the
+// same panel (see emdash/src/components/EmDashHead.astro).
+const seo = getSeoMeta(page, {
+  siteUrl: Astro.url.origin,
+  path: Astro.url.pathname,
+})
+const links = await loadSiteNavigation()
+---
+
+<Layout
+  title={seo.title}
+  description={seo.description ?? ""}
+  image={seo.ogImage ?? ""}
+  url={Astro.url}
+  content={{ collection: "pages", id: page.data.id, slug: page.id }}
+>
+  <Navigation
+    variant={page.data.nav_variant}
+    links={links}
+    cta={{ kind: "whatsapp" }}
+  />
+  <main>
+    <PageBlocks value={page.data.layout ?? []} />
+  </main>
+</Layout>

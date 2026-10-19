@@ -1,0 +1,31 @@
+---
+import Layout from "@layouts/Layout.astro"
+import Navigation from "@components/Navigation.astro"
+import Heading from "@components/Heading.astro"
+import Button from "@components/Button.astro"
+import { loadSiteNavigation } from "@/cms/nav"
+
+Astro.response.status = 404
+
+const links = await loadSiteNavigation()
+---
+
+<Layout
+  title="Página não encontrada | Bruna Braz"
+  description="Esta página não existe."
+  url={Astro.url}
+>
+  <Navigation variant="brown" links={links} cta={{ kind: "whatsapp" }} />
+  <main class="bg-white">
+    <div class="bg-tobago h-18" aria-hidden="true"></div>
+    <div class="container flex flex-col items-center gap-6 py-20 text-center">
+      <Heading as="h1" class="text-tobago text-section-heading">
+        Página não encontrada
+      </Heading>
+      <p class="text-brown-leather text-body">
+        O endereço pode ter mudado ou a página saiu do ar.
+      </p>
+      <Button as="a" href="/" variant="secondary">Voltar ao início</Button>
+    </div>
+  </main>
+</Layout>

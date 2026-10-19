@@ -1,0 +1,17 @@
+---
+import { splitEmphasis } from "@/cms/text"
+
+type Props = {
+  text: string | null | undefined
+  as?: "em" | "strong" | "i"
+  class?: string
+}
+
+const { text, as: Tag = "em", class: className } = Astro.props
+---
+
+{
+  splitEmphasis(text ?? "").map(({ text, emphasis }) =>
+    emphasis ? <Tag class={className}>{text}</Tag> : text
+  )
+}

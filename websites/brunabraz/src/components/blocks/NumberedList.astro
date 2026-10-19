@@ -1,0 +1,68 @@
+---
+import Heading from "@components/Heading.astro"
+import Emphasis from "./Emphasis.astro"
+import type { PageLayoutNumberedListBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutNumberedListBlock }
+
+const { value } = Astro.props
+---
+
+<section
+  id={value.anchor || undefined}
+  class="bg-cambridge/10 py-14 sm:py-14 lg:py-16 xl:pt-20 xl:pb-[104px]"
+>
+  <div
+    class="relative z-10 container flex flex-col items-center gap-8 text-center"
+  >
+    <Heading
+      as="h2"
+      class="text-tobago text-section-heading text-balanced max-w-[50ch]"
+      data-animate
+    >
+      <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+    </Heading>
+    <ol
+      class="border-cambridge/25 w-full text-left sm:w-full lg:grid lg:grid-cols-2 lg:gap-x-8"
+    >
+      {
+        value.items?.map(({ title, description }, index) => (
+          <li
+            class="border-cambridge/25 flex gap-4 border-b py-6 first:border-t sm:min-h-26 sm:items-center lg:nth-2:border-t"
+            data-animate
+            data-delay={(index % 2) + 1}
+          >
+            <span class="text-giraffe-brown relative flex size-14 shrink-0 items-center justify-center p-2 font-serif text-[32px] leading-none">
+              <img
+                src="/images/illustrations/dor-number-ring.svg"
+                alt=""
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-x-0 top-1/2 h-[52px] w-14 -translate-y-1/2 opacity-25"
+                loading="lazy"
+              />
+              <span class="relative z-10">{index + 1}</span>
+            </span>
+            <div>
+              <Heading as="h3" class="text-tobago text-card-heading">
+                {title}
+              </Heading>
+              <p class="text-brown-leather text-body mt-1 text-pretty">
+                {description}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    {
+      value.closing && (
+        <p
+          class="text-tobago text-quote max-w-[45ch] text-balance"
+          data-animate
+        >
+          {value.closing}
+        </p>
+      )
+    }
+  </div>
+</section>

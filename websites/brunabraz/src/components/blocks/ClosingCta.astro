@@ -1,0 +1,30 @@
+---
+import Button from "@components/Button.astro"
+import { buildWhatsAppLink } from "@/data/whatsapp"
+import { paragraphs } from "@/cms/text"
+import type { PageLayoutClosingCtaBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutClosingCtaBlock }
+
+const { value } = Astro.props
+---
+
+<section id={value.anchor || undefined} class="bg-cambridge bg-pattern-sun">
+  <div
+    class="container flex flex-col items-center-safe gap-y-10 py-12 lg:pt-20 lg:pb-14"
+  >
+    <blockquote
+      class="text-white-chocolate flex w-full max-w-[55ch] flex-col gap-y-8 text-center font-serif text-[32px] leading-[120%] font-bold italic"
+    >
+      {paragraphs(value.quote).map(text => <p>{text}</p>)}
+    </blockquote>
+    <Button
+      as="a"
+      href={buildWhatsAppLink(value.whatsapp_message ?? "")}
+      iconName="whatsapp"
+      variant="secondary"
+    >
+      {value.cta_label}
+    </Button>
+  </div>
+</section>

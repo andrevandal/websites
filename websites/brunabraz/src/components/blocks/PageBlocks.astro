@@ -1,0 +1,43 @@
+---
+import { Blocks, defineBlockComponents } from "emdash/ui"
+import type { PageLayoutBlock } from "../../../emdash-env"
+import ClosingCta from "./ClosingCta.astro"
+import Credentials from "./Credentials.astro"
+import Faq from "./Faq.astro"
+import FeatureCards from "./FeatureCards.astro"
+import Hero from "./Hero.astro"
+import HowItWorks from "./HowItWorks.astro"
+import ImageCarousel from "./ImageCarousel.astro"
+import Method from "./Method.astro"
+import NumberedList from "./NumberedList.astro"
+import Pricing from "./Pricing.astro"
+import Purpose from "./Purpose.astro"
+import Results from "./Results.astro"
+import StoryVideo from "./StoryVideo.astro"
+import Testimonials from "./Testimonials.astro"
+import TextSplit from "./TextSplit.astro"
+import Timeline from "./Timeline.astro"
+
+type Props = { value: PageLayoutBlock[] }
+
+const components = defineBlockComponents<PageLayoutBlock>({
+  hero: Hero,
+  credentials: Credentials,
+  image_carousel: ImageCarousel,
+  story_video: StoryVideo,
+  timeline: Timeline,
+  feature_cards: FeatureCards,
+  purpose: Purpose,
+  text_split: TextSplit,
+  numbered_list: NumberedList,
+  method: Method,
+  how_it_works: HowItWorks,
+  results: Results,
+  testimonials: Testimonials,
+  pricing: Pricing,
+  faq: Faq,
+  closing_cta: ClosingCta,
+})
+---
+
+<Blocks value={Astro.props.value} components={components} />

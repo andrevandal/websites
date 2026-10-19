@@ -1,0 +1,77 @@
+---
+import Heading from "@components/Heading.astro"
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import type { PageLayoutTimelineBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutTimelineBlock }
+
+const { value } = Astro.props
+---
+
+<section id={value.anchor || "linha-do-tempo"} class="bg-dark-green">
+  <div class="container py-10">
+    <ul
+      class="relative isolate mx-auto flex w-full max-w-113 flex-col gap-8 lg:mx-[unset] lg:max-w-[unset] lg:flex-row lg:flex-nowrap lg:gap-[unset]"
+    >
+      <div
+        aria-hidden="true"
+        class="text-light-mushroom pointer-events-none absolute top-10 bottom-10 left-10 z-0 w-px bg-[repeating-linear-gradient(to_bottom,currentColor_0_4px,transparent_4px_8px)] lg:top-[4.225rem] lg:right-[calc(100%/12)] lg:bottom-auto lg:left-[calc(100%/12)] lg:h-px lg:w-auto lg:bg-[repeating-linear-gradient(to_right,currentColor_0_4px,transparent_4px_8px)]"
+      >
+      </div>
+      {
+        value.items?.map(({ icon, period, name, description }, index) => (
+          <li
+            class="relative z-10 w-full max-w-113 lg:max-w-[unset]"
+            data-animate
+            data-delay={(index % 3) + 1}
+          >
+            <article class="group grid grid-cols-[5rem_1.25rem_1fr] grid-rows-[1fr_auto_auto_auto_1fr] items-center lg:flex lg:flex-col lg:gap-2">
+              <Heading
+                as="h3"
+                class="text-light-mushroom text-stat col-start-3 row-start-2"
+              >
+                {period === "∞" ? (
+                  <SunIcon
+                    name="infinity"
+                    width={20}
+                    height={20}
+                    class="text-light-mushroom group-hover:text-white-chocolate"
+                  />
+                ) : (
+                  period
+                )}
+              </Heading>
+              <div class="bg-dark-green col-start-1 row-span-5">
+                <div class="border-cambridge from-cambridge/40 to-cambridge/70 text-light-mushroom group-hover:text-white-chocolate group-hover:border-ruddy-brown group-hover:from-ruddy-brown/60 group-hover:to-ruddy-brown/90 flex h-20 w-20 items-center justify-center rounded-full border bg-linear-to-b transition-colors">
+                  <SunIcon
+                    name={icon}
+                    width={56}
+                    height={56}
+                    class="text-light-mushroom group-hover:text-white-chocolate"
+                  />
+                </div>
+              </div>
+              <Heading
+                as="h4"
+                class="text-light-mushroom text-stat col-start-3 row-start-3"
+              >
+                {name}
+              </Heading>
+              <Heading
+                as="p"
+                class="text-white-chocolate text-body-small -lg:mt-1 col-start-3 row-start-4 lg:text-center"
+              >
+                {description.split("\n").map(line => (
+                  <Fragment>
+                    {line}
+                    <br />
+                  </Fragment>
+                ))}
+              </Heading>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

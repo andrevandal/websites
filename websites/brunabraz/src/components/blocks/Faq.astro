@@ -1,0 +1,135 @@
+---
+import Heading from "@components/Heading.astro"
+import Emphasis from "./Emphasis.astro"
+import type { PageLayoutFaqBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutFaqBlock }
+
+const { value } = Astro.props
+---
+
+<section
+  id={value.anchor || "faq"}
+  class="faq bg-white py-14 sm:py-14 lg:py-16 xl:py-20"
+>
+  <div class="container flex flex-col items-center gap-8">
+    <div
+      class="flex max-w-[60ch] flex-col items-center gap-2 text-center"
+      data-animate
+    >
+      {
+        value.eyebrow && (
+          <p class="text-brown-leather text-eyebrow tracking-[.7px]">
+            {value.eyebrow}
+          </p>
+        )
+      }
+      <Heading as="h2" class="text-tobago text-section-heading">
+        <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+      </Heading>
+    </div>
+    <div class="w-full max-w-[42rem]">
+      {
+        value.items?.map(({ question, answer }, index) => (
+          <details
+            class="border-brown-leather border-b px-2 py-6"
+            data-animate
+            data-delay={(index % 3) + 1}
+          >
+            <summary class="text-tobago text-faq-question flex cursor-pointer list-none items-start justify-between gap-4">
+              {question}
+              <span class="text-giraffe-brown text-2xl">+</span>
+            </summary>
+            <p class="text-brown-leather text-body mt-2 pr-10">{answer}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const reduceFaqMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
+
+  document
+    .querySelectorAll<HTMLDetailsElement>(".faq details")
+    .forEach(detail => {
+      const summary = detail.querySelector<HTMLElement>("summary")
+      if (!summary) return
+
+      let animation: Animation | null = null
+      let requestedOpen = detail.open
+
+      const getCollapsedHeight = () => {
+        const styles = getComputedStyle(detail)
+        const padding =
+          Number.parseFloat(styles.paddingTop) +
+          Number.parseFloat(styles.paddingBottom)
+        const borders =
+          Number.parseFloat(styles.borderTopWidth) +
+          Number.parseFloat(styles.borderBottomWidth)
+
+        return summary.getBoundingClientRect().height + padding + borders
+      }
+
+      const clearAnimationStyles = () => {
+        detail.style.removeProperty("height")
+        detail.style.removeProperty("overflow")
+      }
+
+      const setOpenImmediately = (open: boolean) => {
+        animation?.cancel()
+        animation = null
+        requestedOpen = open
+        detail.open = open
+        clearAnimationStyles()
+      }
+
+      const animateTo = (open: boolean) => {
+        requestedOpen = open
+        if (reduceFaqMotion.matches) {
+          setOpenImmediately(open)
+          return
+        }
+
+        animation?.cancel()
+        animation = null
+        const startHeight = detail.getBoundingClientRect().height
+        detail.style.overflow = "hidden"
+
+        if (open) {
+          detail.open = true
+          detail.style.height = "auto"
+        }
+
+        const endHeight = open
+          ? detail.getBoundingClientRect().height
+          : getCollapsedHeight()
+
+        detail.style.height = `${startHeight}px`
+        const nextAnimation = detail.animate(
+          [{ height: `${startHeight}px` }, { height: `${endHeight}px` }],
+          {
+            duration: 280,
+            easing: "ease",
+            fill: "both",
+          }
+        )
+        animation = nextAnimation
+
+        nextAnimation.onfinish = () => {
+          if (animation !== nextAnimation || requestedOpen !== open) return
+
+          animation = null
+          if (!open) detail.open = false
+          clearAnimationStyles()
+          nextAnimation.cancel()
+        }
+      }
+
+      summary.addEventListener("click", event => {
+        event.preventDefault()
+        animateTo(!requestedOpen)
+      })
+    })
+</script>

@@ -1,0 +1,14 @@
+---
+import { getEmDashEntry } from "emdash"
+import { HOME_PAGE_SLUG } from "@/cms/pages"
+import CmsPage from "@components/CmsPage.astro"
+
+const { slug } = Astro.params
+if (slug === HOME_PAGE_SLUG) return Astro.redirect("/", 301)
+
+const { entry: page, cacheHint } = await getEmDashEntry("pages", slug ?? "")
+if (!page) return Astro.rewrite("/404")
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint)
+---
+
+<CmsPage page={page} />

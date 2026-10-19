@@ -57,6 +57,8 @@ Board and gh conventions: [`docs/agents/issue-tracker.md`](../../docs/agents/iss
 | `pr` | model | Write a PR body in this repo's conventions |
 | `pmi-github-project` | model | Stand up, rebuild, or extend the Lean PMI board |
 | `creating-astro-website` | model | Add a client website under `websites/` |
+| `blazediff` | model | Capture, check, and rebaseline BlazeDiff visual regression screenshots |
+| `image-compare` | model | Compare two image files region by region |
 
 ## Vendored skills
 

@@ -1,0 +1,156 @@
+---
+import Heading from "@components/Heading.astro"
+import Emphasis from "./Emphasis.astro"
+import { PortableText } from "emdash/ui"
+import type { PageLayoutMethodBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutMethodBlock }
+
+const { value } = Astro.props
+
+// Pillar artwork is part of the design, so it follows the pillar position.
+const illustrations = [
+  {
+    src: "/images/illustrations/metodo-1.svg",
+    width: 149.59,
+    height: 84.92,
+    rotation: "rotate-[-8.31deg]",
+  },
+  {
+    src: "/images/illustrations/metodo-2.svg",
+    width: 207.17,
+    height: 96.28,
+    rotation: "rotate-[7.44deg]",
+  },
+  {
+    src: "/images/illustrations/metodo-3.svg",
+    width: 108,
+    height: 134.44,
+    rotation: "rotate-[12.89deg]",
+  },
+]
+---
+
+<section
+  id={value.anchor || undefined}
+  class="bg-white py-14 sm:py-14 lg:py-16 xl:pt-20 xl:pb-[104px]"
+>
+  <div class="container flex flex-col items-center gap-8 text-center">
+    <div
+      class="flex w-full max-w-[60ch] flex-col items-center gap-4 sm:max-w-none sm:gap-6"
+      data-animate
+    >
+      <Heading as="h2" class="text-tobago text-section-heading w-full">
+        <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+      </Heading>
+      <div
+        class="text-brown-leather text-body [&_a]:underline-dotted w-full sm:leading-[22px]"
+      >
+        <PortableText value={value.body ?? []} />
+      </div>
+    </div>
+    <div class="relative isolate flex w-full flex-col gap-12 sm:gap-8">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 z-0 sm:hidden"
+      >
+        <span
+          class="border-giraffe-brown absolute top-[83px] left-10 h-[86px] border-l border-dashed"
+        ></span>
+        <span
+          class="border-giraffe-brown absolute top-[169px] right-10 left-10 border-t border-dashed"
+        ></span>
+        <span
+          class="border-giraffe-brown absolute top-[169px] right-10 h-[191px] border-r border-dashed"
+        ></span>
+        <span
+          class="border-giraffe-brown absolute top-[360px] right-10 left-10 border-t border-dashed"
+        ></span>
+        <span
+          class="border-giraffe-brown absolute top-[360px] left-10 h-[81px] border-l border-dashed"
+        ></span>
+      </div>
+      <div
+        aria-hidden="true"
+        class="border-giraffe-brown pointer-events-none absolute top-[72px] bottom-[83px] left-1/2 z-0 hidden -translate-x-1/2 border-l border-dashed sm:block"
+      >
+      </div>
+      {
+        value.pillars?.map(({ title, description }, index) => {
+          const illustration = illustrations[index]
+          return (
+            <article
+              class:list={[
+                "relative flex min-h-36 items-center gap-6 sm:grid sm:grid-cols-[1fr_80px_1fr] sm:items-center sm:gap-6",
+                index === 1 && "flex-row-reverse",
+                index === 2 && "min-h-[166px]",
+              ]}
+              data-animate
+              data-delay={(index % 3) + 1}
+            >
+              <div
+                class:list={[
+                  "pointer-events-none relative z-0 hidden h-full w-full items-center justify-center sm:flex",
+                  index === 1
+                    ? "sm:col-start-3 sm:row-start-1"
+                    : "sm:col-start-1 sm:row-start-1",
+                ]}
+              >
+                {illustration && (
+                  <img
+                    src={illustration.src}
+                    alt=""
+                    width={illustration.width}
+                    height={illustration.height}
+                    class:list={["block opacity-25", illustration.rotation]}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
+              <span class="border-giraffe-brown relative z-10 flex size-20 shrink-0 items-center justify-center rounded-full border bg-white font-serif text-[2rem] leading-[110%] font-bold text-white sm:col-start-2 sm:row-start-1 sm:justify-self-center">
+                <span
+                  aria-hidden="true"
+                  class="bg-giraffe-brown absolute inset-[7px] rounded-full"
+                />
+                <span class="relative z-10">{index + 1}</span>
+              </span>
+              <div
+                class:list={[
+                  "relative z-10 min-w-0",
+                  index === 1
+                    ? "text-right sm:col-start-1 sm:row-start-1"
+                    : "text-left sm:col-start-3 sm:row-start-1",
+                ]}
+              >
+                <Heading
+                  as="h3"
+                  class="text-giraffe-brown text-card-heading w-full"
+                >
+                  {title}
+                </Heading>
+                <p class="text-tobago text-body mt-2 w-full text-pretty sm:leading-[22px]">
+                  {description}
+                </p>
+              </div>
+            </article>
+          )
+        })
+      }
+    </div>
+    {
+      value.closing && (
+        <p
+          class="text-tobago text-quote max-w-[38ch] leading-[130%] text-balance sm:max-w-none"
+          data-animate
+        >
+          <Emphasis
+            text={value.closing}
+            as="strong"
+            class="text-giraffe-brown"
+          />
+        </p>
+      )
+    }
+  </div>
+</section>

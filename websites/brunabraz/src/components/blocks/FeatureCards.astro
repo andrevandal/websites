@@ -1,0 +1,75 @@
+---
+import Heading from "@components/Heading.astro"
+import FeatureCards from "@components/FeatureCards.astro"
+import Emphasis from "./Emphasis.astro"
+import type { PageLayoutFeatureCardsBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutFeatureCardsBlock }
+
+const { value } = Astro.props
+const isTinted = value.variant === "tinted"
+
+// Icon artwork has different aspect ratios; these widths match the design.
+const iconWidths: Record<string, number> = {
+  compass: 44.4,
+  sun: 56.6,
+  eye: 52,
+  feather: 29.2,
+  world: 48,
+  languages: 55,
+}
+
+const cards = (value.cards ?? []).map(({ icon, title, description }) => ({
+  icon: { name: icon, width: iconWidths[icon] ?? 48 },
+  title,
+  description,
+}))
+---
+
+{
+  isTinted ? (
+    <section
+      id={value.anchor || undefined}
+      class="bg-cambridge/10 py-14 sm:py-14 lg:pt-16 lg:pb-20 xl:pt-20 xl:pb-[104px]"
+    >
+      <div class="container flex flex-col items-center gap-8">
+        <div class="flex max-w-[60ch] flex-col items-center gap-4" data-animate>
+          <Heading
+            as="h2"
+            class="text-tobago text-section-heading text-center text-balance"
+          >
+            <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+          </Heading>
+          <p class="text-brown-leather text-body text-center text-pretty">
+            {value.body}
+          </p>
+        </div>
+        <div class="grid items-stretch gap-4 sm:grid-cols-1 lg:grid-cols-3 xl:gap-6">
+          <FeatureCards cards={cards} />
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section
+      id={value.anchor || undefined}
+      class="flex flex-col bg-white py-14"
+    >
+      <div class="container flex flex-col gap-y-10">
+        <div class="flex flex-col items-center gap-6 text-center" data-animate>
+          <Heading
+            as="h2"
+            class="text-tobago text-section-heading w-full max-w-[60ch] text-balance"
+          >
+            <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+          </Heading>
+          <p class="text-brown-leather text-body max-w-[60ch] text-balance">
+            {value.body}
+          </p>
+        </div>
+        <div class="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:gap-6">
+          <FeatureCards cards={cards} />
+        </div>
+      </div>
+    </section>
+  )
+}

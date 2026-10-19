@@ -1,4 +1,4 @@
-import { defaultConfig } from "@/data/site"
+const whatsappUrl = "https://wa.me/5543991100512"
 
 export const buildWhatsAppLink = (message: string) =>
-  `${defaultConfig.links.whatsapp}?text=${encodeURIComponent(message)}`
+  `${whatsappUrl}?text=${encodeURIComponent(message)}`

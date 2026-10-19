@@ -1,10 +1,13 @@
 import type { APIRoute } from "astro"
-import { canonicalHost } from "virtual:@vandal-websites/robots-sitemap/config"
-import { generateRobotsTxt, SITEMAP_PATH } from "./generate"
+import {
+  canonicalHost,
+  sitemapPath,
+} from "virtual:@vandal-websites/robots-sitemap/config"
+import { generateRobotsTxt } from "./generate"
 
 const GET: APIRoute = ({ request }) =>
   new Response(
-    generateRobotsTxt(new URL(request.url).origin, canonicalHost, SITEMAP_PATH),
+    generateRobotsTxt(new URL(request.url).origin, canonicalHost, sitemapPath),
     { headers: { "Content-Type": "text/plain; charset=utf-8" } }
   )
 
