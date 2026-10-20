@@ -1,7 +1,6 @@
 ---
 import { SunPicture } from "@vandal-websites/sun-ui/astro"
-import { DENSITIES } from "@/utils/images"
-import { mediaSource, mediaFormat } from "@/cms/media"
+import { mediaSource, mediaFormat } from "@vandal-websites/sun-ui-emdash"
 import { backgroundStyle, cornerClass, toneClass } from "@/cms/blocks"
 import PostPortableText from "./PostPortableText.astro"
 import type { PostContentPostSplitBlock } from "../../../emdash-env"
@@ -49,7 +48,6 @@ const isImageRight = value.image_position === "right"
         { minWidth: 1280, width: 536 },
       ]}
       sizes="(min-width: 1280px) 536px, (min-width: 1024px) 408px, (min-width: 464px) 384px, calc(100vw - 80px)"
-      densities={DENSITIES}
       format={mediaFormat(value.image)}
       quality={90}
       class="h-auto w-full"

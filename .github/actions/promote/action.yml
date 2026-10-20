@@ -21,6 +21,10 @@ inputs:
     description: "Infisical instance URL; empty for https://app.infisical.com"
     required: false
 
+  images-base-url:
+    description: "Image service base URL from the job's GitHub environment secret IMAGES_BASE_URL"
+    required: false
+
 outputs:
   version-id:
     description: "The production Version now serving 100% of traffic"
@@ -34,7 +38,6 @@ runs:
   steps:
     # Fails before waiting for Main CI when a production secret is absent.
     - name: Fetch production secrets from Infisical
-      if: inputs.target == 'pedrohenri'
       uses: Infisical/secrets-action@v1.0.18
       with:
         method: oidc
@@ -43,6 +46,8 @@ runs:
         domain: ${{ inputs.infisical-domain || 'https://app.infisical.com' }}
         env-slug: production
         secret-path: /websites/${{ inputs.target }}
+        export-type: file
+        file-output-path: /.site-secrets.env
 
     - name: Validate production secrets
       shell: bash
@@ -97,7 +102,7 @@ runs:
     # Core migrations run before the new Version exists, so a Worker that only
     # checks (migrations.runtime: "check") never meets an unmigrated database.
     - name: Apply EmDash migrations (production)
-      if: inputs.target == 'pedrohenri'
+      if: inputs.target == 'pedrohenri' || inputs.target == 'brunabraz'
       shell: bash
       run: >-
         bun scripts/deploy.ts migrate ${{ inputs.target }}
@@ -107,6 +112,8 @@ runs:
     - name: Upload production Version
       id: upload
       shell: bash
+      env:
+        IMAGES_BASE_URL: ${{ inputs.images-base-url }}
       run: >-
         bun scripts/deploy.ts version-upload ${{ inputs.target }}
         --stage production

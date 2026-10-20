@@ -99,12 +99,14 @@ test("prints the sha256 of the file it wrote", () => {
     BAZEL_REMOTE_BASIC_AUTH_USERNAME: "ci-user",
     BAZEL_REMOTE_BASIC_AUTH_PASSWORD: PASSWORD,
   })
-  const printed = /workspace\.yml sha256=([0-9a-f]{64})/.exec(result.output)
+  const printed = /workspace\.yml sha256=(?<digest>[0-9a-f]{64})/.exec(
+    result.output
+  )
   expect(printed).not.toBeNull()
   const digest = new Bun.CryptoHasher("sha256")
     .update(result.contents)
     .digest("hex")
-  expect(printed?.[1]).toBe(digest)
+  expect(printed?.groups?.digest).toBe(digest)
 })
 
 test("fails when the host is set but a credential is missing", () => {

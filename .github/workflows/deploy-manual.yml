@@ -93,4 +93,5 @@ jobs:
           infisical-identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
           infisical-project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
           infisical-domain: ${{ vars.INFISICAL_DOMAIN }}
+          images-base-url: ${{ secrets.IMAGES_BASE_URL }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

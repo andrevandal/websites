@@ -48,7 +48,6 @@ const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(item => typeof item === "string")
 
 const readSeed = (seedPath: string): SeedData =>
-  // oxlint-disable-next-line node/no-sync
   JSON.parse(readFileSync(seedPath, "utf-8")) as SeedData
 
 const seedSlugs = (seed: SeedData): string[] => [
@@ -57,11 +56,9 @@ const seedSlugs = (seed: SeedData): string[] => [
 
 // Returns undefined when no marker exists; throws on a malformed one.
 const readMarker = (path: string): PendingMarker | undefined => {
-  // oxlint-disable-next-line node/no-sync
   if (!existsSync(path)) return undefined
   let value: unknown
   try {
-    // oxlint-disable-next-line node/no-sync
     value = JSON.parse(readFileSync(path, "utf-8"))
   } catch {
     throw new Error(INVALID_MARKER)
@@ -95,7 +92,6 @@ const assertMarkerMatchesSeed = (marker: PendingMarker, seed: SeedData) => {
 // (permissions, corruption) propagates.
 const readExistingIds = (databasePath: string): string[] => {
   try {
-    // oxlint-disable-next-line node/no-sync
     statSync(databasePath)
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return []
@@ -137,7 +133,6 @@ const captureSeedBylineLocale = ({ seedPath, databasePath }: Paths): void => {
     existingIds: readExistingIds(databasePath),
   }
   // "wx": never replace an existing pending snapshot.
-  // oxlint-disable-next-line node/no-sync
   writeFileSync(path, JSON.stringify(marker), { flag: "wx" })
 }
 
@@ -183,7 +178,6 @@ const fixSeedBylineLocale = ({ seedPath, databasePath }: Paths) => {
   }
 
   // Marker is dropped only once the whole pass completed.
-  // oxlint-disable-next-line node/no-sync
   rmSync(path, { force: true })
   return { locale, updated }
 }

@@ -1,0 +1,12 @@
+---
+import { SunPTImage } from "@vandal-websites/sun-ui-emdash/astro"
+
+// Site theme for the shared Portable Text image (EmDash's default spacing).
+const props = Astro.props as Parameters<typeof SunPTImage>[0]
+---
+
+<SunPTImage
+  {...props}
+  class="not-prose my-6"
+  captionClass="mt-2 text-center text-sm text-[#666]"
+/>

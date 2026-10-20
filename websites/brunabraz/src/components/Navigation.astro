@@ -1,31 +1,55 @@
 ---
-import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { assetUrl, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { getSecret } from "astro:env/server"
+import type { NavLink } from "@/cms/nav"
 import { buildWhatsAppLink } from "@/data/whatsapp"
 import Button from "./Button.astro"
 
-const navigation = [
-  { href: "/#minha-trajetoria", name: "Sobre Mim" },
-  { href: "/aula-ingles-particular", name: "Minhas Aulas" },
-] as const
-
 type Props = {
   variant?: "brown" | "green"
+  links: NavLink[]
+  more?: NavLink[]
+  align?: "end" | "center"
+  home?: { href: string; label: string }
+  cta:
+    | { kind: "whatsapp" }
+    | {
+        kind: "link"
+        label: string
+        href: string
+        variant?: "brown" | "green"
+      }
+  opaque?: boolean
 }
 
-const { variant = "brown" } = Astro.props
+const {
+  variant = "brown",
+  links,
+  more = [],
+  align = "end",
+  home = { href: "/", label: "Página Inicial" },
+  cta,
+  opaque = false,
+} = Astro.props
+
+const rowLinks = links.filter(link => link.children.length > 0)
+const ctaVariant = (cta.kind === "link" && cta.variant) || variant
 ---
 
 <nav
   id="navigation"
   class="fixed top-0 z-20 w-full border-b border-transparent bg-transparent transition-colors duration-200"
   data-variant={variant}
+  data-align={align}
+  data-opaque={opaque ? "" : undefined}
 >
   <div
-    class="container grid grid-cols-[1fr_40px] flex-wrap gap-x-2 px-4 py-4 lg:flex lg:flex-row lg:justify-between"
+    class="container grid grid-cols-[1fr_40px] gap-x-2 px-4 py-4 xl:flex xl:flex-row xl:items-center xl:justify-between"
   >
-    <a href="/" class="block">
+    <a href={home.href} class="block flex-shrink-0">
+      <span class="sr-only">{home.label}</span>
       <SunPicture
-        src="https://files.vandal.services/brunabraz/images/logo-horizontal-only-text.png"
+        src={assetUrl(getSecret, "images/logo-horizontal-only-text.png")}
         alt="Bruna Braz"
         width={183}
         height={40}
@@ -39,39 +63,200 @@ const { variant = "brown" } = Astro.props
     </label>
     <ul id="menu">
       {
-        navigation.map(item => (
-          <li>
+        links.map(link =>
+          link.children.length === 0 ? (
+            <li>
+              <Button
+                as="a"
+                variant="secondary-inverted"
+                block
+                href={link.href}
+                target={link.target}
+                class="nav-link text-left xl:h-10"
+              >
+                {link.label}
+              </Button>
+            </li>
+          ) : (
+            <>
+              <li class="hidden xl:block">
+                <Button
+                  as="button"
+                  type="button"
+                  variant="secondary-inverted"
+                  block
+                  iconName="chevron-right"
+                  class="nav-link text-left xl:h-10"
+                  data-toggle-row={link.id}
+                  aria-expanded="false"
+                  aria-controls={`row-${link.id}`}
+                >
+                  {link.label}
+                </Button>
+              </li>
+              <li class="xl:hidden">
+                <Button
+                  as="a"
+                  variant="secondary-inverted"
+                  block
+                  href={link.href}
+                  class="nav-link text-left"
+                >
+                  {link.label}
+                </Button>
+                <ul class="mt-2 flex flex-col gap-2 pl-6">
+                  {link.children.map(child => (
+                    <li>
+                      <Button
+                        as="a"
+                        variant="secondary-inverted"
+                        block
+                        href={child.href}
+                        class="nav-link text-left"
+                      >
+                        {child.label}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            </>
+          )
+        )
+      }
+      {
+        more.length > 0 && (
+          <li class="hidden xl:block">
+            <Button
+              as="button"
+              type="button"
+              variant="secondary-inverted"
+              block
+              iconName="chevron-right"
+              class="nav-link text-left xl:h-10"
+              data-toggle-row="more"
+              aria-expanded="false"
+              aria-controls="row-more"
+            >
+              Mais Categorias
+            </Button>
+          </li>
+        )
+      }
+      {
+        more.map(link => (
+          <li class="xl:hidden">
             <Button
               as="a"
               variant="secondary-inverted"
               block
-              href={item.href}
-              class="nav-link text-left lg:h-10"
+              href={link.href}
+              class="nav-link text-left"
             >
-              {item.name}
+              {link.label}
             </Button>
+            {link.children.length > 0 && (
+              <ul class="mt-2 flex flex-col gap-2 pl-6">
+                {link.children.map(child => (
+                  <li>
+                    <Button
+                      as="a"
+                      variant="secondary-inverted"
+                      block
+                      href={child.href}
+                      class="nav-link text-left"
+                    >
+                      {child.label}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))
       }
-      <li>
-        <Button
-          as="a"
-          variant={variant === "green" ? "secondary" : "primary"}
-          block
-          centered
-          href={buildWhatsAppLink(
-            "Olá, Bruna! Quero ser sua aluna(o) de inglês."
-          )}
-          class="nav-cta track-conversion lg:h-10"
-          data-lead-type="whatsapp"
-          data-button-location="header"
-          iconName="whatsapp"
-        >
-          Seja Aluno!
-        </Button>
+      <li class="nav-cta-item" data-cta-variant={ctaVariant}>
+        {
+          cta.kind === "whatsapp" ? (
+            <Button
+              as="a"
+              variant={variant === "green" ? "secondary" : "primary"}
+              block
+              centered
+              href={buildWhatsAppLink(
+                "Olá, Bruna! Quero ser sua aluna(o) de inglês."
+              )}
+              class="nav-cta track-conversion xl:h-10"
+              data-lead-type="whatsapp"
+              data-button-location="header"
+              iconName="whatsapp"
+            >
+              Seja Aluno!
+            </Button>
+          ) : (
+            <Button
+              as="a"
+              variant={ctaVariant === "green" ? "secondary" : "primary"}
+              block
+              centered
+              href={cta.href}
+              class="nav-cta xl:h-10"
+            >
+              {cta.label}
+            </Button>
+          )
+        }
       </li>
     </ul>
   </div>
+  {
+    rowLinks.map(link => (
+      <div id={`row-${link.id}`} data-category-row class="border-t px-8 py-6">
+        <div class="container">
+          <Button
+            as="a"
+            variant="secondary-inverted"
+            href={link.href}
+            class="nav-link text-left xl:h-10"
+          >
+            {link.label}
+          </Button>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {link.children.map(child => (
+              <Button
+                as="a"
+                variant="secondary-inverted"
+                href={child.href}
+                class="nav-link text-left xl:h-10"
+              >
+                {child.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+    ))
+  }
+  {
+    more.length > 0 && (
+      <div id="row-more" data-category-row class="border-t px-8 py-6">
+        <div class="container">
+          <div class="flex flex-wrap gap-2">
+            {more.map(link => (
+              <Button
+                as="a"
+                variant="secondary-inverted"
+                href={link.href}
+                class="nav-link text-left xl:h-10"
+              >
+                {link.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
   <div
     class:list="absolute"
     data-document-progress
@@ -91,7 +276,7 @@ const { variant = "brown" } = Astro.props
 
   #menu-button {
     @apply border-white-chocolate/15 inline-flex h-10 w-10 cursor-pointer items-center justify-center justify-self-end border p-2 select-none;
-    @apply lg:hidden;
+    @apply xl:hidden;
   }
 
   #menu-button .icon {
@@ -113,11 +298,20 @@ const { variant = "brown" } = Astro.props
 
   #menu {
     @apply col-span-2 clear-both box-border flex max-h-0 flex-col gap-2 overflow-hidden transition-[max-height] duration-200 ease-out will-change-auto;
-    @apply lg:mt-0 lg:max-h-fit lg:flex-row lg:items-center lg:justify-center lg:gap-x-2 lg:pt-0;
+    @apply xl:mt-0 xl:max-h-fit xl:flex-row xl:items-center xl:gap-x-2 xl:overflow-visible xl:pt-0;
   }
 
-  #menu li:last-of-type {
-    @apply mt-2 lg:mt-0 lg:ml-0;
+  #menu > .nav-cta-item {
+    @apply mt-2 xl:mt-0;
+  }
+
+  #navigation[data-align="center"] #menu {
+    @apply xl:flex-1;
+  }
+
+  #navigation[data-align="center"] #menu > li:first-child,
+  #navigation[data-align="center"] #menu > .nav-cta-item {
+    @apply xl:ml-auto;
   }
 
   #menu li :global(a[class*="outline"]) {
@@ -150,11 +344,21 @@ const { variant = "brown" } = Astro.props
     --navigation-hover: var(--color-tobago);
   }
 
-  #navigation[data-variant] #menu li :global(.nav-link) {
+  #navigation [data-cta-variant="brown"] {
+    --navigation-cta: var(--color-cambridge);
+    --navigation-hover: var(--color-dark-green);
+  }
+
+  #navigation [data-cta-variant="green"] {
+    --navigation-cta: var(--color-ruddy-brown);
+    --navigation-hover: var(--color-tobago);
+  }
+
+  #navigation[data-variant] :global(.nav-link) {
     background-color: var(--navigation-link-overlay);
   }
 
-  #navigation[data-variant] #menu li :global(.nav-cta) {
+  #navigation[data-variant] :global(.nav-cta) {
     background-color: color-mix(
       in srgb,
       var(--navigation-cta) 72%,
@@ -162,15 +366,35 @@ const { variant = "brown" } = Astro.props
     );
   }
 
-  #navigation[data-variant] #menu li :global(.nav-link:hover),
-  #navigation[data-variant] #menu li :global(.nav-cta:not(:disabled):hover) {
-    background-color: var(--navigation-hover);
-    color: var(--color-light-mushroom);
+  #navigation:where(
+      .actived,
+      [data-opaque],
+      :has(#menu-opened:checked)
+    )[data-variant] {
+    border-bottom-color: var(--navigation-border);
+    background-color: var(--navigation-surface);
+  }
+
+  #navigation:where(
+      .actived,
+      [data-opaque],
+      :has(#menu-opened:checked)
+    )[data-variant]
+    :global(.nav-link) {
+    background-color: var(--navigation-surface);
+  }
+
+  #navigation:where(
+      .actived,
+      [data-opaque],
+      :has(#menu-opened:checked)
+    )[data-variant]
+    :global(.nav-cta) {
+    background-color: var(--navigation-cta);
   }
 
   #menu-opened:checked ~ #menu {
-    @apply mt-4 max-h-fit pt-4 pb-3 lg:mt-0 lg:p-0;
-    max-height: 282px;
+    @apply mt-4 max-h-[calc(100dvh-88px)] overflow-y-auto pt-4 pb-3 xl:mt-0 xl:max-h-fit xl:overflow-visible xl:p-0;
   }
 
   #menu-opened:checked ~ #menu-button .icon {
@@ -185,35 +409,14 @@ const { variant = "brown" } = Astro.props
     @apply top-0 rotate-45;
   }
 
-  #navigation.actived[data-variant],
-  #navigation:has(#menu-opened:checked)[data-variant] {
-    border-bottom-color: var(--navigation-border);
-  }
-
-  #navigation.actived[data-variant],
-  #navigation:has(#menu-opened:checked)[data-variant] {
+  [data-category-row] {
+    display: none;
+    border-top-color: var(--navigation-border);
     background-color: var(--navigation-surface);
   }
 
-  #navigation.actived[data-variant] #menu li :global(.nav-link),
-  #navigation:has(#menu-opened:checked)[data-variant]
-    #menu
-    li
-    :global(.nav-link),
-  #navigation.actived[data-variant] #menu li :global(.nav-cta),
-  #navigation:has(#menu-opened:checked)[data-variant]
-    #menu
-    li
-    :global(.nav-cta) {
-    background-color: var(--navigation-surface);
-  }
-
-  #navigation.actived[data-variant] #menu li :global(.nav-cta),
-  #navigation:has(#menu-opened:checked)[data-variant]
-    #menu
-    li
-    :global(.nav-cta) {
-    background-color: var(--navigation-cta);
+  [data-category-row][data-visible] {
+    @apply hidden xl:block;
   }
 
   [data-document-progress] {
@@ -230,6 +433,15 @@ const { variant = "brown" } = Astro.props
     height: 100%;
     background-color: var(--navigation-progress);
     transition: width 200ms ease-out;
+  }
+
+  #navigation[data-variant] :global(.nav-link:hover),
+  #navigation[data-variant] :global(.nav-link:focus-visible),
+  #navigation[data-variant] :global(.nav-link[aria-expanded="true"]),
+  #navigation[data-variant] :global(.nav-cta:not(:disabled):hover),
+  #navigation[data-variant] :global(.nav-cta:focus-visible) {
+    background-color: var(--navigation-hover);
+    color: var(--color-light-mushroom);
   }
 </style>
 
@@ -291,6 +503,37 @@ const { variant = "brown" } = Astro.props
       passive: true,
     })
     scheduleNavigationUpdate()
+
+    const rowToggles = nav.querySelectorAll<HTMLElement>("[data-toggle-row]")
+
+    const setRow = (button: HTMLElement, open: boolean) => {
+      button.setAttribute("aria-expanded", String(open))
+      nav
+        .querySelector(`#row-${button.dataset.toggleRow}`)
+        ?.toggleAttribute("data-visible", open)
+    }
+
+    rowToggles.forEach(button => {
+      button.addEventListener("click", () => {
+        const open = button.getAttribute("aria-expanded") !== "true"
+        rowToggles.forEach(other => {
+          if (other !== button) setRow(other, false)
+        })
+        setRow(button, open)
+      })
+
+      button.addEventListener("keydown", event => {
+        if (event.key !== "Escape") return
+        setRow(button, false)
+        button.focus()
+      })
+    })
+
+    document.addEventListener("click", event => {
+      const target = event.target as HTMLElement
+      if (target.closest("[data-toggle-row], [data-category-row]")) return
+      rowToggles.forEach(button => setRow(button, false))
+    })
 
     if (!toggle || !menu) return
 

@@ -31,11 +31,11 @@ Create one Moon application at `websites/<slug>`. Start from current repository 
 
 | Area | Result |
 | --- | --- |
-| Site | `websites/<slug>/` with `package.json`, `config.json`, `moon.yml`, strict Astro TS config, Cloudflare SSR config, Wrangler config, `Layout.astro`, `index.astro`, Tailwind CSS, favicon, and README. |
-| Configuration | `config.json`: `canonicalHost` `https://<slug>`, the `preview`/`staging`/`production` Stage `vars` (`IMAGES_BASE_URL`, `PUBLIC_GOOGLE_*`, `ENABLE_PARTYTOWN: "false"`), and empty `secretKeys`. The layout reads them at request time with `runtimeGtag(getSecret)`; nothing is read at build time. |
+| Site | `websites/<slug>/` with `package.json`, `moon.yml`, strict Astro TS config, Cloudflare SSR config, Wrangler config, `Layout.astro`, `index.astro`, Tailwind CSS, favicon, and README. |
+| Configuration | No config file: the site ID is the folder name and the canonical host is `CANONICAL_SITE_URL` (`https://<slug>`). Deploys attach `IMAGES_BASE_URL` (GitHub environment secret) and every Infisical `/websites/<slug>` key, read at request time with `getSecret`. Bitmaps use `assetUrl(getSecret, path)` against `S3_PUBLIC_URL`. Google Analytics IDs, if any, are committed in the layout. |
 | Dependencies | Catalog references only. `@vandal-websites/sun-ui` and `@vandal-websites/robots-sitemap` use `workspace:*`; `@astrojs/svelte` and `svelte` use `catalog:svelte`. Never add direct framework versions. |
 | Moon | `layer: application`, `language: astro`, `cloudflare` tag, no Stage-variable build inputs and no deploy task. Shared Astro application task config supplies Wrangler type generation. |
-| Deploy | One Worker named after the slug's first dot label (`acme.com.br` deploys as `acme`). Registers the site in `SITE_IDS`, `CUSTOM_DOMAINS` (`https://<slug>`), the Preview cleanup matrix, the manual-deploy choice, the release workflow's released-websites list, release-please config and manifest, and the root README website list. Moon discovers the target automatically. |
+| Deploy | One Worker named after the slug's first dot label (`acme.com.br` deploys as `acme`). Registers the site in `CUSTOM_DOMAINS` (`https://<slug>`), the Preview cleanup matrix, the manual-deploy choice, the release workflow's released-websites list, release-please config and manifest, and the root README website list. Moon discovers the target automatically. |
 
 Use `bun run website:new <slug> --dry-run` before writing when validating a name or expected registrations. The command writes nothing when `websites/<slug>` exists, when the slug is already in any registration, or when another website already uses its Worker name.
 
@@ -55,7 +55,7 @@ Add a Svelte island only when the design spec names a user-visible stateful inte
 
 ## Before the Production Domain Exists
 
-`config.json` `canonicalHost`, `CANONICAL_SITE_URL`, and `CUSTOM_DOMAINS` all assume the production domain `https://<slug>`. Bind that Custom Domain to the Worker in the Cloudflare dashboard before the first release, or correct all three together. Pull requests get Workers Preview `pr-<N>` of the Worker (KV namespace `<worker>-pr-<N>`), staging is a Version of it behind Version Preview alias `staging`, and production is a production-configured Version of the same build.
+`CANONICAL_SITE_URL` and `CUSTOM_DOMAINS` both assume the production domain `https://<slug>`. Bind that Custom Domain to the Worker in the Cloudflare dashboard before the first release, or correct both together. Pull requests get Workers Preview `pr-<N>` of the Worker (KV namespace `<worker>-pr-<N>`), staging is a Version of it behind Version Preview alias `staging`, and production is a production-configured Version of the same build.
 
 ## Common Mistakes
 

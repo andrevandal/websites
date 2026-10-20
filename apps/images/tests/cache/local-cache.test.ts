@@ -122,7 +122,6 @@ describe("localCacheBackend", () => {
       const chunks: Uint8Array[] = []
       try {
         while (true) {
-          // oxlint-disable-next-line eslint/no-await-in-loop -- stream chunks are inherently sequential
           const { done, value } = await reader.read()
           if (done) break
           chunks.push(value)

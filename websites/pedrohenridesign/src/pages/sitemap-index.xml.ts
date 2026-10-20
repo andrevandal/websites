@@ -6,7 +6,10 @@ import { loadSitemapPaths } from "@/cms/sitemap"
 // from the CMS on every request.
 const GET: APIRoute = async () =>
   new Response(
-    generateSitemapXml(import.meta.env.SITE, await loadSitemapPaths()),
+    generateSitemapXml(
+      import.meta.env.SITE,
+      (await loadSitemapPaths()).map(path => ({ path }))
+    ),
     { headers: { "Content-Type": "application/xml; charset=utf-8" } }
   )
 

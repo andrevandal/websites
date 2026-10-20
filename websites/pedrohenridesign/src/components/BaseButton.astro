@@ -1,11 +1,11 @@
 ---
 import type { HTMLAttributes } from "astro/types"
-import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import { SunButton, SunIcon } from "@vandal-websites/sun-ui/astro"
 import { cn } from "@vandal-websites/sun-ui"
 
 type Sizes = "small" | "medium" | "large"
 
-interface Props extends HTMLAttributes<"a"> {
+type Props = {
   href?: string
   variant: "primary" | "primary-outline" | "secondary"
   icon?: string
@@ -14,7 +14,7 @@ interface Props extends HTMLAttributes<"a"> {
   centered?: boolean
   size?: Sizes
   increaseSize?: boolean
-}
+} & HTMLAttributes<"a">
 
 const {
   href,
@@ -28,22 +28,20 @@ const {
   class: className,
   ...attrs
 } = Astro.props
-
-const isExternalLink =
-  href?.startsWith("http") && !href?.startsWith("/") && !href?.startsWith("#")
 ---
 
-<a
+<SunButton
+  as="a"
   href={href}
-  class:list={cn(
-    "btn",
+  block={block}
+  centered={centered}
+  className={cn(
+    "pedro-button",
     {
       "btn-primary": variant === "primary",
       "btn-primary-outline": variant === "primary-outline",
       "btn-secondary": variant === "secondary",
       "btn-reverse": reverse,
-      "btn-block": block,
-      "btn-center": centered,
       "btn-small": size === "small",
       "btn-medium": size === "medium",
       "btn-large": size === "large",
@@ -51,48 +49,40 @@ const isExternalLink =
     },
     className
   )}
-  target={isExternalLink ? "_blank" : undefined}
-  rel={isExternalLink ? "noopener noreferrer" : undefined}
   {...attrs}
 >
-  <span><slot /></span>
-  {icon && <SunIcon name={icon} width={20} height={20} />}
-</a>
+  <slot />
+  {icon && <SunIcon slot="suffix" name={icon} width={20} height={20} />}
+</SunButton>
 
 <style>
   @reference "../styles/global.css";
 
-  .btn {
-    @apply box-border flex w-fit flex-row items-center justify-center gap-x-2 rounded-lg px-6 py-4 text-base font-semibold transition-all duration-200 ease-out;
+  :global(.pedro-button) {
+    @apply gap-x-2 rounded-lg px-6 py-4 text-base font-semibold transition-all duration-200 ease-out;
   }
-  .btn-large {
+  :global(.pedro-button.btn-large) {
     @apply h-14 px-6 py-4;
   }
-  .btn-medium {
+  :global(.pedro-button.btn-medium) {
     @apply h-12 px-3 py-3;
     &.btn-increased {
       @apply lg:h-14 lg:px-6 lg:py-4;
     }
   }
-  .btn-small {
+  :global(.pedro-button.btn-small) {
     @apply h-10 px-6 py-2;
   }
-  .btn-primary {
+  :global(.pedro-button.btn-primary) {
     @apply bg-gray-900 text-gray-50 ring-4 ring-transparent hover:bg-gray-800 focus:bg-gray-500 disabled:opacity-60;
   }
-  .btn-primary-outline {
+  :global(.pedro-button.btn-primary-outline) {
     @apply border border-gray-900 text-gray-900 hover:bg-gray-900/15 focus:border-transparent focus:bg-transparent;
   }
-  .btn-secondary {
+  :global(.pedro-button.btn-secondary) {
     @apply bg-white text-gray-900 hover:bg-gray-200 focus:bg-gray-500 disabled:opacity-60;
   }
-  .btn-center {
-    @apply justify-center;
-  }
-  .btn-block {
-    @apply w-full;
-  }
-  .btn-reverse {
+  :global(.pedro-button.btn-reverse) {
     @apply flex-row-reverse;
   }
 </style>

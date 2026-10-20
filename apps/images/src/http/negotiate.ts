@@ -27,7 +27,6 @@ const negotiateFormat = (
     // Check for wildcard first (matches all candidates)
     if (accepted === "image/*" || accepted === "*/*") {
       // Safe to access [0] since candidates is always non-empty
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return candidates[0]!
     }
 

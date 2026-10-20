@@ -82,10 +82,10 @@ server start and is tracked; commit it with any schema change.
 `seed/seed.json` is the schema (collections, fields, block types, relation)
 plus the site's content. It is read at build time, applied to an empty
 database on the first request (schema) and by the setup wizard (content), and
-never reapplied to an existing database. Images are `$media` references to the
-original files in `files.vandal.services/pedrohenri.design/`; applying the seed
-downloads each one into the media bucket, so the repository holds no images and
-no database.
+never reapplied to an existing database. Images are `$media` references with
+absolute URLs to the original files in the production bucket; applying the
+seed downloads each one into the media bucket, so the repository holds no
+images and no database.
 
 Seeds cannot set publish dates, so each entry is published when the seed is
 applied and the lists sort newest first by that time. Posts are therefore listed
@@ -100,7 +100,7 @@ and do not overwrite `seed/seed.json` automatically):
 ```sh
 cd websites/pedrohenri
 bunx emdash export-seed --database ./.data/emdash.db --with-content=all \
-  --media-base-url=https://files.vandal.services/pedrohenridesign > /tmp/exported.json
+  --media-base-url=<S3_PUBLIC_URL> > /tmp/exported.json
 ```
 
 The installed EmDash export does not include extension-managed per-entry SEO
@@ -112,7 +112,7 @@ treating the export as a complete backup. Portable site settings, including
 site (`<base>/_emdash/api/media/file/<key>`) and leaves images inside blocks
 and Portable Text as stored local values (id and storage key), neither of
 which resolves on another site. Rewrite both to the real
-`https://files.vandal.services/pedrohenridesign/<path>` URLs before
+`<S3_PUBLIC_URL>/<path>` URLs before
 committing, then check it with `bunx emdash seed seed/seed.json --validate`.
 
 ## Images
@@ -121,8 +121,9 @@ CMS images render with `SunPicture` from the media value's stored dimensions:
 the source is the bucket public URL (or the site's
 `/_emdash/api/media/file/<key>` route) and the image service transforms it at
 request time through `IMAGES_BASE_URL` (the Worker variable `getSecret` reads).
-Assets referenced from code (hero, footer and header images) live in
-`files.vandal.services/pedrohenri.design/` and go through `src/utils/images.ts`.
+Assets referenced from code (hero, footer and header images) use
+`src/utils/images.ts`, which builds their public URL from the request-time
+`S3_ENDPOINT` and `S3_BUCKET` values instead of a hard-coded bucket hostname.
 Pictures use blur-up placeholders only with the image service configured.
 
 Local development leaves `IMAGES_BASE_URL` empty (`.env`, seeded from
@@ -130,15 +131,23 @@ Local development leaves `IMAGES_BASE_URL` empty (`.env`, seeded from
 seeded media from `.data/uploads` and the code assets from the bucket. The
 image service is not used locally; it cannot fetch the dev server's own
 `localhost` media. PR Previews do the same on purpose
-(`vars.preview.IMAGES_BASE_URL` is `""` in `config.json`): the external image
+(deploy gives them an empty `IMAGES_BASE_URL`): the external image
 service cannot authenticate to the Access-protected origin (tracked in #196), so
 they serve originals directly, with no `/_image` or transformed `srcset`.
 Staging and production use the image service.
 
+Code-owned branding assets still read the staging bucket in development and
+PR previews. Set `S3_ENDPOINT` and `S3_BUCKET` from Infisical's staging values
+in the local `.env` and this Worker's Preview Base secrets. Do not copy S3
+credentials or `S3_PUBLIC_URL`: preview CMS uploads stay in isolated R2 and
+continue using the Worker route. Missing either asset-location value fails
+rendering rather than silently using the wrong bucket. All `fileUrl` callers
+render on demand (`output: "server"`), so no asset hostname is needed to build.
+
 Audit intrinsic sizes with the repo-level tool: `bun scripts/audit-images.ts
 http://localhost:4321/ -v 390 1024 1440` (any page of any website). It loads the
 page at each viewport, compares every source with the widest size it renders at,
-and flags sources under 3x. `DENSITIES` in `src/utils/images.ts` lists the
+and flags sources under 3x. `SunPicture`'s default densities (1x-3x) are the
 densities the image service serves; the footer logo is a 5x PNG
 (`images/logo-horizontal.png`) of the old SVG.
 
@@ -169,23 +178,20 @@ reference cannot resolve; the home title otherwise comes from the entry title.
 
 ## Configuration
 
-`config.json` holds the canonical host and the non-secret variables for each
-Stage (`preview`, `staging`, `production`). Deploys attach the Stage's
-values to the Worker, and the site reads them at request time through
-`getSecret`. PR previews use a separate provider flavor; staging and production
+The canonical host is the Astro `site`. Deploys attach the Stage's Worker
+variables, read at request time through `getSecret`: `IMAGES_BASE_URL` from
+the deploying job's GitHub environment secret, the rest from Infisical. PR previews use a separate provider flavor; staging and production
 share the same standard build artifact.
 
-| Variable           | Purpose                                        |
-| ------------------ | ---------------------------------------------- |
-| `IMAGES_BASE_URL`  | `apps/images` transform-service base URL.      |
-| `ENABLE_PARTYTOWN` | Loads Gtag through Partytown only when `true`. |
+| Variable          | Purpose                                   |
+| ----------------- | ----------------------------------------- |
+| `IMAGES_BASE_URL` | `apps/images` transform-service base URL. |
 
 Google Analytics and Google Ads tracking IDs are not variables: edit them in
 the admin's **Analytics** page (the `@vandal-websites/emdash-plugin-analytics`
 plugin, registered in every environment). Empty IDs disable tracking.
 
-Runtime secrets are never in `config.json` (it lists their names in
-`secretKeys`). Staging and production each get their own values from Infisical
+Runtime secrets are every key under Infisical; staging and production each get their own values from Infisical
 (`/websites/pedrohenri`, environments `staging` and `production`); CI checks them and
 injects them at upload (see below). Standard
 builds read database and media settings from these values.
@@ -199,12 +205,20 @@ build environment variables are present.
 | `TURSO_AUTH_TOKEN`      | Turso auth token                                                     |
 | `S3_ENDPOINT`           | Media bucket endpoint                                                |
 | `S3_BUCKET`             | Media bucket                                                         |
+| `S3_PUBLIC_URL`         | Public media base: `S3_ENDPOINT` + `/` + `S3_BUCKET`                 |
 | `S3_ACCESS_KEY_ID`      | Media bucket credentials                                             |
 | `S3_SECRET_ACCESS_KEY`  | Media bucket credentials                                             |
 | `EMDASH_ENCRYPTION_KEY` | Encrypts plugin secret settings (JMAP credential); one key per Stage |
 
-`S3_REGION` (default `auto`) and `S3_PUBLIC_URL` (CDN base URL) are optional,
-non-secret Stage vars: add them under a Stage in `config.json` when needed.
+`S3_REGION` (default `auto`) is an optional Infisical key.
+`S3_PUBLIC_URL` is required in Infisical, never a literal host in code.
+The S3 descriptor accepts it at build time if supplied; otherwise the runtime
+adapter resolves it through `process.env`. Astro's `image.remotePatterns`
+only see build-time public URLs, not injected Worker secrets. `SunPicture`
+builds external image-service URLs directly and does not need that allowlist.
+Shared media resolution, GIF format selection and the Portable Text image
+and heading renderers come from `@vandal-websites/sun-ui-emdash`;
+`src/components/blocks/PTImage.astro` only adds this site's classes.
 
 `/robots.txt` and `/sitemap-index.xml` are this site's own routes, not the
 `robotsSitemap()` integration the other sites use: the sitemap lists the
@@ -260,20 +274,21 @@ Wrangler `previews.observability` override disables observability for PR preview
 CI runs `scripts/deploy.ts`: selected PR previews build with
 `EMDASH_BUILD_FLAVOR=preview`; `main` builds the standard artifact once for
 staging, and a release promotes that artifact to production without rebuilding.
-Secrets are set per Stage, not with `wrangler secret put`: add the seven secrets
+Secrets are set per Stage, not with `wrangler secret put`: add the eight secrets
 above under `/websites/pedrohenri` in the Infisical `staging` environment (used by the
 `main` push) and `production` environment (used when the release-please PR is
 merged); see the
 [provisioning guide](../../docs/guides/provision-new-site-and-rotate-secrets.md).
 After the build, CI fetches them over OIDC and runs
-`scripts/deploy.ts check-secrets`: all seven must be non-empty, or the job fails.
+`scripts/deploy.ts check-secrets`: all eight must be non-empty, or the job fails.
 The upload passes them to `wrangler versions upload --secrets-file`, so each
 Version carries its own Stage values. A key left out would be inherited from
 the previous Version (production would get staging's database), which is why
 it is checked. A value set by hand with `wrangler secret put` is overwritten by
 the next upload, and a key removed from Infisical stays on the Worker until you
-delete it with `wrangler secret delete`. `CF_ACCESS_AUDIENCE` is the only other
-secret: it lives on Preview Base, not in Infisical.
+delete it with `wrangler secret delete`. `CF_ACCESS_AUDIENCE` lives on
+Preview Base, not in Infisical. Pedro's Preview Base also needs staging
+`S3_ENDPOINT` and `S3_BUCKET` for public code-owned branding assets only.
 
 Each PR binds `SESSION` to `pedrohenri-pr-<N>`, `DB` to D1 database
 `pedrohenri-pr-<N>-cms`, and `MEDIA` to R2 bucket `pedrohenri-pr-<N>-media`.
@@ -284,10 +299,11 @@ KV-only.
 
 The GitHub secret `CF_ACCESS_TEAM_DOMAIN` is a preview-only build input
 (hostname or full HTTP(S) team URL, normalized to hostname); missing or invalid
-input fails the selected preview build. Set only `CF_ACCESS_AUDIENCE` on this
+input fails the selected preview build. Set `CF_ACCESS_AUDIENCE` on this
 Worker's Preview Base config, matching the Access application. Missing runtime
-audience fails authentication. Do not copy Turso/S3 credentials into Preview
-Base; neither audience nor team domain belongs in plaintext stage vars.
+audience fails authentication. Add staging `S3_ENDPOINT` and `S3_BUCKET`
+for public branding assets, but never Turso/S3 credentials or `S3_PUBLIC_URL`.
+Neither audience nor team domain belongs in plaintext stage vars.
 
 Before first access, the operator must protect every preview hostname and all
 `/_emdash/*` routes with the intended Access policy. The first trusted

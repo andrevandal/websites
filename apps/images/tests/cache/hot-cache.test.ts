@@ -8,7 +8,6 @@ import type { CacheBackend, CacheEntry } from "@/cache/backend"
 
 const freshKv = (maxBytes = 1_000_000) =>
   new SqliteKV({
-    // oxlint-disable-next-line node/no-sync -- test-only temp dir setup
     path: path.join(mkdtempSync(path.join(tmpdir(), "hc-")), "kv.db"),
     maxBytes,
   })

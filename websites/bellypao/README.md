@@ -6,8 +6,8 @@ Astro SSR website deployed to Cloudflare Workers.
 
 - Astro SSR on Cloudflare Workers + Assets
 - Tailwind CSS v4 via `@tailwindcss/vite`
-- `@vandal-websites/sun-ui` for shared layout, image, icon, and button primitives
-- `astro-iconset` with local SVG icons in `src/icons/`
+- `@vandal-websites/sun-ui` for shared layout, images, button structure, header behavior, and WhatsApp links
+- Site-owned `Icon.astro` and `public/images/icons.svg` for original brand glyphs
 - Svelte 5 integration for isolated interactions that require hydration
 
 ## Structure
@@ -17,12 +17,11 @@ websites/bellypao/
 ├── public/favicon.svg
 ├── src/
 │   ├── components/
-│   ├── icons/
+│   ├── data/
 │   ├── layouts/Layout.astro
 │   ├── pages/index.astro
 │   └── styles/global.css
 ├── astro.config.js
-├── config.json
 ├── moon.yml
 ├── tsconfig.json
 └── wrangler.json
@@ -41,31 +40,48 @@ moon run bellypao:build
 
 ## Configuration
 
-`config.json` holds the canonical host and the non-secret variables for each
-Stage (`preview`, `staging`, `production`). Deploys attach the Stage's
-values to the Worker, and the site reads them at request time through
-`getSecret`, so one build serves every Stage.
+The canonical host is `CANONICAL_SITE_URL` in `astro.config.js`; the Google
+Analytics ID is committed in the layout and reported only on that host.
+Deploys attach the Worker variables, read at request time through
+`getSecret`, so one build serves every Stage:
 
-| Variable                             | Purpose                                            |
-| ------------------------------------ | -------------------------------------------------- |
-| `IMAGES_BASE_URL`                    | Optional `apps/images` transform-service base URL. |
-| `PUBLIC_GOOGLE_ANALYTICS_ID`         | Optional Google Analytics measurement ID.          |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_ID`    | Optional Google Ads conversion ID.                 |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional Google Ads conversion label.              |
-| `ENABLE_PARTYTOWN`                   | Loads Gtag through Partytown only when `true`.     |
+| Variable          | Source                                              |
+| ----------------- | --------------------------------------------------- |
+| `IMAGES_BASE_URL` | GitHub environment secret; `apps/images` base URL.  |
+| `S3_PUBLIC_URL`   | Infisical `/websites/bellypao`; bucket public base. |
 
-List secret names in `secretKeys` and set their values with Wrangler, never in
-`config.json`. The `CANONICAL_SITE_URL` constant in `astro.config.js`
-matches `canonicalHost`. `@vandal-websites/robots-sitemap` serves `/robots.txt`
-(crawlable only on that host) and `/sitemap-index.xml`.
+`@vandal-websites/robots-sitemap` serves `/robots.txt` (crawlable only on the
+canonical host) and `/sitemap-index.xml`.
 
 ## Client-side policy
 
 Start with semantic HTML and CSS. Use `details`, `dialog`, form controls, `:target`, and CSS states before client JavaScript. A short inline script is allowed when native HTML cannot express a required state transition. Add a Svelte island only when a documented interaction needs hydrated, stateful behavior.
 
+`BaseButton` delegates anchor behavior and structure to `SunButton`; local variant
+and size classes retain Belly Pão's presentation. HTTP(S) links open in a new tab
+with `rel="noopener noreferrer"`. Relative paths, anchors, email links, and phone
+links stay in the current tab.
+
+`TheHeader` delegates menu and scroll behavior to shared `useHeader`, keeping the
+native checkbox and `.actived` state on its fixed wrapper. All six WhatsApp links
+use shared `waLink` with the number stored in `src/data/contact.ts`.
+
 ## Assets
 
 Replace the scaffold favicon before release. Put brand images in `public/` or use Astro Image with `IMAGES_BASE_URL`; do not embed unoptimized bitmap data in components.
+
+Hero art direction and head preloads share `src/data/hero.ts`. `SunPicture` uses
+the desktop source above 640px and the mobile fallback, preserving eager/high
+priority. Shared default density factors generate 13 desktop and 10 mobile
+candidates; other pictures retain their explicit `[1, 1.5, 2, 3]` overrides.
+
+Astro's local font provider registers every static Fields weight (200-900) and
+Quicksand weight (300-700), with `display: swap`. Layout `Font` components provide
+font CSS and preloads; all 13 original WOFF2 files remain in `public/fonts/`.
+
+The original icon sprite stays: the configured shared icon provider has no
+matching glyphs for `bread`, `clock`, `map-pin`, `facebook`, `whatsapp`, `phone`,
+`truck`, `instagram`, `shop`, or `wheat`. There is no site `src/icons/` collection.
 
 ## Deployment
 

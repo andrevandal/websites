@@ -1,9 +1,11 @@
 import { describe, it, expect } from "bun:test"
+import * as pictureUtils from "./Picture.utils"
 import {
   computeResponsiveImageProps,
   getPlaceholderModeAttribute,
 } from "./Picture.utils"
 import type { SunPictureBreakpoint } from "./Picture.props"
+import type { BuildPictureSourcePropsInput } from "./Picture.utils"
 
 describe("computeResponsiveImageProps", () => {
   it("returns undefined for responsiveWidths and sizes when breakpoints is undefined", () => {
@@ -27,7 +29,7 @@ describe("computeResponsiveImageProps", () => {
     expect(result.sizes).toBeUndefined()
   })
 
-  it("uses default density [1] when densities is undefined", () => {
+  it("uses default densities [1, 1.5, 2, 2.5, 3] when densities is undefined", () => {
     const breakpoints: SunPictureBreakpoint[] = [
       { minWidth: 1024, width: 472 },
       { minWidth: 1280, width: 493 },
@@ -38,7 +40,10 @@ describe("computeResponsiveImageProps", () => {
       breakpoints,
     })
 
-    const expected = [375, 472, 493].sort((a, b) => a - b)
+    const expected = [
+      375, 472, 493, 563, 708, 740, 750, 938, 944, 986, 1125, 1180, 1233, 1416,
+      1479,
+    ]
     expect(result.responsiveWidths).toEqual(expected)
   })
 
@@ -205,5 +210,106 @@ describe("getPlaceholderModeAttribute", () => {
 
   it("returns circle mode data attribute when requested", () => {
     expect(getPlaceholderModeAttribute("circle")).toBe("circle")
+  })
+})
+
+describe("buildPictureSourceProps", () => {
+  const source = {
+    media: "(max-width: 600px)",
+    src: "https://assets.example/portrait.jpg",
+    width: 100,
+    height: 200,
+  }
+  const buildSource = (
+    overrides: Partial<BuildPictureSourcePropsInput> = {}
+  ) => {
+    expect(pictureUtils).toHaveProperty("buildPictureSourceProps")
+    return pictureUtils.buildPictureSourceProps({
+      ...source,
+      imageServiceBaseUrl: "https://images.example",
+      ...overrides,
+    })
+  }
+
+  it("returns five default density URLs with the source aspect ratio", () => {
+    expect(buildSource()).toEqual({
+      media: "(max-width: 600px)",
+      srcset:
+        "https://images.example/w_100,h_200/https%3A%2F%2Fassets.example%2Fportrait.jpg 1x, https://images.example/w_150,h_300/https%3A%2F%2Fassets.example%2Fportrait.jpg 1.5x, https://images.example/w_200,h_400/https%3A%2F%2Fassets.example%2Fportrait.jpg 2x, https://images.example/w_250,h_500/https%3A%2F%2Fassets.example%2Fportrait.jpg 2.5x, https://images.example/w_300,h_600/https%3A%2F%2Fassets.example%2Fportrait.jpg 3x",
+      sizes: undefined,
+      width: 100,
+      height: 200,
+    })
+  })
+
+  it("uses source breakpoint widths instead of density descriptors", () => {
+    expect(
+      buildSource({
+        breakpoints: [{ minWidth: 800, width: 200 }],
+        densities: [1, 2],
+        quality: "high",
+        format: "avif",
+        fit: "cover",
+      })
+    ).toEqual({
+      media: "(max-width: 600px)",
+      srcset:
+        "https://images.example/w_100,h_200,f_avif,q_80,mode_crop/https%3A%2F%2Fassets.example%2Fportrait.jpg 100w, https://images.example/w_200,h_400,f_avif,q_80,mode_crop/https%3A%2F%2Fassets.example%2Fportrait.jpg 200w, https://images.example/w_400,h_800,f_avif,q_80,mode_crop/https%3A%2F%2Fassets.example%2Fportrait.jpg 400w",
+      sizes: "(min-width: 800px) 200px, 100px",
+      width: 100,
+      height: 200,
+    })
+  })
+
+  it("uses five default densities at every source breakpoint tier", () => {
+    expect(
+      buildSource({ breakpoints: [{ minWidth: 800, width: 200 }] }).srcset
+    ).toBe(
+      "https://images.example/w_100,h_200/https%3A%2F%2Fassets.example%2Fportrait.jpg 100w, https://images.example/w_150,h_300/https%3A%2F%2Fassets.example%2Fportrait.jpg 150w, https://images.example/w_200,h_400/https%3A%2F%2Fassets.example%2Fportrait.jpg 200w, https://images.example/w_250,h_500/https%3A%2F%2Fassets.example%2Fportrait.jpg 250w, https://images.example/w_300,h_600/https%3A%2F%2Fassets.example%2Fportrait.jpg 300w, https://images.example/w_400,h_800/https%3A%2F%2Fassets.example%2Fportrait.jpg 400w, https://images.example/w_500,h_1000/https%3A%2F%2Fassets.example%2Fportrait.jpg 500w, https://images.example/w_600,h_1200/https%3A%2F%2Fassets.example%2Fportrait.jpg 600w"
+    )
+  })
+
+  it("preserves an explicit single density and global transformation options", () => {
+    expect(
+      buildSource({
+        densities: [1],
+        quality: 60,
+        format: "webp",
+        fit: "contain",
+      }).srcset
+    ).toBe(
+      "https://images.example/w_100,h_200,f_webp,q_60,mode_max/https%3A%2F%2Fassets.example%2Fportrait.jpg 1x"
+    )
+  })
+
+  it("preserves explicit string density overrides", () => {
+    expect(buildSource({ densities: ["1.5x", "2.5x"] }).srcset).toBe(
+      "https://images.example/w_150,h_300/https%3A%2F%2Fassets.example%2Fportrait.jpg 1.5x, https://images.example/w_250,h_500/https%3A%2F%2Fassets.example%2Fportrait.jpg 2.5x"
+    )
+  })
+
+  it("preserves empty density overrides with and without breakpoints", () => {
+    expect(buildSource({ densities: [] }).srcset).toBe("")
+    expect(
+      buildSource({
+        densities: [],
+        breakpoints: [{ minWidth: 800, width: 200 }],
+      }).srcset
+    ).toBe("")
+  })
+
+  it("returns the raw source URL and independent sizes without an image service", () => {
+    expect(
+      buildSource({
+        imageServiceBaseUrl: undefined,
+        breakpoints: [{ minWidth: 800, width: 200 }],
+      })
+    ).toEqual({
+      media: "(max-width: 600px)",
+      srcset: "https://assets.example/portrait.jpg",
+      sizes: "(min-width: 800px) 200px, 100px",
+      width: 100,
+      height: 200,
+    })
   })
 })

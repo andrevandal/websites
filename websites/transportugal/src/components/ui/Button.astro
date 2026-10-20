@@ -1,5 +1,6 @@
 ---
-import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import { cn } from "@vandal-websites/sun-ui"
+import { SunButton, SunIcon } from "@vandal-websites/sun-ui/astro"
 
 const {
   as: Tag = "button",
@@ -9,13 +10,6 @@ const {
   class: className,
   ...props
 } = Astro.props
-
-const isLink = Tag === "a"
-
-const customProps = {
-  ...(isLink && { href: href ?? "#contato" }),
-  ...props,
-}
 
 const variants = {
   primary:
@@ -27,14 +21,16 @@ const variants = {
 const variantClass = variant === "light" ? variants.light : variants.primary
 ---
 
-<Tag
-  class:list={[
-    "inline-flex items-center justify-center gap-2 rounded px-6 py-3.5 text-base font-normal",
+<SunButton
+  as={Tag}
+  href={Tag === "a" ? (href ?? "#contato") : undefined}
+  className={cn(
+    "inline-flex w-auto items-center justify-center gap-2 rounded px-6 py-3.5 text-base font-normal",
     variantClass,
-    className,
-  ]}
-  {...customProps}
+    className
+  )}
+  {...props}
 >
-  <span><slot /></span>
-  <SunIcon name={icon} width={20} height={20} />
-</Tag>
+  <slot />
+  <SunIcon slot="suffix" name={icon} width={20} height={20} />
+</SunButton>

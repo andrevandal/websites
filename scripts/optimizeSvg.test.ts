@@ -90,8 +90,8 @@ describe("optimizeSvgFiles", () => {
     await optimizeSvgFiles([svgPath])
 
     const output = await readFile(svgPath, "utf8")
-    const pathData = output.match(/\sd="([^"]+)"/)?.[1]
-    const transform = output.match(/\stransform="([^"]+)"/)?.[1]
+    const pathData = output.match(/\sd="(?<data>[^"]+)"/)?.[1]
+    const transform = output.match(/\stransform="(?<transform>[^"]+)"/)?.[1]
 
     if (!pathData || !transform)
       throw new Error("Expected optimized path data and transform attributes")

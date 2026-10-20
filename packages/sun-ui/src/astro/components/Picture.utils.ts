@@ -2,7 +2,17 @@ import type {
   SunPictureBreakpoint,
   SunPictureDensity,
   SunPicturePlaceholderMode,
+  SunPictureProps,
+  SunPictureSource,
 } from "./Picture.props.ts"
+import { buildImageSrcSet, buildImageUrl } from "../../astro-image-service"
+
+const DENSITIES: SunPictureDensity[] = [1, 1.5, 2, 2.5, 3]
+
+type BuildPictureSourcePropsInput = SunPictureSource &
+  Pick<SunPictureProps, "quality" | "format" | "fit" | "densities"> & {
+    imageServiceBaseUrl?: string
+  }
 
 type ComputeResponsiveImagePropsInput = {
   width: number
@@ -20,7 +30,7 @@ const computeResponsiveImageProps = (
 ): ComputeResponsiveImagePropsOutput => {
   const { width, densities, breakpoints } = input
 
-  const densityFactors = (densities ?? [1]).map(density =>
+  const densityFactors = (densities ?? DENSITIES).map(density =>
     typeof density === "number" ? density : Number.parseFloat(density)
   )
 
@@ -47,12 +57,55 @@ const computeResponsiveImageProps = (
   return { responsiveWidths, sizes }
 }
 
+const buildPictureSourceProps = ({
+  media,
+  src,
+  width,
+  height,
+  breakpoints,
+  quality,
+  format,
+  fit,
+  densities = DENSITIES,
+  imageServiceBaseUrl,
+}: BuildPictureSourcePropsInput) => {
+  const { responsiveWidths, sizes } = computeResponsiveImageProps({
+    width,
+    breakpoints,
+    densities,
+  })
+  const srcset = imageServiceBaseUrl
+    ? buildImageSrcSet({
+        src,
+        width,
+        height,
+        quality,
+        format,
+        fit,
+        ...(responsiveWidths ? { widths: responsiveWidths } : { densities }),
+      })
+        .map(
+          entry =>
+            `${buildImageUrl(imageServiceBaseUrl, entry.transform)} ${entry.descriptor}`
+        )
+        .join(", ")
+    : src
+
+  return { media, srcset, sizes, width, height }
+}
+
 const getPlaceholderModeAttribute = (
   placeholderMode: SunPicturePlaceholderMode | undefined
 ): SunPicturePlaceholderMode | undefined => placeholderMode
 
 export type {
+  BuildPictureSourcePropsInput,
   ComputeResponsiveImagePropsInput,
   ComputeResponsiveImagePropsOutput,
 }
-export { computeResponsiveImageProps, getPlaceholderModeAttribute }
+export {
+  DENSITIES,
+  buildPictureSourceProps,
+  computeResponsiveImageProps,
+  getPlaceholderModeAttribute,
+}

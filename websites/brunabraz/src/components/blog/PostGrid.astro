@@ -1,0 +1,108 @@
+---
+import PostCard from "./PostCard.astro"
+import Button from "@components/Button.astro"
+import type { ContentEntry, TaxonomyTerm } from "emdash"
+import type { Post } from "../../../emdash-env"
+
+type Props = {
+  posts: ContentEntry<Post>[]
+  terms: Map<string, TaxonomyTerm | undefined>
+  // Batches already rendered (`?pagina=`) and whether another one exists.
+  page: number
+  hasMore: boolean
+  basePath: string
+  // Category slug on a Category page; omitted on the blog home.
+  category?: string
+}
+
+const { posts, terms, page, hasMore, basePath, category } = Astro.props
+---
+
+<section class="bg-white-chocolate/25">
+  <div class="container py-12 xl:py-20">
+    <div
+      id="post-grid"
+      class="flex flex-row flex-wrap justify-center-safe gap-12 xl:grid xl:grid-cols-3 xl:justify-start"
+    >
+      {posts.map(post => <PostCard post={post} term={terms.get(post.id)} />)}
+    </div>
+
+    {
+      hasMore && (
+        <div class="mt-10 flex justify-center xl:mt-20">
+          <Button
+            as="a"
+            href={`${basePath}?pagina=${page + 1}`}
+            variant="secondary"
+            data-ver-mais
+            data-page={page + 1}
+            data-category={category}
+          >
+            Ver mais publicações
+          </Button>
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  import { ofetch } from "ofetch"
+
+  const verMaisButton =
+    document.querySelector<HTMLAnchorElement>("[data-ver-mais]")
+  const postGrid = document.getElementById("post-grid")
+
+  if (verMaisButton && postGrid) {
+    verMaisButton.addEventListener("click", async e => {
+      e.preventDefault()
+      if (verMaisButton.getAttribute("aria-busy") === "true") return
+      verMaisButton.setAttribute("aria-busy", "true")
+
+      const controller = new AbortController()
+      const abort = () => controller.abort()
+      addEventListener("pagehide", abort, { once: true })
+      const page = Number(verMaisButton.dataset.page)
+      const batch = { hasMore: false }
+
+      try {
+        const html = await ofetch<string, "text">("/parciais/posts", {
+          query: { pagina: page, categoria: verMaisButton.dataset.category },
+          responseType: "text",
+          retry: 2,
+          retryDelay: 300,
+          signal: AbortSignal.any([
+            controller.signal,
+            AbortSignal.timeout(8000),
+          ]),
+          onResponse: ({ response }) => {
+            batch.hasMore = response.headers.get("X-Has-More") === "true"
+          },
+        })
+        postGrid.insertAdjacentHTML("beforeend", html)
+
+        // The URL holds the grid's state, so a reload or a shared link
+        // renders the same batches on the server.
+        const url = new URL(location.href)
+        url.searchParams.set("pagina", String(page))
+        history.replaceState(history.state, "", url)
+
+        if (!batch.hasMore) {
+          verMaisButton.parentElement?.remove()
+          return
+        }
+        const next = new URL(verMaisButton.href)
+        next.searchParams.set("pagina", String(page + 1))
+        verMaisButton.href = next.href
+        verMaisButton.dataset.page = String(page + 1)
+      } catch {
+        // Leaving the page aborts on purpose; any other failure falls back to
+        // the server-rendered page, which shows the same batches.
+        if (!controller.signal.aborted) location.assign(verMaisButton.href)
+      } finally {
+        removeEventListener("pagehide", abort)
+        verMaisButton.removeAttribute("aria-busy")
+      }
+    })
+  }
+</script>

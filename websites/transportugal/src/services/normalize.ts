@@ -9,9 +9,9 @@ const SMALL_WORDS: Record<string, true> = {
 
 const capitalizeToken = (token: string): string => {
   if (token === "") return token
-  const match = /^([a-z]+)'(.)(.*)$/.exec(token)
-  if (match) {
-    const [, prefix, first, rest] = match
+  const match = /^(?<prefix>[a-z]+)'(?<first>.)(?<rest>.*)$/.exec(token)
+  if (match?.groups) {
+    const { prefix, first, rest } = match.groups
     const capitalizedPrefix =
       prefix === "d"
         ? prefix

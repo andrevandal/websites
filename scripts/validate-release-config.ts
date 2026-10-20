@@ -5,7 +5,6 @@ import { consola } from "consola"
 const repoRoot = resolve(import.meta.dirname, "..")
 
 const readJson = (path: string) =>
-  // oxlint-disable-next-line node/no-sync
   JSON.parse(readFileSync(resolve(repoRoot, path), "utf-8"))
 
 const run = () => {
@@ -18,7 +17,6 @@ const run = () => {
   let failed = false
 
   for (const pkg of configPaths) {
-    // oxlint-disable-next-line node/no-sync
     if (pkg !== "." && !existsSync(resolve(repoRoot, pkg))) {
       consola.error(`Config references missing path: ${pkg}`)
       failed = true

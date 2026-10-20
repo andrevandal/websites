@@ -56,6 +56,11 @@ const coverageConfig: CoverageConfig = {
       ],
       allowlist: [{ file: "src/config.ts", issue: "#83" }],
     },
+    "sun-ui-emdash": {
+      include: ["src/index.ts", "src/headings.ts", "src/image-layout.ts"],
+      exclude: [],
+      allowlist: [],
+    },
   },
 }
 

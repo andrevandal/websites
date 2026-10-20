@@ -86,7 +86,6 @@ describe("SunUIAstroIntegration", () => {
     const updateConfig = mock(),
       integration = SunUIAstroIntegration()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     integration.hooks["astro:config:setup"]?.({
       updateConfig,
     } as unknown as any)
@@ -99,7 +98,6 @@ describe("SunUIAstroIntegration", () => {
     const updateConfig = mock(),
       integration = SunUIAstroIntegration({ svelte: true })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     integration.hooks["astro:config:setup"]?.({
       updateConfig,
     } as unknown as any)

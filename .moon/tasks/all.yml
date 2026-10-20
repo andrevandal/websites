@@ -25,7 +25,7 @@ tasks:
   # projects that have no .astro files, so one shared task fits all 10
   # projects with no per-project override.
   lint:
-    script: "bun x oxlint . && bun x eslint --no-error-on-unmatched-pattern"
+    script: "bun x oxlint . --report-unused-disable-directives && bun x eslint --max-warnings 0 --no-error-on-unmatched-pattern"
     inputs:
       - "**/*"
       - "/.oxlintrc.json"

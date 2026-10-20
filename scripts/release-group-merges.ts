@@ -9,10 +9,10 @@ import { readFileSync, writeFileSync } from "node:fs"
 // outside the release branch's checkout.
 
 const ENTRY_COMMIT =
-  /\(\[[0-9a-f]{7,40}\]\([^)]*\/commit\/([0-9a-f]{40})\)\)\s*$/
+  /\(\[[0-9a-f]{7,40}\]\([^)]*\/commit\/(?<hash>[0-9a-f]{40})\)\)\s*$/
 
 const commitOf = (line: string) =>
-  line.startsWith("* ") ? ENTRY_COMMIT.exec(line)?.[1] : undefined
+  line.startsWith("* ") ? ENTRY_COMMIT.exec(line)?.groups?.hash : undefined
 
 const messageOf = (line: string) => line.replace(ENTRY_COMMIT, "").trim()
 
@@ -97,7 +97,7 @@ const groupMergeEntries = (
     .split("\n")
     // A version section starts at its `## ` heading or its <details> wrapper.
     .reduce<string[][]>((sections, line) => {
-      if (/^(## |<details>)/.test(line) || sections.length === 0)
+      if (/^(?:## |<details>)/.test(line) || sections.length === 0)
         sections.push([])
 
       sections.at(-1)!.push(line)

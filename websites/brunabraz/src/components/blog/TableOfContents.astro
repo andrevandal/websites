@@ -1,0 +1,74 @@
+---
+import type { Heading } from "@vandal-websites/sun-ui-emdash"
+
+type Props = { entries: Heading[] }
+const { entries } = Astro.props
+---
+
+{
+  entries.length > 0 && (
+    <nav class="sticky top-28 hidden lg:block" aria-label="Índice do artigo">
+      <h2 class="text-giraffe-brown font-serif text-2xl leading-[1.29] font-bold">
+        Índice
+      </h2>
+      <ul class="border-light-mushroom mt-4 flex flex-col gap-y-2 border-l pl-4">
+        {entries.map(entry => (
+          <li class={entry.level === 3 ? "ml-4" : ""}>
+            <a
+              href={`#${entry.id}`}
+              data-toc-link
+              data-target={entry.id}
+              class:list={[
+                "text-tobago/50 block font-sans text-base",
+                entry.level === 2 ? "font-semibold" : "font-normal",
+              ]}
+            >
+              {entry.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <img
+        src="/images/illustrations/sansa.svg"
+        width="373"
+        height="201"
+        alt=""
+        class="mt-8"
+      />
+    </nav>
+  )
+}
+
+<script>
+  const links = document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]")
+
+  if (links.length > 0) {
+    const headings = [...links]
+      .map(link => {
+        const id = link.dataset.target
+        return id ? document.getElementById(id) : null
+      })
+      .filter((el): el is HTMLElement => el !== null)
+
+    const setActive = (id: string) => {
+      for (const link of links) {
+        const isActive = link.dataset.target === id
+        link.classList.toggle("text-tobago/50", !isActive)
+        link.classList.toggle("text-tobago", isActive)
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      observerEntries => {
+        const visible = observerEntries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+        const [topMost] = visible
+        if (topMost) setActive(topMost.target.id)
+      },
+      { rootMargin: "-96px 0px -70% 0px" }
+    )
+
+    for (const heading of headings) observer.observe(heading)
+  }
+</script>

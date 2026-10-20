@@ -37,7 +37,6 @@ const entry = (n: number): DeliveryLog => ({
 test("writeLog caps at 500 and drops the oldest", async () => {
   const { rows, collection } = memoryCollection()
   // Sequential on purpose: each write trims against the previous count.
-  // eslint-disable-next-line no-await-in-loop
   for (let n = 0; n < 502; n++) await writeLog(collection, entry(n))
   const subjects = [...rows.values()].map(row => row.subject)
   expect(rows.size).toBe(500)
@@ -49,7 +48,6 @@ test("writeLog caps at 500 and drops the oldest", async () => {
 test("listLogs returns newest first, capped at a page", async () => {
   const { collection } = memoryCollection()
   // Sequential on purpose: each write trims against the previous count.
-  // eslint-disable-next-line no-await-in-loop
   for (let n = 0; n < 60; n++) await writeLog(collection, entry(n))
   const logs = await listLogs(collection)
   expect(logs).toHaveLength(50)

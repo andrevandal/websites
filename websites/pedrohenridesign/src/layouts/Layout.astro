@@ -1,8 +1,7 @@
 ---
 import "@/styles/global.css"
-import { getSecret } from "astro:env/server"
 import type { HTMLAttributes } from "astro/types"
-import { SunLayout, runtimeBoolean } from "@vandal-websites/sun-ui/astro"
+import { SunLayout } from "@vandal-websites/sun-ui/astro"
 import { getSiteSettings } from "emdash"
 import { loadAnalyticsSettings } from "@vandal-websites/emdash-plugin-analytics/settings"
 import { EmDashHead, EmDashBodyStart, EmDashBodyEnd } from "emdash/ui"
@@ -30,11 +29,9 @@ const site = await getSiteSettings()
 const pageTitle = title || site.title || ""
 const pageDescription = description || site.tagline || ""
 
-// Tracking IDs are edited in the admin's Analytics page (plugin "analytics");
-// the Partytown gate is the ENABLE_PARTYTOWN Stage var.
+// Tracking IDs are edited in the admin's Analytics page (plugin "analytics").
 const gtag = {
   ...(await loadAnalyticsSettings()),
-  partytown: runtimeBoolean(getSecret, "ENABLE_PARTYTOWN"),
 }
 
 // Pages without their own share image use the site's default social image
@@ -82,13 +79,7 @@ const page = createPublicPageContext({
   class="font-stara scroll-p-20.5"
 >
   <Fragment slot="close-head">
-    <link
-      href="/css/fonts.css"
-      rel="preload"
-      as="style"
-      onload="this.rel='stylesheet'"
-    />
-    <noscript><link rel="stylesheet" href="/css/fonts.css" /></noscript>
+    <link rel="stylesheet" href="/css/fonts.css" />
     <EmDashHead page={page} />
   </Fragment>
   <EmDashBodyStart page={page} slot="open-body" />

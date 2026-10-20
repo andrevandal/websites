@@ -5,7 +5,6 @@ import path from "node:path"
 import { SqliteKV } from "@/kv/sqlite-kv"
 
 const freshDbPath = () =>
-  // oxlint-disable-next-line node/no-sync -- test-only temp dir setup
   path.join(mkdtempSync(path.join(tmpdir(), "kv-test-")), "kv.db")
 
 describe("SqliteKV: get/set/delete", () => {

@@ -56,7 +56,6 @@ const renderPackageJson = (options: ResolvedOptions) => {
   const dependencies = sortObject({
     "@astrojs/check": "catalog:astro",
     "@astrojs/cloudflare": "catalog:astro",
-    "@astrojs/partytown": "catalog:astro",
     "@vandal-websites/robots-sitemap": "workspace:*",
     "@astrojs/ts-plugin": "catalog:astro",
     "@vandal-websites/sun-ui": "workspace:*",
@@ -82,27 +81,6 @@ const renderPackageJson = (options: ResolvedOptions) => {
       type: "module",
       dependencies,
       devDependencies,
-    },
-    null,
-    2
-  )}\n`
-}
-
-const renderConfig = (options: ResolvedOptions) => {
-  const stageVars = {
-    IMAGES_BASE_URL: "",
-    PUBLIC_GOOGLE_ANALYTICS_ID: "",
-    PUBLIC_GOOGLE_ADS_CONVERSION_ID: "",
-    PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: "",
-    ENABLE_PARTYTOWN: "false",
-  }
-
-  return `${JSON.stringify(
-    {
-      siteId: options.slug,
-      canonicalHost: `https://${options.slug}`,
-      vars: { preview: stageVars, staging: stageVars, production: stageVars },
-      secretKeys: [],
     },
     null,
     2
@@ -192,7 +170,6 @@ const renderAstroConfig = (
 ) => `import { defineConfig, fontProviders } from "astro/config"
 import sunUIAstroIntegration from "@vandal-websites/sun-ui/astro-integration"
 import { robotsSitemap } from "@vandal-websites/robots-sitemap"
-import partytown from "@astrojs/partytown"
 import cloudflare from "@astrojs/cloudflare"
 import tailwindcss from "@tailwindcss/vite"
 
@@ -218,14 +195,6 @@ export default defineConfig({
       svelte: true,
     }),
     robotsSitemap({ canonicalHost: CANONICAL_SITE_URL }),
-    partytown({
-      config: {
-        forward: [
-          ["dataLayer.push", { preserveBehavior: true }],
-          ["gtag", { preserveBehavior: true }],
-        ],
-      },
-    }),
   ],
   trailingSlash: "ignore",
   site: CANONICAL_SITE_URL,
@@ -304,8 +273,7 @@ const renderGlobalCss = (options: ResolvedOptions) => `@import "tailwindcss";
 const renderLayout = (options: ResolvedOptions) => `---
 import "@/styles/global.css"
 import { Font } from "astro:assets"
-import { getSecret } from "astro:env/server"
-import { SunLayout, runtimeGtag } from "@vandal-websites/sun-ui/astro"
+import { SunLayout } from "@vandal-websites/sun-ui/astro"
 
 interface Props {
   title: string
@@ -321,7 +289,6 @@ const { title, description, image = "/og-image.png" } = Astro.props
   description={description}
   image={new URL(image, Astro.url).toString()}
   url={Astro.url}
-  gtag={runtimeGtag(getSecret)}
 >
   <Font cssVariable="${fontVariable(options.font)}" preload slot="close-head" />
   <slot />
@@ -366,7 +333,6 @@ websites/${options.slug}/
 │   ├── pages/index.astro
 │   └── styles/global.css
 ├── astro.config.js
-├── config.json
 ├── moon.yml
 ├── tsconfig.json
 └── wrangler.json
@@ -385,23 +351,18 @@ moon run ${options.slug}:build
 
 ## Configuration
 
-\`config.json\` holds the canonical host and the non-secret variables for each
-Stage (\`preview\`, \`staging\`, \`production\`). Deploys attach the Stage's
-values to the Worker, and the site reads them at request time through
-\`getSecret\`, so one build serves every Stage.
+The site ID is the folder name and the canonical host is \`CANONICAL_SITE_URL\`
+in \`astro.config.js\`. Deploys attach the Worker variables at request time
+through \`getSecret\`, so one build serves every Stage:
 
-| Variable | Purpose |
+| Variable | Source |
 | --- | --- |
-| \`IMAGES_BASE_URL\` | Optional \`apps/images\` transform-service base URL. |
-| \`PUBLIC_GOOGLE_ANALYTICS_ID\` | Optional Google Analytics measurement ID. |
-| \`PUBLIC_GOOGLE_ADS_CONVERSION_ID\` | Optional Google Ads conversion ID. |
-| \`PUBLIC_GOOGLE_ADS_CONVERSION_LABEL\` | Optional Google Ads conversion label. |
-| \`ENABLE_PARTYTOWN\` | Loads Gtag through Partytown only when \`true\`. |
+| \`IMAGES_BASE_URL\` | GitHub environment secret of the deploying job. |
+| \`S3_PUBLIC_URL\` and any other runtime secret | Infisical \`/websites/<site>\`. |
 
-List secret names in \`secretKeys\` and set their values with Wrangler, never in
-\`config.json\`. The \`CANONICAL_SITE_URL\` constant in \`astro.config.js\`
-matches \`canonicalHost\`. \`@vandal-websites/robots-sitemap\` serves \`/robots.txt\`
-(crawlable only on that host) and \`/sitemap-index.xml\`.
+Google Analytics IDs, if any, are committed in the layout.
+\`@vandal-websites/robots-sitemap\` serves \`/robots.txt\` (crawlable only on the
+canonical host) and \`/sitemap-index.xml\`.
 
 ## Client-side policy
 
@@ -409,7 +370,7 @@ Start with semantic HTML and CSS. Use \`details\`, \`dialog\`, form controls, \`
 
 ## Assets
 
-Replace the scaffold favicon before release. Put brand images in \`public/\` or use Astro Image with \`IMAGES_BASE_URL\`; do not embed unoptimized bitmap data in components.
+Replace the scaffold favicon before release. Bitmaps live in the site's bucket, never in git: reference them with \`assetUrl(getSecret, path)\` from \`@vandal-websites/sun-ui/astro\`.
 
 ## Deployment
 
@@ -509,18 +470,6 @@ const ensureUniqueWorkerName = async (root: string, slug: string) => {
       `Website slug "${slug}" would deploy as Worker "${worker}", which websites/${conflict.site} already uses. Choose a distinct first dot segment.`
     )
   }
-}
-
-const updateSiteIds = (content: string, slug: string) => {
-  const match = content.match(/const SITE_IDS = \[(?<ids>[^\]]*)\]/)
-  if (!match?.groups) throw new Error("site-config.ts has no SITE_IDS list.")
-  const ids = [...match.groups["ids"]!.matchAll(/"(?<id>[^"]+)"/g)].map(
-    entry => entry.groups!["id"]!
-  )
-  const list = sortedWebsites(ids, slug)
-    .map(id => `  ${JSON.stringify(id)},`)
-    .join("\n")
-  return content.replace(match[0], `const SITE_IDS = [\n${list}\n]`)
 }
 
 const updateCustomDomains = (content: string, slug: string) => {
@@ -638,7 +587,6 @@ const createWebsite = async (root: string, rawOptions: WebsiteOptions) => {
     cleanupWorkflow,
     releaseWorkflow,
     readme,
-    siteConfig,
     deployScript,
   ] = await Promise.all(
     [
@@ -646,7 +594,6 @@ const createWebsite = async (root: string, rawOptions: WebsiteOptions) => {
       ".github/workflows/pr-preview-cleanup.yml",
       ".github/workflows/release.yml",
       "README.md",
-      "scripts/site-config.ts",
       "scripts/deploy.ts",
     ].map(path => readRoot(root, path))
   )
@@ -655,7 +602,6 @@ const createWebsite = async (root: string, rawOptions: WebsiteOptions) => {
   // already present in any of them leaves the repository untouched.
   const writes: [string, string][] = [
     [join(siteRoot, "package.json"), renderPackageJson(options)],
-    [join(siteRoot, "config.json"), renderConfig(options)],
     [join(siteRoot, "moon.yml"), renderMoon(options)],
     [join(siteRoot, "astro.config.js"), renderAstroConfig(options)],
     [join(siteRoot, "tsconfig.json"), renderTsConfig(options)],
@@ -683,7 +629,6 @@ const createWebsite = async (root: string, rawOptions: WebsiteOptions) => {
       updateReleaseWorkflow(releaseWorkflow!.content, options.slug),
     ],
     [readme!.path, updateReadme(readme!.content, options.slug)],
-    [siteConfig!.path, updateSiteIds(siteConfig!.content, options.slug)],
     [
       deployScript!.path,
       updateCustomDomains(deployScript!.content, options.slug),

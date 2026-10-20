@@ -206,7 +206,7 @@ const checkAdrCitations = (file: string, text: string): Finding[] => {
 
 // ---------------------------------------------------------------- links
 
-const LINK = /\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g
+const LINK = /\[(?:[^\]]+)\]\((?<target>[^)\s]+)(?:\s+"[^"]*")?\)/g
 const EXTERNAL = /^(?:https?|mailto):/
 
 const checkLinks = (file: string, text: string): Finding[] => {
@@ -219,7 +219,7 @@ const checkLinks = (file: string, text: string): Finding[] => {
     const matches = line.matchAll(LINK)
 
     for (const match of matches) {
-      const target = match[2]
+      const { target } = match.groups
 
       if (EXTERNAL.test(target) || target.startsWith("mailto:")) continue
 
@@ -365,6 +365,7 @@ const run = async (): Promise<number> => {
     f => f.startsWith("docs/adr/") && f !== "docs/adr/FORMAT.md"
   )
   for (const file of adrFiles) {
+    // oxlint-disable-next-line eslint/no-await-in-loop -- sequential file read preserves check order
     const text = await readFile(file, "utf-8")
     findings.push(...checkAdrFilename(file))
     findings.push(...checkAdrH1(file, text))
@@ -374,11 +375,12 @@ const run = async (): Promise<number> => {
 
   const textFiles = files.filter(
     f =>
-      /\.(md|ts|tsx|js|mjs|cjs|astro|svelte|yml|yaml|json|jsonc|toml|sh)$/.test(
+      /\.(?:md|ts|tsx|js|mjs|cjs|astro|svelte|yml|yaml|json|jsonc|toml|sh)$/.test(
         f
       ) && !skipped.some(prefix => f.startsWith(prefix))
   )
   for (const file of textFiles) {
+    // oxlint-disable-next-line eslint/no-await-in-loop -- sequential file read preserves check order
     const text = await readFile(file, "utf-8")
     if (!SELF_FILES.includes(file)) {
       findings.push(...checkEpicInvariants(file, text))

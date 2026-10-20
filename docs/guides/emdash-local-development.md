@@ -27,7 +27,7 @@ locally. `<site>` is the site's Moon project and directory under `websites/`
 | Media       | `.data/uploads`, served at `/_emdash/api/media/file/<key>` | S3-compatible bucket (`S3_*`)                             |
 | Email       | EmDash console provider, sends nothing                     | The site's email plugin, selected under Settings -> Email |
 | Images      | `SunPicture` renders the source URL directly               | `SunPicture` builds transform URLs from `IMAGES_BASE_URL` |
-| Credentials | None                                                       | Stage vars in `config.json` plus Worker secrets           |
+| Credentials | None                                                       | GitHub env `IMAGES_BASE_URL` plus Infisical secrets       |
 
 `.data/` is gitignored; nothing local reaches the repository.
 
@@ -41,10 +41,8 @@ process.argv.includes("dev")` selects the Node adapter, `sqlite()` at
   Cloudflare adapter, the production database and `s3()` storage otherwise.
 - **Email plugins load in builds only.** EmDash auto-selects its dev console
   provider only when it is the sole `email:deliver` provider, so any email
-  plugin (`jmapEmailPlugin()` on `pedrohenri`; `emdashSmtp()` is the SMTP
-  alternative) is registered as `plugins: isDev ? [] : [<emailPlugin>()]`.
-  Loading one in
-  dev makes magic links fail with `EMAIL_NOT_CONFIGURED`.
+  plugin (`jmapEmailPlugin()` on `pedrohenri` and `brunabraz`) is registered
+  as `plugins: isDev ? [] : [<emailPlugin>()]`. Loading one in dev makes magic links fail with `EMAIL_NOT_CONFIGURED`.
 - **The site's `moon.yml` has the `emdash` tag** (next to `cloudflare`). The
   tag inherits the shared tasks; nothing is copied per site:
   - `seed` (`.moon/tasks/emdash.yml`): `scripts/fix-seed-byline-locale.ts
@@ -225,8 +223,8 @@ seed change. Regenerating against the old database removes the new field and
 `astro check` fails.
 
 `worker-configuration.d.ts` only reflects what `wrangler.json` declares. The
-`SESSION` KV binding and the Stage vars from `config.json` are added at deploy
-time, so they do not appear in it.
+`SESSION` KV binding and the Stage vars (`IMAGES_BASE_URL`, Infisical secrets)
+are added at deploy time, so they do not appear in it.
 
 ## Verifying a change
 

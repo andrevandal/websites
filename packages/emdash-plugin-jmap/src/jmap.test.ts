@@ -94,23 +94,26 @@ describe("sendJmap", () => {
 
   test("unknown from address throws", async () => {
     queue(session, lookup())
-    await expect(
-      sendJmap({ ...settings, fromEmail: "other@example.com" }, message)
-    ).rejects.toThrow("No JMAP identity for other@example.com")
+    expect(
+      await sendJmap(
+        { ...settings, fromEmail: "other@example.com" },
+        message
+      ).catch((error: Error) => error.message)
+    ).toContain("No JMAP identity for other@example.com")
   })
 
   test("missing Sent mailbox throws", async () => {
     queue(session, lookup({ drafts: "d1" }))
-    await expect(sendJmap(settings, message)).rejects.toThrow(
-      "No JMAP mailbox with role sent"
-    )
+    expect(
+      await sendJmap(settings, message).catch((error: Error) => error.message)
+    ).toContain("No JMAP mailbox with role sent")
   })
 
   test("missing submission capability throws", async () => {
     queue({ ...session, capabilities: {} })
-    await expect(sendJmap(settings, message)).rejects.toThrow(
-      "JMAP server lacks mail/submission capability"
-    )
+    expect(
+      await sendJmap(settings, message).catch((error: Error) => error.message)
+    ).toContain("JMAP server lacks mail/submission capability")
   })
 
   test("submission SetError is reported", async () => {
@@ -124,9 +127,9 @@ describe("sendJmap", () => {
         ],
       ],
     })
-    await expect(sendJmap(settings, message)).rejects.toThrow(
-      "JMAP EmailSubmission/set: forbiddenFrom"
-    )
+    expect(
+      await sendJmap(settings, message).catch((error: Error) => error.message)
+    ).toContain("JMAP EmailSubmission/set: forbiddenFrom")
   })
 
   test("method error names the method it replied to", async () => {
@@ -135,8 +138,8 @@ describe("sendJmap", () => {
         ["error", { type: "serverFail", description: "boom" }, "e"],
       ],
     })
-    await expect(sendJmap(settings, message)).rejects.toThrow(
-      "JMAP Email/set: serverFail - boom"
-    )
+    expect(
+      await sendJmap(settings, message).catch((error: Error) => error.message)
+    ).toContain("JMAP Email/set: serverFail - boom")
   })
 })

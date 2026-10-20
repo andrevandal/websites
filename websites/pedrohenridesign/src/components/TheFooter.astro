@@ -1,6 +1,6 @@
 ---
 import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
-import { DENSITIES, fileUrl } from "@/utils/images"
+import { fileUrl } from "@/utils/images"
 import BaseButton from "@/components/BaseButton.astro"
 
 const currentYear = new Date().getFullYear()
@@ -23,7 +23,6 @@ const currentYear = new Date().getFullYear()
             { minWidth: 1024, width: 362 },
             { minWidth: 1280, width: 469 },
           ]}
-          densities={DENSITIES}
           class="aspect-square h-auto w-full rounded-lg"
           loading="lazy"
           decoding="async"
@@ -59,7 +58,6 @@ const currentYear = new Date().getFullYear()
           src={fileUrl("images/logo-horizontal.png")}
           width={171}
           height={32}
-          densities={DENSITIES}
           class="h-full w-full"
           wrapperClass="h-8 w-[171px]"
           alt=""

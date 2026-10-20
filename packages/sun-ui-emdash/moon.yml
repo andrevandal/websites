@@ -1,0 +1,24 @@
+layer: "library"
+language: "typescript"
+
+project:
+  title: "Sun UI EmDash"
+  description: "EmDash content helpers and headless Sun UI components"
+
+tasks:
+  build:
+    command: "tsdown"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.astro"
+      - "tsconfig.json"
+      - "tsdown.config.ts"
+      - "/tsconfig.json"
+      - "/tsconfig.options.json"
+      - "/tsconfig.bundler.json"
+    outputs:
+      - dist
+
+  test:
+    script: "rm -rf coverage && bun test --coverage --coverage-reporter=lcov --coverage-dir=coverage"
+    outputs: ["coverage/lcov.info"]

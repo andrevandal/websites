@@ -2,6 +2,7 @@
   "extends": ["astro/tsconfigs/strict", "../../tsconfig.bundler.json"],
   "compilerOptions": {
     "paths": {
+      "#/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
       "@assets/*": ["./src/assets/*"],
       "@styles/*": ["./src/styles/*"],
@@ -32,6 +33,9 @@
     },
     {
       "path": "../../packages/sun-ui"
+    },
+    {
+      "path": "../../packages/sun-ui-emdash"
     }
   ]
 }

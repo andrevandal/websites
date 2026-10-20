@@ -17,7 +17,7 @@ Repo-root files are outside every moon project (`.moon/workspace.yml`'s
 project globs are `apps/*`, `packages/*`, `websites/*`). The
 `Check root files` step covers them explicitly: oxlint over `scripts/`,
 `.omp/`, and root-level `*.ts`; oxfmt over `scripts/`, `docs/`, `docker/`,
-`.agents/`, `.github/`, `.moon/`, `.omp/`, `.claude/`, `.vscode/`,
+`.agents/`, `.github/`, `.moon/`, `.omp/`, `.vscode/`,
 root-level `*.ts` / `*.md` / `*.json` / `*.yml`, and the supported hidden
 JSON/YAML configs; then `bun run test:scripts`, `bun run docs` (docs, skills,
 and `AGENTS.md` checks), and the coverage contract guard. Add new root-level
@@ -33,31 +33,36 @@ Missing or invalid team domain fails the selected preview build. Staging and
 production share the standard Turso/S3 artifact without rebuilding.
 
 Selected previews use native D1/R2 and Access with per-PR `SESSION` KV.
-Staging (`main` push) and production (merged release-please PR, or the manual
+Staging and production jobs first export the site's Infisical `staging` (or,
+on promotion, `production`) keys to `.site-secrets.env`, never the env, so the
+build cannot read them. Staging (`main` push) and production (merged release-please PR, or the manual
 `deploy-manual.yml` promotion, which runs in the `production` Environment) take
 the site's runtime secrets from Infisical (project `INFISICAL_PROJECT_SLUG`,
 path `/websites/<site>`, environment `staging` or `production`, OIDC login as the
-`INFISICAL_IDENTITY_ID` machine identity). The Infisical action exports them as
-masked env vars after the build; `check-secrets` fails the job when a declared
-key is missing or empty (it names only the key, never a value) and
+`INFISICAL_IDENTITY_ID` machine identity). Every key under that path is a runtime
+secret; `check-secrets` fails the job when `S3_PUBLIC_URL` is missing or a key
+is empty (it names only the key, never a value) and
 `version-upload` passes them to
 `wrangler versions upload --secrets-file`. A rotated value takes effect on the
 next deployment of that site to that Stage, not on unrelated pushes. Preview
 Base and each existing Preview have their own effective settings.
-`pedrohenri` previews serve
-original images directly: `vars.preview.IMAGES_BASE_URL` is empty.
+`IMAGES_BASE_URL` is the GitHub environment secret of the deploying job
+(`staging`, `production`, and `preview` for PR jobs); both selected previews
+get `""`, serving original CMS images. Previews never read Infisical: site
+assets are bucket-relative (`assetUrl`) and previews take `S3_PUBLIC_URL`
+from Preview Base. Seeds keep absolute production media URLs.
 The runtime audience is supplied manually as `CF_ACCESS_AUDIENCE` on Preview
-Base, not as a GitHub build secret; it is a preview-only key and is not part of
-the Stage secrets in Infisical. Same-PR redeploys preserve resources and
+Base, not as a GitHub build secret; it is never uploaded to staging or
+production. Same-PR redeploys preserve resources and
 CMS state; PR close deletes only that Preview and its KV/D1/R2 resources,
 purging media before deleting its R2 bucket. Generic previews remain KV-only.
 CI does not provision Access policy coverage or create admins; see the
-[Access guide](./guides/cloudflare-access-for-previews.md). For `pedrohenri`,
-CI applies the core migrations of each database before the code that needs
+[Access guide](./guides/cloudflare-access-for-previews.md). For `pedrohenri`
+and `brunabraz`, CI applies the core migrations of each database before the code that needs
 them gets traffic (`scripts/deploy.ts migrate`: the PR Preview's D1 before
 `wrangler preview`, the stage's Turso database from Infisical
 before the staging and production Version uploads), and its Worker only checks
-(`migrations.runtime: "check"`). Its PR Previews are also set up from CI
+(`migrations.runtime: "check"`). Their PR Previews are also set up from CI
 (`setupPreview`): the bundled `seed/seed.json` goes through the public
 `/_emdash/api/setup` route with the Service Auth token, then
 `scripts/seed-extensions.ts` writes the SEO panels, default OG image and

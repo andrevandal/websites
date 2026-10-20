@@ -1,6 +1,6 @@
 ---
 import { publishedPost } from "@/cms/queries"
-import { mediaSource } from "@/cms/media"
+import { mediaSource } from "@vandal-websites/sun-ui-emdash"
 import { imageUrl } from "@/utils/images"
 import { getSeoMeta } from "emdash"
 import Layout from "@/layouts/Layout.astro"
@@ -12,19 +12,24 @@ const { slug } = Astro.params
 const postData = await publishedPost(slug!)
 
 // Handle 404
-if (!postData) {
-  return Astro.rewrite("/404")
-}
+if (!postData) return Astro.rewrite("/404")
 
 const { entry, post, category, categorySlug } = postData
 
 // Default share image: the post's social image, else its cover, resized for
 // 1200x630; the SEO panel image wins, then the site's default social image.
-const socialImageSrc = post.social_image
-  ? mediaSource(post.social_image, { url: Astro.url, locals: Astro.locals })
-  : post.cover
-    ? mediaSource(post.cover, { url: Astro.url, locals: Astro.locals })
-    : ""
+let socialImageSrc = ""
+if (post.social_image) {
+  socialImageSrc = mediaSource(post.social_image, {
+    url: Astro.url,
+    locals: Astro.locals,
+  })
+} else if (post.cover) {
+  socialImageSrc = mediaSource(post.cover, {
+    url: Astro.url,
+    locals: Astro.locals,
+  })
+}
 
 const seo = getSeoMeta(entry, {
   siteUrl: Astro.url.origin,

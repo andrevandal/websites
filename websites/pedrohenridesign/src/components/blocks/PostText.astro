@@ -12,13 +12,21 @@ const { value } = Astro.props
 
 <div
   class:list={[
-    "w-full pb-12",
-    value.background && "px-4",
+    // Without a background the body flows like the post's own prose: no
+    // outer gap at the start or end of the post.
+    "w-full first:[&>div>:first-child]:mt-0 last:[&>div>:last-child]:mb-0",
+    value.background && "px-4 py-16",
     cornerClass(value.corners, "md"),
   ]}
   style={backgroundStyle(value.background)}
 >
-  <div class:list={["mx-auto max-w-[75ch]", toneClass(value.tone)]}>
+  <div
+    class:list={[
+      "mx-auto max-w-[75ch]",
+      value.background && "prose",
+      toneClass(value.tone),
+    ]}
+  >
     <PostPortableText value={value.body} />
   </div>
 </div>

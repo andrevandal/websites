@@ -1,0 +1,84 @@
+---
+import type { FigureProps } from "./Figure.props.ts"
+
+type Props = FigureProps
+
+const {
+  caption,
+  captionPlacement = "below",
+  align,
+  maxWidth,
+  class: className,
+  captionClass,
+  style,
+  ...attrs
+} = Astro.props
+---
+
+<figure
+  class:list={[
+    "sun-figure",
+    align && `sun-figure--${align}`,
+    captionPlacement === "overlay" && "sun-figure--overlay",
+    className,
+  ]}
+  style={[maxWidth && `--cap: ${maxWidth}px`, style]
+    .filter(Boolean)
+    .join("; ") || undefined}
+  {...attrs}
+>
+  <slot />
+  {caption && <figcaption class={captionClass}>{caption}</figcaption>}
+</figure>
+
+<style>
+  /* Structural only: sites theme spacing, caption type and colors via classes. */
+  .sun-figure {
+    max-width: var(--cap, none);
+  }
+
+  .sun-figure--overlay {
+    position: relative;
+  }
+
+  .sun-figure--overlay > figcaption {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .sun-figure--left,
+  .sun-figure--right {
+    width: fit-content;
+    max-width: min(50%, var(--cap, 50%));
+  }
+
+  .sun-figure--left {
+    float: left;
+  }
+
+  .sun-figure--right {
+    float: right;
+  }
+
+  .sun-figure--center {
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  .sun-figure--wide,
+  .sun-figure--full {
+    width: 100%;
+  }
+
+  /* Narrow screens: un-float so the figure is not cramped beside text. */
+  @media (max-width: 640px) {
+    .sun-figure--left,
+    .sun-figure--right {
+      float: none;
+      width: 100%;
+      max-width: min(100%, var(--cap, 100%));
+    }
+  }
+</style>

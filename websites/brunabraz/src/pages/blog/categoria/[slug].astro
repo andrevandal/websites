@@ -1,0 +1,34 @@
+---
+import { getSiteSettings, getTaxonomyTerms } from "emdash"
+import { categorySeo, findCategory } from "@/cms/category"
+import { loadCategoryGrid, parsePage } from "@/cms/posts"
+import BlogLayout from "@layouts/BlogLayout.astro"
+import CategoryHeader from "@components/blog/CategoryHeader.astro"
+import PostGrid from "@components/blog/PostGrid.astro"
+
+const { slug = "" } = Astro.params
+const match = findCategory(
+  await getTaxonomyTerms("category", { includeCounts: false }),
+  slug
+)
+if (!match) return Astro.rewrite("/404")
+const { term, parent } = match
+
+const page = parsePage(Astro.url.searchParams.get("pagina"))
+const { posts, terms, hasMore } = await loadCategoryGrid(term, page)
+
+// No image: EmDashHead falls back to the site's default social image.
+const seo = categorySeo(term, (await getSiteSettings()).title ?? "")
+---
+
+<BlogLayout title={seo.title} description={seo.description} url={Astro.url}>
+  <CategoryHeader term={term} parent={parent} />
+  <PostGrid
+    posts={posts}
+    terms={terms}
+    page={page}
+    hasMore={hasMore}
+    basePath={`/blog/categoria/${term.slug}`}
+    category={term.slug}
+  />
+</BlogLayout>

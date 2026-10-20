@@ -20,7 +20,6 @@
     "@astro-community/astro-embed-youtube": "catalog:astro",
     "@astrojs/check": "catalog:astro",
     "@astrojs/cloudflare": "catalog:astro",
-    "@astrojs/partytown": "catalog:astro",
     "@astrojs/ts-plugin": "catalog:astro",
     "@tailwindcss/vite": "catalog:tailwind",
     "astro": "catalog:astro",

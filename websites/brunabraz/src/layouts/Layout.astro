@@ -2,63 +2,65 @@
 import "@styles/global.css"
 
 import { SunLayout, SunAnimateOnScroll } from "@vandal-websites/sun-ui/astro"
+import { getSiteSettings } from "emdash"
+import { loadAnalyticsSettings } from "@vandal-websites/emdash-plugin-analytics/settings"
+import { EmDashHead, EmDashBodyStart, EmDashBodyEnd } from "emdash/ui"
+import { createPublicPageContext } from "emdash/page"
 import TheFooter from "@/components/TheFooter.astro"
 
 import { Font } from "astro:assets"
 import type { ComponentProps } from "astro/types"
-import { getSecret } from "astro:env/server"
-import { runtimeEnv } from "@vandal-websites/sun-ui/astro/runtime-env"
-import { buildImageUrl } from "@vandal-websites/sun-ui/astro-image-service"
 
 type Props = ComponentProps<typeof SunLayout> & {
-  noCallToAction?: boolean
+  content?: { collection: string; id: string; slug?: string | null }
 }
 
-const { image = "", noCallToAction, ...props } = Astro.props
-const imageServiceBaseUrl = runtimeEnv(getSecret, "IMAGES_BASE_URL")
-const patternSource = "https://files.vandal.services/brunabraz/images"
-const waveSource = `${patternSource}/pattern-wave.png`
-const sunSource = `${patternSource}/pattern-sun.png`
-const waveUrl = imageServiceBaseUrl
-  ? buildImageUrl(imageServiceBaseUrl, {
-      src: waveSource,
-      width: 100,
-      quality: 90,
-      format: "auto",
-    })
-  : waveSource
-const sunUrl = imageServiceBaseUrl
-  ? buildImageUrl(imageServiceBaseUrl, {
-      src: sunSource,
-      width: 236,
-      height: 304,
-      quality: 90,
-      format: "auto",
-    })
-  : sunSource
+const { content, image, ...rest } = Astro.props
+
+// EmDashHead renders the SEO tags; it falls back to the default social image
+// from site settings. Title and description fall back to the site title and
+// tagline, so no page renders empty share metadata.
+const site = await getSiteSettings()
+const props = {
+  ...rest,
+  title: rest.title || site.title || "",
+  description: rest.description || site.tagline || "",
+}
+
+// Tracking IDs are edited in the admin's Analytics page (plugin "analytics").
+const gtag = {
+  ...(await loadAnalyticsSettings()),
+}
+
+const page = createPublicPageContext({
+  Astro,
+  kind: content ? "content" : "custom",
+  pageType: "website",
+  title: props.title,
+  description: props.description,
+  canonical: String(props.url),
+  image,
+  content,
+})
 ---
 
-<SunLayout
-  image={image}
-  lang="pt-BR"
-  class="no-js"
-  {...props}
-  style={{
-    "--pattern-wave-image": `url("${waveUrl}")`,
-    "--pattern-sun-image": `url("${sunUrl}")`,
-  }}
->
+<SunLayout lang="pt-BR" class="no-js" gtag={gtag} seoTags={false} {...props}>
   <Fragment slot="close-head">
     <script is:inline>
       document.documentElement.classList.replace("no-js", "js")
     </script>
     <Font cssVariable="--font-dm-sans" preload />
     <Font cssVariable="--font-averia" preload />
+    <EmDashHead page={page} />
     <slot name="head" />
   </Fragment>
-  <slot />
-  <TheFooter noCallToAction={noCallToAction} />
+  <EmDashBodyStart page={page} slot="open-body" />
+  <div class="flex min-h-screen flex-col [&>main]:grow">
+    <slot />
+    <TheFooter />
+  </div>
   <Fragment slot="close-body">
     <SunAnimateOnScroll />
+    <EmDashBodyEnd page={page} />
   </Fragment>
 </SunLayout>

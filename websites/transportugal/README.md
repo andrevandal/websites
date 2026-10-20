@@ -49,13 +49,23 @@ moon run transportugal:build
 moon run transportugal:preview
 ```
 
+`Navigation.astro` uses the shared `useHeader` hook on `#navigation` and marks
+the menu with `data-header-menu`: scrolling updates the header; menu links,
+outside clicks, and Escape close the mobile menu. The hook cleans up listeners
+and reinitializes after Astro swaps.
+
+The local button delegates markup and external-link behavior to `SunButton`.
+WhatsApp links use shared `waLink` with raw messages, encoded once; the home CTA
+and footer intentionally retain different contact numbers. One art-directed
+hero picture selects desktop/mobile sources with the existing density tiers;
+both carousels hydrate when visible.
+
 ## Environment variables
 
-Configured in `.env.example`: `IMAGES_BASE_URL`, `PUBLIC_GOOGLE_ANALYTICS_ID`,
-`PUBLIC_GOOGLE_ADS_CONVERSION_ID`, `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL`, and
-`ENABLE_PARTYTOWN` (Gtag loads through Partytown only when it is `true`).
-Deployed values come from `config.json` for the Stage and are read at request
-time through `getSecret`. The canonical site URL is the `CANONICAL_SITE_URL`
+Configured in `.env.example`: `IMAGES_BASE_URL` and `S3_PUBLIC_URL`.
+Deployed values come from the GitHub environment secret (`IMAGES_BASE_URL`)
+and Infisical `/websites/transportugal` (`S3_PUBLIC_URL`), and are read at
+request time through `getSecret`. The canonical site URL is the `CANONICAL_SITE_URL`
 constant in `astro.config.js`.
 
 ## Icons

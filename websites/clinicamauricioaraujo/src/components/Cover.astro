@@ -1,5 +1,6 @@
 ---
-import { getImageUrl, cn } from "@utils"
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { getImageSource, cn } from "#/utils"
 
 type Props = {
   src: string
@@ -9,31 +10,43 @@ type Props = {
   class?: string
 }
 
-const { src, alt = "", width, height, class: className } = Astro.props
+const {
+  src,
+  alt = "",
+  width = 1280,
+  height = 560,
+  class: className,
+} = Astro.props
+
+const source = getImageSource(src)
 ---
 
-<picture class={cn("block w-full h-full", className)}>
-  <source
-    media="(min-width: 1024px)"
-    srcset={`
-        ${getImageUrl(src, "w_1280,h_560,mode_crop")} 1280w,
-        ${getImageUrl(src, "w_1920,h_840,mode_crop")} 1920w
-      `}
-    sizes="100vw"
-  />
-  <source
-    srcset={`
-        ${getImageUrl(src, "w_430,h_269,mode_crop")} 430w,
-        ${getImageUrl(src, "w_768,h_480,mode_crop")} 768w
-      `}
-    sizes="100vw"
-  />
-  <img
-    src={getImageUrl(src, "w_1280,h_560,mode_crop")}
-    alt={alt}
-    width={width}
-    height={height}
-    class:list={["h-full w-full object-cover", className]}
-    loading="eager"
-  />
-</picture>
+<SunPicture
+  src={source}
+  alt={alt}
+  width={width}
+  height={height}
+  sources={[
+    {
+      media: "(min-width: 1024px)",
+      src: source,
+      width: 1280,
+      height: 560,
+      breakpoints: [{ minWidth: 1281, width: 1920 }],
+    },
+    {
+      media: "(min-width: 0px)",
+      src: source,
+      width: 430,
+      height: 269,
+      breakpoints: [{ minWidth: 431, width: 768 }],
+    },
+  ]}
+  densities={[1]}
+  fit="cover"
+  placeholder={false}
+  loading="eager"
+  fetchpriority="high"
+  wrapperClass={cn("z-0 block w-full h-full", className)}
+  class={cn("h-full w-full object-cover", className)}
+/>

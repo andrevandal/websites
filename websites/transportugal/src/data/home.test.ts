@@ -1,7 +1,6 @@
 import { describe, expect, it } from "bun:test"
 import {
   differentiators,
-  HERO_SRC,
   insurances,
   qualityIndicators,
   segments,
@@ -9,10 +8,7 @@ import {
 } from "./home"
 
 describe("home source data", () => {
-  it("keeps hero image and service-card order", () => {
-    expect(HERO_SRC).toBe(
-      "https://files.vandal.services/transportugal/images/hero-bg.png"
-    )
+  it("keeps service-card order", () => {
     expect(services).toHaveLength(6)
     expect(services[0]?.icon).toBe("carga-fracionada")
     expect(services.at(-1)?.mobileOrder).toBe("order-4")

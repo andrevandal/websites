@@ -4,9 +4,12 @@ import type { HTMLAttributes } from "astro/types"
 import Layout from "@layouts/Layout.astro"
 import BaseButton from "@components/BaseButton.astro"
 import Figure from "@components/Figure.astro"
-import Icon from "@components/Icon.astro"
-import { SunPicture } from "@vandal-websites/sun-ui/astro"
-import { fileUrl, imageUrl } from "@utils/images"
+import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import { buildImageSrcSet } from "@vandal-websites/sun-ui/astro-image-service"
+import { WA_NUMBER } from "#/data/contact"
+import { heroDesktop, heroMobile, heroDensities } from "#/data/hero"
+import { fileUrl, imageUrl } from "#/utils/images"
 
 const schema = {
   "@context": "https://schema.org",
@@ -92,39 +95,71 @@ const products = [
   },
 ]
 
-const srcset = (path: string, widths: number[]) =>
-  widths
+const heroSrcset = (source: typeof heroDesktop) => {
+  const widths = new Set<number>()
+  for (const width of [
+    source.width,
+    ...source.breakpoints.map(bp => bp.width),
+  ]) {
+    for (const entry of buildImageSrcSet({
+      src: fileUrl(source.path),
+      width,
+      densities: heroDensities,
+    }))
+      widths.add(entry.transform.width as number)
+  }
+  return buildImageSrcSet({
+    src: fileUrl(source.path),
+    width: source.width,
+    height: source.height,
+    quality: 90,
+    format: "auto",
+    widths: [...widths],
+  })
     .map(
-      w => `${imageUrl(path, { width: w, quality: 90, format: "auto" })} ${w}w`
+      entry =>
+        `${imageUrl(source.path, {
+          width: entry.transform.width,
+          height: entry.transform.height,
+          quality: 90,
+          format: "auto",
+        })} ${entry.descriptor}`
     )
     .join(", ")
+}
 
-const desktopWidths = [1216, 960, 640, 576]
-const mobileWidths = [1920, 1280, 1125, 960, 750, 640, 563, 375]
+const desktopSizes = [...heroDesktop.breakpoints]
+  .sort((a, b) => b.minWidth - a.minWidth)
+  .map(bp => `(min-width: ${bp.minWidth}px) ${bp.width}px`)
+  .concat(`${heroDesktop.width}px`)
+  .join(", ")
 
 const links: HTMLAttributes<"link">[] = [
   {
     rel: "preload",
     as: "image",
-    href: imageUrl("images/primeira-dobra.png", {
-      width: 576,
+    href: imageUrl(heroDesktop.path, {
+      width: heroDesktop.width,
+      height: heroDesktop.height,
       quality: 90,
       format: "auto",
     }),
-    imagesizes: "(min-width: 1280px) 1216px, (min-width: 1024px) 960px, 640px",
-    imagesrcset: srcset("images/primeira-dobra.png", desktopWidths),
-    media: "(min-width: 640px)",
+    imagesizes: desktopSizes,
+    imagesrcset: heroSrcset(heroDesktop),
+    media: heroDesktop.media,
   },
   {
     rel: "preload",
     as: "image",
-    href: imageUrl("images/primeira-dobra_mobile.png", {
-      width: 375,
+    href: imageUrl(heroMobile.path, {
+      width: heroMobile.width,
+      height: heroMobile.height,
       quality: 90,
       format: "auto",
     }),
-    imagesrcset: srcset("images/primeira-dobra_mobile.png", mobileWidths),
-    media: "(max-width: 639px)",
+    imagesizes: heroMobile.sizes,
+    imagesrcset: heroSrcset(heroMobile),
+    media: heroMobile.media,
   },
 ]
 ---
@@ -150,8 +185,7 @@ const links: HTMLAttributes<"link">[] = [
       variant="primary"
       size="sm"
       icon="whatsapp"
-      href="https://wa.me/5511945488607"
-      >Sinta este aroma, fale conosco!</BaseButton
+      href={waLink(WA_NUMBER)}>Sinta este aroma, fale conosco!</BaseButton
     >
   </section>
   <section id="diferencial" class="relative bg-white">
@@ -182,8 +216,8 @@ const links: HTMLAttributes<"link">[] = [
           variant="secondary-outline"
           size="sm"
           icon="whatsapp"
-          href="https://wa.me/5511945488607"
-          class:list={["mt-4"]}>Você merece o melhor, fale conosco!</BaseButton
+          href={waLink(WA_NUMBER)}
+          class="mt-4">Você merece o melhor, fale conosco!</BaseButton
         >
       </div>
       <div class="mt-6 flex items-center justify-center lg:mt-0 lg:justify-end">
@@ -223,7 +257,7 @@ const links: HTMLAttributes<"link">[] = [
         <div
           class="mb-4 flex h-20 w-20 items-center justify-center rounded-lg border border-[#FFAA33] p-4 text-[#FFAA33] xl:row-span-2 xl:justify-start"
         >
-          <Icon name="truck" width="48" height="48" />
+          <SunIcon name="truck" width={48} height={48} />
         </div>
         <h3 class="font-fields mb-2 text-[2rem] leading-8 font-extrabold">
           Para empresas
@@ -239,7 +273,7 @@ const links: HTMLAttributes<"link">[] = [
         <div
           class="mb-4 flex h-20 w-20 items-center justify-center rounded-lg border border-[#FFAA33] p-4 text-[#FFAA33] xl:row-span-2 xl:justify-start"
         >
-          <Icon name="bread" width="48" height="48" />
+          <SunIcon name="bread" width={48} height={48} />
         </div>
         <h3 class="font-fields mb-2 text-[2rem] leading-8 font-extrabold">
           Produtos exclusivos
@@ -255,7 +289,7 @@ const links: HTMLAttributes<"link">[] = [
         <div
           class="mb-4 flex h-20 w-20 items-center justify-center rounded-lg border border-[#FFAA33] p-4 text-[#FFAA33] xl:row-span-2 xl:justify-start"
         >
-          <Icon name="clock" width="48" height="48" />
+          <SunIcon name="clock" width={48} height={48} />
         </div>
         <h3 class="font-fields mb-2 text-[2rem] leading-8 font-extrabold">
           Entrega rápida
@@ -307,7 +341,7 @@ const links: HTMLAttributes<"link">[] = [
           variant="primary"
           size="sm"
           icon="whatsapp"
-          href="https://wa.me/5511945488607"
+          href={waLink(WA_NUMBER)}
           block
           centered
           class="mt-4 sm:col-span-2 sm:mt-4 sm:w-fit! sm:place-self-center lg:col-span-3"
@@ -366,13 +400,13 @@ const links: HTMLAttributes<"link">[] = [
           <div
             class="bg-brown-700 absolute top-[49%] -left-6 flex h-12 w-12 min-w-12 items-center justify-center rounded-full text-[#FFAA33] lg:top-[43%]"
           >
-            <Icon name="wheat" width="24" height="24" />
+            <SunIcon name="wheat" width={24} height={24} />
           </div>
 
           <div
             class="text-brown-700 absolute top-[-23.73px] -right-6 flex h-12 w-12 min-w-12 items-center justify-center rounded-full bg-[#FFAA33]"
           >
-            <Icon name="bread" width="24" height="24" />
+            <SunIcon name="bread" width={24} height={24} />
           </div>
         </div>
       </div>
@@ -395,8 +429,7 @@ const links: HTMLAttributes<"link">[] = [
           variant="primary"
           icon="whatsapp"
           class="whitespace-nowrap"
-          href="https://wa.me/5511945488607"
-          >Fale conosco via WhatsApp</BaseButton
+          href={waLink(WA_NUMBER)}>Fale conosco via WhatsApp</BaseButton
         >
       </div>
     </section>

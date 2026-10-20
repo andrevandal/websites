@@ -1,3 +1,7 @@
+import { waLink } from "@vandal-websites/sun-ui"
+
+const WHATSAPP_NUMBER = "5521993615337"
+
 export const siteConfig = {
   name: "Clínica Maurício Araújo",
   legalName: "Clínica Odontológica Maurício Araújo",
@@ -9,7 +13,7 @@ export const siteConfig = {
   phone: "(21) 3088-6342",
   phoneLink: "tel:+552130886342",
   whatsApp: "(21) 99361-5337",
-  whatsAppLink: "https://wa.me/5521993615337",
+  whatsAppLink: waLink(WHATSAPP_NUMBER),
   email: "contato@clinicamauricioaraujo.com.br",
   address:
     "Av. das Américas, 3500, Bloco 7, Sala 521, Condomínio Le Monde Office, Barra da Tijuca, Rio de Janeiro - RJ",

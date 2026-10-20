@@ -1,0 +1,48 @@
+---
+/**
+ * Minimal Portable Text block-style renderer for every style besides h2/h3
+ * (those go through SunPTHeading instead). `emdash/ui`'s own `Block`
+ * component would work here, but it re-exports the name `Block` both as a
+ * type (from astro-portabletext) and as a value (its own component) from two
+ * separate `export {}` groups in the same barrel, which `tsc` rejects as
+ * "used as a value because it was exported using 'export type'" under this
+ * project's `verbatimModuleSyntax`. A local equivalent sidesteps it.
+ */
+import type { BlockProps } from "astro-portabletext/types"
+
+const {
+  node,
+  index: _index,
+  isInline: _isInline,
+  ...attrs
+} = Astro.props as BlockProps
+const { style } = node
+---
+
+{
+  style === "h1" ? (
+    <h1 {...attrs}>
+      <slot />
+    </h1>
+  ) : style === "h4" ? (
+    <h4 {...attrs}>
+      <slot />
+    </h4>
+  ) : style === "h5" ? (
+    <h5 {...attrs}>
+      <slot />
+    </h5>
+  ) : style === "h6" ? (
+    <h6 {...attrs}>
+      <slot />
+    </h6>
+  ) : style === "blockquote" ? (
+    <blockquote {...attrs}>
+      <slot />
+    </blockquote>
+  ) : (
+    <p {...attrs}>
+      <slot />
+    </p>
+  )
+}

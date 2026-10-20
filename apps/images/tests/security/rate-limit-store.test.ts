@@ -7,7 +7,6 @@ import { SqliteRateLimitStore } from "@/security/rate-limit-store"
 
 const freshStore = () => {
   const kv = new SqliteKV({
-    // oxlint-disable-next-line node/no-sync -- test-only temp dir setup
     path: path.join(mkdtempSync(path.join(tmpdir(), "rl-")), "kv.db"),
     maxBytes: 1_000_000,
   })

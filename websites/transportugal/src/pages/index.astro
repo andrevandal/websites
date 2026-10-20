@@ -3,8 +3,9 @@ import BaseLayout from "../layouts/Base.astro"
 import Button from "@components/ui/Button.astro"
 import MapBrazil from "@components/MapBrazil.astro"
 import RouteCalculator from "@components/RouteCalculator.svelte"
-import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
-import { siteConfig } from "@/data/site"
+import { assetUrl, SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import { siteConfig } from "#/data/site"
 import { ALLOWED_LOCATIONS } from "@/data/allowed-locations"
 import {
   ABOUT_SRC,
@@ -21,6 +22,7 @@ import {
 import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
 import Eyebrown from "@components/Eyebrown.astro"
 import Heading from "@components/Heading.astro"
+import { getSecret } from "astro:env/server"
 
 const meta = {
   title: "Transportugal - Transporte de cargas SP e Espírito Santo",
@@ -47,6 +49,11 @@ const fitWithinBox = (
     height: Math.round(height * scale),
   }
 }
+
+const heroUrl = assetUrl(getSecret, HERO_SRC)
+const heroMobileUrl = assetUrl(getSecret, HERO_SRC_MOBILE)
+const aboutUrl = assetUrl(getSecret, ABOUT_SRC)
+const partnersUrl = assetUrl(getSecret, PARTNERS_SRC)
 ---
 
 <BaseLayout {...meta}>
@@ -55,27 +62,30 @@ const fitWithinBox = (
   >
     <div class="sm:absolute sm:inset-0 sm:z-0" aria-hidden="true">
       <SunPicture
-        src={HERO_SRC_MOBILE}
+        src={heroMobileUrl}
         alt=""
         width={375}
         height={382}
+        sources={[
+          {
+            media: "(min-width: 640px)",
+            src: heroUrl,
+            width: 1440,
+            height: 675,
+            breakpoints: [{ minWidth: 1024, width: 1440 }],
+          },
+          {
+            media: "(min-width: 0px)",
+            src: heroMobileUrl,
+            width: 375,
+            height: 382,
+          },
+        ]}
         quality={90}
         densities={[1, 1.5, 2]}
         loading="eager"
-        wrapperClass="relative size-auto sm:hidden object-cover after:content-[''] after:absolute after:inset-0 after:z-10 after:pointer-events-none sm:after:shadow-[inset_0_-32px_16px_rgba(31,30,30,1)]"
-        class="h-auto w-full"
-      />
-      <SunPicture
-        src={HERO_SRC}
-        alt=""
-        width={1440}
-        height={675}
-        quality={90}
-        densities={[1, 1.5, 2]}
-        breakpoints={[{ minWidth: 1024, width: 1440 }]}
-        loading="eager"
-        wrapperClass="hidden size-full sm:block"
-        class="size-full object-cover"
+        wrapperClass="relative size-auto sm:size-full object-cover after:content-[''] after:absolute after:inset-0 after:z-10 after:pointer-events-none"
+        class="aspect-[375/382] h-auto w-full sm:aspect-[1440/675] sm:size-full sm:object-cover"
       />
     </div>
     <div
@@ -108,7 +118,7 @@ const fitWithinBox = (
       class="container flex flex-col items-center gap-8 py-14 xl:flex-row xl:justify-between xl:gap-6 xl:py-20"
     >
       <SunPicture
-        src={ABOUT_SRC}
+        src={aboutUrl}
         alt="Frota Transportugal"
         width={343}
         height={275}
@@ -432,7 +442,7 @@ const fitWithinBox = (
       </div>
       <div class="flex w-full flex-col gap-4">
         <SunCarousel
-          client:load
+          client:visible
           ariaLabel="Segmentos atendidos"
           className="gap-4"
         >
@@ -447,7 +457,7 @@ const fitWithinBox = (
           }
         </SunCarousel>
         <SunCarousel
-          client:load
+          client:visible
           ariaLabel="Logos de clientes"
           className="gap-8"
           direction="left-to-right"
@@ -462,7 +472,7 @@ const fitWithinBox = (
               )
               return (
                 <SunPicture
-                  src={logo.url}
+                  src={assetUrl(getSecret, logo.url)}
                   alt={`Logo de ${name}`}
                   width={renderSize.width}
                   height={renderSize.height}
@@ -525,7 +535,7 @@ const fitWithinBox = (
         >
           <div class="absolute inset-0 bg-[#2c2a2a]"></div>
           <SunPicture
-            src={PARTNERS_SRC}
+            src={partnersUrl}
             alt="Equipe Transportugal"
             width={596}
             height={477}
@@ -558,7 +568,7 @@ const fitWithinBox = (
       <div class="flex flex-col items-center gap-4">
         <Button
           as="a"
-          href={`https://wa.me/${siteConfig.whatsapp}`}
+          href={waLink(siteConfig.whatsapp)}
           variant="primary"
           class="text-base"
         >

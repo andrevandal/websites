@@ -1,4 +1,5 @@
 import { describe, it, expect, mock } from "bun:test"
+import { z } from "zod"
 
 mock.module("astro:actions", () => ({
   defineAction: <T>(config: T): T => config,
@@ -11,12 +12,9 @@ mock.module("astro:actions", () => ({
   },
 }))
 
-mock.module("astro/zod", () => {
-  const zodModule = require("zod")
-  return {
-    z: zodModule.z,
-  }
-})
+mock.module("astro/zod", () => ({
+  z,
+}))
 
 // NOW import index.ts after mocks are registered
 import { server } from "./index"

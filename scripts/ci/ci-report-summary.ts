@@ -90,7 +90,6 @@ const render = (report: Report) => {
 }
 
 const run = () => {
-  // oxlint-disable-next-line node/no-sync
   if (!existsSync(reportPath)) {
     consola.warn(`No moon ci report at ${reportPath} - nothing to summarize`)
     return 0
@@ -98,7 +97,6 @@ const run = () => {
 
   let summary: string
   try {
-    // oxlint-disable-next-line node/no-sync
     const report = JSON.parse(readFileSync(reportPath, "utf-8")) as Report
     summary = render(report)
   } catch (error) {
@@ -113,7 +111,6 @@ const run = () => {
 
   const target = process.env["GITHUB_STEP_SUMMARY"]
   if (target) {
-    // oxlint-disable-next-line node/no-sync
     appendFileSync(target, summary)
     return 0
   }

@@ -1,0 +1,10 @@
+---
+// Reads the `tocId` annotateHeadingIds() put on h2/h3 blocks, so the rendered
+// id matches the site's table of contents entry.
+type Props = { node: { style?: string; tocId?: string }; class?: string }
+
+const { node, class: className } = Astro.props
+const Tag = node.style === "h3" ? "h3" : "h2"
+---
+
+<Tag id={node.tocId} class={className}><slot /></Tag>

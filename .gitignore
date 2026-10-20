@@ -90,3 +90,5 @@ tsconfig.tsbuildinfo
 # fresh clone/worktree from re-tracking it, which is how it kept leaking
 # into commit history and causing rebase conflicts across goal branches.
 /GOAL.md
+# blazediff visual-regression state (local only, never committed)
+.blazediff/

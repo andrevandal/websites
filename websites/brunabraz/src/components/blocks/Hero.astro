@@ -1,0 +1,70 @@
+---
+import Hero from "@components/Hero.astro"
+import Heading from "@components/Heading.astro"
+import Emphasis from "./Emphasis.astro"
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { buildWhatsAppLink } from "@/data/whatsapp"
+import { mediaSource } from "@vandal-websites/sun-ui-emdash"
+import type { PageLayoutHeroBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutHeroBlock }
+
+const { value } = Astro.props
+const isHome = value.variant === "home"
+---
+
+<Hero
+  variant={value.variant}
+  containerClass={isHome ? "pb-0" : ""}
+  ctaHref={buildWhatsAppLink(value.whatsapp_message ?? "")}
+>
+  <SunPicture
+    src={mediaSource(value.image, Astro)}
+    alt={value.image.alt ?? ""}
+    width={375}
+    height={isHome ? 323 : 344}
+    quality={90}
+    densities={[1, 1.5, 2, 3]}
+    breakpoints={[
+      { minWidth: 1024, width: 472 },
+      { minWidth: 1280, width: 493 },
+    ]}
+    loading="eager"
+    fetchpriority="high"
+    placeholderMode="circle"
+    wrapperClass={isHome
+      ? "order-2 -mx-4 aspect-[375/323] w-full sm:mx-0 sm:w-[375px] lg:order-2 lg:aspect-[472/460] lg:w-[472px] lg:shrink-0 lg:self-end  xl:w-[493px]"
+      : "order-2 -mx-4 aspect-[375/344] w-full sm:mx-0 sm:w-[375px] lg:order-2 lg:aspect-[472/433] lg:w-[472px] lg:shrink-0 lg:self-end xl:aspect-[493/453] xl:w-[493px]"}
+    class={isHome ? "size-full object-contain" : "size-full object-cover"}
+    slot="media"
+  />
+  <Heading
+    as="h1"
+    class:list={[
+      "text-white-chocolate text-hero text-center lg:text-left",
+      isHome ? "max-w-[60ch]" : "max-w-[34ch]",
+    ]}
+    slot="heading"
+  >
+    <Emphasis text={value.heading} class="text-light-mushroom italic" />
+  </Heading>
+  {
+    isHome ? (
+      <Heading
+        as="p"
+        class="text-white-chocolate text-body text-center md:max-w-[80ch] lg:text-left"
+        slot="description"
+      >
+        {value.description}
+      </Heading>
+    ) : (
+      <p
+        slot="description"
+        class="text-white-chocolate text-body max-w-[52ch] text-center lg:text-left"
+      >
+        {value.description}
+      </p>
+    )
+  }
+  <Fragment slot="cta">{value.cta_label}</Fragment>
+</Hero>

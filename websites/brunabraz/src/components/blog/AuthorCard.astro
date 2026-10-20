@@ -1,0 +1,76 @@
+---
+import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import Heading from "@components/Heading.astro"
+import Button from "@components/Button.astro"
+import { mediaSource } from "@vandal-websites/sun-ui-emdash"
+import type { BylineSummary } from "emdash"
+
+type Props = { byline: BylineSummary }
+const { byline } = Astro.props
+
+const headline =
+  typeof byline.customFields?.headline === "string"
+    ? byline.customFields.headline
+    : undefined
+const ctaLabel =
+  typeof byline.customFields?.cta_label === "string"
+    ? byline.customFields.cta_label
+    : undefined
+const websiteUrl = byline.websiteUrl ?? undefined
+
+const photo = byline.avatarStorageKey
+  ? {
+      id: byline.avatarMediaId ?? "",
+      meta: { storageKey: byline.avatarStorageKey },
+      alt: byline.avatarAlt ?? byline.displayName,
+    }
+  : undefined
+---
+
+<div class="bg-white-chocolate/50 relative flex flex-col gap-6 p-6 sm:flex-row">
+  <SunIcon
+    name="leaf-branch"
+    width={76}
+    height={100}
+    class="text-light-mushroom pointer-events-none absolute top-0 right-0"
+    aria-hidden="true"
+  />
+  {
+    photo ? (
+      <SunPicture
+        src={mediaSource(photo, Astro)}
+        alt={photo.alt}
+        width={80}
+        height={80}
+        quality={90}
+        wrapperClass="size-20 shrink-0 overflow-hidden rounded-full"
+        class="size-full object-cover"
+      />
+    ) : (
+      <div
+        class="bg-light-mushroom size-20 shrink-0 rounded-full"
+        aria-hidden="true"
+      />
+    )
+  }
+  <div class="flex flex-col gap-2">
+    <span class="text-eyebrow text-giraffe-brown tracking-[0.1em]"
+      >Sobre mim</span
+    >
+    {headline && <p class="text-body-small text-giraffe-brown">{headline}</p>}
+    <Heading
+      as="h2"
+      class="text-tobago font-serif text-[2rem] leading-none font-bold"
+    >
+      {byline.displayName}
+    </Heading>
+    <p class="text-body text-tobago leading-[1.39]">{byline.bio}</p>
+    {
+      ctaLabel && websiteUrl && (
+        <Button as="a" href={websiteUrl} variant="secondary" class="mt-2 w-fit">
+          {ctaLabel}
+        </Button>
+      )
+    }
+  </div>
+</div>

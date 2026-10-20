@@ -1,0 +1,100 @@
+---
+import { SunPicture, SunIcon } from "@vandal-websites/sun-ui/astro"
+import { mediaSource } from "@vandal-websites/sun-ui-emdash"
+import { readingMinutes, postExcerpt } from "@/cms/post"
+import type { ContentEntry, TaxonomyTerm } from "emdash"
+import type { Post } from "../../../emdash-env"
+
+type Props = {
+  post: ContentEntry<Post>
+  term?: TaxonomyTerm
+}
+
+const { post, term } = Astro.props
+
+const formattedDate = post.data.publishedAt
+  ? new Intl.DateTimeFormat("pt-BR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(post.data.publishedAt)
+  : undefined
+
+const contentBody = Array.isArray(post.data.content)
+  ? post.data.content
+  : undefined
+
+const minutes = contentBody ? readingMinutes(contentBody) : 0
+
+const excerpt = postExcerpt({
+  excerpt: post.data.excerpt,
+  content: contentBody,
+})
+
+const imageUrl =
+  post.data.featured_image && mediaSource(post.data.featured_image, Astro)
+---
+
+<div data-post-card class="flex max-w-sm flex-col gap-4">
+  {
+    imageUrl && (
+      <SunPicture
+        src={imageUrl}
+        alt={post.data.featured_image?.alt ?? post.data.title}
+        width={373}
+        height={498}
+        quality={85}
+        class="aspect-3/4 size-auto overflow-clip rounded-lg object-cover"
+      />
+    )
+  }
+
+  {
+    term && (
+      <a
+        href={`/blog/categoria/${term.slug}`}
+        class="bg-white-chocolate text-brown-leather hover:bg-brown-leather hover:text-white-chocolate focus-visible:bg-brown-leather focus-visible:text-white-chocolate h-6.5 w-fit rounded-full px-3 py-1 font-sans text-sm leading-[130%] font-medium tracking-[5%] uppercase transition-colors duration-200"
+      >
+        {term.label}
+      </a>
+    )
+  }
+
+  <a href={`/blog/${post.id}`} class="group w-fit">
+    <h3
+      class="text-tobago group-hover:link-underline-dotted group-focus-visible:link-underline-dotted font-serif text-2xl leading-[1.2] font-bold"
+    >
+      {post.data.title}
+    </h3>
+  </a>
+
+  <div class="text-brown-leather -mt-2 flex gap-6 font-sans text-sm">
+    {
+      formattedDate && (
+        <div class="flex items-center gap-2">
+          <SunIcon name="calendar" width={20} height={20} aria-hidden="true" />
+          <span>{formattedDate}</span>
+        </div>
+      )
+    }
+    <div class="flex items-center gap-2">
+      <SunIcon name="clock" width={20} height={20} aria-hidden="true" />
+      <span>{minutes} min de leitura</span>
+    </div>
+  </div>
+
+  {
+    excerpt && (
+      <p class="text-brown-leather line-clamp-4 font-sans text-base leading-[1.29]">
+        {excerpt}
+      </p>
+    )
+  }
+
+  <a
+    href={`/blog/${post.id}`}
+    class="text-brown-leather hover:link-underline-dotted focus-visible:link-underline-dotted mt-auto w-fit font-sans text-sm font-medium tracking-widest uppercase"
+  >
+    Continuar lendo →
+  </a>
+</div>

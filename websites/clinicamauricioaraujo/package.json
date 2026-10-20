@@ -8,7 +8,6 @@
     "@astrojs/check": "catalog:astro",
     "@astrojs/cloudflare": "catalog:astro",
     "@astrojs/mdx": "catalog:astro",
-    "@astrojs/partytown": "catalog:astro",
     "@astrojs/ts-plugin": "catalog:astro",
     "@vandal-websites/robots-sitemap": "workspace:*",
     "@vandal-websites/sun-ui": "workspace:*",

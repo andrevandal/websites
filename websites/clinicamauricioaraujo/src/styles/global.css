@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@source "../../../../packages/sun-ui/src";
 
 @theme {
   --color-brand-50: oklch(0.97 0.03 172.82);

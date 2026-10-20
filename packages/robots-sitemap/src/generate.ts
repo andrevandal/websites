@@ -10,36 +10,53 @@ const XML_ENTITIES: Record<string, string> = {
   "'": "&apos;",
 }
 
+type SitemapUrl = { path: string; lastmod?: Date }
+
 // Crawling is allowed only on the canonical host; Workers Preview and other
 // hosts serving the same Worker are disallowed.
 const generateRobotsTxt = (
   requestOrigin: string,
   canonicalHost: string,
-  sitemapPath: string
+  sitemapPath: string,
+  canonicalRules: readonly string[] = []
 ): string => {
   const canonical = new URL(canonicalHost).origin
-  const rule =
-    new URL(requestOrigin).origin === canonical ? "Allow: /" : "Disallow: /"
+  const rules =
+    new URL(requestOrigin).origin === canonical
+      ? ["User-agent: *", "Allow: /", ...canonicalRules]
+      : ["User-agent: *", "Disallow: /"]
 
-  return `User-agent: *\n${rule}\n\nSitemap: ${canonical}${sitemapPath}\n`
+  return [...rules, "", `Sitemap: ${canonical}${sitemapPath}`, ""].join("\n")
 }
 
 const generateSitemapXml = (
   canonicalHost: string,
-  paths: readonly string[]
+  sitemapUrls: readonly SitemapUrl[]
 ): string => {
   const canonical = new URL(canonicalHost).origin
-  const urls = [...new Set(paths)]
-    .toSorted()
-    .map(
-      path =>
-        `<url><loc>${`${canonical}${path}`.replace(/[&<>"']/g, char => XML_ENTITIES[char] ?? char)}</loc></url>`
-    )
+  const urls = new Map<string, SitemapUrl>()
+
+  for (const url of sitemapUrls)
+    if (!urls.has(url.path)) urls.set(url.path, url)
+
+  const xmlUrls = [...urls.values()]
+    .toSorted((left, right) => left.path.localeCompare(right.path))
+    .map(({ lastmod, path }) => {
+      const location = `${canonical}${path}`.replace(
+        /[&<>"']/g,
+        char => XML_ENTITIES[char] ?? char
+      )
+      const timestamp = lastmod
+        ? `<lastmod>${lastmod.toISOString()}</lastmod>`
+        : ""
+
+      return `<url><loc>${location}</loc>${timestamp}</url>`
+    })
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...urls,
+    ...xmlUrls,
     "</urlset>",
     "",
   ].join("\n")
@@ -64,3 +81,4 @@ export {
   selectSitemapPaths,
   SITEMAP_PATH,
 }
+export type { SitemapUrl }

@@ -1,6 +1,7 @@
 ---
 import type { PortableTextBlock } from "emdash"
 import { PortableText } from "emdash/ui"
+import { portableTextComponents } from "@vandal-websites/sun-ui-emdash/astro"
 import PTImage from "./PTImage.astro"
 
 type Props = {
@@ -10,4 +11,7 @@ type Props = {
 const { value } = Astro.props
 ---
 
-<PortableText value={value} components={{ type: { image: PTImage } }} />
+<PortableText
+  value={value}
+  components={{ ...portableTextComponents, type: { image: PTImage } }}
+/>

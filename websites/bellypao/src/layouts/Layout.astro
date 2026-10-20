@@ -1,8 +1,8 @@
 ---
 import "@/styles/global.css"
-import { getSecret } from "astro:env/server"
+import { Font } from "astro:assets"
 import type { HTMLAttributes } from "astro/types"
-import { SunLayout, runtimeGtag } from "@vandal-websites/sun-ui/astro"
+import { SunLayout } from "@vandal-websites/sun-ui/astro"
 import { imageUrl } from "@/utils/images"
 import TheHeader from "@/components/TheHeader.astro"
 import TheFooter from "@/components/TheFooter.astro"
@@ -31,17 +31,15 @@ const styleAttr = `--belly-pattern: url("${bellyPatternUrl}")`
   schema={schema}
   links={links}
   image={new URL(image, Astro.site ?? url).toString()}
-  gtag={runtimeGtag(getSecret)}
+  gtag={{
+    // Only the canonical (production) host reports to Analytics.
+    gtagId: url.host === Astro.site?.host ? "G-NJDJVMT0ES" : undefined,
+  }}
   style={styleAttr}
 >
   <Fragment slot="close-head">
-    <link
-      href="/css/fonts.css"
-      rel="preload"
-      as="style"
-      onload="this.rel='stylesheet'"
-    />
-    <noscript><link rel="stylesheet" href="/css/fonts.css" /></noscript>
+    <Font cssVariable="--belly-font-fields" preload />
+    <Font cssVariable="--belly-font-quicksand" preload />
   </Fragment>
   <TheHeader>
     <slot name="header" />

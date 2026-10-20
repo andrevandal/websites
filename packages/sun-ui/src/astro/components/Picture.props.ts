@@ -20,10 +20,20 @@ type SunPictureBreakpoint = {
   width: number
 }
 
+type SunPictureSource = {
+  media: string
+  src: string
+  width: number
+  height: number
+  breakpoints?: SunPictureBreakpoint[]
+}
+
 type SunPictureProps = Omit<
   HTMLAttributes<"img">,
   "src" | "width" | "height" | "class"
 > & {
+  /** Art-directed entries in browser media-match priority order; other props describe the fallback img. */
+  sources?: SunPictureSource[]
   /** Remote source URL. Only http(s) sources are supported by the Sun image service. */
   src: string
   alt: string
@@ -33,7 +43,7 @@ type SunPictureProps = Omit<
   format?: SunPictureFormat
   fit?: SunPictureFit
   /**
-   * Pixel densities (e.g. `[1, 1.5, 2, 3]`) to generate a `srcset` for. Combined
+   * Pixel densities (default `[1, 1.5, 2, 2.5, 3]`) to generate a `srcset` for. Combined
    * with `breakpoints`, applied at every tier (base `width` included) instead of
    * scaling a single fixed size.
    */
@@ -63,6 +73,7 @@ type SunPictureProps = Omit<
 export type {
   SunPictureProps,
   SunPictureBreakpoint,
+  SunPictureSource,
   SunPictureDensity,
   SunPicturePlaceholderMode,
 }

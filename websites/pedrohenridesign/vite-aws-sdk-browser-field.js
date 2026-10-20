@@ -7,7 +7,7 @@ import { dirname, join, relative, resolve } from "node:path"
 // build does not read that field, so it bundles the Node variants and S3 calls
 // fail at runtime. This applies the mapping to relative imports inside
 // @aws-sdk/* and @smithy/* packages only.
-const sdkPackage = /[/\\]node_modules[/\\]@(aws-sdk|smithy)[/\\]/
+const sdkPackage = /[/\\]node_modules[/\\]@(?:aws-sdk|smithy)[/\\]/
 const packageRoots = new Map()
 
 const findPackage = file => {

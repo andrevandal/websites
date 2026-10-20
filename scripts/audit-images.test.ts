@@ -3,7 +3,7 @@ import { findings, originalUrl } from "./audit-images"
 import type { Intrinsic, Sighting } from "./audit-images"
 
 const PAGE = "http://localhost:4321/posts/x/"
-const SOURCE = "https://files.vandal.services/site/images/a.png"
+const SOURCE = "https://assets.example.com/site/images/a.png"
 
 describe("originalUrl", () => {
   test("unwraps an Astro /_image href", () => {
@@ -14,18 +14,18 @@ describe("originalUrl", () => {
   })
 
   test("unwraps an image-service URL with an encoded source", () => {
-    const src = `https://infra.example.invalid/w_375,h_211,f_auto/${encodeURIComponent(SOURCE)}`
+    const src = `https://images.example.invalid/w_375,h_211,f_auto/${encodeURIComponent(SOURCE)}`
     expect(originalUrl(src, PAGE)).toBe(SOURCE)
   })
 
   test("unwraps an image-service URL with a raw source", () => {
     expect(
-      originalUrl(`https://infra.example.invalid/w_600/${SOURCE}`, PAGE)
+      originalUrl(`https://ipx.example.invalid/w_600/${SOURCE}`, PAGE)
     ).toBe(SOURCE)
   })
 
   test("keeps the source query string", () => {
-    const src = `https://infra.example.invalid/w_300/${encodeURIComponent(`${SOURCE}?v=2`)}`
+    const src = `https://images.example.invalid/w_300/${encodeURIComponent(`${SOURCE}?v=2`)}`
     expect(originalUrl(src, PAGE)).toBe(`${SOURCE}?v=2`)
   })
 
@@ -39,7 +39,7 @@ describe("originalUrl", () => {
 
 describe("findings", () => {
   const sighting = (width: number, viewport: number): Sighting => ({
-    src: `https://infra.example.invalid/w_${width}/${SOURCE}`,
+    src: `https://images.example.invalid/w_${width}/${SOURCE}`,
     width,
     viewport,
     page: PAGE,
@@ -59,14 +59,14 @@ describe("findings", () => {
   })
 
   test("sorts the smallest ratio first and skips vector or unmeasured originals", () => {
-    const other = "https://files.vandal.services/site/images/b.png"
-    const vector = "https://files.vandal.services/site/images/c.svg"
+    const other = "https://assets.example.com/site/images/b.png"
+    const vector = "https://assets.example.com/site/images/c.svg"
     const result = findings(
       [
         sighting(600, 1280),
         { ...sighting(600, 1280), src: other },
         { ...sighting(600, 1280), src: vector },
-        { ...sighting(600, 1280), src: "https://files.vandal.services/d.png" },
+        { ...sighting(600, 1280), src: "https://assets.example.com/d.png" },
       ],
       new Map<string, Intrinsic>([
         [SOURCE, { width: 3000, height: 2000 }],

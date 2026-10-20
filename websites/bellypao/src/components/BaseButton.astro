@@ -1,13 +1,23 @@
 ---
-import type { AvailableIcons } from "@/types"
-import Icon from "./Icon.astro"
+import { SunButton, SunIcon } from "@vandal-websites/sun-ui/astro"
 
-type Sizes = "xs" | "sm" | "base"
+const variantClasses = {
+  primary: "btn-primary",
+  "primary-outline": "btn-primary-outline",
+  "secondary-outline": "btn-secondary-outline",
+}
+const sizeClasses = {
+  xs: "btn-xs",
+  sm: "btn-sm",
+  base: "btn-base",
+}
+
+type Sizes = keyof typeof sizeClasses
 
 type Props = {
   href?: string
-  variant: string
-  icon?: AvailableIcons
+  variant: keyof typeof variantClasses
+  icon?: string
   reverse?: boolean
   block?: boolean
   centered?: boolean
@@ -25,65 +35,56 @@ const {
   centered = false,
   class: className = "",
 } = Astro.props
-
-const isExternalLink =
-  href?.startsWith("http") || !href?.startsWith("/") || !href?.startsWith("#")
-const isSizeXs = size === "xs"
 ---
 
-<a
+<SunButton
+  as="a"
   href={href}
-  class:list={[
-    "btn",
-    `btn-${variant}`,
-    {
-      "btn-reverse": reverse,
-      "btn-block": block,
-      "btn-center": centered,
-      "btn-xs": isSizeXs,
-      "btn-sm": size === "sm",
-      "btn-base": size === "base",
-    },
+  block={block}
+  centered={centered}
+  className={[
+    "belly-button",
+    variantClasses[variant],
+    sizeClasses[size],
+    reverse ? "btn-reverse" : "",
     className,
-  ]}
-  target={isExternalLink ? "_blank" : undefined}
-  rel={isExternalLink ? "noopener noreferrer" : undefined}
+  ].join(" ")}
 >
-  <span><slot /></span>
-  {icon && <Icon name={icon} width={"20"} height={"20"} />}
-</a>
+  <slot />
+  {icon && <SunIcon slot="suffix" name={icon} width={20} height={20} />}
+</SunButton>
 
 <style>
   @reference "../styles/global.css";
 
-  .btn {
-    @apply box-border flex w-fit flex-row items-center gap-x-2 rounded-lg px-6 py-4 text-base font-semibold transition-all duration-200 ease-out;
+  :global(.belly-button) {
+    @apply gap-x-2 rounded-lg px-6 py-4 text-base font-semibold transition-all duration-200 ease-out;
   }
-  .btn-base {
+  :global(.belly-button.btn-base) {
     @apply h-14 px-6 py-4;
   }
-  .btn-sm {
+  :global(.belly-button.btn-sm) {
     @apply h-12 px-3 py-3;
   }
-  .btn-xs {
+  :global(.belly-button.btn-xs) {
     @apply h-10 px-6 py-2;
   }
-  .btn-primary {
+  :global(.belly-button.btn-primary) {
     @apply bg-[#FFAA33] text-[#503C2D] ring-4 ring-transparent hover:ring-[#FFAA33]/50;
   }
-  .btn-primary-outline {
+  :global(.belly-button.btn-primary-outline) {
     @apply hover:text-brown-700 border border-[#FFAA33] text-[#FFAA33] hover:bg-[#FFAA33];
   }
-  .btn-secondary-outline {
+  :global(.belly-button.btn-secondary-outline) {
     @apply border-brown-700 text-brown-700 hover:bg-brown-700 border hover:text-[#FFECCC];
   }
-  .btn-center {
+  :global(.belly-button.btn:not(.btn-center)) {
+    @apply justify-start;
+  }
+  :global(.belly-button.btn.btn-center) {
     @apply justify-center;
   }
-  .btn-block {
-    @apply w-full;
-  }
-  .btn-reverse {
+  :global(.belly-button.btn.btn-reverse) {
     @apply flex-row-reverse;
   }
 </style>

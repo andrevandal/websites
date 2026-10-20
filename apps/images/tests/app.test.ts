@@ -120,7 +120,6 @@ describe("bot defense: ban escalation", () => {
     const env = mockServer(ip)
 
     for (let i = 0; i < config.banStrikeThreshold; i++) {
-      // oxlint-disable-next-line eslint/no-await-in-loop -- strikes must land in order to trip the threshold deterministically
       const response = await app.request("/.git/config", undefined, env)
       expect(response.status).toBe(404)
     }
@@ -140,7 +139,6 @@ describe("bot defense: rate limiting", () => {
     let lastStatus = 0
 
     for (let i = 0; i < config.rateLimitMax + 1; i++) {
-      // oxlint-disable-next-line eslint/no-await-in-loop -- hits must be counted in order against the shared window
       const response = await app.request("/malformed", undefined, env)
       lastStatus = response.status
     }

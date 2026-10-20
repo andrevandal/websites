@@ -30,6 +30,10 @@ inputs:
     description: "Infisical instance URL; empty for https://app.infisical.com"
     required: false
 
+  images-base-url:
+    description: "Image service base URL from the job's GitHub environment secret IMAGES_BASE_URL"
+    required: false
+
 outputs:
   url:
     description: "The Workers Preview URL (pull requests only)"
@@ -38,19 +42,10 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # Pedro and Bruna previews use native providers and Access; their standard
-    # build remains the shared staging/production artifact with config at upload.
-    - name: Build
-      shell: bash
-      env:
-        EMDASH_BUILD_FLAVOR: ${{ (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz') && (inputs.mode == 'preview' && 'preview' || 'standard') || '' }}
-        CF_ACCESS_TEAM_DOMAIN: ${{ inputs.mode == 'preview' && (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz') && inputs.access-team-domain || '' }}
-      run: moon run ${{ inputs.target }}:build
-
-    # After the build so the runtime secrets never reach it; the action exports
-    # them as masked env vars for the steps below.
+    # Staging only; previews take S3_PUBLIC_URL from Preview Base. Exported
+    # to a file, never the env, so the build cannot read runtime secrets.
     - name: Fetch staging secrets from Infisical
-      if: inputs.mode == 'staging' && inputs.target == 'pedrohenri'
+      if: inputs.mode == 'staging'
       uses: Infisical/secrets-action@v1.0.18
       with:
         method: oidc
@@ -59,6 +54,17 @@ runs:
         domain: ${{ inputs.infisical-domain || 'https://app.infisical.com' }}
         env-slug: staging
         secret-path: /websites/${{ inputs.target }}
+        export-type: file
+        file-output-path: /.site-secrets.env
+
+    # Pedro and Bruna previews use native providers and Access; their standard
+    # build remains the shared staging/production artifact with config at upload.
+    - name: Build
+      shell: bash
+      env:
+        EMDASH_BUILD_FLAVOR: ${{ (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz') && (inputs.mode == 'preview' && 'preview' || 'standard') || '' }}
+        CF_ACCESS_TEAM_DOMAIN: ${{ inputs.mode == 'preview' && (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz') && inputs.access-team-domain || '' }}
+      run: moon run ${{ inputs.target }}:build
 
     - name: Validate staging secrets
       if: inputs.mode == 'staging'
@@ -72,6 +78,7 @@ runs:
       env:
         CF_ACCESS_CLIENT_ID: ${{ inputs.access-client-id }}
         CF_ACCESS_CLIENT_SECRET: ${{ inputs.access-client-secret }}
+        IMAGES_BASE_URL: ${{ inputs.images-base-url }}
       run: bun scripts/deploy.ts preview ${{ inputs.target }} --pr ${{ inputs.pr }}
 
     - name: Record build digest
@@ -94,7 +101,7 @@ runs:
     # Core migrations run before the new Version exists, so a Worker that only
     # checks (migrations.runtime: "check") never meets an unmigrated database.
     - name: Apply EmDash migrations (staging)
-      if: inputs.mode == 'staging' && inputs.target == 'pedrohenri'
+      if: inputs.mode == 'staging' && (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz')
       shell: bash
       run: >-
         bun scripts/deploy.ts migrate ${{ inputs.target }}
@@ -105,6 +112,8 @@ runs:
       id: staging
       if: inputs.mode == 'staging'
       shell: bash
+      env:
+        IMAGES_BASE_URL: ${{ inputs.images-base-url }}
       run: >-
         bun scripts/deploy.ts version-upload ${{ inputs.target }}
         --stage staging

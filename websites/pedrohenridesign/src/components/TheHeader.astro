@@ -1,6 +1,6 @@
 ---
 import { SunPicture } from "@vandal-websites/sun-ui/astro"
-import { DENSITIES, fileUrl } from "@/utils/images"
+import { fileUrl } from "@/utils/images"
 import BaseButton from "@/components/BaseButton.astro"
 
 const navigation = [
@@ -31,7 +31,6 @@ const callToAction = {
             src={fileUrl("images/icon-pedrohenri.h160.png")}
             width={36}
             height={40}
-            densities={DENSITIES}
             class="h-auto w-full"
             wrapperClass="w-[33.33px] aspect-(--ratio)"
             loading="lazy"
@@ -115,9 +114,8 @@ const callToAction = {
         !target.closest("#menu") &&
         !target.closest("#menu-button") &&
         menuButton.getAttribute("aria-expanded") === "true"
-      ) {
+      )
         closeMenu()
-      }
     },
     false
   )

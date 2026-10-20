@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte"
+  import { SvelteSet } from "svelte/reactivity"
   import type { Snippet } from "svelte"
   import type { CarouselProps } from "./Carousel.props.ts"
   import { cn } from "../../index"
@@ -49,8 +50,7 @@
   let lastTime: number | undefined
   let rafId: number | undefined
   let resumeTimer: ReturnType<typeof setTimeout> | undefined
-  // eslint-disable-next-line svelte/prefer-svelte-reactivity
-  const pauseReasons = new Set<string>()
+  const pauseReasons = new SvelteSet<string>()
 
   let firstOriginal: HTMLElement | undefined
   let firstClone: HTMLElement | undefined
@@ -190,7 +190,8 @@
       }
 
       appendCloneCycle()
-      firstOriginal = originalSlides[0]
+      const [first] = originalSlides
+      firstOriginal = first
       firstClone = track.children[originalSlides.length] as HTMLElement
       const getLoopWidth = () =>
         (firstClone as HTMLElement).offsetLeft -

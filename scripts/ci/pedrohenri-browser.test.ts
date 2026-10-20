@@ -72,8 +72,8 @@ describe("fixtures and pure assertion logic", () => {
     const hostile = {
       ...fixtures,
       gtagId:
-        '</script><script id="issue197-injected">window.__issue197Injected=1</script>',
-      conversionLabel: "x',value:(window.__issue197Injected=1),unused:'x",
+        '</script><script id="issue197-injected">window.issue197Injected=1</script>',
+      conversionLabel: "x',value:(window.issue197Injected=1),unused:'x",
     }
     expect(validateFixtures(hostile)).toEqual(hostile)
   })
@@ -177,17 +177,17 @@ describe("fixtures and pure assertion logic", () => {
     expect(isTransformedImage("/_image?href=x", ORIGIN)).toBe(true)
     expect(
       isTransformedImage(
-        "https://infra.example.invalid/width=432/image.png",
+        "https://images-staging.example.invalid/width=432/image.png",
         ORIGIN
       )
-    ).toBe(true)
+    ).toBe(false)
     expect(
-      isTransformedImage("https://infra.example.invalid/image.png", ORIGIN)
-    ).toBe(true)
+      isTransformedImage("https://images.example.invalid/image.png", ORIGIN)
+    ).toBe(false)
     expect(isTransformedImage("/media/image.png", ORIGIN)).toBe(false)
     expect(
       isTransformedImage(
-        "https://images.vandal.services.example/image.png",
+        "https://images.example.invalid.example/image.png",
         ORIGIN
       )
     ).toBe(false)
@@ -200,13 +200,14 @@ describe("fixtures and pure assertion logic", () => {
 })
 
 describe("spawned CLI rejection without input disclosure", () => {
-  for (const missing of ["--url", "--storage-state", "--fixtures", "--phase"]) {
-    it(`rejects missing ${missing}`, async () => {
+  it.each(["--url", "--storage-state", "--fixtures", "--phase"])(
+    "rejects missing %s",
+    async missing => {
       const input = args()
       input.splice(input.indexOf(missing), 2)
       await rejectedCli(input)
-    })
-  }
+    }
+  )
   it("rejects malformed fixtures JSON without echoing its contents", async () => {
     const path = join(directory, "malformed.json")
     await writeFile(path, `{ "${SENTINEL}": `)

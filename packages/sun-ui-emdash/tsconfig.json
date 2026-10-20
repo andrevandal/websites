@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.bundler.json",
+  "include": ["src/**/*", "*.ts"],
+  "references": [{ "path": "../sun-ui" }],
+  "compilerOptions": {
+    "paths": { "#/*": ["./src/*"] },
+    "outDir": "../../.moon/cache/types/packages/sun-ui-emdash"
+  }
+}

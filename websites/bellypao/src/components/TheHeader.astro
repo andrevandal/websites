@@ -1,14 +1,10 @@
 ---
 import { SunPicture } from "@vandal-websites/sun-ui/astro"
-import { fileUrl, imageUrl } from "@/utils/images"
-import BaseButton from "@/components/BaseButton.astro"
-
-const srcset = (path: string, widths: number[]): string =>
-  widths
-    .map(
-      w => `${imageUrl(path, { width: w, quality: 90, format: "auto" })} ${w}w`
-    )
-    .join(", ")
+import { waLink } from "@vandal-websites/sun-ui"
+import { fileUrl } from "#/utils/images"
+import BaseButton from "#/components/BaseButton.astro"
+import { WA_NUMBER } from "#/data/contact"
+import { heroDesktop, heroMobile } from "#/data/hero"
 ---
 
 <header id="topo" class="block">
@@ -50,7 +46,7 @@ const srcset = (path: string, widths: number[]): string =>
         </li>
         <li>
           <BaseButton
-            href="https://wa.me/5511945488607"
+            href={waLink(WA_NUMBER)}
             variant="primary-outline"
             icon="whatsapp"
             size="xs"
@@ -62,77 +58,39 @@ const srcset = (path: string, widths: number[]): string =>
     </nav>
   </div>
   <div class="bg-brown-700 relative flex flex-col">
-    <picture
-      class="absolute right-0 bottom-0 left-0 opacity-70 mix-blend-lighten"
-    >
-      <source
-        srcset={srcset("images/primeira-dobra.png", [1216, 960, 640, 576])}
-        sizes="(min-width: 1280px) 1216px, (min-width: 1024px) 960px, 640px"
-        media="(min-width: 640px)"
-      />
-      <source
-        srcset={srcset(
-          "images/primeira-dobra_mobile.png",
-          [1920, 1280, 1125, 960, 750, 640, 563, 375]
-        )}
-        media="(max-width: 639px)"
-      />
-      <img
-        src={imageUrl("images/primeira-dobra_mobile.png", {
-          width: 1080,
-          format: "auto",
-          quality: 90,
-        })}
-        alt="Pão com manteiga"
-        class="mt-auto aspect-375/278 h-auto w-full object-cover sm:mx-auto sm:aspect-640/276 sm:max-w-160 sm:px-8 lg:max-w-5xl xl:max-w-7xl"
-        loading="eager"
-        fetchpriority="high"
-      />
-    </picture>
+    <SunPicture
+      src={fileUrl(heroMobile.path)}
+      width={heroMobile.width}
+      height={heroMobile.height}
+      breakpoints={heroMobile.breakpoints}
+      sizes={heroMobile.sizes}
+      sources={[
+        {
+          media: heroDesktop.media,
+          src: fileUrl(heroDesktop.path),
+          width: heroDesktop.width,
+          height: heroDesktop.height,
+          breakpoints: heroDesktop.breakpoints,
+        },
+      ]}
+      alt="Pão com manteiga"
+      loading="eager"
+      fetchpriority="high"
+      quality={90}
+      format="auto"
+      placeholder={false}
+      wrapperClass="absolute right-0 bottom-0 left-0 opacity-70 mix-blend-lighten"
+      class="mt-auto aspect-375/278 h-auto w-full object-cover sm:mx-auto sm:aspect-640/276 sm:max-w-160 sm:px-8 lg:max-w-5xl xl:max-w-7xl"
+    />
     <div class="relative z-2 container mt-18">
       <slot />
     </div>
   </div>
 </header>
 <script>
-  const fixedNavbar = document.querySelector("#topo .fixed")
+  import { useHeader } from "@vandal-websites/sun-ui"
 
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 0) return fixedNavbar?.classList.add("actived")
-    return fixedNavbar?.classList.remove("actived")
-  })
-
-  const closeMenu = () => {
-    const menuOpened = document.getElementById(
-      "menu-opened"
-    ) as HTMLInputElement
-    menuOpened.checked = false
-  }
-  const menuLinks = Array.from(
-    document.querySelectorAll("#menu a")
-  ) as HTMLLinkElement[]
-  menuLinks.forEach(menuLink => {
-    menuLink.addEventListener("click", () => closeMenu())
-  })
-
-  // click outside
-  document.addEventListener(
-    "click",
-    event => {
-      const target = event.target as HTMLElement
-      const menuOpened = document.getElementById(
-        "menu-opened"
-      ) as HTMLInputElement
-      if (
-        !target.closest("#menu") &&
-        !target.closest("#menu-button") &&
-        !target.closest("#menu-opened") &&
-        menuOpened.checked
-      )
-        closeMenu()
-    },
-    false
-  )
+  useHeader("#topo .fixed")
 </script>
 <style>
   @reference "../styles/global.css";
@@ -167,7 +125,7 @@ const srcset = (path: string, widths: number[]): string =>
   #menu li:last-of-type {
     @apply mt-2 lg:mt-0 lg:ml-4;
   }
-  #menu li:last-of-type a {
+  #menu li:last-of-type :global(a) {
     @apply h-10;
   }
 

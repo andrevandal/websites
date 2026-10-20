@@ -1,0 +1,128 @@
+---
+import Heading from "@components/Heading.astro"
+import Emphasis from "./Emphasis.astro"
+import { SunVideo } from "@vandal-websites/sun-ui/astro"
+import { mediaSource } from "@vandal-websites/sun-ui-emdash"
+import type { PageLayoutHowItWorksBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutHowItWorksBlock }
+
+const { value } = Astro.props
+const sources = value.video_mp4
+  ? { mp4: value.video_mp4, webm: value.video_webm ?? undefined }
+  : undefined
+---
+
+<section
+  id={value.anchor || undefined}
+  class="bg-white py-14 sm:py-14 lg:pt-16 lg:pb-20 xl:pt-20 xl:pb-[104px]"
+>
+  <div class="container flex flex-col items-center gap-8">
+    <div
+      class="flex max-w-[60ch] flex-col items-center gap-4 text-center sm:gap-2"
+      data-animate
+    >
+      <Heading as="h2" class="text-tobago text-section-heading">
+        <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+      </Heading>
+      <p class="text-brown-leather text-body sm:text-[.875rem]">
+        <Emphasis text={value.body} as="i" />
+      </p>
+    </div>
+    <div class="flex flex-col gap-8 lg:flex-row">
+      {
+        sources && (
+          <div data-animate data-delay="1">
+            <SunVideo
+              autoplay
+              sources={sources}
+              poster={mediaSource(value.poster, Astro)}
+              posterAlt={value.poster?.alt ?? ""}
+              width={1412}
+              height={1080}
+              title={value.video_title ?? ""}
+            />
+          </div>
+        )
+      }
+      <ol
+        class="border-cambridge/25 w-full max-w-[42rem] border px-4 sm:max-w-none"
+      >
+        {
+          value.steps?.map(({ title, description }, index) => (
+            <li
+              class="border-cambridge/25 relative flex gap-4 border-b py-4 last:border-b-0"
+              data-animate
+              data-delay={(index % 4) + 1}
+            >
+              <span class="relative z-10 flex size-14 shrink-0 items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 56 56"
+                  width={56}
+                  height={56}
+                  class="absolute inset-0 size-full select-none"
+                >
+                  <defs>
+                    <linearGradient
+                      id={`ring-gradient-${index}`}
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stop-color="#506c5c" stop-opacity="1" />
+                      <stop
+                        offset="100%"
+                        stop-color="#506c5c"
+                        stop-opacity="0"
+                      />
+                    </linearGradient>
+                    <mask
+                      id={`ring-mask-${index}`}
+                      maskUnits="userSpaceOnUse"
+                      x="0"
+                      y="0"
+                      width="56"
+                      height="56"
+                    >
+                      <path
+                        fill="#fff"
+                        d="M54.6 28c.773 0 1.404.627 1.365 1.4A28 28 0 1 1 34.731.82c.75.186 1.17.97.946 1.711-.223.74-1.003 1.155-1.755.974a25.2 25.2 0 1 0 19.24 25.893c.042-.772.665-1.399 1.438-1.399"
+                      />
+                    </mask>
+                  </defs>
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r="26.6"
+                    fill="none"
+                    stroke={`url(#ring-gradient-${index})`}
+                    stroke-width="2.8"
+                    stroke-linecap="round"
+                    stroke-dasharray="100"
+                    pathLength="100"
+                    mask={`url(#ring-mask-${index})`}
+                    class="ring-draw"
+                  />
+                </svg>
+                <span class="bg-cambridge/25 border-cambridge/25 relative flex size-11 items-center justify-center rounded-full border">
+                  <span class="text-dark-green font-serif text-2xl">
+                    {index + 1}
+                  </span>
+                </span>
+              </span>
+              <div class="relative z-10">
+                <Heading as="h3" class="text-dark-green text-card-heading">
+                  {title}
+                </Heading>
+                <p class="text-tobago text-body mt-2">{description}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>

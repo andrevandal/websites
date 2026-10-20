@@ -1,0 +1,65 @@
+---
+import Heading from "@components/Heading.astro"
+import Emphasis from "./Emphasis.astro"
+import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
+import { mediaSource } from "@vandal-websites/sun-ui-emdash"
+import type { PageLayoutImageCarouselBlock } from "../../../emdash-env"
+
+type Props = { value: PageLayoutImageCarouselBlock }
+
+const { value } = Astro.props
+---
+
+<section
+  id={value.anchor || "lingua-e-cultura"}
+  class="flex flex-col overflow-clip bg-white py-14"
+>
+  <div class="container flex flex-col items-center gap-6 text-center">
+    <Heading
+      as="h2"
+      class="text-tobago text-section-heading w-full max-w-[60ch] text-balance"
+      data-animate
+    >
+      <Emphasis text={value.heading} class="text-giraffe-brown italic" />
+    </Heading>
+    <p
+      class="text-brown-leather text-body text-wrap md:max-w-[80ch]"
+      data-animate
+    >
+      {value.body}
+    </p>
+  </div>
+  <div data-animate>
+    <SunCarousel
+      client:load
+      ariaLabel="Fotos de alunos"
+      className="mt-10 items-stretch"
+    >
+      {
+        value.images?.map(({ image }) => (
+          <div class="flex w-[290px] min-w-[290px] shrink-0 snap-center items-start justify-center overflow-visible first:ml-4 last:mr-4 lg:first:ml-8 lg:last:mr-8">
+            <div class="relative h-[362px] w-[290px]">
+              <SunIcon
+                name="image-frame"
+                width={290}
+                height={362}
+                class="text-giraffe-brown pointer-events-none absolute inset-0 z-3 h-[362px] w-[290px] object-fill select-none"
+              />
+              <SunPicture
+                src={mediaSource(image, Astro)}
+                alt={image.alt ?? ""}
+                width={290}
+                height={362}
+                quality={90}
+                densities={[1, 1.5, 1.75, 2, 3]}
+                wrapperClass="relative z-2 h-[362px] w-[290px]"
+                class="image-mask block size-full object-cover"
+              />
+            </div>
+          </div>
+        ))
+      }
+    </SunCarousel>
+  </div>
+</section>

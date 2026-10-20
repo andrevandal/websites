@@ -101,7 +101,7 @@ the API use `{"type":"preview_worker","worker_id":"<id>"}`.
 
 ## Store the audience
 
-Per site, as a Preview Base secret (never a GitHub secret or `config.json`
+Per site, as a Preview Base secret (never a GitHub secret or Infisical
 value):
 
 ```bash

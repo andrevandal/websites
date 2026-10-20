@@ -2,6 +2,7 @@
 language: "astro"
 tags:
   - "cloudflare"
+  - "emdash"
 
 project:
   title: "brunabraz"
@@ -25,6 +26,12 @@ tasks:
       - "@globs(sources)"
       - "@globs(typescript)"
       - "./astro.config.js"
+      - "./emdash-env.d.ts"
+      - "./wrangler.json"
+      - "./vite-aws-sdk-browser-field.js"
+      - "$EMDASH_BUILD_FLAVOR"
+      - "$CF_ACCESS_TEAM_DOMAIN"
+      - "$S3_PUBLIC_URL"
       - "/packages/sun-ui/src/**/*"
     dependsOn:
       - ^:build
@@ -36,7 +43,14 @@ tasks:
       - "@globs(public)"
       - "@globs(typescript)"
       - "/packages/sun-ui/src/**/*"
+      - "seed/**/*"
       - "./astro.config.js"
+      - "./emdash-env.d.ts"
+      - "./wrangler.json"
+      - "./vite-aws-sdk-browser-field.js"
+      - "$EMDASH_BUILD_FLAVOR"
+      - "$CF_ACCESS_TEAM_DOMAIN"
+      - "$S3_PUBLIC_URL"
     outputs:
       - dist
     dependsOn:
@@ -52,6 +66,11 @@ tasks:
     dependsOn:
       - build
 
+  deploy:
+    command: bunx wrangler deploy
+    dependsOn:
+      - build
+
   test:
     command: "bun test --isolate --pass-with-no-tests"
     inputs:
@@ -60,6 +79,7 @@ tasks:
       - "@globs(sources)"
       - "bunfig.toml"
       - "/bunfig.toml"
+      - "/happydom.ts"
       - "/packages/sun-ui/src/**/*"
 
   typecheck:

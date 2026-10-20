@@ -1,0 +1,25 @@
+---
+import Layout from "@layouts/Layout.astro"
+import Navigation from "@components/Navigation.astro"
+import { loadBlogNavigation } from "@/cms/nav"
+import type { ComponentProps } from "astro/types"
+
+type Props = ComponentProps<typeof Layout>
+
+const { props } = Astro
+const { links, more } = await loadBlogNavigation()
+---
+
+<Layout {...props}>
+  <Navigation
+    links={links}
+    more={more}
+    align="center"
+    home={{ href: "/blog", label: "Blog" }}
+    cta={{ kind: "link", label: "Meu site", href: "/", variant: "green" }}
+    opaque
+  />
+  <main class="pt-18">
+    <slot />
+  </main>
+</Layout>

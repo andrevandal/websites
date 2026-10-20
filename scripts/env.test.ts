@@ -1,41 +1,38 @@
-import { afterEach, describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { resolveTargetEnvVars } from "./env"
-import { SITE_IDS, STAGES } from "./site-config"
+
+const env = {
+  IMAGES_BASE_URL: "https://images.example.invalid",
+  S3_PUBLIC_URL: "https://assets.example.com/site-staging",
+  API_TOKEN: "plaintext-token",
+}
 
 describe("resolveTargetEnvVars", () => {
-  afterEach(() => {
-    delete process.env["LEGACY_DEPLOY_CONFIG"]
-  })
-
-  test("committed Stage config does not leak legacy process-environment variables", () => {
-    process.env["LEGACY_DEPLOY_CONFIG"] = JSON.stringify({
-      SITE_URL: "https://wrong.example.test",
-      API_TOKEN: "plaintext-token",
-    })
-
-    const vars = resolveTargetEnvVars(["websites", "brunabraz"], "staging")
-    expect(vars).not.toHaveProperty("SITE_URL")
-    expect(vars).not.toHaveProperty("API_TOKEN")
-  })
-
-  test("each website routes image transforms to the proxy for its Stage, except Pedro preview", () => {
-    for (const siteId of SITE_IDS) {
-      for (const stage of STAGES) {
-        const vars = resolveTargetEnvVars(["websites", siteId], stage)
-        const expected =
-          siteId === "pedrohenri" && stage === "preview"
-            ? ""
-            : stage === "production"
-              ? "https://infra.example.invalid"
-              : "https://infra.example.invalid"
-        expect(vars["IMAGES_BASE_URL"]).toBe(expected)
-      }
+  test("staging and production get only the image service base", () => {
+    for (const stage of ["staging", "production"] as const) {
+      expect(
+        resolveTargetEnvVars(["websites", "brunabraz"], stage, env)
+      ).toEqual({ IMAGES_BASE_URL: "https://images.example.invalid" })
     }
   })
 
-  test("rejects paths that do not identify a configured website", () => {
-    expect(() => resolveTargetEnvVars(["apps", "web"], "production")).toThrow(
-      'Expected ["websites", "<site-id>"]'
-    )
+  test("static-site previews use the image service and leave assets to Preview Base", () => {
+    expect(
+      resolveTargetEnvVars(["websites", "bellypao"], "preview", env)
+    ).toEqual({ IMAGES_BASE_URL: "https://images.example.invalid" })
+  })
+
+  test("EmDash previews serve originals", () => {
+    expect(
+      resolveTargetEnvVars(["websites", "pedrohenri"], "preview", env)[
+        "IMAGES_BASE_URL"
+      ]
+    ).toBe("")
+  })
+
+  test("rejects paths that do not identify a website", () => {
+    expect(() =>
+      resolveTargetEnvVars(["apps", "web"], "production", env)
+    ).toThrow('Expected ["websites", "<site-id>"]')
   })
 })

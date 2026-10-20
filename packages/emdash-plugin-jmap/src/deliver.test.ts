@@ -51,9 +51,11 @@ test("logs a sent delivery with ids and no body", async () => {
 test("logs a failure and rethrows", async () => {
   sendMock.mockRejectedValueOnce(new Error("boom"))
   const { puts, collection } = logs()
-  await expect(deliver(settings, collection, message, "test")).rejects.toThrow(
-    "boom"
-  )
+  expect(
+    await deliver(settings, collection, message, "test").catch(
+      (error: Error) => error.message
+    )
+  ).toContain("boom")
   expect(puts).toHaveLength(1)
   expect(puts[0]).toMatchObject({ status: "failed", error: "boom" })
 })
@@ -61,9 +63,11 @@ test("logs a failure and rethrows", async () => {
 test("incomplete settings are logged as failed without sending", async () => {
   const { puts, collection } = logs()
   const empty = { get: async () => null } as unknown as SettingsAccess
-  await expect(deliver(empty, collection, message, "test")).rejects.toThrow(
-    "JMAP settings incomplete"
-  )
+  expect(
+    await deliver(empty, collection, message, "test").catch(
+      (error: Error) => error.message
+    )
+  ).toContain("JMAP settings incomplete")
   expect(sendMock).not.toHaveBeenCalled()
   expect(puts[0]).toMatchObject({ status: "failed" })
 })

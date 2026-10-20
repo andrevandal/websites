@@ -1,6 +1,7 @@
 ---
-import { SunPicture } from "@vandal-websites/sun-ui/astro"
-import Icon from "@components/Icon.astro"
+import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import { WA_NUMBER } from "#/data/contact"
 import { fileUrl } from "@utils/images"
 ---
 
@@ -19,10 +20,10 @@ import { fileUrl } from "@utils/images"
           <li
             class="flex flex-row justify-center gap-x-1 py-2 lg:justify-start"
           >
-            <Icon
-              class:list={["h-6 w-6 text-[#FFAA33]"]}
-              width="24"
-              height="24"
+            <SunIcon
+              class="h-6 w-6 text-[#FFAA33]"
+              width={24}
+              height={24}
               name="clock"
             />
             <p class="w-fit text-base leading-5 text-[#FFECCC]">
@@ -33,14 +34,14 @@ import { fileUrl } from "@utils/images"
           <li
             class="flex flex-row justify-center gap-x-1 py-2 lg:justify-start"
           >
-            <Icon
-              class:list={["h-6 w-6 text-[#FFAA33]"]}
-              width="24"
-              height="24"
+            <SunIcon
+              class="h-6 w-6 text-[#FFAA33]"
+              width={24}
+              height={24}
               name="whatsapp"
             />
             <a
-              href="https://wa.me/5511945488607"
+              href={waLink(WA_NUMBER)}
               target="_blank"
               rel="noopener noreferrer"
               class="w-fit text-base leading-5 text-[#FFECCC]"
@@ -51,10 +52,10 @@ import { fileUrl } from "@utils/images"
           <li
             class="flex flex-row justify-center gap-x-1 py-2 lg:justify-start"
           >
-            <Icon
-              class:list={["h-6 w-6 text-[#FFAA33]"]}
-              width="24"
-              height="24"
+            <SunIcon
+              class="h-6 w-6 text-[#FFAA33]"
+              width={24}
+              height={24}
               name="phone"
             />
             <a
@@ -69,10 +70,10 @@ import { fileUrl } from "@utils/images"
           <li
             class="flex flex-row justify-center gap-x-1 py-2 lg:justify-start"
           >
-            <Icon
-              class:list={["h-6 w-6 text-[#FFAA33]"]}
-              width="24"
-              height="24"
+            <SunIcon
+              class="h-6 w-6 text-[#FFAA33]"
+              width={24}
+              height={24}
               name="map-pin"
             />
             <a
@@ -95,7 +96,7 @@ import { fileUrl } from "@utils/images"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Icon name="instagram" width="24" height="24" />
+              <SunIcon name="instagram" width={24} height={24} />
             </a>
           </li>
         </ul>

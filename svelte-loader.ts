@@ -22,7 +22,7 @@ plugin({
     // `.svelte.js`/`.svelte.ts` rune-only modules (e.g. bits-ui's internals)
     // ship raw, uncompiled rune syntax and need `compileModule()`, a
     // distinct API from `compile()` — they are not components.
-    builder.onLoad({ filter: /\.svelte\.(js|ts)$/ }, ({ path }) => {
+    builder.onLoad({ filter: /\.svelte\.(?:js|ts)$/ }, ({ path }) => {
       const source = readFileSync(path, "utf-8"),
         result = compileModule(source, {
           filename: path,

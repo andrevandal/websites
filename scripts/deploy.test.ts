@@ -19,7 +19,6 @@ import {
 } from "./deploy"
 import type { DeployDeps, SetupDeps } from "./deploy"
 import type { SeedDb } from "./seed-extensions"
-import { resolveSiteConfig } from "./site-config"
 import { createEmDashTestDb, seedEmDashDb } from "./utils/emdash-test-db"
 
 const ACCOUNT_ID = "acct-1"
@@ -160,8 +159,9 @@ const target = {
 }
 
 describe("preview resources", () => {
-  for (const worker of ["pedrohenri", "brunabraz"]) {
-    test(`${worker} binds isolated native resources only under previews and reuses edited state`, async () => {
+  test.each(["pedrohenri", "brunabraz"])(
+    "%s binds isolated native resources only under previews and reuses edited state",
+    async worker => {
       const state = createDeps()
       const previewTarget = {
         ...target,
@@ -205,8 +205,8 @@ describe("preview resources", () => {
       expect(state.kv.size).toBe(1)
       expect(state.d1.size).toBe(1)
       expect(state.r2.size).toBe(1)
-    })
-  }
+    }
+  )
 
   test("Worker and PR identities isolate resources", async () => {
     const state = createDeps()
@@ -229,7 +229,7 @@ describe("preview resources", () => {
 
   test("generic previews stay KV-only with unchanged top-level config", async () => {
     const state = createDeps()
-    const { vars } = resolveSiteConfig("transportugal", "preview")
+    const vars = { IMAGES_BASE_URL: "https://images.example.invalid" }
     expect(
       (await deployPreview({ ...target, pr: 42, vars }, state.deps)).url
     ).toBe("https://pr-42-transportugal.account.workers.dev")
@@ -245,8 +245,9 @@ describe("preview resources", () => {
     expect(state.previews.has("transportugal:pr-42")).toBe(true)
   })
 
-  for (const worker of ["pedrohenri", "brunabraz", "transportugal"]) {
-    test(`${worker} cleanup is exact and repeated cleanup reports absent resources`, async () => {
+  test.each(["pedrohenri", "brunabraz", "transportugal"])(
+    "%s cleanup is exact and repeated cleanup reports absent resources",
+    async worker => {
       const state = createDeps()
       for (const pr of [41, 42])
         await deployPreview({ ...target, worker, pr, vars: {} }, state.deps)
@@ -285,11 +286,12 @@ describe("preview resources", () => {
         expect(state.d1.has(`${worker}-pr-41-cms`)).toBe(true)
         expect(state.r2.has(`${worker}-pr-41-media`)).toBe(true)
       }
-    })
-  }
+    }
+  )
 
-  for (const pr of [undefined, 0, -1, 1.5, NaN, Infinity]) {
-    test(`invalid PR ${pr} rejects before any dependency call`, async () => {
+  test.each([undefined, 0, -1, 1.5, NaN, Infinity])(
+    "invalid PR %p rejects before any dependency call",
+    async pr => {
       let touched = false
       const unavailable = async (): Promise<never> => {
         touched = true
@@ -314,8 +316,8 @@ describe("preview resources", () => {
         cleanupPreview({ ...target, worker: "pedrohenri", pr }, deps)
       ).rejects.toThrow("--pr")
       expect(touched).toBe(false)
-    })
-  }
+    }
+  )
 })
 
 describe("core migrations in previews", () => {
@@ -352,6 +354,19 @@ describe("core migrations in previews", () => {
     expect(bucketName).toBe("pedrohenri-pr-42-media")
   })
 
+  test("brunabraz migrates its PR database like pedrohenri", async () => {
+    const state = createDeps()
+    state.migrationReport.pending = ["001_initial"]
+
+    await deployPreview({ ...pedro, worker: "brunabraz" }, state.deps)
+
+    expect(state.calls.map(args => args.slice(0, 3).join(" "))).toEqual([
+      "emdash migrate --status",
+      "emdash migrate --json",
+      "wrangler preview --name",
+    ])
+  })
+
   test("makes no apply call when nothing is pending", async () => {
     const state = createDeps()
 
@@ -386,14 +401,6 @@ describe("core migrations in previews", () => {
 
     expect(state.calls).toEqual([])
   })
-
-  test("brunabraz previews make no emdash calls", async () => {
-    const state = createDeps()
-
-    await deployPreview({ ...pedro, worker: "brunabraz" }, state.deps)
-
-    expect(state.calls.map(args => args[0])).toEqual(["wrangler"])
-  })
 })
 
 describe("migrateStage", () => {
@@ -418,7 +425,7 @@ describe("migrateStage", () => {
       env?: Record<string, string> | undefined
     }[] = []
     const { deps } = createVersionDeps()
-    const stageDeps: DeployDeps = {
+    const migrateDeps: DeployDeps = {
       ...deps,
       exec: async (args, options) => {
         calls.push({ args, env: options.env })
@@ -434,7 +441,7 @@ describe("migrateStage", () => {
         }
       },
     }
-    return { calls, deps: stageDeps }
+    return { calls, deps: migrateDeps }
   }
 
   const writeManifest = async (manifest: object) => {
@@ -731,14 +738,14 @@ describe("setupPreview", () => {
           return json({ error: { code: "ALREADY_CONFIGURED" } }, 409)
         await seedEmDashDb(fixture, coreSeed)
         coreSeeds++
-        for (const [key, path] of [
+        for (const [key, mediaPath] of [
           ["logo", "/ready.svg"],
           ["favicon", "/pending.svg"],
         ]) {
           sqlite.query("INSERT INTO options (name, value) VALUES (?, ?)").run(
             `site:${key}`,
             JSON.stringify({
-              $media: { url: new URL(path, request.url).href },
+              $media: { url: new URL(mediaPath, request.url).href },
             })
           )
         }
@@ -768,9 +775,9 @@ describe("setupPreview", () => {
         uploaded.push(body)
       },
     }
-    const target = { ...preview, url: server.url.origin }
+    const setupTarget = { ...preview, url: server.url.origin }
     try {
-      expect(await setupPreview(target, deps)).toBe("configured")
+      expect(await setupPreview(setupTarget, deps)).toBe("configured")
       expect(failedDownloads).toBe(1)
       expect(uploaded).toHaveLength(1)
       const pendingFavicon = sqlite
@@ -826,7 +833,7 @@ describe("setupPreview", () => {
         ])
       const edited = snapshot()
       mediaAvailable = true
-      expect(await setupPreview(target, deps)).toBe("already-configured")
+      expect(await setupPreview(setupTarget, deps)).toBe("already-configured")
       expect(snapshot()).toBe(edited)
       expect(coreSeeds).toBe(1)
       expect(setupRequests).toBe(2)
@@ -947,8 +954,9 @@ const configAt = async (args: string[]) =>
   JSON.parse(await readFile(args[args.indexOf("-c") + 1]!, "utf-8"))
 
 describe("versionUpload", () => {
-  for (const worker of ["pedrohenri", "brunabraz"]) {
-    test(`${worker} stages share unchanged standard artifact without preview bindings`, async () => {
+  test.each(["pedrohenri", "brunabraz"])(
+    "%s stages share unchanged standard artifact without preview bindings",
+    async worker => {
       const artifactDir = await createArtifact()
       const before = await digestDirectory(artifactDir)
       for (const stage of ["staging", "production"]) {
@@ -978,13 +986,13 @@ describe("versionUpload", () => {
         )
         expect(await digestDirectory(artifactDir)).toBe(before)
       }
-    })
-  }
+    }
+  )
   test("uploads a Version of the given Worker from a configured copy and never deploys it", async () => {
     const artifactDir = await createArtifact()
     const before = await digestDirectory(artifactDir)
     const { calls, deps } = createVersionDeps()
-    const { vars } = resolveSiteConfig("transportugal", "staging")
+    const vars = { IMAGES_BASE_URL: "https://images.example.invalid" }
 
     const result = await versionUpload(
       {
@@ -1124,78 +1132,116 @@ describe("digestDirectory", () => {
   })
 })
 
-const PEDRO_SECRET_KEYS = [
-  "TURSO_DATABASE_URL",
-  "TURSO_AUTH_TOKEN",
-  "S3_ENDPOINT",
-  "S3_BUCKET",
-  "S3_ACCESS_KEY_ID",
-  "S3_SECRET_ACCESS_KEY",
-  "EMDASH_ENCRYPTION_KEY",
-  "CF_ACCESS_AUDIENCE",
-]
-const pedroTarget = {
-  stage: "production",
-  secretKeys: PEDRO_SECRET_KEYS,
-} as const
 const completeSecrets = Object.fromEntries(
-  PEDRO_SECRET_KEYS.filter(key => key !== "CF_ACCESS_AUDIENCE").map(key => [
-    key,
-    `value-of-${key}`,
-  ])
+  [
+    "TURSO_DATABASE_URL",
+    "TURSO_AUTH_TOKEN",
+    "S3_ENDPOINT",
+    "S3_BUCKET",
+    "S3_PUBLIC_URL",
+    "S3_ACCESS_KEY_ID",
+    "S3_SECRET_ACCESS_KEY",
+    "EMDASH_ENCRYPTION_KEY",
+  ].map(key => [key, `value-of-${key}`])
 )
 
+const dotenv = (secrets: Record<string, string>) =>
+  Object.entries(secrets)
+    .map(([key, value]) => `${key}='${value}'`)
+    .join("\n")
+
 describe("parseStageSecrets", () => {
-  test("returns the declared keys without the preview-only audience or other env", () => {
+  test("returns every key under the site path except the preview-only audience", () => {
     expect(
-      parseStageSecrets(pedroTarget, {
-        ...completeSecrets,
-        CF_ACCESS_AUDIENCE: "aud",
-        PATH: "/bin",
-      })
+      parseStageSecrets(
+        "pedrohenri",
+        "production",
+        dotenv({ ...completeSecrets, CF_ACCESS_AUDIENCE: "aud" })
+      )
     ).toEqual(completeSecrets)
   })
 
-  test("rejects a missing or empty key, naming it but never a value", () => {
-    const { S3_BUCKET: _bucket, ...incomplete } = completeSecrets
-    expect(() => parseStageSecrets(pedroTarget, incomplete)).toThrow(
-      "Infisical production secrets are missing or empty: S3_BUCKET."
-    )
+  test("reads unquoted and double-quoted values", () => {
+    expect(
+      parseStageSecrets(
+        "bellypao",
+        "staging",
+        'S3_PUBLIC_URL=https://a.example.com/b\nX="y"'
+      )
+    ).toEqual({ S3_PUBLIC_URL: "https://a.example.com/b", X: "y" })
+  })
+
+  test("rejects an empty key, naming it but never a value", () => {
     expect(() =>
-      parseStageSecrets(pedroTarget, {
-        ...completeSecrets,
-        S3_BUCKET: "",
-        TURSO_AUTH_TOKEN: "",
-      })
+      parseStageSecrets(
+        "pedrohenri",
+        "production",
+        dotenv({ ...completeSecrets, S3_BUCKET: "", TURSO_AUTH_TOKEN: "" })
+      )
     ).toThrow("missing or empty: TURSO_AUTH_TOKEN, S3_BUCKET.")
   })
 
-  test("a site without runtime secrets needs none", () => {
-    expect(parseStageSecrets({ stage: "staging", secretKeys: [] }, {})).toEqual(
-      {}
+  test("an EmDash site requires its database, bucket and encryption key", () => {
+    const { TURSO_AUTH_TOKEN: _token, ...incomplete } = completeSecrets
+    expect(() =>
+      parseStageSecrets("brunabraz", "staging", dotenv(incomplete))
+    ).toThrow(
+      "Infisical staging secrets are missing or empty: TURSO_AUTH_TOKEN."
     )
   })
+
+  test.each(["staging", "production"] as const)(
+    "requires the public asset base in %s",
+    stage => {
+      const { S3_PUBLIC_URL: _publicUrl, ...incomplete } = completeSecrets
+      expect(() =>
+        parseStageSecrets("bellypao", stage, dotenv(incomplete))
+      ).toThrow(
+        `Infisical ${stage} secrets are missing or empty: S3_PUBLIC_URL.`
+      )
+      expect(() => parseStageSecrets("bellypao", stage, "")).toThrow(
+        `Infisical ${stage} secrets are missing or empty: S3_PUBLIC_URL.`
+      )
+    }
+  )
 })
 
 describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
-  const { S3_BUCKET: _bucket, ...missingKey } = completeSecrets
+  const { S3_PUBLIC_URL: _publicUrl, ...missingPublicUrl } = completeSecrets
   const cases = [
-    { name: "missing key", secrets: missingKey },
-    { name: "empty key", secrets: { ...completeSecrets, S3_BUCKET: "" } },
-    { name: "all declared keys", secrets: completeSecrets, valid: true },
+    {
+      name: "empty key",
+      key: "S3_BUCKET",
+      secrets: { ...completeSecrets, S3_BUCKET: "" },
+    },
+    {
+      name: "missing public URL",
+      key: "S3_PUBLIC_URL",
+      secrets: missingPublicUrl,
+    },
+    {
+      name: "empty public URL",
+      key: "S3_PUBLIC_URL",
+      secrets: { ...completeSecrets, S3_PUBLIC_URL: "" },
+    },
+    { name: "complete secrets", secrets: completeSecrets, valid: true },
   ]
 
   describe.each([false, true])("GITHUB_ACTIONS=%s", githubActions => {
     test.each(cases)(
       "$name",
-      async ({ secrets, valid }) => {
+      async ({ secrets, valid, key: missingSecretKey }) => {
         const env: NodeJS.ProcessEnv = {
           ...process.env,
           ...secrets,
           NO_COLOR: "1",
         }
-        for (const key of Object.keys(completeSecrets))
-          if (!(key in secrets)) delete env[key]
+        const secretsFile = join(
+          await mkdtemp(join(tmpdir(), "site-secrets-")),
+          "secrets.env"
+        )
+        await writeFile(secretsFile, dotenv(secrets))
+        env.SITE_SECRETS_FILE = secretsFile
         delete env.GITHUB_ACTIONS
         delete env.GITHUB_OUTPUT
         delete env.GITHUB_STEP_SUMMARY
@@ -1241,7 +1287,7 @@ describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
           expect(normalOutput).not.toContain(value)
         if (!valid) {
           expect(normalOutput).toContain(
-            `Infisical ${stage} secrets are missing or empty: S3_BUCKET.`
+            `Infisical ${stage} secrets are missing or empty: ${missingSecretKey}.`
           )
         }
       },

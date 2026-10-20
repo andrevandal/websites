@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { defineConfig } from "astro/config"
 import sunUIAstroIntegration from "@vandal-websites/sun-ui/astro-integration"
-import partytown from "@astrojs/partytown"
 import cloudflare from "@astrojs/cloudflare"
 import node from "@astrojs/node"
 import react from "@astrojs/react"
@@ -59,14 +58,6 @@ export default defineConfig({
       // CI applies core migrations (scripts/deploy.ts migrate); the Worker only
       // checks and returns 503 while any are pending.
       migrations: { runtime: "check", dev: "auto" },
-    }),
-    partytown({
-      config: {
-        forward: [
-          ["dataLayer.push", { preserveBehavior: true }],
-          ["gtag", { preserveBehavior: true }],
-        ],
-      },
     }),
   ],
 

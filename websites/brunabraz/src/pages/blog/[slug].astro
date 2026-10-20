@@ -1,0 +1,60 @@
+---
+import { getEmDashEntry, getSeoMeta, getSiteSettings } from "emdash"
+import { postExcerpt, readingMinutes } from "@/cms/post"
+import { annotateHeadingIds, mediaSource } from "@vandal-websites/sun-ui-emdash"
+import BlogLayout from "@layouts/BlogLayout.astro"
+import PostHeader from "@components/blog/PostHeader.astro"
+import PostBody from "@components/blog/PostBody.astro"
+import TableOfContents from "@components/blog/TableOfContents.astro"
+import AuthorCard from "@components/blog/AuthorCard.astro"
+
+const { slug } = Astro.params
+const { entry: post, cacheHint } = await getEmDashEntry("posts", slug ?? "")
+if (!post) return Astro.rewrite("/404")
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint)
+
+const body = post.data.content ?? []
+const { blocks: annotatedBody, headings: toc } = annotateHeadingIds(body)
+const minutes = readingMinutes(body)
+
+// Title: the SEO panel title as written, else "<post title> | <site title>",
+// like the pages. Share image: SEO panel image, then the featured image; with
+// neither, EmDashHead falls back to the site's default social image.
+const { title: siteName } = await getSiteSettings()
+const seo = getSeoMeta(post, {
+  siteUrl: Astro.url.origin,
+  path: Astro.url.pathname,
+  defaultTitle: siteName ? `${post.data.title} | ${siteName}` : undefined,
+  defaultOgImage: mediaSource(post.data.featured_image, Astro) || undefined,
+})
+---
+
+<BlogLayout
+  title={seo.title}
+  description={seo.description ?? postExcerpt(post.data)}
+  image={seo.ogImage ?? ""}
+  url={Astro.url}
+  content={{ collection: "posts", id: post.data.id, slug: post.id }}
+>
+  <PostHeader
+    title={post.data.title}
+    byline={post.data.byline ?? null}
+    publishedAt={post.data.publishedAt}
+    readingMinutes={minutes}
+  />
+  <div
+    class="container grid gap-8 py-14 lg:grid-cols-[699px_389px] lg:items-start lg:gap-x-[128px] lg:py-20"
+  >
+    <PostBody value={annotatedBody} />
+    <TableOfContents entries={toc} />
+  </div>
+  {
+    post.data.byline && (
+      <div class="container pb-14 lg:pb-20">
+        <div class="mt-10">
+          <AuthorCard byline={post.data.byline} />
+        </div>
+      </div>
+    )
+  }
+</BlogLayout>

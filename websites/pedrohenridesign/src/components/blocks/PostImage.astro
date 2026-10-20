@@ -1,7 +1,6 @@
 ---
 import { SunPicture } from "@vandal-websites/sun-ui/astro"
-import { DENSITIES } from "@/utils/images"
-import { mediaSource, mediaFormat } from "@/cms/media"
+import { mediaSource, mediaFormat } from "@vandal-websites/sun-ui-emdash"
 import { backgroundStyle, cornerClass } from "@/cms/blocks"
 import type { PostContentPostImageBlock } from "../../../emdash-env"
 
@@ -18,7 +17,11 @@ const height = Math.round((width * (image.height || 1)) / (image.width || 1))
 ---
 
 <div
-  class:list={["not-prose my-0 w-full", cornerClass(value.corners, "lg")]}
+  class:list={[
+    // Same rhythm as a prose paragraph; consecutive images sit flush.
+    "post-image not-prose my-5 w-full first:mt-0 last:mb-0 [&:has(+.post-image)]:mb-0 [.post-image+&]:mt-0",
+    cornerClass(value.corners, "lg"),
+  ]}
   style={backgroundStyle(value.background)}
 >
   <SunPicture
@@ -31,7 +34,6 @@ const height = Math.round((width * (image.height || 1)) / (image.width || 1))
       { minWidth: 1280, width: 1152 },
     ]}
     sizes="(min-width: 1280px) 1152px, (min-width: 1024px) 896px, (min-width: 464px) 432px, calc(100vw - 32px)"
-    densities={DENSITIES}
     format={mediaFormat(image)}
     quality={90}
     class="my-0 h-auto w-full"

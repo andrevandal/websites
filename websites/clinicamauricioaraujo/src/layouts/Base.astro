@@ -2,13 +2,11 @@
 import "../styles/global.css"
 
 import { Font } from "astro:assets"
-import { getSecret } from "astro:env/server"
 import type { HTMLAttributes } from "astro/types"
 
 import {
   SunAnimateOnScroll as AnimateOnScroll,
   SunLayout as Layout,
-  runtimeGtag,
 } from "@vandal-websites/sun-ui/astro"
 import TheHeader from "@components/TheHeader.astro"
 import TheFooter from "@components/TheFooter.astro"
@@ -55,7 +53,6 @@ const image = processImage(Astro.props.image ?? siteConfig.defaultSocialImage)
   links={links}
   themeColor="#152329"
   class="scroll-p-20.5"
-  gtag={runtimeGtag(getSecret)}
 >
   <Font cssVariable="--font-inter" preload slot="close-head" />
   <TheHeader>

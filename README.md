@@ -11,44 +11,34 @@ Client websites and a shared image service. TypeScript monorepo managed with moo
 
 ### Websites
 
-- **`websites/bellypao`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/brunabraz`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/clinicamauricioaraujo.com.br`** - Astro site, deployed to Cloudflare Workers.
-- **`websites/pedrohenri`** - Astro site with EmDash CMS, deployed to Cloudflare Workers. Local development uses SQLite and `.data/uploads`; PR Previews use D1/R2 behind Access; staging and production use Turso, S3-compatible media and passkeys.
 - **`websites/transportugal`** - Astro site, deployed to Cloudflare Workers.
 - **`websites/vandallabs`** - Astro site, deployed to Cloudflare Workers.
 
 ### Packages
 
 - **`packages/sun-ui`** — Shared UI components (used by the Astro websites).
-- **`packages/robots-sitemap`** - Astro integration for static-content websites,
-  registered as `robotsSitemap({ canonicalHost: CANONICAL_SITE_URL })`. It injects
-  `/robots.txt` and `/sitemap-index.xml` as request-time endpoints. Robots
-  allows crawling only when the request origin is the canonical host (the
-  site's `config.json` `canonicalHost`), so Workers Preview origins are
-  disallowed. Both endpoints always name canonical URLs; the sitemap lists
-  static pages. Pedro uses its own canonical-host robots endpoint and
-  CMS-backed sitemap (`websites/pedrohenri/src/cms/sitemap.ts`), listing
-  published categories and posts with trailing slashes like its internal links
-  and canonical URLs.
+- **`packages/robots-sitemap`** - Astro integration every website registers
+  as `robotsSitemap({ canonicalHost: CANONICAL_SITE_URL })`. It injects
+  `/robots.txt` and `/sitemap-index.xml` as request-time endpoints for static
+  sites. Robots allows crawling only when the request origin is the canonical
+  host (`CANONICAL_SITE_URL`, the Astro `site`), so Workers Preview origins
+  are disallowed. Both endpoints always name canonical URLs. CMS sites own
+  their `/sitemap.xml` and `/robots.txt` routes, and pass
+  `sitemapPath: "/sitemap.xml"` and `injectRobots: false` to suppress the
+  shared injected routes.
 
 ## Deploy environments
-
-Full GitHub-hosted jobs explicitly use `ubuntu-26.04` rather than following
-the rolling `ubuntu-latest` label. PR-title validation keeps the lightweight
-`ubuntu-slim` runner. Disk cleanup uses `jlumbroso/free-disk-space@v2`;
-compatible minor/patch updates follow when upstream moves that major tag.
-Action upgrades retain the zipped website artifact layout, including hidden
-build files and the promotion digest check.
 
 CI (`.github/workflows/main.yml`) runs `moon ci` on every push/PR — only the
 projects a change actually affects are linted, typechecked, and tested — then
 
 - `main` branch → each affected website is built once. The build is saved as
   artifact `website-dist-<site>-<sha>` (with its content digest) and uploaded
-  as a Version of the site's own `<worker>-staging` Worker
-  (`https://<worker>-staging.<subdomain>.workers.dev`), then deployed at 100%.
-  Production stays on `<worker>`.
+  as a **staging Version** of the site's one persistent Worker, under Version
+  Preview alias `staging` (`https://staging-<worker>.<subdomain>.workers.dev`).
+  Staging is never deployed to live traffic.
 - same-repository pull requests → a **Workers Preview** named `pr-<N>`,
   scoped to each affected site's one persistent Worker (`wrangler preview`).
   Closing the PR deletes the Preview and its `<worker>-pr-<N>` KV namespace.
@@ -57,48 +47,10 @@ projects a change actually affects are linted, typechecked, and tested — then
   a Docker image, pushes it to GHCR, and triggers a Coolify webhook
   (staging on push to `main`, production via `release.yml`'s dispatch —
   pull requests never trigger a container build, unlike the websites below).
-  The trigger sends an authenticated `POST` to `COOLIFY_IMAGES_WEBHOOK`,
-  preserving its `uuid`/`force` query parameters and Cloudflare bypass header.
-  Coolify rejects the former `GET` request with HTTP 405.
-  Staging builds publish `:<version>-staging` and the floating `:staging` alias;
-  production builds publish `:<version>` and `:latest`. Set the staging Coolify
-  image to `ghcr.io/andrevandal/websites/images-app:staging` to follow successful
-  staging builds without editing the version. A pull and redeploy is still
-  required; changing the registry tag does not update running containers.
 - On a website release, `release.yml` waits for that commit's Main CI and
   downloads its saved build. It checks the digest, uploads the identical bytes
   as a new Version with production config, and runs
   `wrangler versions deploy <id>@100%`. Production never rebuilds.
-
-### Website image routing
-
-`websites/<site>/config.json` sets `IMAGES_BASE_URL` at Worker request time.
-It is the transform proxy, not an asset bucket:
-
-| Stage                         | `IMAGES_BASE_URL`                                          |
-| ----------------------------- | ---------------------------------------------------------- |
-| Production                    | `https://infra.example.invalid`                           |
-| Staging; other sites' Preview | `https://infra.example.invalid`                   |
-| Pedro Henri Preview           | empty: originals are served directly, no transform service |
-
-Image sources remain in each site's own `files.vandal.services` bucket:
-
-| Website                 | Source bucket                     |
-| ----------------------- | --------------------------------- |
-| Bruna Braz              | `brunabraz`                       |
-| Transportugal           | `transportugal`                   |
-| Bellypao                | `bellypao.com.br`                 |
-| Clinica Mauricio Araujo | `clinicamauricioaraujo`           |
-| Vandallabs              | No remote image sources currently |
-
-The proxy receives the full source URL after the transform modifiers, URL-encoded.
-Local development with an unset `IMAGES_BASE_URL` uses raw source images. So does
-Pedro Henri's PR Preview (`vars.preview.IMAGES_BASE_URL` is empty, so no
-external transform service): it serves each original directly, never `/_image`
-or the staging image service. Pedro Henri's staging and production use the
-image service.
-Bruna's background patterns and the clinic's image helper use the same runtime
-proxy variable as the shared image components. No bucket names or objects change.
 
 ## Setup
 
@@ -159,9 +111,8 @@ moon run acme-consulting.com.br:typecheck
 moon run acme-consulting.com.br:build
 ```
 
-The generator writes the site, its `config.json` (canonical host
-`https://<slug>` and empty Stage vars), and every registration the deploy and
-release tooling enumerates: `SITE_IDS`, `CUSTOM_DOMAINS`, the Preview cleanup
+The generator writes the site (canonical host `https://<slug>`) and every
+registration the deploy and release tooling enumerates: `CUSTOM_DOMAINS`, the Preview cleanup
 matrix, the manual-deploy choice, the release workflow, release-please, and the
 website list above. It does not provision the Cloudflare Custom Domain; bind it
 in the dashboard before the site's first release.
@@ -250,7 +201,6 @@ For extra information, check the official documentation:
 Publishing happens automatically after release-please creates a release and tags it. The process:
 
 1. Release-please creates a PR with version bumps and changelog updates
-   The release workflow then runs `scripts/release-group-merges.ts` on that PR's branch and body. A merge commit (its body is the PR title) and the PR's branch commits would otherwise each become a changelog line, so each merge's line stays and its branch commits are nested under it.
 2. When merged to main, the release workflow runs
 3. If a release is created, the workflow executes `scripts/release.ts`
 4. The release script runs `moon run :publish --query "projectSource~packages/*"` to publish all packages
@@ -276,7 +226,7 @@ If you want to add new workflows, but do not want them to run on release-please 
 ```yaml
 jobs:
   your-job:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-latest
     # Skip if PR has any autorelease label
     if: |
       !contains(github.event.pull_request.labels.*.name, 'autorelease: pending') &&
@@ -288,7 +238,7 @@ And for push ignores, you can use:
 ```yaml
 jobs:
   your-job:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-latest
     # Skip if commit message indicates a release-please release
     if: |
       !startsWith(github.event.head_commit.message, 'chore: release') &&

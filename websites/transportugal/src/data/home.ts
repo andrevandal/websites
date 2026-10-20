@@ -1,10 +1,7 @@
-const HERO_SRC =
-  "https://files.vandal.services/transportugal/images/hero-bg.png"
-const HERO_SRC_MOBILE =
-  "https://files.vandal.services/transportugal/images/hero-mobile.png"
-const ABOUT_SRC = "https://files.vandal.services/transportugal/images/about.png"
-const PARTNERS_SRC =
-  "https://files.vandal.services/transportugal/images/partners.png"
+const HERO_SRC = "images/hero-bg.png"
+const HERO_SRC_MOBILE = "images/hero-mobile.png"
+const ABOUT_SRC = "images/about.png"
+const PARTNERS_SRC = "images/partners.png"
 
 const services = [
   {
@@ -112,7 +109,7 @@ const suppliers = [
   {
     name: "Aço Mix",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/01-acomix.png",
+      url: "images/suppliers/01-acomix.png",
       width: 353,
       height: 177,
     },
@@ -120,7 +117,7 @@ const suppliers = [
   {
     name: "Armarinhos Fernando",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/02-armarinhos-fernando.png",
+      url: "images/suppliers/02-armarinhos-fernando.png",
       width: 395,
       height: 82,
     },
@@ -128,7 +125,7 @@ const suppliers = [
   {
     name: "Atacadão",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/03-atacadao.png",
+      url: "images/suppliers/03-atacadao.png",
       width: 290,
       height: 94,
     },
@@ -136,7 +133,7 @@ const suppliers = [
   {
     name: "Bozi",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/04-bozi.png",
+      url: "images/suppliers/04-bozi.png",
       width: 213,
       height: 105,
     },
@@ -144,7 +141,7 @@ const suppliers = [
   {
     name: "Riachuelo",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/05-riachuelo.png",
+      url: "images/suppliers/05-riachuelo.png",
       width: 173,
       height: 61,
     },
@@ -152,7 +149,7 @@ const suppliers = [
   {
     name: "Carone",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/06-carone.png",
+      url: "images/suppliers/06-carone.png",
       width: 1236,
       height: 844,
     },
@@ -160,7 +157,7 @@ const suppliers = [
   {
     name: "Bridgestone",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/07-bridgestone.png",
+      url: "images/suppliers/07-bridgestone.png",
       width: 176,
       height: 118,
     },
@@ -168,7 +165,7 @@ const suppliers = [
   {
     name: "Casagrande",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/08-casagrande.png",
+      url: "images/suppliers/08-casagrande.png",
       width: 195,
       height: 154,
     },
@@ -176,7 +173,7 @@ const suppliers = [
   {
     name: "Cesconetto",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/09-cesconetto.png",
+      url: "images/suppliers/09-cesconetto.png",
       width: 219,
       height: 48,
     },
@@ -184,7 +181,7 @@ const suppliers = [
   {
     name: "Danny Pack",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/10-dannypack.png",
+      url: "images/suppliers/10-dannypack.png",
       width: 384,
       height: 90,
     },
@@ -192,7 +189,7 @@ const suppliers = [
   {
     name: "Assaí",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/11-assai.png",
+      url: "images/suppliers/11-assai.png",
       width: 384,
       height: 297,
     },
@@ -200,7 +197,7 @@ const suppliers = [
   {
     name: "Cescom",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/12-cescom.png",
+      url: "images/suppliers/12-cescom.png",
       width: 177,
       height: 169,
     },
@@ -208,7 +205,7 @@ const suppliers = [
   {
     name: "Pax-Lub",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/13-pax-lub.png",
+      url: "images/suppliers/13-pax-lub.png",
       width: 380,
       height: 380,
     },
@@ -216,7 +213,7 @@ const suppliers = [
   {
     name: "Quality Fix",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/14-quality-fix.png",
+      url: "images/suppliers/14-quality-fix.png",
       width: 357,
       height: 231,
     },
@@ -224,7 +221,7 @@ const suppliers = [
   {
     name: "Supermed",
     logo: {
-      url: "https://files.vandal.services/transportugal/images/suppliers/15-supermed.png",
+      url: "images/suppliers/15-supermed.png",
       width: 285,
       height: 332,
     },

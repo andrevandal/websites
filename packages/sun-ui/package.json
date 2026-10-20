@@ -35,12 +35,14 @@
   "devDependencies": {
     "@astro-community/astro-embed-youtube": "catalog:astro",
     "@astrojs/check": "catalog:astro",
+    "@astrojs/compiler-rs": "^0.4.0",
     "@astrojs/ts-plugin": "catalog:astro",
     "@testing-library/svelte": "catalog:testing",
     "@testing-library/user-event": "catalog:testing",
     "@types/bun": "catalog:types",
     "@types/node": "catalog:types",
     "astro": "catalog:astro",
+    "happy-dom": "^20.11.6",
     "publint": "catalog:tools",
     "tsdown": "catalog:tools",
     "typescript": "catalog:typescript"

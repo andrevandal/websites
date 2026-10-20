@@ -6,7 +6,7 @@ websites is a bun + moon monorepo of client websites and a shared image
 service. Tool versions live in `.prototools`.
 
 - `apps/images` - Hono + Bun.Image image service; sharp only for animated GIF output.
-- `packages/sun-ui` - Astro + Svelte UI kit for the websites.
+- `packages/sun-ui*` - headless UI kit; `-emdash` adds EmDash.
 - `websites/*` - client Astro sites on Cloudflare. Scaffold one with
   `bun run website:new`.
 
@@ -62,8 +62,9 @@ CI.
   projects, never a relative path that climbs out of a project.
 - Keep root `tsconfig` free of `compilerOptions.paths` aliases to
   `packages/*/src`; they collide with moon's project references (TS6305).
-- oxlint + oxfmt cover TS, JS, JSON, and Markdown; eslint + prettier cover
-  only `.astro` and `.svelte`.
+- oxlint + oxfmt cover TS, JS, JSON, Markdown, and the script blocks of
+  `.astro`/`.svelte`; eslint + prettier add Astro and Svelte rules. Zero lint
+  warnings; a disable needs a `-- reason`.
 - Tailwind v4 is configured in CSS `@theme` blocks, never a JS config.
 - Plain punctuation in docs: hyphens and straight quotes. `bun run docs`
   enforces it in agent-facing files.
@@ -128,3 +129,9 @@ them win over a skill. A skill that contradicts an ADR is a bug in the skill.
   suggestions.
 - Plain punctuation everywhere: hyphens and straight quotes, no decorative
   Unicode; code output is copy-paste safe.
+
+## Documentation lookups
+
+Verify EmDash APIs, hooks, and config through the `emdash-docs` MCP server,
+not training data. To run, sign in to, seed, or reset an EmDash site locally,
+follow [`docs/guides/emdash-local-development.md`](docs/guides/emdash-local-development.md).

@@ -46,11 +46,12 @@ const expandInput = async (input: string) => {
   return matches
 }
 
-export const optimizeSvgFiles = async (inputs: readonly string[]) => {
+const optimizeSvgFiles = async (inputs: readonly string[]) => {
   if (inputs.length === 0) throw new Error("No SVG input paths were provided")
 
   const matchedPaths = new Set<string>()
   for (const input of inputs) {
+    // oxlint-disable-next-line eslint/no-await-in-loop -- sequential input expansion required
     for (const filePath of await expandInput(input))
       if (filePath.toLowerCase().endsWith(".svg")) matchedPaths.add(filePath)
   }
@@ -58,6 +59,7 @@ export const optimizeSvgFiles = async (inputs: readonly string[]) => {
   const changes: { filePath: string; data: string }[] = []
 
   for (const filePath of [...matchedPaths].sort()) {
+    // oxlint-disable-next-line eslint/no-await-in-loop -- sequential file read for optimization
     const source = await readFile(filePath, "utf8")
     let optimizedData: string
 
@@ -77,6 +79,7 @@ export const optimizeSvgFiles = async (inputs: readonly string[]) => {
       changes.push({ filePath, data: optimizedData })
   }
 
+  // oxlint-disable-next-line eslint/no-await-in-loop -- sequential writes preserve file order
   for (const change of changes) await writeFile(change.filePath, change.data)
 
   return changes.map(({ filePath }) => filePath)
@@ -94,3 +97,5 @@ if (import.meta.main) {
     process.exitCode = 1
   })
 }
+
+export { optimizeSvgFiles }

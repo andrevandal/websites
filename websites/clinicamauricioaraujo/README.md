@@ -41,3 +41,12 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## Shared UI
+
+`@vandal-websites/sun-ui` owns header interactions and WhatsApp URL generation.
+`BaseButton` delegates markup and external-link behavior to `SunButton`; its
+variants, sizing, and presentation remain site-only styles. `Cover` delegates
+responsive image markup to `SunPicture`, using normalized bucket sources and
+the existing crop dimensions. Hero images remain eager-loaded and now use
+high fetch priority; `TheHero` retains its layout and overlay.

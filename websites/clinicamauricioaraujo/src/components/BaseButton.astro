@@ -1,7 +1,8 @@
 ---
-import type { HTMLTag, Polymorphic } from "astro/types"
+import type { Polymorphic } from "astro/types"
+import { SunButton } from "@vandal-websites/sun-ui/astro"
 
-import { cn } from "@/utils"
+import { cn } from "#/utils"
 
 type Sizes = "small" | "medium" | "large"
 
@@ -21,11 +22,12 @@ type CustomProps = {
   increaseSize?: boolean
 }
 
-type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & CustomProps
+type Props<T extends "a" | "button"> = Polymorphic<{ as: T }> & CustomProps
 
 const {
   as: Tag = "button",
   class: className,
+  href,
   variant,
   reverse,
   size = "base",
@@ -34,28 +36,15 @@ const {
   increaseSize,
   ...props
 } = Astro.props
-
-const anchorAttrs =
-  Tag === "a" &&
-  "href" in props &&
-  (typeof props.href === "string" || props.href instanceof URL)
-    ? (() => {
-        const href = props?.href?.toString() ?? "#"
-        const isExternal =
-          href.startsWith("http") &&
-          !href.startsWith("/") &&
-          !href.startsWith("#")
-        return {
-          href,
-          ...(isExternal && { target: "_blank", rel: "noopener noreferrer" }),
-        }
-      })()
-    : {}
 ---
 
-<Tag
-  class={cn(
-    "btn",
+<SunButton
+  as={Tag}
+  href={href?.toString()}
+  block={block}
+  centered={centered}
+  className={cn(
+    "clinic-button btn",
     {
       "btn-primary": variant === "primary",
       "btn-primary-outline": variant === "primary-outline",
@@ -65,8 +54,6 @@ const anchorAttrs =
       "btn-brand": variant === "brand",
       "btn-brand-outline": variant === "brand-outline",
       "btn-reverse": reverse,
-      "btn-block": block,
-      "btn-center": centered,
       "btn-small": size === "small",
       "btn-medium": size === "medium",
       "btn-large": size === "large",
@@ -75,58 +62,51 @@ const anchorAttrs =
     className
   )}
   {...props}
-  {...anchorAttrs}
 >
-  <span><slot /></span>
-  <slot name="icon" />
-</Tag>
+  <slot />
+  <slot name="icon" slot="suffix" />
+</SunButton>
 
 <style>
   @reference "../styles/global.css";
 
-  .btn {
-    @apply box-border flex w-fit flex-row items-center justify-center gap-x-2 rounded-full px-6 py-4 text-base font-semibold whitespace-nowrap transition-all duration-200 ease-out;
+  :global(.clinic-button.btn) {
+    @apply gap-x-2 rounded-full px-6 py-4 text-base font-semibold whitespace-nowrap transition-all duration-200 ease-out;
   }
-  .btn-large {
+  :global(.clinic-button.btn-large) {
     @apply h-14 px-6 py-4;
   }
-  .btn-medium {
+  :global(.clinic-button.btn-medium) {
     @apply h-12 px-3 py-3;
-    &.btn-increased {
+    &:global(.btn-increased) {
       @apply lg:h-14 lg:px-6 lg:py-4;
     }
   }
-  .btn-small {
+  :global(.clinic-button.btn-small) {
     @apply h-10 px-6 py-2;
   }
-  .btn-primary {
+  :global(.clinic-button.btn-primary) {
     @apply bg-brand-950 text-brand-50 hover:bg-brand-800 focus:bg-brand-700 ring-4 ring-transparent disabled:opacity-60;
   }
-  .btn-primary-outline {
+  :global(.clinic-button.btn-primary-outline) {
     @apply border-brand-950 text-brand-950 hover:bg-brand-950/15 border focus:border-transparent focus:bg-transparent;
   }
-  .btn-secondary {
+  :global(.clinic-button.btn-secondary) {
     @apply text-brand-950 hover:bg-brand-200 focus:bg-brand-600 bg-white disabled:opacity-60;
   }
-  .btn-secondary-outline {
+  :global(.clinic-button.btn-secondary-outline) {
     @apply border-brand-950 text-brand-950 hover:bg-brand-950/15 border focus:border-transparent focus:bg-transparent;
   }
-  .btn-white-outline {
+  :global(.clinic-button.btn-white-outline) {
     @apply border border-white text-white hover:bg-white/15 focus:border-transparent focus:bg-transparent;
   }
-  .btn-brand {
+  :global(.clinic-button.btn-brand) {
     @apply bg-brand-500 hover:bg-brand-600 focus:bg-brand-700 text-white disabled:opacity-60;
   }
-  .btn-brand-outline {
+  :global(.clinic-button.btn-brand-outline) {
     @apply border-brand-300 border text-white hover:bg-white/15 focus:border-transparent focus:bg-transparent;
   }
-  .btn-center {
-    @apply justify-center;
-  }
-  .btn-block {
-    @apply w-full;
-  }
-  .btn-reverse {
+  :global(.clinic-button.btn.btn-reverse) {
     @apply flex-row-reverse;
   }
 </style>

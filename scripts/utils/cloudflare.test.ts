@@ -235,8 +235,9 @@ const withCloudflare = async (
 }
 
 describe("Cloudflare preview resource REST helpers", () => {
-  for (const pagination of ["total_pages", "total_count"] as const) {
-    test(`D1 exact lookup follows ${pagination}, reuses UUID, creates and deletes only exact names`, async () => {
+  test.each(["total_pages", "total_count"] as const)(
+    "D1 exact lookup follows %s, reuses UUID, creates and deletes only exact names",
+    async pagination => {
       await withCloudflare({ pagination }, async state => {
         expect(await findOrCreateD1Database("pedrohenri-pr-42-cms")).toEqual({
           database: { uuid: "existing-db", name: "pedrohenri-pr-42-cms" },
@@ -254,8 +255,8 @@ describe("Cloudflare preview resource REST helpers", () => {
         expect(state.d1.has("pedrohenri-pr-42-cms-extra")).toBe(true)
         expect(state.d1.has("production-cms")).toBe(true)
       })
-    })
-  }
+    }
+  )
 
   test("R2 cursor lookup preserves exact existing bucket, creates once and purges all media before deletion", async () => {
     await withCloudflare({}, async state => {
@@ -298,13 +299,9 @@ describe("Cloudflare preview resource REST helpers", () => {
     })
   })
 
-  for (const failure of [
-    "verify",
-    "transport",
-    "objects",
-    "partial",
-  ] as const) {
-    test(`R2 ${failure} failure propagates without deleting bucket`, async () => {
+  test.each(["verify", "transport", "objects", "partial"] as const)(
+    "R2 %s failure propagates without deleting bucket",
+    async failure => {
       await withCloudflare({ failure }, async state => {
         await expect(
           deleteR2BucketByName("pedrohenri-pr-42-media")
@@ -316,11 +313,12 @@ describe("Cloudflare preview resource REST helpers", () => {
           expect(state.paths).not.toContain("GET /user/tokens/verify")
         else expect(state.destroyed()).toBe(1)
       })
-    })
-  }
+    }
+  )
 
-  for (const failure of ["list", "create", "delete"] as const) {
-    test(`REST ${failure} failures propagate without fake success`, async () => {
+  test.each(["list", "create", "delete"] as const)(
+    "REST %s failures propagate without fake success",
+    async failure => {
       await withCloudflare({ failure }, async state => {
         if (failure === "delete") {
           await expect(
@@ -342,6 +340,6 @@ describe("Cloudflare preview resource REST helpers", () => {
         expect(state.d1.has("pedrohenri-pr-42-cms")).toBe(true)
         expect(state.r2.has("pedrohenri-pr-42-media")).toBe(true)
       })
-    })
-  }
+    }
+  )
 })

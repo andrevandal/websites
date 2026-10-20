@@ -53,9 +53,7 @@ const buildInitialComboboxItems = (
     `${toTitleCase(city.cidade)} - ${city.uf}`,
   parseOriginValue = (value: string | undefined): Origin | null => {
     if (!value) return null
-    const parts = value.split("|"),
-      cidade = parts[0],
-      uf = parts[1]
+    const [cidade, uf] = value.split("|")
     if (cidade === undefined || uf === undefined) return null
     return { cidade, uf }
   },
@@ -68,11 +66,9 @@ const buildInitialComboboxItems = (
     findAreaById(m.areaId)?.nome,
   parseDestinationValue = (value: string | undefined): Destination | null => {
     if (!value) return null
-    const parts = value.split(":"),
-      kind = parts[0],
-      areaId = parts[1]
+    const [kind, areaId, cidade] = value.split(":")
     if (areaId === undefined) return null
-    return kind === "area" ? { areaId } : { areaId, cidade: parts[2] }
+    return kind === "area" ? { areaId } : { areaId, cidade }
   },
   formatDestinationQuery = (destination: Destination | null): string => {
     if (!destination) return ""

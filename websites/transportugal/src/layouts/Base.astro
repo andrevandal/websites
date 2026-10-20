@@ -8,7 +8,7 @@ import type { HTMLAttributes } from "astro/types"
 import {
   SunAnimateOnScroll as AnimateOnScroll,
   SunLayout as Layout,
-  runtimeGtag,
+  assetUrl,
 } from "@vandal-websites/sun-ui/astro"
 import Navigation from "@components/Navigation.astro"
 import TheFooter from "@components/TheFooter.astro"
@@ -36,12 +36,11 @@ const {
 <Layout
   title={title}
   description={description}
-  image={image}
+  image={/^https?:/.test(image) ? image : assetUrl(getSecret, image)}
   url={url}
   schema={schema}
   links={links}
   themeColor="#1f1e1e"
-  gtag={runtimeGtag(getSecret)}
 >
   <Font cssVariable="--font-lexend" preload slot="close-head" />
   <Navigation />

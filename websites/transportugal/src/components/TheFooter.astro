@@ -1,5 +1,7 @@
 ---
 import Logo from "./Logo.astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import { siteConfig } from "#/data/site"
 
 const currentYear = new Date().getFullYear()
 ---
@@ -54,8 +56,10 @@ const currentYear = new Date().getFullYear()
         <p class="font-medium text-white">Cotação e acompanhar carga</p>
         <div class="flex flex-col gap-1 text-gray-300">
           <a
-            href="https://wa.me/551123580464?text=Ol%C3%A1%21%20Gostaria%20de%20solicitar%20uma%20cota%C3%A7%C3%A3o."
-            >WhatsApp (11) 2358-0464</a
+            href={waLink(
+              siteConfig.whatsappOffice,
+              "Olá! Gostaria de solicitar uma cotação."
+            )}>WhatsApp (11) 2358-0464</a
           >
           <a
             href="mailto:comercial@transportugal.com.br?subject=Solicita%C3%A7%C3%A3o%20de%20cota%C3%A7%C3%A3o"

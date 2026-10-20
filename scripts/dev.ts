@@ -1,7 +1,7 @@
 import yargs from "yargs"
 import { queryDevTargets } from "./utils"
 import { hideBin } from "yargs/helpers"
-import consola from "consola"
+import { consola } from "consola"
 import { execa } from "execa"
 
 const availableTargets = await queryDevTargets()

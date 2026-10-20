@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto"
 import { existsSync } from "node:fs"
 import { readFile, readdir } from "node:fs/promises"
-import { join, basename, relative } from "node:path"
+import { join, relative } from "node:path"
 
 type Finding = {
   file: string
@@ -44,10 +44,10 @@ const parseYAML = (text: string): Record<string, string> => {
 }
 
 const parseFrontmatter = (text: string): Record<string, string> | null => {
-  const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---/)
-  if (!match) return null
+  const match = text.match(/^---\r?\n(?<yaml>[\s\S]*?)\r?\n---/)
+  if (!match?.groups) return null
 
-  return parseYAML(match[1])
+  return parseYAML(match.groups["yaml"]!)
 }
 
 // ---------------------------------------------------------------- skill checks
@@ -98,8 +98,10 @@ const computeFolderHash = async (skillDir: string): Promise<string> => {
 
       const fullPath = join(dir, entry.name)
 
+      // oxlint-disable-next-line eslint/no-await-in-loop -- recursive walk must be sequential per directory
       if (entry.isDirectory()) await walk(fullPath)
       else {
+        // oxlint-disable-next-line eslint/no-await-in-loop -- sequential file read preserves hash computation order
         const content = await readFile(fullPath)
         const relPath = relative(skillDir, fullPath)
         files.push({ path: relPath, content })
@@ -135,7 +137,7 @@ const run = async (): Promise<number> => {
   try {
     const lockText = await readFile(lockPath, "utf-8")
     lock = JSON.parse(lockText)
-  } catch (error) {
+  } catch {
     findings.push(finding(lockPath, "Failed to read or parse skills-lock.json"))
   }
 
@@ -150,7 +152,7 @@ const run = async (): Promise<number> => {
       .filter(e => e.isDirectory())
       .map(e => e.name)
       .sort()
-  } catch (error) {
+  } catch {
     findings.push(finding(skillsDir, "Failed to read skills directory"))
     return findings.length > 0 ? 1 : 0
   }
@@ -170,6 +172,7 @@ const run = async (): Promise<number> => {
       continue
     }
 
+    // oxlint-disable-next-line eslint/no-await-in-loop -- sequential file read per skill
     const skillText = await readFile(skillMdPath, "utf-8")
     findings.push(...checkSkillFrontmatter(skillName, skillText))
   }
@@ -221,6 +224,7 @@ const run = async (): Promise<number> => {
     if (!existsSync(skillPath)) continue
 
     try {
+      // oxlint-disable-next-line eslint/no-await-in-loop -- sequential hash computation per skill
       const computed = await computeFolderHash(skillPath)
       if (computed !== lockHash) {
         findings.push(
@@ -230,7 +234,7 @@ const run = async (): Promise<number> => {
           )
         )
       }
-    } catch (error) {
+    } catch {
       findings.push(
         finding(
           lockPath,

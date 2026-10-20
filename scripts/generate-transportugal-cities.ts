@@ -14,6 +14,7 @@ const main = async () => {
     rows: BrazilCityRow[] = []
 
   for (const estado of estados) {
+    // oxlint-disable-next-line eslint/no-await-in-loop -- sequential API call per estado required
     const municipios = await ibge().getMunicipios(estado.sigla)
     for (const municipio of municipios)
       rows.push({ cidade: municipio.nome, uf: estado.sigla })
@@ -45,7 +46,11 @@ ${body}
   console.log(`Wrote ${rows.length} cities to ${OUTPUT_PATH}`)
 }
 
-main().catch(err => {
-  console.error(err)
-  process.exitCode = 1
-})
+;(async () => {
+  try {
+    await main()
+  } catch (err) {
+    console.error(err)
+    process.exitCode = 1
+  }
+})()

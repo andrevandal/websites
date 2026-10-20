@@ -41,9 +41,9 @@ jobs:
 
       - name: Check root files
         run: |
-          bunx oxlint scripts .omp *.ts
+          bunx oxlint scripts .omp *.ts --report-unused-disable-directives
           bunx oxfmt --check \
-            scripts docs docker .agents .github .moon .vscode .omp .claude \
+            scripts docs docker .agents .github .moon .vscode .omp \
             *.ts *.md *.json *.yml \
             .gitguardian.yml .oxfmtrc.json .oxlintrc.json \
             .release-please-manifest.json
@@ -140,11 +140,12 @@ jobs:
           target: ${{ matrix.app }}
           pr: ${{ github.event.pull_request.number }}
           access-team-domain: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenri' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_TEAM_DOMAIN || '' }}
-          access-client-id: ${{ github.ref != 'refs/heads/main' && matrix.app == 'pedrohenri' && secrets.CF_ACCESS_CLIENT_ID || '' }}
-          access-client-secret: ${{ github.ref != 'refs/heads/main' && matrix.app == 'pedrohenri' && secrets.CF_ACCESS_CLIENT_SECRET || '' }}
+          access-client-id: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenri' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_CLIENT_ID || '' }}
+          access-client-secret: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenri' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_CLIENT_SECRET || '' }}
           infisical-identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
           infisical-project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
           infisical-domain: ${{ vars.INFISICAL_DOMAIN }}
+          images-base-url: ${{ secrets.IMAGES_BASE_URL }}
 
       - name: Lighthouse CI against the preview deploy
         id: lhci

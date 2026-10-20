@@ -20,8 +20,8 @@ const rawHttpRequest = async (
     port,
     data: { response: "" },
     socket: {
-      open: socket => {
-        socket.write(
+      open: sock => {
+        sock.write(
           [
             `GET ${target} HTTP/1.1`,
             `Host: ${headers.Host ?? `127.0.0.1:${port}`}`,
@@ -34,12 +34,11 @@ const rawHttpRequest = async (
           ].join("\r\n")
         )
       },
-      data: (socket, data) => {
-        socket.data.response += Buffer.from(data).toString("utf8")
-        if (socket.data.response.includes("\r\n\r\n"))
-          resolve(socket.data.response)
+      data: (sock, data) => {
+        sock.data.response += Buffer.from(data).toString("utf8")
+        if (sock.data.response.includes("\r\n\r\n")) resolve(sock.data.response)
       },
-      close: socket => resolve(socket.data.response),
+      close: sock => resolve(sock.data.response),
       error: (_socket, error) => reject(error),
     },
   })

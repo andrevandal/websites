@@ -1,0 +1,36 @@
+---
+import { getEmDashEntry, getSeoMeta } from "emdash"
+import { loadBlogGrid, parsePage } from "@/cms/posts"
+import BlogLayout from "@layouts/BlogLayout.astro"
+import FeaturedCarousel from "@components/blog/FeaturedCarousel.astro"
+import PostGrid from "@components/blog/PostGrid.astro"
+
+const { entry: blogPage, cacheHint } = await getEmDashEntry("pages", "blog")
+if (!blogPage) return Astro.rewrite("/404")
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint)
+
+const page = parsePage(Astro.url.searchParams.get("pagina"))
+const { carousel, posts, terms, hasMore } = await loadBlogGrid(page)
+
+const seo = getSeoMeta(blogPage, {
+  siteUrl: Astro.url.origin,
+  path: Astro.url.pathname,
+})
+---
+
+<BlogLayout
+  title={seo.title}
+  description={seo.description ?? ""}
+  image={seo.ogImage ?? ""}
+  url={Astro.url}
+  content={{ collection: "pages", id: blogPage.data.id, slug: blogPage.id }}
+>
+  <FeaturedCarousel posts={carousel} />
+  <PostGrid
+    posts={posts}
+    terms={terms}
+    page={page}
+    hasMore={hasMore}
+    basePath="/blog"
+  />
+</BlogLayout>

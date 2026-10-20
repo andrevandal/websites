@@ -1,0 +1,3 @@
+const WA_NUMBER = "5511945488607"
+
+export { WA_NUMBER }

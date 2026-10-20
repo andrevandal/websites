@@ -10,7 +10,7 @@ const queryTargetsSchema = v.object({
   ),
 })
 
-export const queryTargets = async () => {
+const queryTargets = async () => {
   const { stdout } = await execa("moon", [
     "query",
     "projects",
@@ -61,7 +61,7 @@ const queryDevTargetsSchema = v.object({
   ),
 })
 
-export const queryDevTargets = async () => {
+const queryDevTargets = async () => {
   const { stdout } = await execa("moon", ["query", "projects"])
 
   const { projects } = v.parse(
@@ -93,3 +93,5 @@ export const queryDevTargets = async () => {
     >
   )
 }
+
+export { queryTargets, queryDevTargets }

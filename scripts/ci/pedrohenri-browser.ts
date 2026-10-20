@@ -37,7 +37,7 @@ type AnalyticsWindow = Window & {
   dataLayer?: ArrayLike<unknown>[]
   gtag?: (...args: unknown[]) => void
   gtag_report_conversion?: () => void
-  __issue197Injected?: number
+  issue197Injected?: number
 }
 type Check = (label: string, action: () => Promise<void>) => Promise<void>
 
@@ -128,12 +128,9 @@ const corruptPreviewUrl = (input: string) => {
 
 const isTransformedImage = (input: string, base: string) => {
   const url = new URL(input, base)
-  return (
-    url.pathname === "/_image" ||
-    ["infra.example.invalid", "infra.example.invalid"].includes(
-      url.hostname
-    )
-  )
+  // Only /_image is a transformed image (local image service).
+  // IMAGES_BASE_URL transformations use dynamic hostnames from environment.
+  return url.pathname === "/_image"
 }
 
 const parseCliArgs = async (argv: string[]) => {
@@ -185,7 +182,7 @@ const analyticsPhase = async (
     errors++
   })
   await page.addInitScript(() => {
-    ;(window as AnalyticsWindow).__issue197Injected = 0
+    ;(window as AnalyticsWindow).issue197Injected = 0
   })
   // Three reloads exercise repeat installation. Different saved settings require
   // separate CLI invocations; this runner never substitutes mocked settings.
@@ -218,17 +215,17 @@ const analyticsPhase = async (
         if (typeof win.gtag_report_conversion !== "function") return false
         const start = win.dataLayer?.length ?? 0
         win.gtag_report_conversion()
-        return win.dataLayer?.slice(start).some(row => {
-          const value = row[2]
-          return (
-            row[0] === "event" &&
-            row[1] === "conversion" &&
-            typeof value === "object" &&
-            value !== null &&
-            "send_to" in value &&
-            value.send_to === target
+        return win.dataLayer
+          ?.slice(start)
+          .some(
+            ([eventType, eventName, value]) =>
+              eventType === "event" &&
+              eventName === "conversion" &&
+              typeof value === "object" &&
+              value !== null &&
+              "send_to" in value &&
+              value.send_to === target
           )
-        })
       }, `${fixtures.conversionId}/${fixtures.conversionLabel}`)
       assert(queued)
     })
@@ -248,7 +245,7 @@ const analyticsPhase = async (
       async () => {
         assert(
           await page.evaluate(
-            () => (window as AnalyticsWindow).__issue197Injected === 0
+            () => (window as AnalyticsWindow).issue197Injected === 0
           )
         )
         assert((await page.locator("#issue197-injected").count()) === 0)
@@ -480,6 +477,7 @@ const renderingPhase = async (
           assert(group.some(row => !row.href && Boolean(row.caption)))
           assert(
             group.every(
+              // eslint-disable-next-line eslint/no-script-url -- testing that href values don't start with javascript:
               row => !row.href?.trim().toLowerCase().startsWith("javascript:")
             )
           )
@@ -717,7 +715,7 @@ const seoPhase = async (
         )
       assert(
         paths
-          .filter(value => /^\/(posts|categorias)\//.test(value))
+          .filter(value => /^\/(?:posts|categorias)\//.test(value))
           .every(value => value.endsWith("/"))
       )
     })
@@ -729,15 +727,15 @@ const seoPhase = async (
         maxRedirects: 0,
       })
       if (response.status() === 404) {
-        response = await context.request.get(origin + "/sitemap.xml", {
+        response = await context.request.get(`${origin}/sitemap.xml`, {
           maxRedirects: 0,
         })
       }
       assert(response.status() === 200)
       const xml = await response.text()
       const locations = (text: string) =>
-        [...text.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)].map(match =>
-          match[1].replaceAll("&amp;", "&")
+        [...text.matchAll(/<loc>\s*(?<url>[^<]+?)\s*<\/loc>/g)].map(match =>
+          match.groups!["url"]!.replaceAll("&amp;", "&")
         )
       let urls = locations(xml)
       if (/<sitemapindex[\s>]/.test(xml)) {
@@ -761,7 +759,7 @@ const seoPhase = async (
       for (const value of urls) {
         const url = new URL(value)
         assert(url.origin === CANONICAL)
-        if (/^\/(posts|categorias)\//.test(url.pathname))
+        if (/^\/(?:posts|categorias)\//.test(url.pathname))
           assert(url.pathname.endsWith("/"))
         for (const draft of [
           fixtures.postPreviewUrl,

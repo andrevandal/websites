@@ -1,3 +1,5 @@
 export { cn } from "./cn"
 export { createImageUtils } from "./image"
+export { useHeader } from "./useHeader"
+export { waLink } from "./waLink"
 export type { ImageConfig, Sizes } from "./image"

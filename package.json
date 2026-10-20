@@ -29,7 +29,8 @@
         "tsdown": "^0.22.3",
         "wrangler": "^4.147.0",
         "msw": "^2.14.6",
-        "publint": "^0.3.21"
+        "publint": "^0.3.21",
+        "@blazediff/agent": "^0.12.0"
       },
       "utils": {
         "@sindresorhus/slugify": "^3.0.0",
@@ -91,7 +92,6 @@
         "@astrojs/check": "^0.9.9",
         "@astro-community/astro-embed-youtube": "^0.5.10",
         "@astrojs/mdx": "^7.0.0",
-        "@astrojs/partytown": "^2.1.7",
         "@astrojs/ts-plugin": "^1.10.9",
         "astro-iconset": "^0.0.6"
       },
@@ -145,7 +145,7 @@
     "typecheck": "moon run *:typecheck",
     "test": "moon run *:test",
     "test:scripts": "bun test scripts",
-    "lint": "oxlint . && eslint --no-error-on-unmatched-pattern",
+    "lint": "oxlint . --report-unused-disable-directives && eslint --max-warnings 0 --no-error-on-unmatched-pattern",
     "lint:fix": "oxlint --fix . && eslint --no-error-on-unmatched-pattern --fix",
     "format": "oxfmt . --check && prettier --check --no-error-on-unmatched-pattern **/*.astro",
     "format:fix": "oxfmt . --write && prettier --write --no-error-on-unmatched-pattern **/*.astro",
@@ -155,6 +155,7 @@
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "catalog:server",
+    "@blazediff/agent": "catalog:tools",
     "@commitlint/cli": "catalog:tools",
     "@commitlint/config-conventional": "catalog:tools",
     "@prettier/plugin-oxc": "catalog:linting",

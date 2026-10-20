@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { runtimeBoolean, runtimeEnv, runtimeGtag } from "./runtime-env"
+import { assetUrl, runtimeEnv } from "./runtime-env"
 
 const reader =
   (values: Record<string, string>) =>
@@ -24,49 +24,32 @@ describe("runtimeEnv", () => {
   })
 })
 
-describe("runtimeBoolean", () => {
-  test("is true only for the raw string true", () => {
+describe("assetUrl", () => {
+  test("joins base URL and path with single slash when S3_PUBLIC_URL is set", () => {
     expect(
-      runtimeBoolean(reader({ ENABLE_PARTYTOWN: "true" }), "ENABLE_PARTYTOWN")
-    ).toBe(true)
-    expect(
-      runtimeBoolean(reader({ ENABLE_PARTYTOWN: "false" }), "ENABLE_PARTYTOWN")
-    ).toBe(false)
-    expect(
-      runtimeBoolean(reader({ ENABLE_PARTYTOWN: "TRUE" }), "ENABLE_PARTYTOWN")
-    ).toBe(false)
-    expect(runtimeBoolean(reader({}), "ENABLE_PARTYTOWN")).toBe(false)
-  })
-})
-
-describe("runtimeGtag", () => {
-  test("builds the Gtag config from Worker variables", () => {
-    expect(
-      runtimeGtag(
-        reader({
-          PUBLIC_GOOGLE_ANALYTICS_ID: "G-TEST",
-          PUBLIC_GOOGLE_ADS_CONVERSION_ID: "AW-1",
-          PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: "label",
-          ENABLE_PARTYTOWN: "true",
-        })
+      assetUrl(
+        reader({ S3_PUBLIC_URL: "https://files.example.com" }),
+        "images/logo.png"
       )
-    ).toEqual({
-      gtagId: "G-TEST",
-      conversionId: "AW-1",
-      conversionLabel: "label",
-      partytown: true,
-    })
+    ).toBe("https://files.example.com/images/logo.png")
   })
 
-  test("disables Partytown unless ENABLE_PARTYTOWN is true", () => {
-    expect(runtimeGtag(reader({ ENABLE_PARTYTOWN: "false" })).partytown).toBe(
-      false
+  test("removes trailing slash from base and leading slash from path", () => {
+    expect(
+      assetUrl(
+        reader({ S3_PUBLIC_URL: "https://files.example.com/" }),
+        "/images/logo.png"
+      )
+    ).toBe("https://files.example.com/images/logo.png")
+  })
+
+  test("returns root-relative path when S3_PUBLIC_URL is unset", () => {
+    expect(assetUrl(reader({}), "images/logo.png")).toBe("/images/logo.png")
+  })
+
+  test("handles empty S3_PUBLIC_URL as unset", () => {
+    expect(assetUrl(reader({ S3_PUBLIC_URL: "" }), "images/logo.png")).toBe(
+      "/images/logo.png"
     )
-    expect(runtimeGtag(reader({}))).toEqual({
-      gtagId: undefined,
-      conversionId: undefined,
-      conversionLabel: undefined,
-      partytown: false,
-    })
   })
 })

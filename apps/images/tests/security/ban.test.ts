@@ -13,7 +13,6 @@ const freshTracker = (
   }> = {}
 ) => {
   const kv = new SqliteKV({
-    // oxlint-disable-next-line node/no-sync -- test-only temp dir setup
     path: path.join(mkdtempSync(path.join(tmpdir(), "ban-test-")), "kv.db"),
     maxBytes: 1_000_000,
   })

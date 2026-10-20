@@ -1,32 +1,42 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "rules": {
-    "no-unused-vars": "warn",
-    "no-unused-expressions": ["warn", { "allowShortCircuit": true }],
+    "no-unused-vars": "error",
+    "no-unused-expressions": ["error", { "allowShortCircuit": true }],
     "id-length": "off",
     "new-cap": "off",
     "max-params": "off",
     "max-statements": "off",
     "capitalized-comments": "off",
-    "oxc/no-accumulating-spread": "warn",
+    "oxc/no-accumulating-spread": "error",
     "import/no-unassigned-import": "off",
     "import/no-named-export": "off",
     "import/prefer-default-export": "off",
 
     "eslint/no-duplicate-imports": [
-      "warn",
+      "error",
       {
         "allowSeparateTypeImports": true
       }
     ],
-    "eslint/no-await-in-loop": "warn",
+    "eslint/no-await-in-loop": "error",
     "eslint/no-magic-numbers": "off",
     "eslint/no-ternary": "off",
+    // TypeScript already rejects use-before-assign; a bare `let x: T` is clearer
+    // than `let x: T | undefined = undefined`, and Svelte `bind:this` needs it.
+    "eslint/init-declarations": "off",
+    // Guard-clause `continue` is idiomatic.
+    "eslint/no-continue": "off",
+    // Portable Text / Sanity-shaped fields.
+    "eslint/no-underscore-dangle": [
+      "error",
+      { "allow": ["_key", "_ref", "_type", "_id"] }
+    ],
     "eslint/one-var": "off",
 
     // Unicorn rules
     "unicorn/filename-case": "off",
-    "unicorn/no-empty-file": "warn",
+    "unicorn/no-empty-file": "error",
     "unicorn/no-null": "off",
 
     "jest/require-hook": "off",
@@ -35,17 +45,17 @@
     "eslint/func-style": ["error", "expression"],
 
     "typescript/triple-slash-reference": "off",
-    "typescript/consistent-type-definitions": ["warn", "type"],
+    "typescript/consistent-type-definitions": ["error", "type"],
     // Disabled until auto-fix support is added
     "sort-keys": "off",
     "eslint/sort-imports": "off",
-    "curly": ["warn", "multi-or-nest"]
+    "curly": ["error", "multi-or-nest"]
   },
   "categories": {
     "correctness": "error",
-    "suspicious": "warn",
-    "style": "warn",
-    "perf": "warn"
+    "suspicious": "error",
+    "style": "error",
+    "perf": "error"
   },
   "plugins": [
     // Defaults
@@ -76,7 +86,7 @@
       "files": [
         "**/*.server.tsx",
         "**/*.server.ts",
-        "scripts/**.ts",
+        "scripts/**/*.ts",
         "playwright.config.ts"
       ],
       "rules": {
@@ -97,6 +107,30 @@
         "typescript/consistent-type-imports": "off",
         "import/group-exports": "off"
       }
+    },
+    {
+      // Node-only tooling: scripts, tests and build config run on Node, not in a Worker.
+      "files": [
+        "scripts/**/*.ts",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.config.{ts,js,mjs}",
+        "**/vite-*.js",
+        "svelte-loader.ts"
+      ],
+      "rules": {
+        "node/no-sync": "off",
+        "import/no-nodejs-modules": "off"
+      }
+    },
+    {
+      // Sequential awaits are intentional: ordered browser steps and test setup.
+      "files": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "scripts/ci/pedrohenri-browser.ts"
+      ],
+      "rules": { "eslint/no-await-in-loop": "off" }
     },
     {
       "files": ["*.config.{ts,js,mjs}"],

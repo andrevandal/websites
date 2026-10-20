@@ -1,55 +1,63 @@
 // @ts-nocheck
-import { defineConfig, fontProviders, envField } from "astro/config"
+import { defineConfig, fontProviders } from "astro/config"
 import sunUIAstroIntegration from "@vandal-websites/sun-ui/astro-integration"
 import tailwindcss from "@tailwindcss/vite"
 import { robotsSitemap } from "@vandal-websites/robots-sitemap"
-import partytown from "@astrojs/partytown"
+import { analyticsPlugin } from "@vandal-websites/emdash-plugin-analytics"
 import cloudflare from "@astrojs/cloudflare"
+import node from "@astrojs/node"
+import react from "@astrojs/react"
+import emdash from "emdash/astro"
+import { jmapEmailPlugin } from "@vandal-websites/emdash-plugin-jmap"
+import { mkdirSync } from "node:fs"
+import { loadEnv } from "vite"
+import { awsSdkBrowserField } from "./vite-aws-sdk-browser-field.js"
+import { resolveEmDashProviders } from "./src/cms/providers.ts"
 
 const CANONICAL_SITE_URL = "https://brunabraz.com.br"
+
+const env = loadEnv(import.meta.env.MODE, process.cwd(), "")
+
+const isDev = process.argv.includes("dev")
+if (isDev) mkdirSync("./.data/uploads", { recursive: true })
+
+const { database, storage, auth } = resolveEmDashProviders({ isDev, env })
 
 export default defineConfig({
   output: "server",
 
-  adapter: cloudflare({
-    sessionKVBindingName: "SESSION",
-    imageService: "passthrough",
-    prerenderEnvironment: "node",
-  }),
-
-  env: {
-    schema: {
-      PUBLIC_GOOGLE_ANALYTICS_ID: envField.string({
-        context: "server",
-        access: "public",
-        optional: true,
+  adapter: isDev
+    ? node({ mode: "standalone" })
+    : cloudflare({
+        sessionKVBindingName: "SESSION",
+        imageService: "passthrough",
+        prerenderEnvironment: "node",
       }),
-      PUBLIC_GOOGLE_ADS_CONVERSION_ID: envField.string({
-        context: "server",
-        access: "public",
-        optional: true,
-      }),
-      PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: envField.string({
-        context: "server",
-        access: "public",
-        optional: true,
-      }),
-    },
-    validateSecrets: true,
-  },
 
   integrations: [
     sunUIAstroIntegration({
       svelte: true,
     }),
-    robotsSitemap({ canonicalHost: CANONICAL_SITE_URL }),
-    partytown({
-      config: {
-        forward: [
-          ["dataLayer.push", { preserveBehavior: true }],
-          ["gtag", { preserveBehavior: true }],
-        ],
-      },
+    robotsSitemap({
+      canonicalHost: CANONICAL_SITE_URL,
+      sitemapPath: "/sitemap.xml",
+      injectRobots: false,
+    }),
+    react(),
+    // No siteUrl: on Workers EmDash records the hostname it is served on, so
+    // the admin works on Stage hosts other than the canonical one.
+    emdash({
+      database,
+      storage,
+      ...(auth ? { auth } : {}),
+      admin: { locales: ["pt-BR"] },
+      // Analytics loads in every environment. Only the email plugin is
+      // build-only: dev leaves EmDash's console email provider as the only
+      // one, so it is auto-selected and magic links print to the terminal.
+      plugins: [analyticsPlugin(), ...(isDev ? [] : [jmapEmailPlugin()])],
+      // CI applies core migrations (scripts/deploy.ts migrate); the Worker only
+      // checks and returns 503 while any are pending.
+      migrations: { runtime: "check", dev: "auto" },
     }),
   ],
   fonts: [
@@ -71,8 +79,12 @@ export default defineConfig({
   trailingSlash: "ignore",
   site: CANONICAL_SITE_URL,
 
+  // EmDash reads its content locale from here; without it new entries default
+  // to "en" while the seeded pages, terms, and menus are pt-BR.
+  i18n: { defaultLocale: "pt-BR", locales: ["pt-BR"] },
+
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), !isDev && awsSdkBrowserField],
     // Pre-bundle deps that were being discovered mid-request in the "ssr"
     // (workerd) environment. Late discovery triggers a Vite optimizer
     // reload while a request is in flight; the Cloudflare runner can then
@@ -89,6 +101,12 @@ export default defineConfig({
         "astro-iconset/components",
         "@astro-community/astro-embed-youtube",
       ],
+    },
+    // Node dev leaves node_modules external, but these ship TypeScript or
+    // import `virtual:` modules (directly, or through `emdash`) that only Vite
+    // can resolve. Workers builds bundle everything, so only Node dev needs it.
+    ssr: {
+      noExternal: ["astro", "astro-iconset", /^@astro-community\/astro-embed-/],
     },
   },
 })

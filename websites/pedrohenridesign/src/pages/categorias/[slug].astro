@@ -2,21 +2,17 @@
 import Layout from "@/layouts/Layout.astro"
 import TheHomeCategoryListing from "@/components/TheHomeCategoryListing.astro"
 import { categoryWithPosts } from "@/cms/queries"
-import { mediaSource } from "@/cms/media"
+import { mediaSource } from "@vandal-websites/sun-ui-emdash"
 import { imageUrl } from "@/utils/images"
 import { getSeoMeta } from "emdash"
 
 const { slug } = Astro.params
 
-if (slug === undefined) {
-  throw new Error("Slug is required")
-}
+if (slug === undefined) throw new Error("Slug is required")
 
 const category = await categoryWithPosts(slug)
 
-if (!category) {
-  return Astro.rewrite(new URL("/404", Astro.url), { status: 404 })
-}
+if (!category) return Astro.rewrite(new URL("/404", Astro.url), { status: 404 })
 
 const { social_image } = category.category
 const socialImage = social_image

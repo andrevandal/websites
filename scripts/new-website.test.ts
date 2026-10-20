@@ -19,7 +19,6 @@ const REGISTRATION_FILES = [
   ".github/workflows/pr-preview-cleanup.yml",
   ".github/workflows/release.yml",
   "README.md",
-  "scripts/site-config.ts",
   "scripts/deploy.ts",
 ]
 
@@ -66,13 +65,6 @@ const readYaml = async <T = unknown>(root: string, path: string) =>
 
 const snapshot = async (root: string) =>
   Promise.all(REGISTRATION_FILES.map(path => read(root, path)))
-
-const arrayLiteral = (source: string, name: string) =>
-  [
-    ...(source
-      .match(new RegExp(`const ${name} = \\[(?<items>[^\\]]*)\\]`))
-      ?.groups?.["items"]?.matchAll(/"(?<item>[^"]+)"/g) ?? []),
-  ].map(match => match.groups?.["item"])
 
 // Runs release.yml's real "Compute released websites" step with only `slug`
 // reported as released by release-please.
@@ -134,21 +126,7 @@ describe("createWebsite", () => {
 
     await createWebsite(root, { slug: SLUG })
 
-    const stageVars = {
-      IMAGES_BASE_URL: "",
-      PUBLIC_GOOGLE_ANALYTICS_ID: "",
-      PUBLIC_GOOGLE_ADS_CONVERSION_ID: "",
-      PUBLIC_GOOGLE_ADS_CONVERSION_LABEL: "",
-      ENABLE_PARTYTOWN: "false",
-    }
-    expect(
-      await readJson<Record<string, unknown>>(root, `${SITE}/config.json`)
-    ).toEqual({
-      siteId: SLUG,
-      canonicalHost: `https://${SLUG}`,
-      vars: { preview: stageVars, staging: stageVars, production: stageVars },
-      secretKeys: [],
-    })
+    await expect(read(root, `${SITE}/config.json`)).rejects.toThrow()
     expect(
       await readJson<Record<string, unknown>>(root, `${SITE}/wrangler.json`)
     ).toMatchObject({
@@ -181,11 +159,10 @@ describe("createWebsite", () => {
     expect(astroConfig).toContain(
       "robotsSitemap({ canonicalHost: CANONICAL_SITE_URL })"
     )
-    expect(astroConfig).toMatch(/^ {4}partytown\(\{$/m)
+    expect(astroConfig).not.toContain("partytown")
 
     const layout = await read(root, `${SITE}/src/layouts/Layout.astro`)
-    expect(layout).toContain('import { getSecret } from "astro:env/server"')
-    expect(layout).toContain("gtag={runtimeGtag(getSecret)}")
+    expect(layout).not.toContain("gtag=")
 
     for (const content of await generatedFiles(root)) {
       for (const forbidden of [
@@ -207,9 +184,6 @@ describe("createWebsite", () => {
 
     await createWebsite(root, { slug: SLUG })
 
-    expect(
-      arrayLiteral(await read(root, "scripts/site-config.ts"), "SITE_IDS")
-    ).toContain(SLUG)
     expect(await read(root, "scripts/deploy.ts")).toContain(
       `"${WORKER}": "https://${SLUG}",`
     )
@@ -281,14 +255,6 @@ describe("createWebsite", () => {
 
   test.each([
     [
-      "scripts/site-config.ts",
-      (content: string) =>
-        content.replace(
-          "const SITE_IDS = [",
-          `const SITE_IDS = [\n  "${SLUG}",`
-        ),
-    ],
-    [
       ".github/workflows/pr-preview-cleanup.yml",
       (content: string) =>
         content.replace(" brunabraz,", ` ${SLUG}, brunabraz,`),
@@ -344,7 +310,7 @@ describe("createWebsite", () => {
     const result = await createWebsite(root, { slug: SLUG, dryRun: true })
 
     expect(result).toEqual(
-      expect.arrayContaining([`${SITE}/config.json`, ...REGISTRATION_FILES])
+      expect.arrayContaining([`${SITE}/package.json`, ...REGISTRATION_FILES])
     )
     expect(await snapshot(root)).toEqual(before)
     await expect(read(root, `${SITE}/package.json`)).rejects.toThrow()

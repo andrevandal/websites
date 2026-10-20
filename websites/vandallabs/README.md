@@ -47,6 +47,11 @@ websites/vandallabs/
 └── wrangler.json
 ```
 
+`src/lib/whatsapp.ts` holds only the site's WhatsApp number (`WA_NUMBER`).
+`Modes.astro` and `WhatsAppCta.astro` build links with `waLink` from
+`@vandal-websites/sun-ui`, passing that number and raw English or Portuguese messages
+from `src/lib/i18n.ts`.
+
 ## Local development
 
 Run commands from the repository root.
@@ -62,19 +67,10 @@ The dev server defaults to Astro's local port. If another server is already runn
 
 ## Environment variables
 
-Configured in `.env.example`:
-
-| Variable                             | Purpose                                              |
-| ------------------------------------ | ---------------------------------------------------- |
-| `PUBLIC_GOOGLE_ANALYTICS_ID`         | Optional Google Analytics measurement id.            |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_ID`    | Optional Google Ads conversion id.                   |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional Google Ads conversion label.                |
-| `ENABLE_PARTYTOWN`                   | Loads Gtag through Partytown only when it is `true`. |
-
-CI reads the non-secret values from `config.json` for the requested Stage and
-writes them to the deployed Worker's `wrangler.json` `vars`. The layout reads
-them at request time through `getSecret`. Store a sensitive value only on the
-Worker with `wrangler secret put`; do not add it to `config.json`.
+Configured in `.env.example`: `IMAGES_BASE_URL` and `S3_PUBLIC_URL`.
+Deployed values come from the GitHub environment secret (`IMAGES_BASE_URL`)
+and Infisical `/websites/vandallabs` (`S3_PUBLIC_URL` and any runtime secret),
+and are read at request time through `getSecret`.
 
 ## Icons
 

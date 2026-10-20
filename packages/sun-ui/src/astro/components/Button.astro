@@ -15,8 +15,7 @@ const {
 
 const isLink = Tag === "a"
 
-const isExternalLink =
-  href?.startsWith("http") && !href?.startsWith("/") && !href?.startsWith("#")
+const isExternalLink = href ? /^https?:\/\//i.test(href) : false
 
 const customProps = {
   ...(isLink && {
@@ -46,14 +45,16 @@ const customProps = {
   <style>
     @reference "tailwindcss";
 
-    .btn {
-      @apply box-border flex w-fit flex-row items-center justify-center;
-    }
-    .btn-center {
-      @apply justify-center;
-    }
-    .btn-block {
-      @apply w-full;
+    @layer components {
+      .btn {
+        @apply box-border flex w-fit flex-row items-center justify-center;
+      }
+      .btn-center {
+        @apply justify-center;
+      }
+      .btn-block {
+        @apply w-full;
+      }
     }
   </style>
 </Tag>

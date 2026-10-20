@@ -291,6 +291,7 @@ const applySeedExtensions = async ({
         try {
           // oxlint-disable-next-line no-await-in-loop -- one download per URL, cached
           const { id } = await store(avatarMedia.$media)
+          // oxlint-disable-next-line eslint/no-await-in-loop -- database update must complete sequentially
           await db.run(
             "UPDATE _emdash_bylines SET avatar_media_id = ?, updated_at = ? WHERE id = ?",
             [id, now, row.id]

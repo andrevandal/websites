@@ -38,6 +38,23 @@ describe("resolveEmDashProviders", () => {
     }
   )
 
+  test("passes a build-time public URL without embedding S3 credentials", () => {
+    const { storage } = resolveEmDashProviders({
+      isDev: false,
+      env: {
+        S3_PUBLIC_URL: "https://assets.example.com/site",
+        S3_ENDPOINT: "https://s3.example.invalid",
+        S3_BUCKET: "site",
+        S3_ACCESS_KEY_ID: "runtime-only-key",
+        S3_SECRET_ACCESS_KEY: "runtime-only-secret",
+      },
+    })
+    expect(storage).toEqual({
+      entrypoint: "emdash/storage/s3",
+      config: { publicUrl: "https://assets.example.com/site" },
+    })
+  })
+
   test("uses existing unset libSQL URL when standard has no env", () => {
     const { database } = resolveEmDashProviders({ isDev: false, env: {} })
     expect(database.migrations?.manifestConfig).toEqual({

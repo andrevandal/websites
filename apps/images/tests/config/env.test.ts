@@ -41,7 +41,6 @@ const loadFreshEnvModule = async (env: Record<string, string | undefined>) => {
   for (const key of touchedKeys) delete process.env[key]
   Object.assign(process.env, env)
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const module = await import(
     `../../src/config/env?test=${crypto.randomUUID()}`
   )

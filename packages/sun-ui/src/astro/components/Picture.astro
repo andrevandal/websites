@@ -7,6 +7,8 @@ import {
   buildImageSrcSet,
 } from "../../astro-image-service"
 import {
+  DENSITIES,
+  buildPictureSourceProps,
   computeResponsiveImageProps,
   getPlaceholderModeAttribute,
 } from "./Picture.utils"
@@ -25,8 +27,9 @@ const {
   quality,
   format,
   fit,
-  densities,
+  densities = DENSITIES,
   breakpoints,
+  sources,
   placeholder = true,
   placeholderMode,
   class: className,
@@ -49,10 +52,13 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
   densities,
   breakpoints,
 })
+
+const hasSources = Boolean(sources?.length)
+const Wrapper = hasSources ? "picture" : "div"
 ---
 
-<div
-  class={cn("relative block overflow-hidden", wrapperClass)}
+<Wrapper
+  class={cn("sun-picture relative isolate block overflow-hidden", wrapperClass)}
   data-sun-picture-placeholder={placeholderUrl ? "" : undefined}
   data-sun-picture-placeholder-mode={placeholderModeAttribute}
   style={{
@@ -62,6 +68,21 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
     "--ratio": [width, height].join("/"),
   }}
 >
+  {
+    hasSources &&
+      sources?.map(source => (
+        <source
+          {...buildPictureSourceProps({
+            ...source,
+            quality,
+            format,
+            fit,
+            densities,
+            imageServiceBaseUrl,
+          })}
+        />
+      ))
+  }
   {
     imageServiceBaseUrl ? (
       responsiveWidths ? (
@@ -92,11 +113,13 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
                 fit,
               })}
               srcset={srcset}
-              sizes={sizes}
+              sizes={hasSources && rest.sizes !== undefined ? undefined : sizes}
               alt={alt}
+              width={hasSources ? width : undefined}
+              height={hasSources ? height : undefined}
               loading={loading}
               decoding={decoding}
-              class={cn("aspect-(--ratio)", className)}
+              class={cn(!hasSources && "aspect-(--ratio)", className)}
               {...rest}
             />
           )
@@ -130,9 +153,11 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
               })}
               srcset={srcset}
               alt={alt}
+              width={hasSources ? width : undefined}
+              height={hasSources ? height : undefined}
               loading={loading}
               decoding={decoding}
-              class={cn("aspect-(--ratio)", className)}
+              class={cn(!hasSources && "aspect-(--ratio)", className)}
               {...rest}
             />
           )
@@ -146,12 +171,12 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
         height={height}
         loading={loading}
         decoding={decoding}
-        class={cn("aspect-(--ratio)", className)}
+        class={cn(!hasSources && "aspect-(--ratio)", className)}
         {...rest}
       />
     )
   }
-</div>
+</Wrapper>
 
 {
   placeholderUrl && (
@@ -162,12 +187,7 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
 }
 
 <style>
-  .sun-picture {
-    position: relative;
-    display: block;
-    overflow: hidden;
-  }
-
+  /* `.sun-picture` scopes the placeholder rules; layout comes from utilities. */
   .sun-picture[data-sun-picture-placeholder]::before {
     content: "";
     position: absolute;
@@ -200,24 +220,39 @@ const { responsiveWidths, sizes } = computeResponsiveImageProps({
 </style>
 
 <script>
+  const PLACEHOLDER = "[data-sun-picture-placeholder]"
+
   const revealImage = (wrapper: HTMLElement) => {
     wrapper.setAttribute("data-placeholder-loaded", "")
   }
 
-  document
-    .querySelectorAll<HTMLElement>("[data-sun-picture-placeholder]")
-    .forEach(wrapper => {
-      const image = wrapper.querySelector("img")
-      if (!image) return
+  const watchImage = (wrapper: HTMLElement) => {
+    const image = wrapper.querySelector("img")
+    if (!image) return
 
-      if (image.complete) revealImage(wrapper)
-      else {
-        image.addEventListener("load", () => revealImage(wrapper), {
-          once: true,
-        })
-        image.addEventListener("error", () => revealImage(wrapper), {
-          once: true,
-        })
+    if (image.complete) revealImage(wrapper)
+    else {
+      image.addEventListener("load", () => revealImage(wrapper), {
+        once: true,
+      })
+      image.addEventListener("error", () => revealImage(wrapper), {
+        once: true,
+      })
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>(PLACEHOLDER).forEach(watchImage)
+
+  // Pictures inserted after load (e.g. fetched HTML fragments) need the same
+  // reveal; scripts inside inserted HTML never run.
+  new MutationObserver(records => {
+    for (const record of records) {
+      for (const node of record.addedNodes) {
+        if (node instanceof HTMLElement) {
+          if (node.matches(PLACEHOLDER)) watchImage(node)
+          node.querySelectorAll<HTMLElement>(PLACEHOLDER).forEach(watchImage)
+        }
       }
-    })
+    }
+  }).observe(document.body, { childList: true, subtree: true })
 </script>

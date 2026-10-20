@@ -1,7 +1,8 @@
 ---
+import { waLink } from "@vandal-websites/sun-ui"
 import { SunButton, SunIcon } from "@vandal-websites/sun-ui/astro"
 import type { Dict } from "@lib/i18n"
-import { waLink } from "@lib/whatsapp"
+import { WA_NUMBER } from "#/lib/whatsapp"
 
 type Props = {
   dict: Dict
@@ -12,7 +13,7 @@ const { dict } = Astro.props
 
 <SunButton
   as="a"
-  href={waLink(dict.wa_general)}
+  href={waLink(WA_NUMBER, dict.wa_general)}
   target="_blank"
   className="lb-cta border-ink-900 bg-signal text-ink-900 hover:bg-signal-300 mt-8 gap-4 border-[1.5px] px-6 py-4.5 shadow-[4px_4px_0_var(--color-ink-900)] duration-180 ease-out *:inline-flex *:items-center *:justify-center *:gap-2 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--color-ink-900)] active:translate-x-px active:translate-y-px active:shadow-[2px_2px_0_var(--color-ink-900)]"
   style="border-radius: var(--radius-r1)"

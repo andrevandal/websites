@@ -1,0 +1,2586 @@
+{
+  "$schema": "https://emdashcms.com/seed.schema.json",
+  "version": "1",
+  "defaultLocale": "pt-BR",
+  "meta": {
+    "name": "Bruna Braz",
+    "description": "Bruna Braz's site, English teacher",
+    "author": "websites"
+  },
+  "settings": {
+    "title": "Bruna Braz",
+    "tagline": "Bruna Braz é professora de inglês com 10 anos de experiência e mestrado na área. Aulas online personalizadas para você ampliar sua voz no mundo. Saiba mais!",
+    "seo": {
+      "defaultOgImage": {
+        "$media": {
+          "url": "https://files.vandal.services/brunabraz/images/social/home-page.png",
+          "filename": "home-page.png",
+          "alt": "Bruna Braz, professora de inglês"
+        }
+      }
+    }
+  },
+  "blockTypes": [
+    {
+      "slug": "hero",
+      "label": "Hero",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "variant",
+              "label": "Style",
+              "type": "select",
+              "required": true,
+              "validation": {
+                "options": ["home", "lp"]
+              }
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "description",
+              "label": "Description",
+              "type": "text"
+            },
+            {
+              "slug": "image",
+              "label": "Image",
+              "type": "image",
+              "required": true
+            },
+            {
+              "slug": "cta_label",
+              "label": "Button text",
+              "type": "string"
+            },
+            {
+              "slug": "whatsapp_message",
+              "label": "WhatsApp message",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "credentials",
+      "label": "Credentials strip",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "items",
+              "label": "Credentials",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "text",
+                    "label": "Text (line break becomes <br>)",
+                    "type": "text",
+                    "required": true
+                  }
+                ],
+                "minItems": 1,
+                "maxItems": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "image_carousel",
+      "label": "Text with photo carousel",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "body",
+              "label": "Text",
+              "type": "text"
+            },
+            {
+              "slug": "images",
+              "label": "Photos",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "image",
+                    "label": "Photo",
+                    "type": "image",
+                    "required": true
+                  }
+                ],
+                "minItems": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "story_video",
+      "label": "Story with video",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "eyebrow",
+              "label": "Eyebrow",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "body",
+              "label": "Text",
+              "type": "text"
+            },
+            {
+              "slug": "youtube_id",
+              "label": "YouTube video ID",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "video_title",
+              "label": "Video title",
+              "type": "string"
+            },
+            {
+              "slug": "cta_label",
+              "label": "Button text",
+              "type": "string"
+            },
+            {
+              "slug": "whatsapp_message",
+              "label": "WhatsApp message",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "timeline",
+      "label": "Timeline",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "items",
+              "label": "Milestones",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "icon",
+                    "label": "Icon",
+                    "type": "select",
+                    "required": true,
+                    "options": [
+                      "book-open",
+                      "cairn",
+                      "compass",
+                      "dog",
+                      "eye",
+                      "feather",
+                      "flying-book",
+                      "globe-outline",
+                      "graduation-cap",
+                      "infinity",
+                      "language",
+                      "languages",
+                      "leaf-branch",
+                      "leaf-outline",
+                      "moon",
+                      "note-card",
+                      "paw-print",
+                      "plant-sprig",
+                      "plant-stem",
+                      "presentation",
+                      "rainbow",
+                      "star-flower",
+                      "sun",
+                      "sunflower",
+                      "tea-cup",
+                      "world",
+                      "writing-book"
+                    ]
+                  },
+                  {
+                    "slug": "period",
+                    "label": "Period (use ∞ for the infinity icon)",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "name",
+                    "label": "Name",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "description",
+                    "label": "Description (line break becomes <br>)",
+                    "type": "text",
+                    "required": true
+                  }
+                ],
+                "minItems": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "feature_cards",
+      "label": "Text with cards",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "variant",
+              "label": "Style",
+              "type": "select",
+              "required": true,
+              "validation": {
+                "options": ["white", "tinted"]
+              }
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "body",
+              "label": "Text",
+              "type": "text"
+            },
+            {
+              "slug": "cards",
+              "label": "Cards",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "icon",
+                    "label": "Icon",
+                    "type": "select",
+                    "required": true,
+                    "options": [
+                      "book-open",
+                      "cairn",
+                      "compass",
+                      "dog",
+                      "eye",
+                      "feather",
+                      "flying-book",
+                      "globe-outline",
+                      "graduation-cap",
+                      "infinity",
+                      "language",
+                      "languages",
+                      "leaf-branch",
+                      "leaf-outline",
+                      "moon",
+                      "note-card",
+                      "paw-print",
+                      "plant-sprig",
+                      "plant-stem",
+                      "presentation",
+                      "rainbow",
+                      "star-flower",
+                      "sun",
+                      "sunflower",
+                      "tea-cup",
+                      "world",
+                      "writing-book"
+                    ]
+                  },
+                  {
+                    "slug": "title",
+                    "label": "Title",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "description",
+                    "label": "Description",
+                    "type": "text",
+                    "required": true
+                  }
+                ],
+                "minItems": 1,
+                "maxItems": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "purpose",
+      "label": "Purpose with numbered list",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "body",
+              "label": "Text",
+              "type": "text"
+            },
+            {
+              "slug": "eyebrow",
+              "label": "List eyebrow",
+              "type": "string"
+            },
+            {
+              "slug": "items",
+              "label": "Items",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "text",
+                    "label": "Text",
+                    "type": "string",
+                    "required": true
+                  }
+                ],
+                "minItems": 1
+              }
+            },
+            {
+              "slug": "cta_label",
+              "label": "Button text",
+              "type": "string"
+            },
+            {
+              "slug": "whatsapp_message",
+              "label": "WhatsApp message",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "text_split",
+      "label": "Heading and text side by side",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "body",
+              "label": "Text (blank line splits paragraphs)",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "numbered_list",
+      "label": "Numbered list in two columns",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "items",
+              "label": "Items",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "title",
+                    "label": "Title",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "description",
+                    "label": "Description",
+                    "type": "text",
+                    "required": true
+                  }
+                ],
+                "minItems": 1
+              }
+            },
+            {
+              "slug": "closing",
+              "label": "Closing line",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "method",
+      "label": "Method in pillars",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "body",
+              "label": "Text",
+              "type": "portableText"
+            },
+            {
+              "slug": "pillars",
+              "label": "Pillars",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "title",
+                    "label": "Title",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "description",
+                    "label": "Description",
+                    "type": "text",
+                    "required": true
+                  }
+                ],
+                "minItems": 1,
+                "maxItems": 3
+              }
+            },
+            {
+              "slug": "closing",
+              "label": "Closing line (use *text* for bold)",
+              "type": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "how_it_works",
+      "label": "How the classes work",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "body",
+              "label": "Text (use *text* for italic)",
+              "type": "string"
+            },
+            {
+              "slug": "video_mp4",
+              "label": "MP4 video (URL)",
+              "type": "url"
+            },
+            {
+              "slug": "video_webm",
+              "label": "WebM video (URL)",
+              "type": "url"
+            },
+            {
+              "slug": "poster",
+              "label": "Video poster",
+              "type": "image"
+            },
+            {
+              "slug": "video_title",
+              "label": "Video title",
+              "type": "string"
+            },
+            {
+              "slug": "steps",
+              "label": "Steps",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "title",
+                    "label": "Title",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "description",
+                    "label": "Description",
+                    "type": "text",
+                    "required": true
+                  }
+                ],
+                "minItems": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "results",
+      "label": "Results",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "body",
+              "label": "Text",
+              "type": "text"
+            },
+            {
+              "slug": "items",
+              "label": "Items",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "title",
+                    "label": "Title",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "description",
+                    "label": "Description",
+                    "type": "text",
+                    "required": true
+                  }
+                ],
+                "minItems": 1
+              }
+            },
+            {
+              "slug": "banner",
+              "label": "Closing banner (blank line splits paragraphs)",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "testimonials",
+      "label": "Testimonials",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "description",
+              "label": "Description",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "description": "Lists the published testimonials."
+    },
+    {
+      "slug": "pricing",
+      "label": "Pricing calculator",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "description": "Pricing calculator. Values live in the site's code."
+    },
+    {
+      "slug": "faq",
+      "label": "FAQ",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "eyebrow",
+              "label": "Eyebrow",
+              "type": "string"
+            },
+            {
+              "slug": "heading",
+              "label": "Heading (use *text* to highlight)",
+              "type": "string",
+              "required": true
+            },
+            {
+              "slug": "items",
+              "label": "Questions",
+              "type": "repeater",
+              "validation": {
+                "subFields": [
+                  {
+                    "slug": "question",
+                    "label": "Question",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "slug": "answer",
+                    "label": "Answer",
+                    "type": "text",
+                    "required": true
+                  }
+                ],
+                "minItems": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "closing_cta",
+      "label": "Closing CTA",
+      "currentVersion": 1,
+      "versions": [
+        {
+          "version": 1,
+          "fields": [
+            {
+              "slug": "anchor",
+              "label": "Anchor (section id)",
+              "type": "string"
+            },
+            {
+              "slug": "quote",
+              "label": "Quote (blank line splits paragraphs)",
+              "type": "text",
+              "required": true
+            },
+            {
+              "slug": "cta_label",
+              "label": "Button text",
+              "type": "string"
+            },
+            {
+              "slug": "whatsapp_message",
+              "label": "WhatsApp message",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "slug": "pages",
+      "label": "Pages",
+      "labelSingular": "Page",
+      "supports": ["drafts", "revisions", "preview", "seo"],
+      "urlPattern": "/{slug}",
+      "sortOrder": 1,
+      "fields": [
+        {
+          "slug": "nav_variant",
+          "label": "Menu color",
+          "type": "select",
+          "required": true,
+          "defaultValue": "brown",
+          "validation": {
+            "options": ["brown", "green"]
+          }
+        },
+        {
+          "slug": "layout",
+          "label": "Sections",
+          "type": "blocks",
+          "validation": {
+            "allowedTypes": [
+              "hero",
+              "credentials",
+              "image_carousel",
+              "story_video",
+              "timeline",
+              "feature_cards",
+              "purpose",
+              "text_split",
+              "numbered_list",
+              "method",
+              "how_it_works",
+              "results",
+              "testimonials",
+              "pricing",
+              "faq",
+              "closing_cta"
+            ],
+            "maxItems": 40
+          }
+        }
+      ]
+    },
+    {
+      "slug": "testimonials",
+      "label": "Testimonials",
+      "labelSingular": "Testimonial",
+      "supports": ["drafts"],
+      "routable": false,
+      "sortOrder": 2,
+      "titleField": "author",
+      "fields": [
+        {
+          "slug": "author",
+          "label": "Name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "role",
+          "label": "Role",
+          "type": "string"
+        },
+        {
+          "slug": "content",
+          "label": "Testimonial",
+          "type": "text",
+          "required": true
+        },
+        {
+          "slug": "photo",
+          "label": "Photo",
+          "type": "image",
+          "required": true
+        }
+      ]
+    },
+    {
+      "slug": "posts",
+      "label": "Posts",
+      "labelSingular": "Post",
+      "supports": ["drafts", "revisions", "preview", "seo"],
+      "urlPattern": "/blog/{slug}",
+      "sortOrder": 4,
+      "titleField": "title",
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "excerpt",
+          "label": "Excerpt",
+          "type": "text"
+        },
+        {
+          "slug": "featured_image",
+          "label": "Featured image",
+          "type": "image"
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "portableText"
+        },
+        {
+          "slug": "featured",
+          "label": "Destaque",
+          "type": "boolean",
+          "defaultValue": false
+        }
+      ]
+    }
+  ],
+  "taxonomies": [
+    {
+      "name": "category",
+      "label": "Categories",
+      "labelSingular": "Category",
+      "hierarchical": true,
+      "collections": ["posts"],
+      "terms": [
+        { "slug": "linguistics", "label": "Linguistics" },
+        { "slug": "narratives", "label": "Narratives" },
+        { "slug": "culture", "label": "Culture" },
+        { "slug": "the-english-language", "label": "The English Language" },
+        {
+          "slug": "history",
+          "label": "History",
+          "parent": "the-english-language"
+        },
+        {
+          "slug": "grammar",
+          "label": "Grammar",
+          "parent": "the-english-language"
+        },
+        {
+          "slug": "vocabulary",
+          "label": "Vocabulary",
+          "parent": "the-english-language"
+        },
+        {
+          "slug": "pronunciation",
+          "label": "Pronunciation",
+          "parent": "the-english-language"
+        },
+        { "slug": "teaching", "label": "Teaching" },
+        { "slug": "travel", "label": "Travel" }
+      ]
+    }
+  ],
+  "menus": [
+    {
+      "name": "primary",
+      "label": "Main menu",
+      "items": [
+        {
+          "type": "custom",
+          "label": "Sobre Mim",
+          "url": "/#minha-trajetoria"
+        },
+        {
+          "type": "custom",
+          "label": "Minhas Aulas",
+          "url": "/aula-ingles-particular"
+        },
+        {
+          "type": "custom",
+          "label": "Blog",
+          "url": "/blog"
+        }
+      ]
+    },
+    {
+      "name": "social",
+      "label": "Social links (footer)",
+      "items": [
+        {
+          "type": "custom",
+          "label": "Siga-me no Instagram",
+          "url": "https://www.instagram.com/teacherbrunabraz/",
+          "target": "_blank"
+        },
+        {
+          "type": "custom",
+          "label": "Siga-me no Youtube",
+          "url": "https://www.youtube.com/channel/UCY9X9GT9MhPdUggz5XG-fmQ",
+          "target": "_blank"
+        },
+        {
+          "type": "custom",
+          "label": "Siga-me na Twitch",
+          "url": "https://www.twitch.tv/princesafoia",
+          "target": "_blank"
+        },
+        {
+          "type": "custom",
+          "label": "Seja parte da minha comunidade",
+          "url": "https://discord.gg/UuxEUhYF2S",
+          "target": "_blank"
+        }
+      ]
+    }
+  ],
+  "bylineFields": [
+    { "slug": "headline", "label": "Headline", "type": "string" },
+    { "slug": "cta_label", "label": "CTA label", "type": "string" }
+  ],
+  "bylines": [
+    {
+      "id": "byline-bruna-braz",
+      "slug": "bruna-braz",
+      "displayName": "Bruna Braz",
+      "bio": "Dou aula de inglês desde 2016 e estudo idiomas desde muito antes disso. Escrevo aqui sobre o que a sala de aula me ensina: pronúncia, gramática viva, linguística e as culturas que aprendemos junto com as palavras.",
+      "websiteUrl": "https://brunabraz.com.br/aula-ingles-particular",
+      "avatarMedia": {
+        "$media": {
+          "url": "https://files.vandal.services/brunabraz/images/blog/authors/bruna-braz.jpg",
+          "filename": "bruna-braz.jpg",
+          "alt": "Bruna Braz"
+        }
+      },
+      "customFields": {
+        "headline": "Professora de inglês e escritora deste blog",
+        "cta_label": "Conheça minhas aulas"
+      }
+    }
+  ],
+  "content": {
+    "posts": [
+      {
+        "id": "post-ia-era",
+        "slug": "por-que-aprender-outra-lingua-na-era-da-ia",
+        "status": "published",
+        "data": {
+          "title": "Por que aprender outra língua em plena era de inteligências artificiais?",
+          "excerpt": "",
+          "featured": true,
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/por-que-aprender-outra-lingua-na-era-da-ia.jpg",
+              "filename": "por-que-aprender-outra-lingua-na-era-da-ia.jpg",
+              "alt": "Bruna Braz ensinando inglês, cercada por elementos de linguagem e cultura"
+            }
+          },
+          "content": [
+            {
+              "_type": "image",
+              "_key": "img-1",
+              "asset": {
+                "$media": {
+                  "url": "https://files.vandal.services/brunabraz/images/blog/por-que-aprender-outra-lingua-na-era-da-ia-1.jpg",
+                  "filename": "por-que-aprender-outra-lingua-na-era-da-ia-1.jpg",
+                  "alt": ""
+                }
+              }
+            },
+            {
+              "_type": "block",
+              "_key": "p-1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-1-s",
+                  "text": "Para mim, o fato de sequer nos fazermos essa pergunta já nos traz a resposta: línguas nunca serviram apenas para transferência de informações.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-2",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-2-s",
+                  "text": "Se a língua fosse apenas um código (ou seja, um meio de troca para decifrar um cardápio, uma placa de trânsito ou um e-mail comercial), então o avanço da tradução quase instantânea por IA poderia, de fato, fazer do aprendizado de outro idioma um hobby nostálgico, como escrever cartas ou ouvir música em vinil. Mas língua não é código. É um modo de ser humano, e é exatamente aí que termina a utilidade da IA.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-3",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-3-s",
+                  "text": "Decidi escrever este texto com o propósito de destrinchar convicção de que, especialmente agora, aprender outro idioma é um ato de resistência e de profunda expansão.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "h2-1",
+              "style": "h2",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h2-1-s",
+                  "text": "Língua não é código",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "h3-1",
+              "style": "h3",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h3-1-s",
+                  "text": "Cada língua recorta o mundo de maneira diferente",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-4",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-4-s",
+                  "text": "Trago aqui alguns exemplos das línguas que mais estudei ao longo da minha vida:",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-5",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-5-s",
+                  "text": "Em espanhol você não deixa algo cair por acidente, pois algo 'cai de você' [se me cayó], o que difunde a culpa e molda toda a relação de uma cultura com responsabilidade e perdão.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-6",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-6-s",
+                  "text": "Em japonês você simplesmente não pode dizer 'não' a alguém que possua um cargo superior ao seu. É necessário navegar por uma gradação de recusas que preservam a harmonia social.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-7",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-7-s",
+                  "text": "Em inglês, se você chegar em uma cafeteria e disser 'quero um cafezinho' [I want a coffee], quem estiver te atendendo vai ter uma percepção completamente rude de você, mesmo que não tenha sido a sua intenção (de quem teve seu pensamento moldado pelo português-brasileiro).",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "image",
+              "_key": "img-2",
+              "asset": {
+                "$media": {
+                  "url": "https://files.vandal.services/brunabraz/images/blog/por-que-aprender-outra-lingua-na-era-da-ia-2.jpg",
+                  "filename": "por-que-aprender-outra-lingua-na-era-da-ia-2.jpg",
+                  "alt": ""
+                }
+              }
+            },
+            {
+              "_type": "block",
+              "_key": "h3-2",
+              "style": "h3",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h3-2-s",
+                  "text": "Um novo sistema operacional para a cognição",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-8",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-8-s",
+                  "text": "A IA pode até traduzir as palavras, mas não pode fazer você pensar nessas estruturas. Ela não consegue reconectar suas vias neurais para abrigar uma lógica completamente nova dentro da sua própria cabeça. Aprender um novo idioma é quase como se estivéssemos instalando um novo sistema operacional para nossa cognição. Você começa a perceber nuances que uma máquina, que apenas prevê a próxima palavra provável, simplesmente não consegue. Uma máquina pode até conhecer a palavra 'saudade', mas é só quando se aprende português de verdade que se conhece a dor que ela carrega.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "h3-3",
+              "style": "h3",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h3-3-s",
+                  "text": "A conexão humana mora onde a IA não alcança",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-9",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-9-s",
+                  "text": "Além disso, a conexão humana floresce no espaço que a IA não alcança: vulnerabilidade e presença. Gosto de trazer exemplos concretos, então imagine-se em um restaurante no Cairo e você, nervosamente, tenta a sua primeira frase totalmente autocomposta em árabe. Você massacra a pronúncia dessas palavras, mas a pessoa à sua frente vai além da pura decodificação da sua construção truncada: ela vê seu esforço, sua humildade, sua disposição de se conectar com a cultura dela. O rosto dela se abre num sorriso genuíno e, de repente, também se abre uma porta que nenhuma tradução impecável mediada por uma tela jamais poderia destrancar.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "image",
+              "_key": "img-3",
+              "asset": {
+                "$media": {
+                  "url": "https://files.vandal.services/brunabraz/images/blog/por-que-aprender-outra-lingua-na-era-da-ia-3.jpg",
+                  "filename": "por-que-aprender-outra-lingua-na-era-da-ia-3.jpg",
+                  "alt": ""
+                }
+              }
+            },
+            {
+              "_type": "block",
+              "_key": "p-10",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-10-s",
+                  "text": "A IA promete uma comunicação sem atritos, mas a intimidade humana costuma ser construída justamente neles. A risada compartilhada diante de um erro, o brilho de reconhecimento quando você usa uma expressão corretamente… Esses são sinais de respeito e eles dizem \"eu vejo você, e estou me esforçando para me aproximar do seu mundo\". Numa era de eficiência estéril, esse trabalho humano e bagunçado está, pelo menos para mim, se tornando a moeda mais rara e valiosa de todas.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "h2-2",
+              "style": "h2",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h2-2-s",
+                  "text": "O que acontece com quem aprende um idioma",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "h3-4",
+              "style": "h3",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h3-4-s",
+                  "text": "O que o mercado realmente passou a valorizar",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-11",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-11-s",
+                  "text": "Sendo professora de inglês desde 2016, vi em 2021 o pânico inicial dos meus colegas de trabalho que o boom das IA-generativas sugeria que saber idiomas se tornaria obsoleto no mercado de trabalho. Porém, a realidade é bem mais sutil: qualquer pessoa agora pode traduzir um PDF, mas poucas conseguem negociar uma parceria intercultural delicada, interpretar a hesitação silenciosa por trás do 'sim' de um cliente ou até criar um produto que ressoe emocionalmente em um mercado que só conheceram por meio de dados. Quem internalizou um idioma traz uma inteligência cultural intuitiva que nenhum plug-in do Chat GPT pode oferecer.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "h3-5",
+              "style": "h3",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h3-5-s",
+                  "text": "Um ato radical de recuperar a neuroplasticidade",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-12",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-12-s",
+                  "text": "Outro ponto são os benefícios cognitivos do aprendizado de um novo idioma que já são bem documentados, mas acredito valer a pena reformulá-los para a era das IAs. Numa época em que terceirizamos cada vez mais nossa vida mental para algoritmos (lembrar trajetos, recordar fatos, até mesmo esboçar nossos pensamentos), aprender idiomas é um ato radical de recuperar sua neuroplasticidade. Basicamente é um treino completo para o cérebro, que afasta o declínio cognitivo e fortalece as funções executivas.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "h3-6",
+              "style": "h3",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h3-6-s",
+                  "text": "Uma educação moral de paciência e humildade",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-13",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-13-s",
+                  "text": "Só que, gosto de dizer que, tanto como professora como também estudante, chega ser até mais do que isso. Aprender outra língua é uma educação moral de paciência e humildade. Você será novamente um iniciante. Vai \"passar vergonha\" por meses, talvez anos. Em um mundo que busca a perfeição da máquina, escolher tropeçar por uma nova gramática é uma forma de permanecer humano, de praticar a arte perdida de conviver com o desconforto por uma recompensa profunda na sua alma.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "h2-3",
+              "style": "h2",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "h2-3-s",
+                  "text": "O porquê mudou, e isso é um presente",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-14",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-14-s",
+                  "text": "Para finalizar meus pensamentos, creio que o porquê de aprender um idioma mudou, e vejo isso como um presente.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-15",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-15-s",
+                  "text": "No passado, as pessoas aprendiam idiomas principalmente por utilidade: para fazer comércio, estudar textos sagrados, negociar. A IA agora eliminou essa justificativa puramente utilitária, e vejo que o que sobrou é algo mais puro. Hoje aprendemos idiomas porque queremos amar de forma mais ampla, ler Shakespeare e sentir a eletricidade no verso original, deixar de ser turistas nos muitos aposentos do mundo, quebrar a ilusão de que nossa língua materna nomeia tudo o que é real.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p-16",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p-16-s",
+                  "text": "A era da IA — paradoxalmente — finalmente permite que o aprendizado de idiomas seja o que, secretamente, sempre foi: uma passagem para uma vida mais rica. A máquina pode até mediar o mundo para você, mas nunca vai viver esse mundo no seu lugar. Escolher aprender outro idioma é, no fim das contas, escolher experimentar mais do que significa estar vivo (algo que nenhum algoritmo jamais poderá fazer por você).",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["history"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      },
+      {
+        "id": "post-lingua-nao-codigo",
+        "slug": "lingua-nao-e-codigo",
+        "status": "published",
+        "data": {
+          "title": "Língua não é código",
+          "excerpt": "",
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/lingua-nao-e-codigo.jpg",
+              "filename": "lingua-nao-e-codigo.jpg",
+              "alt": "Exploração de linguagem e comunicação"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "_key": "p1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p1-s",
+                  "text": "Langue não é código, mas um sistema vivo de comunicação que vai além de regras e estruturas gramaticais.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p2",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p2-s",
+                  "text": "Uma língua é uma manifestação da cultura, da história e da forma como as pessoas enxergam e interpretam o mundo ao seu redor.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p3",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p3-s",
+                  "text": "Quando aprendemos uma nova língua, não estamos apenas memorizando palavras e regras, estamos adquirindo uma nova forma de pensar e de estar no mundo.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["linguistics"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      },
+      {
+        "id": "post-cada-lingua",
+        "slug": "cada-lingua-recorta-mundo",
+        "status": "published",
+        "data": {
+          "title": "Cada língua recorta o mundo de maneira diferente",
+          "excerpt": "",
+          "featured": true,
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/cada-lingua-recorta-mundo.jpg",
+              "filename": "cada-lingua-recorta-mundo.jpg",
+              "alt": "Diferentes perspectivas e culturas"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "_key": "p1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p1-s",
+                  "text": "Cada idioma possui sua própria forma de categorizar e descrever a realidade.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p2",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p2-s",
+                  "text": "O vocabulário de uma língua reflete as prioridades e valores de sua comunidade falante.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p3",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p3-s",
+                  "text": "Estruturas gramaticais diferentes refletem formas diferentes de pensar sobre tempo, espaço e relações.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p4",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p4-s",
+                  "text": "Por isso, aprender uma nova língua é aprender uma nova forma de ver e interpretar o mundo.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["culture"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      },
+      {
+        "id": "post-novo-sistema",
+        "slug": "novo-sistema-operacional-cognicao",
+        "status": "published",
+        "data": {
+          "title": "Um novo sistema operacional para a cognição",
+          "excerpt": "",
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/novo-sistema-operacional-cognicao.jpg",
+              "filename": "novo-sistema-operacional-cognicao.jpg",
+              "alt": "Transformação cognitiva através da linguagem"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "_key": "p1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p1-s",
+                  "text": "Aprender um novo idioma é como instalar um novo sistema operacional em seu cérebro, alterando permanentemente a forma como você processa informações e compreende o mundo.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["linguistics"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      },
+      {
+        "id": "post-conexao-humana",
+        "slug": "conexao-humana-onde-ia-nao-alcanca",
+        "status": "published",
+        "data": {
+          "title": "A conexão humana mora onde a IA não alcança",
+          "excerpt": "",
+          "featured": true,
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/conexao-humana-onde-ia-nao-alcanca.jpg",
+              "filename": "conexao-humana-onde-ia-nao-alcanca.jpg",
+              "alt": "Conexão humana e aprendizado pessoal"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "_key": "p1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p1-s",
+                  "text": "A verdadeira aprendizagem vai além da transferência de informações.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p2",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p2-s",
+                  "text": "Ela acontece na relação entre pessoas, na empatia, na compreensão mútua e na construção compartilhada de significados.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["narratives"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      },
+      {
+        "id": "post-mercado",
+        "slug": "mercado-valorizar",
+        "status": "published",
+        "data": {
+          "title": "O que o mercado realmente passou a valorizar",
+          "excerpt": "",
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/mercado-valorizar.jpg",
+              "filename": "mercado-valorizar.jpg",
+              "alt": "Evolução do mercado de trabalho"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "_key": "p1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p1-s",
+                  "text": "O mercado atual valoriza não apenas conhecimento técnico, mas a capacidade de comunicar, colaborar e adaptar-se em contextos multiculturais e multilíngues.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["teaching"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      },
+      {
+        "id": "post-neuroplasticidade",
+        "slug": "ato-radical-neuroplasticidade",
+        "status": "published",
+        "data": {
+          "title": "Um ato radical de recuperar a neuroplasticidade",
+          "excerpt": "",
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/ato-radical-neuroplasticidade.jpg",
+              "filename": "ato-radical-neuroplasticidade.jpg",
+              "alt": "Neuroplasticidade e aprendizado"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "_key": "p1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p1-s",
+                  "text": "Aprender uma nova língua é um ato radical que ativa e fortalece a neuroplasticidade, a capacidade do cérebro de se reorganizar e formar novas conexões neurais ao longo da vida.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["grammar"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      },
+      {
+        "id": "post-educacao-paciencia",
+        "slug": "educacao-paciencia-humildade",
+        "status": "published",
+        "data": {
+          "title": "Uma educação moral de paciência e humildade",
+          "excerpt": "",
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/educacao-paciencia-humildade.jpg",
+              "filename": "educacao-paciencia-humildade.jpg",
+              "alt": "Aprendizado com paciência e humildade"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "_key": "p1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p1-s",
+                  "text": "O aprendizado de um idioma nos ensina paciência, humildade e perseverança, valores essenciais para uma educação verdadeiramente significativa.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["vocabulary"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      },
+      {
+        "id": "post-porque-mudou",
+        "slug": "porque-mudou-presente",
+        "status": "published",
+        "data": {
+          "title": "O porquê mudou, e isso é um presente",
+          "excerpt": "",
+          "featured_image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/blog/porque-mudou-presente.jpg",
+              "filename": "porque-mudou-presente.jpg",
+              "alt": "Transformação e mudança positiva"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "_key": "p1",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p1-s",
+                  "text": "O mundo mudou, e com ele, os motivos pelos quais aprendemos idiomas também se transformaram.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p2",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p2-s",
+                  "text": "Agora aprendemos não por obrigação, mas por um desejo genuíno de conexão, expansão e transformação pessoal.",
+                  "marks": []
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "p3",
+              "style": "normal",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "p3-s",
+                  "text": "E isso, verdadeiramente, é um presente para quem está disposto a abraçar essa jornada.",
+                  "marks": []
+                }
+              ]
+            }
+          ]
+        },
+        "taxonomies": {
+          "category": ["travel"]
+        },
+        "bylines": [{ "byline": "byline-bruna-braz" }]
+      }
+    ],
+    "pages": [
+      {
+        "id": "page-home",
+        "slug": "inicio",
+        "status": "published",
+        "seo": {
+          "title": "Bruna Braz | Professora de Inglês Online e Aulas Personalizadas",
+          "description": "Bruna Braz é professora de inglês com 10 anos de experiência e mestrado na área. Aulas online personalizadas para você ampliar sua voz no mundo. Saiba mais!",
+          "image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/social/home-page.png",
+              "filename": "home-page.png",
+              "alt": "Bruna Braz, professora de inglês"
+            }
+          }
+        },
+        "data": {
+          "nav_variant": "brown",
+          "layout": [
+            {
+              "_type": "hero",
+              "_version": 1,
+              "_key": "home-hero",
+              "variant": "home",
+              "heading": "Faça do *inglês* uma ferramenta para *ampliar sua voz no mundo*",
+              "description": "Prazer, me chamo Bruna Braz e sou [sua futura] professora de inglês! Tenho como máxima ensinar este idioma de forma personalizada, crítica e humana, conectando aprendizado, cultura, autonomia e expressão.",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/brunabraz/images/hero_pagina-inicial.png",
+                  "filename": "hero_pagina-inicial.png",
+                  "alt": "Bruna Braz, professora de inglês"
+                }
+              },
+              "cta_label": "Quero estudar com você!",
+              "whatsapp_message": "Olá, Bruna! Vi seu site e quero saber mais sobre as aulas de inglês."
+            },
+            {
+              "_type": "credentials",
+              "_version": 1,
+              "_key": "home-credentials",
+              "anchor": "credenciais",
+              "items": [
+                {
+                  "text": "10 anos de experiência\n(6 anos online)"
+                },
+                {
+                  "text": "Letras-Inglês\n(Universidade Estadual de Londrina)"
+                },
+                {
+                  "text": "Mestre em\nEstudos da Linguagem"
+                },
+                {
+                  "text": "Mais de 30\npaíses explorados"
+                }
+              ]
+            },
+            {
+              "_type": "image_carousel",
+              "_version": 1,
+              "_key": "home-carousel",
+              "anchor": "lingua-e-cultura",
+              "heading": "Uma língua nunca é *só uma língua*.",
+              "body": "Aprender inglês vai muito além de memorizar regras ou buscar uma finitude na fluência. Toda língua carrega cultura, história e formas de existir no mundo. Aprender uma língua nova não só complementa e expande sua forma de viver, mas também amplifica o poder da sua voz.",
+              "images": [
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-1.jpg",
+                      "filename": "carrossel_pi-1.jpg",
+                      "alt": ""
+                    }
+                  }
+                },
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-2.jpg",
+                      "filename": "carrossel_pi-2.jpg",
+                      "alt": ""
+                    }
+                  }
+                },
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-3.jpg",
+                      "filename": "carrossel_pi-3.jpg",
+                      "alt": ""
+                    }
+                  }
+                },
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-4.jpg",
+                      "filename": "carrossel_pi-4.jpg",
+                      "alt": ""
+                    }
+                  }
+                },
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-5.jpg",
+                      "filename": "carrossel_pi-5.jpg",
+                      "alt": ""
+                    }
+                  }
+                },
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-6.jpg",
+                      "filename": "carrossel_pi-6.jpg",
+                      "alt": ""
+                    }
+                  }
+                },
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-7.jpg",
+                      "filename": "carrossel_pi-7.jpg",
+                      "alt": ""
+                    }
+                  }
+                },
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-8.jpg",
+                      "filename": "carrossel_pi-8.jpg",
+                      "alt": ""
+                    }
+                  }
+                },
+                {
+                  "image": {
+                    "$media": {
+                      "url": "https://files.vandal.services/brunabraz/images/carousel/carrossel_pi-9.jpg",
+                      "filename": "carrossel_pi-9.jpg",
+                      "alt": ""
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "_type": "story_video",
+              "_version": 1,
+              "_key": "home-story",
+              "anchor": "minha-trajetoria",
+              "eyebrow": "Minha tragetória até aqui",
+              "heading": "A forma como eu ensino mudou quando minha forma de enxergar o inglês mudou.",
+              "body": "Minha trajetória não foi linear e percorrei — e ainda percorro — diversos caminhos para chegar onde estou. No vídeo você me escuta contando minha trajetória brevemente.",
+              "youtube_id": "WvjXbsmuoFk",
+              "video_title": "Vídeo: Bruna conta sua trajetória (3 min)",
+              "cta_label": "Quero estudar com você!",
+              "whatsapp_message": "Olá, Bruna! Vi sua trajetória e quero estudar inglês com você."
+            },
+            {
+              "_type": "timeline",
+              "_version": 1,
+              "_key": "home-timeline",
+              "anchor": "linha-do-tempo",
+              "items": [
+                {
+                  "icon": "leaf-outline",
+                  "period": "2010-2016",
+                  "name": "Ciências Biológica",
+                  "description": "Bacharel e Licenciatura\nUniversidade Estadual de Londrina"
+                },
+                {
+                  "icon": "paw-print",
+                  "period": "2014-2015",
+                  "name": "Animal Behaviour",
+                  "description": "Bachelor of Science\nAberystwyth University"
+                },
+                {
+                  "icon": "languages",
+                  "period": "2021-2025",
+                  "name": "Letras-Inglês",
+                  "description": "Licenciatura (com honra ao mérito)\nUniversidade Estadual de Londrina"
+                },
+                {
+                  "icon": "graduation-cap",
+                  "period": "2024-2026",
+                  "name": "Estudos da Linguagem",
+                  "description": "Mestrado\nUniversidade Estadual de Londrina"
+                },
+                {
+                  "icon": "presentation",
+                  "period": "2016",
+                  "name": "10 anos ensinando",
+                  "description": "6 anos online"
+                },
+                {
+                  "icon": "world",
+                  "period": "∞",
+                  "name": "30+ países",
+                  "description": "Vividos e percorridos"
+                }
+              ]
+            },
+            {
+              "_type": "feature_cards",
+              "_version": 1,
+              "_key": "home-autonomy",
+              "anchor": "ferramenta-de-autonomia",
+              "variant": "white",
+              "heading": "Ensino inglês como *ferramenta de autonomia*.",
+              "body": "Nas minhas aulas, falar em inglês não é o ponto final. Comigo, você faz da língua inglesa uma ferramenta para ampliar seu repertório, acessar culturas e ecoar sua voz.",
+              "cards": [
+                {
+                  "icon": "compass",
+                  "title": "Autonomia",
+                  "description": "Acessar mais culturas, mais possibilidades e mais formas de existir."
+                },
+                {
+                  "icon": "sun",
+                  "title": "Expressão",
+                  "description": "Fazer suas ideias, histórias e opiniões chegarem mais longe e alcançarem mais pessoas."
+                },
+                {
+                  "icon": "eye",
+                  "title": "Consciência",
+                  "description": "Entender como cultura, história e poder vivem dentro de uma língua."
+                },
+                {
+                  "icon": "feather",
+                  "title": "Personalização",
+                  "description": "Aulas construídas a partir do seu repertório, ritmo, interesses e objetivos."
+                }
+              ]
+            },
+            {
+              "_type": "purpose",
+              "_version": 1,
+              "_key": "home-purpose",
+              "anchor": "meu-proposito",
+              "heading": "Meu propósito é guiar você a *trilhar seu próprio caminho* no aprendizado da *Língua Inglesa*.",
+              "body": "Cada estudante chega em um momento diferente. E cada momento pede uma ação distinta.",
+              "eyebrow": "Às vezes você precisa de...",
+              "items": [
+                {
+                  "text": "Um local seguro para errar sem medo (e você vai errar)."
+                },
+                {
+                  "text": "Alguém que ensine de uma forma diferente do que você já tentou."
+                },
+                {
+                  "text": "Um desafio, mesmo que você acredite que chegou ao fim (spoiler: não tem fim)."
+                },
+                {
+                  "text": "Apenas se divertir estudando!"
+                }
+              ],
+              "cta_label": "Conheça minhas aulas",
+              "whatsapp_message": "Olá, Bruna! Quero conhecer suas aulas de inglês."
+            },
+            {
+              "_type": "testimonials",
+              "_version": 1,
+              "_key": "home-testimonials",
+              "anchor": "depoimentos",
+              "heading": "Depoimentos",
+              "description": "Veja os depoimentos dos meus alunos"
+            },
+            {
+              "_type": "closing_cta",
+              "_version": 1,
+              "_key": "home-closing",
+              "quote": "Aprender inglês não precisa significar caber em ideias prontas de desbloqueio, sucesso e perfeição.\n\nEssa experiência pode ser exatamente o contrário!\n\nPode ser uma forma de entender melhor o mundo, acessar outras vozes e fazer a sua própria voz circular com mais força.",
+              "cta_label": "Quero estudar com você!",
+              "whatsapp_message": "Olá, Bruna! Quero estudar inglês com você."
+            }
+          ]
+        }
+      },
+      {
+        "id": "page-lp",
+        "slug": "aula-ingles-particular",
+        "status": "published",
+        "seo": {
+          "title": "Aulas de Inglês Particulares e Online | Bruna Braz",
+          "description": "Aprenda inglês com aulas particulares 100% online e personalizadas para o seu ritmo, interesses e objetivos. Agende sua aula experimental gratuita com a Bruna Braz!",
+          "image": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/social/landing-page.png",
+              "filename": "landing-page.png",
+              "alt": "Aulas de inglês particulares e online com a Bruna Braz"
+            }
+          }
+        },
+        "data": {
+          "nav_variant": "green",
+          "layout": [
+            {
+              "_type": "hero",
+              "_version": 1,
+              "_key": "lp-hero",
+              "variant": "lp",
+              "heading": "Aulas de inglês nas quais o ponto de equilíbrio é você!",
+              "description": "Ministradas online e personalizadas para o seu momento, seus interesses e seus objetivos. Se, por acaso, você já tentou aprender inglês de diversas formas e não se desenvolveu, há grandes chances do problema não ter sido você.",
+              "image": {
+                "$media": {
+                  "url": "https://files.vandal.services/brunabraz/images/hero_landing-page.png",
+                  "filename": "hero_landing-page.png",
+                  "alt": "Bruna Braz, professora de inglês"
+                }
+              },
+              "cta_label": "Quero estudar com você!",
+              "whatsapp_message": "Olá, Bruna! Quero saber mais sobre as aulas particulares de inglês."
+            },
+            {
+              "_type": "text_split",
+              "_version": 1,
+              "_key": "lp-context",
+              "anchor": "contexto",
+              "heading": "Você provavelmente já tentou aprender inglês *mais de uma vez.*",
+              "body": "Curso, aplicativo, apostila, vídeos prometendo fluência rápida. E sempre a mesma sensação: voltar à estaca zero ou travar no mesmo ponto.\n\nO problema raramente é falta de esforço. É que a maioria dos métodos trata todo mundo igual, como se aprender uma língua fosse seguir uma receita pronta."
+            },
+            {
+              "_type": "numbered_list",
+              "_version": 1,
+              "_key": "lp-pain",
+              "anchor": "dor",
+              "heading": "Quanto mais o tempo passa, mais o inglês vira uma *dívida em aberto consigo mesma(o).*",
+              "items": [
+                {
+                  "title": "A vaga de trabalho que passou",
+                  "description": "Pedia inglês e você não se candidatou."
+                },
+                {
+                  "title": "O conteúdo filtrado",
+                  "description": "Artigos, livros e vídeos que chegam sempre traduzidos por outra pessoa."
+                },
+                {
+                  "title": "A cultura pela metade",
+                  "description": "Filmes, séries e músicas que você curte sem captar metade do que dizem."
+                },
+                {
+                  "title": "A conversa evitada",
+                  "description": "A reunião, a viagem ou a troca que você desviou por medo de errar."
+                }
+              ],
+              "closing": "Cada uma dessas é uma porta que segue fechada enquanto você espera o dia de \"aprender inglês de verdade\"."
+            },
+            {
+              "_type": "method",
+              "_version": 1,
+              "_key": "lp-method",
+              "anchor": "metodo",
+              "heading": "Sempre me perguntam *qual método* eu uso.",
+              "body": [
+                {
+                  "_type": "block",
+                  "style": "normal",
+                  "_key": "method-p1",
+                  "markDefs": [
+                    {
+                      "_type": "link",
+                      "_key": "pdf",
+                      "href": "http://files.vandal.services/brunabraz/files/b-kumaravadivelu-beyond-methods-macrostrategies-for-language-teaching.pdf",
+                      "blank": true
+                    }
+                  ],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s1",
+                      "text": "Honestamente, minha prática se aproxima do pós-método de ",
+                      "marks": []
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s2",
+                      "text": "Bala Kumaravadivelu",
+                      "marks": ["pdf"]
+                    },
+                    {
+                      "_type": "span",
+                      "_key": "s3",
+                      "text": ": uma ideia que rompe com a busca por uma fórmula única que sirva para todo mundo. Na prática, penso e ajo como uma professora que se adapta a cada estudante ao invés de seguir receitas prontas.",
+                      "marks": []
+                    }
+                  ]
+                },
+                {
+                  "_type": "block",
+                  "style": "normal",
+                  "_key": "method-p2",
+                  "markDefs": [],
+                  "children": [
+                    {
+                      "_type": "span",
+                      "_key": "s4",
+                      "text": "Para isso, me apoio em três pilares:",
+                      "marks": []
+                    }
+                  ]
+                }
+              ],
+              "pillars": [
+                {
+                  "title": "Particularidade",
+                  "description": "Levo a sério quem você é. Por isso tudo começa com uma aula experimental, pra conhecer sua história, seus obstáculos e o seu contexto."
+                },
+                {
+                  "title": "Praticidade",
+                  "description": "Observo o que funciona pra você e o que não funciona, ajustando o caminho durante e depois de cada aula, sem engessamento."
+                },
+                {
+                  "title": "Possibilidade",
+                  "description": "Trago os assuntos que você gosta e te dou voz, assim você sugere o ritmo, temas e onde quer mais ajuda. Dessa forma, construímos as aulas em conjunto."
+                }
+              ],
+              "closing": "No fim, cada aula é pensada, repensada e ajustada *pra você.*"
+            },
+            {
+              "_type": "feature_cards",
+              "_version": 1,
+              "_key": "lp-positioning",
+              "anchor": "posicionamento",
+              "variant": "tinted",
+              "heading": "Aprender vai *além* de ter uma linha afirmando ter fluência no seu currículo.",
+              "body": "Não posso negar que ser fluente em inglês abre portas profissionais. Cargos e salários mais dignos, acesso ao mercado global... No mundo em que vivemos, isso é importante sim. Porém, aprender inglês (ou qualquer outra língua) nos leva em um ponto mais difícil de colocar em um currículo:",
+              "cards": [
+                {
+                  "icon": "world",
+                  "title": "O mundo em primeira mão",
+                  "description": "Culturas, ideias e pessoas que antes chegavam traduzidas, agora direto pra você."
+                },
+                {
+                  "icon": "eye",
+                  "title": "A sua própria leitura",
+                  "description": "Forme a sua opinião sobre o que lê e assiste, sem depender da interpretação dos outros."
+                },
+                {
+                  "icon": "languages",
+                  "title": "A sua voz mais longe",
+                  "description": "Suas ideias, seu trabalho e sua história circulando além do português."
+                }
+              ]
+            },
+            {
+              "_type": "how_it_works",
+              "_version": 1,
+              "_key": "lp-how",
+              "anchor": "como-funcionam-as-aulas",
+              "heading": "Como funcionam *as aulas?*",
+              "body": "Desde o primeiro *\"hello\"* ao seu progresso, o caminho é construído com você.",
+              "video_mp4": "https://files.vandal.services/brunabraz/videos/welcome-to-our-class.mp4",
+              "video_webm": "https://files.vandal.services/brunabraz/videos/welcome-to-our-class.webm",
+              "poster": {
+                "$media": {
+                  "url": "https://files.vandal.services/brunabraz/images/preload-gif.jpg",
+                  "filename": "preload-gif.jpg",
+                  "alt": "Prévia em vídeo de uma aula de inglês com a Bruna Braz"
+                }
+              },
+              "video_title": "Vídeo: como funcionam as aulas",
+              "steps": [
+                {
+                  "title": "A aula experimental",
+                  "description": "Esse é o momento onde eu te conheço, entendo seu nível, seus objetivos, o que já tentou e o que te interessa."
+                },
+                {
+                  "title": "O plano sob medida",
+                  "description": "Monto um caminho de aprendizado feito para você que não sai de uma apostila pronta."
+                },
+                {
+                  "title": "As aulas",
+                  "description": "Gramática, conversa, leitura e escuta conectadas ao que importa pra você."
+                },
+                {
+                  "title": "A transformação",
+                  "description": "Acompanho seu progresso e ajusto o caminho conforme você avança."
+                }
+              ]
+            },
+            {
+              "_type": "results",
+              "_version": 1,
+              "_key": "lp-results",
+              "anchor": "resultados",
+              "heading": "E o que muda quando a língua inglesa *se torna sua?*",
+              "body": "Com o tempo, o inglês deixa de ser aquela matéria distante e passa a fazer parte de você. Você ganha:",
+              "items": [
+                {
+                  "title": "Segurança",
+                  "description": "Para pedir socorro caso se perca no aeroporto ou perceber uma tentativa de golpe antes que ela aconteça."
+                },
+                {
+                  "title": "Naturalidade",
+                  "description": "Para poder fazer uma piada no momento certo, chorar com uma música sem precisar traduzir a letra ou argumentar em um debate sem travar."
+                },
+                {
+                  "title": "Autonomia",
+                  "description": "Para pesquisar a solução de um problema no YouTube, ler um artigo científico recém-lançado ou assistir a uma palestra ao vivo, sem depender da tradução (e do viés) de terceiros."
+                },
+                {
+                  "title": "Liberdade",
+                  "description": "Para trabalhar de qualquer lugar, ter amizades que vão além do seu país e sair da sua bolha para se tornar um cidadão do mundo."
+                }
+              ],
+              "banner": "Não prometo fluência em prazo recorde.\n\nPrometo um processo honesto, no seu ritmo, que de fato leva você adiante."
+            },
+            {
+              "_type": "testimonials",
+              "_version": 1,
+              "_key": "lp-testimonials",
+              "anchor": "depoimentos",
+              "heading": "O que diz quem já estudou comigo?",
+              "description": "Depoimentos de quem confiou em mim para acompanhar seus processos individuais."
+            },
+            {
+              "_type": "pricing",
+              "_version": 1,
+              "_key": "lp-pricing",
+              "anchor": "planos"
+            },
+            {
+              "_type": "faq",
+              "_version": 1,
+              "_key": "lp-faq",
+              "anchor": "faq",
+              "eyebrow": "PERGUNTAS FREQUENTES",
+              "heading": "Ainda tem alguma dúvida? *Talvez ela esteja aqui:*",
+              "items": [
+                {
+                  "question": "Já tentei aprender inglês antes e não funcionou. Por que com você seria diferente?",
+                  "answer": "Porque aqui o método se adapta a você, e não o contrário. A maioria dos métodos falha justamente porque é genérica. Comigo, tudo parte do seu nível, dos seus interesses e das suas dificuldades reais."
+                },
+                {
+                  "question": "Meu nível é muito básico (ou estou enferrujado). Consigo acompanhar?",
+                  "answer": "Sim! Após a aula experimental (que pode até ser desafiadora), as aulas começam exatamente do onde você está. Eu trabalho com estudantes em todos os níveis, além de ter calma e paciência com o estilo e velocidade de aprendizado de cada um."
+                },
+                {
+                  "question": "Não tenho muito tempo. Dá pra encaixar?",
+                  "answer": "Aprender qualquer idioma é completamente diferente de aprender outros assuntos/matérias (apesar de ser tratado da mesma forma nas escolas regulares). Línguas modulam e são moduladas pelas interações entre seres humanos e o ambiente em que vivem, assim como seres humanos entre si. Para além da nossas aulas, vamos discutir outras pequenas atividades que você consegue inserir no seu dia a dia para manter a constância. Pensa um pouco sobre como você aprendeu português: foi só na sala de aula na escola com a(o) docente de português, ou foi no dia a dia, interagindo constantemente com a língua?"
+                },
+                {
+                  "question": "Aula online funciona mesmo?",
+                  "answer": "Não nego que gosto muito das interações das aulas presenciais, mas trabalhar no online me permite alcançar alunos do Brasil inteiro (e até mesmo brasileiros morando no exterior). O online também permite uma maior flexibilidade de horários (e menos tempo gasto no trânsito), sem contar a infinidade de recursos disponíveis. Além disso, durante nossa hora junta(o)s, meu foco é 100% em você!"
+                },
+                {
+                  "question": "E se eu não me adaptar ou não gostar?",
+                  "answer": "Tudo começa com uma aula experimental gratuita, justamente para você me conhecer e sentir sua interação comigo antes de qualquer compromisso."
+                },
+                {
+                  "question": "A aula experimental é mesmo gratuita?",
+                  "answer": "Sim! É apenas após a aula experimental que fazemos o compromisso das nossas aulas através de um contrato. Antes disso, você estará apenas conhecendo meu serviço."
+                },
+                {
+                  "question": "Como funciona o pagamento?",
+                  "answer": "O pagamento é mensal, via boleto. Depois que você decidir o número de aulas e a frequência semanal, assinamos um contrato com todos os detalhes. Após a assinatura (via GOV.BR), todos os boletos são emitidos com data de vencimento até o dia 10 de cada mês."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "page-blog",
+        "slug": "blog",
+        "status": "published",
+        "seo": {
+          "title": "Blog de Inglês, Linguística e Cultura | Bruna Braz",
+          "description": "Textos da professora Bruna Braz sobre a língua inglesa, linguística, cultura, gramática, pronúncia e ensino de idiomas."
+        },
+        "data": {
+          "nav_variant": "brown",
+          "layout": []
+        }
+      }
+    ],
+    "testimonials": [
+      {
+        "id": "testimonial-juh-nogueira",
+        "status": "published",
+        "data": {
+          "author": "Juh Nogueira",
+          "role": "Bióloga",
+          "content": "Minha experiência com a professora foi a chave que precisava virar pra engatar em dominar o inglês. Durante as aulas ela criava um ambiente tão familiar e principalmente relatable com temas de diversos assuntos que tinha interesse e era isso que me fazia absorver tanto o conteúdo.",
+          "photo": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/testimonials/headshots/juh-nogueira.jpg",
+              "filename": "juh-nogueira.jpg",
+              "alt": "Juh Nogueira"
+            }
+          }
+        }
+      },
+      {
+        "id": "testimonial-elisete-rodrigues",
+        "status": "published",
+        "data": {
+          "author": "Elisete Rodrigues",
+          "role": "Professora de microbiologia",
+          "content": "Tentei desenvolver a conversação com outros professores particulares e em cursos regulares, mas sempre percebia que não evoluía. Quando comecei com a Bruna, esse se tornou meu principal objetivo. Ela sempre busca trazer temas de nosso interesse e assuntos variados, permite que a gente aproveite o tempo para aprender coisas novas, que fogem do dia a dia.",
+          "photo": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/testimonials/headshots/elisete-rodrigues.png",
+              "filename": "elisete-rodrigues.png",
+              "alt": "Elisete Rodrigues"
+            }
+          }
+        }
+      },
+      {
+        "id": "testimonial-alessandro-correa",
+        "status": "published",
+        "data": {
+          "author": "Alessandro Correa",
+          "role": "Professor e Imunologista",
+          "content": "No tempo que fui seu aluno, vi que ela é uma professora muito esforçada. As aulas se adequaram às minhas expectativas e necessidades. Acho que ela tem um feeling excelente para que tipo de aula dar e também um ótimo domínio de tecnologias. Eu me desenvolvi muito com ela.",
+          "photo": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/testimonials/headshots/alessandro-correa.png",
+              "filename": "alessandro-correa.png",
+              "alt": "Alessandro Correa"
+            }
+          }
+        }
+      },
+      {
+        "id": "testimonial-vitor-boyanoski",
+        "status": "published",
+        "data": {
+          "author": "Vitor Boyanoski",
+          "role": "Cheff",
+          "content": "Ter aulas com a professora Bruna foi essencial para mim. As aulas sempre foram direcionadas e ela me preparou para entrevistas e processos seletivos internacionais. Se hoje eu moro fora do Brasil consigo falar em inglês, sem dúvida é graças ao suporte e às aulas dela.",
+          "photo": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/testimonials/headshots/vitor-boyanoski.jpeg",
+              "filename": "vitor-boyanoski.jpeg",
+              "alt": "Vitor Boyanoski"
+            }
+          }
+        }
+      },
+      {
+        "id": "testimonial-sandra-grahl",
+        "status": "published",
+        "data": {
+          "author": "Sandra Grahl",
+          "role": "Dona de casa",
+          "content": "Minha experiência foi muito boa. As aulas de inglês on-line são leves, nunca monótonas. São muito bem organizadas, dinâmicas e muito didáticas. Parecem mais um bate-papo do que propriamente uma aula de inglês. Bruna traz sempre um material do seu interesse e mantém seu interesse do início ao fim.",
+          "photo": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/testimonials/headshots/sandra-grahl.png",
+              "filename": "sandra-grahl.png",
+              "alt": "Sandra Grahl"
+            }
+          }
+        }
+      },
+      {
+        "id": "testimonial-lucas-ribeiro",
+        "status": "published",
+        "data": {
+          "author": "Lucas Ribeiro",
+          "role": "Programador",
+          "content": "Ter aulas com a professora Bruna é incrível, eu sou uma daquelas pessoas introvertidas, ainda mais com pessoas que não conheço, mas lembro que logo nas primeiras aulas já estava confortável o suficiente para conversar em um outro idioma que na minha cabeça eu estava falando tudo errado. Ela é uma profissional incrível!",
+          "photo": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/testimonials/headshots/lucas-ribeiro.png",
+              "filename": "lucas-ribeiro.png",
+              "alt": "Lucas Ribeiro"
+            }
+          }
+        }
+      },
+      {
+        "id": "testimonial-andre-vandal",
+        "status": "published",
+        "data": {
+          "author": "André Van Dal",
+          "role": "Programador",
+          "content": "Passei anos em escolas de inglês, mas travava na hora de falar. Com a recomendação da minha irmã, comecei as aulas com a Bruna e, em pouco tempo, destravei.\nAs aulas são super personalizadas para me fazer falar o tempo todo. A Bruna me deu a confiança para usar o inglês como expressão de quem eu sou, falando com clareza e com o meu próprio sotaque. Recomendo demais!",
+          "photo": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/testimonials/headshots/andre-vandal.jpg",
+              "filename": "andre-vandal.jpg",
+              "alt": "André Van Dal"
+            }
+          }
+        }
+      },
+      {
+        "id": "testimonial-isabel-limoli",
+        "status": "published",
+        "data": {
+          "author": "Isabel Limoli",
+          "role": "Bibliotecária aposentada",
+          "content": "A Bruna fez toda a diferença no meu aprendizado.\nEla preparava as aulas com muito carinho e cuidado, levando sempre em consideração o meu perfil, de maneira que a gente pudesse discutir, ler e aprender assuntos de nosso interesse.\nHoje apesar de estar com 60+, me sinto confortável para fazer minhas viagens internacionais solo. Para mim foi uma grande conquista!",
+          "photo": {
+            "$media": {
+              "url": "https://files.vandal.services/brunabraz/images/testimonials/headshots/isabel-limoli.png",
+              "filename": "isabel-limoli.png",
+              "alt": "Isabel Limoli"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

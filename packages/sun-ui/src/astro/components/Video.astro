@@ -212,9 +212,10 @@ const optimizedPosterUrl = optimizedPoster.src
               ) {
                 video = injectVideo(wrapper)
                 // See the click handler above for why this stays a two-callback then().
-                // oxlint-disable-next-line promise/prefer-catch promise/prefer-await-to-then promise/prefer-await-to-callbacks
+                // oxlint-disable-next-line promise/prefer-catch promise/prefer-await-to-then
                 video.play().then(
                   () => playButton?.setAttribute("hidden", ""),
+                  // oxlint-disable-next-line promise/prefer-await-to-callbacks -- rejection handler of the two-callback then() above
                   error => {
                     // A pause() interrupting this same play() rejects it with AbortError
                     // (routine on fast scroll) -- that isn't a playback failure, so it must

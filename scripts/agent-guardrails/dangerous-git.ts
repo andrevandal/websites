@@ -1,4 +1,4 @@
-// Shared by the Claude Code and oh-my-pi hooks. A tripwire, not a boundary:
+// Shared by the oh-my-pi hooks. A tripwire, not a boundary:
 // it matches common spellings of destructive git calls, including behind
 // sudo/env/xargs/eval and `sh -c`. The pre-push hook is the backstop for pushes.
 
@@ -169,7 +169,7 @@ const gitInvocation = (
   if (i >= tokens.length || commandName(tokens[i]) !== "git") return undefined
   i++
   while (i < tokens.length && tokens[i].startsWith("-")) {
-    const option = tokens[i].split("=")[0]
+    const [option] = tokens[i].split("=")
     i += GIT_OPTIONS_WITH_VALUE[option] && !tokens[i].includes("=") ? 2 : 1
   }
   if (i >= tokens.length) return undefined

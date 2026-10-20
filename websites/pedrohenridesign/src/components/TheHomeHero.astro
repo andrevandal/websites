@@ -1,6 +1,6 @@
 ---
 import { SunPicture } from "@vandal-websites/sun-ui/astro"
-import { DENSITIES, fileUrl } from "@/utils/images"
+import { fileUrl } from "@/utils/images"
 import BaseButton from "./BaseButton.astro"
 ---
 
@@ -42,7 +42,6 @@ import BaseButton from "./BaseButton.astro"
         { minWidth: 1024, width: 359 },
         { minWidth: 1280, width: 466 },
       ]}
-      densities={DENSITIES}
       sizes="(min-width: 1280px) 466px, (min-width: 1024px) 359px, (min-width: 464px) 400px, calc(100vw - 64px)"
       class="aspect-9/10 h-auto w-full"
       wrapperClass="w-full"
@@ -64,7 +63,6 @@ import BaseButton from "./BaseButton.astro"
         { minWidth: 1024, width: 359 },
         { minWidth: 1280, width: 466 },
       ]}
-      densities={DENSITIES}
       sizes="(min-width: 1280px) 466px, (min-width: 1024px) 359px, (min-width: 464px) 432px, calc(100vw - 32px)"
       class="aspect-square h-auto w-full rounded-lg"
       loading="lazy"

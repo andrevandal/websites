@@ -6,7 +6,6 @@
   "dependencies": {
     "@astrojs/check": "catalog:astro",
     "@astrojs/cloudflare": "catalog:astro",
-    "@astrojs/partytown": "catalog:astro",
     "@astrojs/react": "^7.0.0",
     "@astrojs/ts-plugin": "catalog:astro",
     "@aws-sdk/client-s3": "catalog:server",
@@ -16,6 +15,7 @@
     "@vandal-websites/emdash-plugin-jmap": "workspace:*",
     "@vandal-websites/robots-sitemap": "workspace:*",
     "@vandal-websites/sun-ui": "workspace:*",
+    "@vandal-websites/sun-ui-emdash": "workspace:*",
     "@tailwindcss/typography": "catalog:tailwind",
     "@tailwindcss/vite": "catalog:tailwind",
     "astro": "catalog:astro",

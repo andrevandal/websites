@@ -1,0 +1,4 @@
+# EmDash build output (migration manifest)
+.emdash/
+# Downloaded seed assets (preview builds only)
+public/

@@ -10,7 +10,7 @@
 // Chromium and every `<img>` is measured; the original behind an
 // image-service or Astro `/_image` URL is fetched and its intrinsic width read.
 
-import consola from "consola"
+import { consola } from "consola"
 import { chromium } from "playwright"
 import sharp from "sharp"
 import yargs from "yargs"
@@ -41,9 +41,9 @@ const originalUrl = (src: string, pageUrl: string): string => {
   if (url.pathname === "/_image" && href) return new URL(href, url).toString()
 
   const embedded = decodeURIComponent(url.pathname + url.search).match(
-    /\/(https?:\/\/.+)$/
+    /\/(?<target>https?:\/\/.+)$/
   )
-  return embedded?.[1] ?? url.toString()
+  return embedded?.groups?.["target"] ?? url.toString()
 }
 
 // For every original, the widest rendering seen across pages and viewports,
@@ -107,14 +107,18 @@ const collect = async (
   const worker = async () => {
     for (let job = jobs.pop(); job; job = jobs.pop()) {
       const { page, viewport } = job
+      // oxlint-disable-next-line eslint/no-await-in-loop -- browser context setup must be sequential
       const context = await browser.newContext({
         viewport: { width: viewport, height: VIEWPORT_HEIGHT },
       })
+      // oxlint-disable-next-line eslint/no-await-in-loop -- new page must await context creation
       const tab = await context.newPage()
       // not "networkidle": analytics and streams keep real pages from settling;
       // the evaluate below waits for the images itself, briefly: a broken or
       // slow image service must not stall the audit, the layout box is what counts
+      // oxlint-disable-next-line eslint/no-await-in-loop -- page load must complete before evaluation
       await tab.goto(page, { waitUntil: "load", timeout: 60_000 })
+      // oxlint-disable-next-line eslint/no-await-in-loop -- image load evaluation must complete per page
       const images = await tab.evaluate(async wait => {
         for (const img of document.images) img.loading = "eager"
         await Promise.all(
@@ -139,6 +143,7 @@ const collect = async (
       }, IMAGE_WAIT_MS)
       for (const image of images) sightings.push({ ...image, viewport, page })
       consola.info(`${page} @${viewport}: ${images.length} images`)
+      // oxlint-disable-next-line eslint/no-await-in-loop -- context cleanup must complete before next job
       await context.close()
     }
   }

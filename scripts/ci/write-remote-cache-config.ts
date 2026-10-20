@@ -51,7 +51,6 @@ const run = () => {
     return 1
   }
 
-  // oxlint-disable-next-line node/no-sync
   const current = readFileSync(workspaceFile, "utf-8")
   if (/^remote:/m.test(current)) {
     console.error(
@@ -63,7 +62,6 @@ const run = () => {
   const api = process.env["MOON_REMOTE_API"] || "http"
   const credential = Buffer.from(`${username}:${password}`).toString("base64")
   const next = `${current.trimEnd()}\n${renderRemoteBlock(host, api, credential)}`
-  // oxlint-disable-next-line node/no-sync
   writeFileSync(workspaceFile, next)
 
   // The sha256 is how CI and the Docker build prove they wrote byte-identical

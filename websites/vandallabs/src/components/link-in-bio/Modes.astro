@@ -1,7 +1,8 @@
 ---
+import { waLink } from "@vandal-websites/sun-ui"
 import { SunIcon } from "@vandal-websites/sun-ui/astro"
 import type { Dict } from "@lib/i18n"
-import { waLink } from "@lib/whatsapp"
+import { WA_NUMBER } from "#/lib/whatsapp"
 
 type Props = {
   dict: Dict
@@ -36,7 +37,7 @@ const modes = [
     {
       modes.map(mode => (
         <a
-          href={waLink(mode.message)}
+          href={waLink(WA_NUMBER, mode.message)}
           target="_blank"
           rel="noopener noreferrer"
           class="group border-line bg-paper-raise hover:border-ink-900 grid grid-cols-[auto_1fr_auto] items-start gap-4 border p-5 text-inherit no-underline duration-[180ms] ease-out hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--color-ink-900)]"

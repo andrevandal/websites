@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { resolveImageLayout } from "./ptimage-layout"
+import { resolveImageLayout } from "./image-layout"
 
 const ratio = (l: ReturnType<typeof resolveImageLayout>) =>
   l.baseWidth / l.baseHeight

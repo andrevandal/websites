@@ -65,15 +65,12 @@
   let calculating = $state(false)
   let calcError = $state(false)
 
-  const phase = $derived(
-    !origin || !destination
-      ? "empty"
-      : calcError
-        ? "error"
-        : calculating || !result
-          ? "calculating"
-          : "filled"
-  )
+  const phase = $derived.by(() => {
+    if (!origin || !destination) return "empty"
+    if (calcError) return "error"
+    if (calculating || !result) return "calculating"
+    return "filled"
+  })
 
   let originDebounce: ReturnType<typeof setTimeout> | undefined
   const handleOriginInput = (value: string) => {
@@ -82,7 +79,7 @@
     originLoading = true
     if (!shouldSearchOrigin(value)) {
       originLoading = false
-      originItems = initialCombobox.originItems
+      ;({ originItems } = initialCombobox)
       ++originRequestId
       return
     }
@@ -103,7 +100,7 @@
     destinationLoading = true
     if (!shouldSearchDestination(value)) {
       destinationLoading = false
-      destinationItems = initialCombobox.destinationItems
+      ;({ destinationItems } = initialCombobox)
       ++destinationRequestId
       return
     }
@@ -141,24 +138,24 @@
     let cancelled = false
     calculating = true
     calcError = false
-    actions
-      .calculate({
-        originCidade: origin.cidade,
-        originUf: origin.uf,
-        destinationAreaId: destination.areaId,
-        destinationCidade: destination.cidade,
-      })
-      .then(({ data }) => {
+    ;(async () => {
+      try {
+        const { data } = await actions.calculate({
+          originCidade: origin.cidade,
+          originUf: origin.uf,
+          destinationAreaId: destination.areaId,
+          destinationCidade: destination.cidade,
+        })
         if (cancelled) return
         calculating = false
         if (data) result = data
         else calcError = true
-      })
-      .catch(() => {
+      } catch {
         if (cancelled) return
         calculating = false
         calcError = true
-      })
+      }
+    })()
     return () => {
       cancelled = true
     }

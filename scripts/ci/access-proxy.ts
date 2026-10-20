@@ -39,7 +39,7 @@ const createAccessProxy = ({
   const server = Bun.serve({
     hostname: "127.0.0.1",
     port,
-    async fetch(request, server) {
+    async fetch(request, bun) {
       let requestUrl: URL
       try {
         requestUrl = new URL(request.url)
@@ -86,7 +86,7 @@ const createAccessProxy = ({
           if (redirectUrl.origin === upstreamOrigin) {
             out.set(
               "location",
-              `http://127.0.0.1:${server.port}${redirectUrl.pathname}${redirectUrl.search}${redirectUrl.hash}`
+              `http://127.0.0.1:${bun.port}${redirectUrl.pathname}${redirectUrl.search}${redirectUrl.hash}`
             )
           }
           // External redirects pass through unchanged

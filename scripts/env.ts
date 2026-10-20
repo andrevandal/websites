@@ -1,8 +1,12 @@
 import { resolve } from "node:path"
-import { resolveSiteConfig } from "./site-config"
-import type { Stage } from "./site-config"
 
 const repoRoot = resolve(import.meta.dirname, "..")
+
+type Stage = "preview" | "staging" | "production"
+
+// EmDash previews are Access-protected with their own media; the image
+// service cannot fetch from them, so they serve originals.
+const EMDASH_SITES = new Set(["pedrohenri", "brunabraz"])
 
 const extractSiteIdFromLocation = (location: string[]): string => {
   const [directory, siteId] = location
@@ -14,15 +18,22 @@ const extractSiteIdFromLocation = (location: string[]): string => {
   return siteId
 }
 
+// Non-secret Worker vars. IMAGES_BASE_URL comes from the GitHub environment
+// secret of the deploying job. Previews read S3_PUBLIC_URL from Preview Base,
+// so it is never set here (a var would override it).
 const resolveTargetEnvVars = (
   siteLocation: string[],
-  stage: Stage
-): Record<string, string> =>
-  resolveSiteConfig(extractSiteIdFromLocation(siteLocation), stage).vars
-
-const resolveTargetSecretKeys = (siteLocation: string[]): string[] =>
-  resolveSiteConfig(extractSiteIdFromLocation(siteLocation), "staging")
-    .secretKeys
+  stage: Stage,
+  env: NodeJS.ProcessEnv = process.env
+): Record<string, string> => {
+  const siteId = extractSiteIdFromLocation(siteLocation)
+  return {
+    IMAGES_BASE_URL:
+      stage === "preview" && EMDASH_SITES.has(siteId)
+        ? ""
+        : (env["IMAGES_BASE_URL"] ?? ""),
+  }
+}
 
 const resolveDbUrl = (url: string | undefined): string | undefined => {
   if (!url) return undefined
@@ -34,4 +45,5 @@ const resolveDbUrl = (url: string | undefined): string | undefined => {
   return url
 }
 
-export { repoRoot, resolveDbUrl, resolveTargetEnvVars, resolveTargetSecretKeys }
+export { EMDASH_SITES, repoRoot, resolveDbUrl, resolveTargetEnvVars }
+export type { Stage }

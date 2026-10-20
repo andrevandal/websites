@@ -1,0 +1,110 @@
+---
+import { SunFigure, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { sanitizeHref } from "emdash"
+import { mediaUrl, resolveImageLayout, text } from "../index"
+
+// A Portable Text image block as EmDash stores it: `asset._ref` is the media
+// id, `asset.url` the internal media URL or an external one. A seeded
+// `$media` asset can also carry the MediaValue shape (`id`, `src`, `meta`).
+type Props = {
+  node: {
+    asset?: {
+      _ref?: string
+      id?: string
+      url?: string
+      src?: string
+      meta?: Record<string, unknown>
+      alt?: string
+      width?: number
+      height?: number
+    }
+    alt?: string
+    width?: number
+    height?: number
+    caption?: string
+    title?: string
+    displayWidth?: number
+    displayHeight?: number
+    alignment?: "left" | "center" | "right" | "wide" | "full"
+    link?: string | { href: string; blank?: boolean }
+  }
+  class?: string
+  captionClass?: string
+}
+
+const { node, class: className, captionClass } = Astro.props
+const asset = node.asset ?? {}
+const src = mediaUrl(
+  {
+    url: text(asset.url) ?? text(asset.src),
+    storageKey: text(asset.meta?.storageKey),
+    id: text(asset._ref) ?? text(asset.id),
+  },
+  Astro
+)
+
+const layout = resolveImageLayout(node, asset, {
+  width: asset.meta?.width as number,
+  height: asset.meta?.height as number,
+})
+
+// Same link rules as EmDash's Image: legacy string or object, sanitized;
+// an unsafe URL leaves the image unlinked.
+const link = typeof node.link === "string" ? { href: node.link } : node.link
+const sanitizedHref = link ? sanitizeHref(link.href) : undefined
+const linkHref = sanitizedHref === link?.href ? sanitizedHref : undefined
+const newTab =
+  linkHref !== undefined && !linkHref.startsWith("#") && link?.blank === true
+
+const isGif = src.toLowerCase().endsWith(".gif")
+const alt = node.alt ?? asset.alt ?? ""
+---
+
+{
+  src && (
+    <SunFigure
+      caption={node.caption}
+      align={node.alignment}
+      maxWidth={layout.maxWidth}
+      class:list={["sun-pt-image", className]}
+      captionClass={captionClass}
+    >
+      {(() => {
+        const picture = (
+          <SunPicture
+            src={src}
+            alt={alt}
+            title={node.title}
+            width={layout.baseWidth}
+            height={layout.baseHeight}
+            breakpoints={layout.breakpoints}
+            sizes={layout.sizes}
+            format={isGif ? "gif" : "auto"}
+            quality={90}
+            loading="lazy"
+          />
+        )
+        return linkHref ? (
+          <a
+            href={linkHref}
+            target={newTab ? "_blank" : undefined}
+            rel={newTab ? "noopener noreferrer" : undefined}
+          >
+            {picture}
+          </a>
+        ) : (
+          picture
+        )
+      })()}
+    </SunFigure>
+  )
+}
+
+<style>
+  .sun-pt-image :global(img) {
+    display: block;
+    width: 100%;
+    margin: 0;
+    height: auto;
+  }
+</style>

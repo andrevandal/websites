@@ -94,7 +94,7 @@ describe("local seed byline locale repair", () => {
   test.each([
     [
       "target-locale slug collision",
-      (id: string) =>
+      (_id: string) =>
         `INSERT INTO _emdash_bylines (id, slug, display_name, locale, translation_group) VALUES ('c1', 'fresh', 'C', 'pt-BR', 'other-group')`,
     ],
     [

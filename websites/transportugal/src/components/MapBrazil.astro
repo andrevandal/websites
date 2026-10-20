@@ -9,7 +9,7 @@ import mobileTrace from "../assets/map-brazil-mobile-route-trace.svg?raw"
 const label = "Mapa da rota de São Paulo ao Espírito Santo"
 
 const firstTagClass = (svg: string, className: string) =>
-  svg.replace(/<(g|path)(?=[\s>])/, `<$1 class="${className}"`)
+  svg.replace(/<(?:g|path)(?=[\s>])/, match => `${match} class="${className}"`)
 
 const svgContents = (svg: string) =>
   svg.replace(/^<svg\b[^>]*>/, "").replace(/<\/svg>\s*$/, "")
@@ -69,9 +69,8 @@ const mobileMarkup = composeMap(mobileMap, mobileGlow, mobileTrace, {
   document.querySelectorAll<HTMLElement>(".map-brazil").forEach(el => {
     const observer = new IntersectionObserver(
       entries => {
-        for (const entry of entries) {
+        for (const entry of entries)
           entry.target.classList.toggle("is-visible", entry.isIntersecting)
-        }
       },
       { threshold: 0 }
     )

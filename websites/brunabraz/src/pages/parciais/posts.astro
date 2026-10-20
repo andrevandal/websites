@@ -1,0 +1,39 @@
+---
+import { getTaxonomyTerms } from "emdash"
+import { findCategory } from "@/cms/category"
+import {
+  PAGE_SIZE,
+  loadBlogGrid,
+  loadCategoryGrid,
+  parsePage,
+} from "@/cms/posts"
+import PostCard from "@components/blog/PostCard.astro"
+
+// "Ver mais" fragment for PostGrid: batch `pagina` of the blog home's grid, or
+// of a Category's grid with `categoria`. X-Has-More tells whether another
+// batch exists.
+export const partial = true
+
+const pagina = Astro.url.searchParams.get("pagina")
+const page = parsePage(pagina)
+if (String(page) !== pagina) return new Response(null, { status: 400 })
+
+const categoria = Astro.url.searchParams.get("categoria")
+const match = categoria
+  ? findCategory(
+      await getTaxonomyTerms("category", { includeCounts: false }),
+      categoria
+    )
+  : undefined
+if (categoria && !match) return new Response(null, { status: 404 })
+
+const { posts, terms, hasMore } = match
+  ? await loadCategoryGrid(match.term, page)
+  : await loadBlogGrid(page)
+const batch = posts.slice((page - 1) * PAGE_SIZE)
+
+Astro.response.headers.set("X-Has-More", String(hasMore))
+Astro.response.headers.set("X-Robots-Tag", "noindex")
+---
+
+{batch.map(post => <PostCard post={post} term={terms.get(post.id)} />)}

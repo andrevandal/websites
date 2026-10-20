@@ -1,10 +1,9 @@
 ---
 import type { HTMLAttributes } from "astro/types"
-import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { SunFigure, SunPicture } from "@vandal-websites/sun-ui/astro"
 import type { Category } from "../../emdash-env"
-import { mediaSource, mediaFormat, type MediaValue } from "@/cms/media"
-import { DENSITIES } from "@/utils/images"
-import Figure from "./Figure.astro"
+import { mediaSource, mediaFormat } from "@vandal-websites/sun-ui-emdash"
+import type { MediaValue } from "@vandal-websites/sun-ui-emdash"
 import TheFeatures from "./TheFeatures.astro"
 import BaseButton from "./BaseButton.astro"
 
@@ -62,9 +61,11 @@ const {
           )
           return (
             <a href={`/posts/${post.id}/`} class="block">
-              <Figure
+              <SunFigure
                 caption={post.title}
-                class="group relative overflow-hidden rounded-lg"
+                captionPlacement="overlay"
+                class="group overflow-hidden rounded-lg"
+                captionClass="rounded-b-lg bg-linear-to-b from-black/0 to-black/70 px-6 py-3 text-left text-base leading-5 font-bold text-white"
               >
                 <SunPicture
                   src={mediaSource(post.cover, Astro)}
@@ -76,13 +77,12 @@ const {
                     { minWidth: 1024, width: 440 },
                     { minWidth: 1280, width: 373 },
                   ]}
-                  densities={DENSITIES}
                   sizes="(min-width: 1280px) 373px, (min-width: 1024px) 440px, (min-width: 464px) 432px, calc(100vw - 32px)"
                   class="h-auto w-full transition ease-in group-hover:scale-110"
                   loading="lazy"
                   decoding="async"
                 />
-              </Figure>
+              </SunFigure>
             </a>
           )
         })

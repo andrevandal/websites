@@ -1,0 +1,28 @@
+---
+import { PortableText } from "emdash/ui"
+import type { PortableTextBlock } from "emdash"
+import { portableTextComponents } from "@vandal-websites/sun-ui-emdash/astro"
+import DefaultBlock from "./DefaultBlock.astro"
+import PostImage from "./PostImage.astro"
+
+type Props = { value: PortableTextBlock[] }
+const { value } = Astro.props
+---
+
+<div class="prose prose-blog max-w-none">
+  <PortableText
+    value={value}
+    components={{
+      block: {
+        ...portableTextComponents.block,
+        normal: DefaultBlock,
+        h1: DefaultBlock,
+        h4: DefaultBlock,
+        h5: DefaultBlock,
+        h6: DefaultBlock,
+        blockquote: DefaultBlock,
+      },
+      type: { image: PostImage },
+    }}
+  />
+</div>

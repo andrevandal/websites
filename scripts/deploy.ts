@@ -3,13 +3,14 @@ import { createHash } from "node:crypto"
 import { cp, mkdtemp, readdir, readFile, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join, relative, resolve } from "node:path"
+import { parseEnv } from "node:util"
 
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 
 import { consola } from "consola"
 import { execa } from "execa"
-import { repoRoot, resolveTargetEnvVars, resolveTargetSecretKeys } from "./env"
+import { repoRoot, resolveTargetEnvVars } from "./env"
 import { queryTargets } from "./utils"
 import {
   deleteD1DatabaseByName,
@@ -139,7 +140,7 @@ const resolvePreviewUrl = (stdout: string): string => {
 
 // Sites whose EmDash core migrations CI applies; their Worker runs
 // `migrations.runtime: "check"` and never migrates (or locks) itself.
-const CI_MIGRATED_SITES = new Set(["pedrohenri"])
+const CI_MIGRATED_SITES = new Set(["pedrohenri", "brunabraz"])
 
 const migrationStatusSchema = v.object({
   target: v.object({ fingerprint: v.string(), label: v.string() }),
@@ -426,36 +427,61 @@ const cleanupPreview = async (
 // Preview Base holds this one; staging and production never receive it.
 const PREVIEW_ONLY_SECRET_KEYS = new Set(["CF_ACCESS_AUDIENCE"])
 
-type StageSecretsTarget = {
-  stage: "staging" | "production"
-  secretKeys: string[]
-}
+// Every site serves its assets from the bucket's public base; CI-migrated
+// EmDash sites also need their database, bucket and encryption key.
+const requiredSecretKeys = (worker: string): string[] =>
+  CI_MIGRATED_SITES.has(worker)
+    ? [
+        "S3_PUBLIC_URL",
+        "TURSO_DATABASE_URL",
+        "TURSO_AUTH_TOKEN",
+        "S3_ENDPOINT",
+        "S3_BUCKET",
+        "S3_ACCESS_KEY_ID",
+        "S3_SECRET_ACCESS_KEY",
+        "EMDASH_ENCRYPTION_KEY",
+      ]
+    : ["S3_PUBLIC_URL"]
 
-// Reads the site's runtime secrets from `env`, where the Infisical action
-// exports them. A missing key would make `wrangler versions upload` keep the
-// previous Version's value, so production would inherit staging's database:
-// every declared key must be present and non-empty. Only names are reported.
+// The Infisical action exports `/websites/<target>` for the job's Stage here.
+const SITE_SECRETS_FILE =
+  process.env["SITE_SECRETS_FILE"] ?? resolve(repoRoot, ".site-secrets.env")
+
+// Every key under the site's Infisical path is a runtime secret. A key left
+// empty would make `wrangler versions upload` keep the previous Version's
+// value, so production would inherit staging's: empty values are rejected.
+// Only names are reported.
 const parseStageSecrets = (
-  { stage, secretKeys }: StageSecretsTarget,
-  env: NodeJS.ProcessEnv
+  worker: string,
+  stage: "staging" | "production",
+  content: string
 ): Record<string, string> => {
-  const keys = secretKeys.filter(key => !PREVIEW_ONLY_SECRET_KEYS.has(key))
-  const missing = keys.filter(key => !env[key])
+  const secrets = Object.fromEntries(
+    Object.entries(parseEnv(content)).filter(
+      ([key]) => !PREVIEW_ONLY_SECRET_KEYS.has(key)
+    )
+  )
+  const missing = [
+    ...requiredSecretKeys(worker).filter(key => !(key in secrets)),
+    ...Object.keys(secrets).filter(key => !secrets[key]),
+  ]
   if (missing.length > 0) {
     throw new Error(
       `Infisical ${stage} secrets are missing or empty: ${missing.join(", ")}.`
     )
   }
-  return Object.fromEntries(keys.map(key => [key, env[key] as string]))
+  return secrets
 }
 
-const stageSecretsTarget = (
-  siteLocation: string[],
-  stage: StageSecretsTarget["stage"]
-): StageSecretsTarget => ({
-  stage,
-  secretKeys: resolveTargetSecretKeys(siteLocation),
-})
+const readStageSecrets = async (
+  worker: string,
+  stage: "staging" | "production"
+): Promise<Record<string, string>> =>
+  parseStageSecrets(
+    worker,
+    stage,
+    await readFile(SITE_SECRETS_FILE, "utf-8").catch(() => "")
+  )
 
 // Uploads, never deploys, a Version built from `artifactDir`. The artifact is
 // copied first so its bytes, and therefore its digest, never carry Stage
@@ -887,10 +913,7 @@ if (import.meta.main) {
 
     if (command === "check-secrets") {
       const stage = args["stage"] as "staging" | "production"
-      const secrets = parseStageSecrets(
-        stageSecretsTarget(project.location, stage),
-        process.env
-      )
+      const secrets = await readStageSecrets(worker, stage)
       // Keeps secret values out of every later log line of the job, e.g. the
       // Turso URL `emdash migrate` prints as its target label.
       if (process.env["GITHUB_ACTIONS"] === "true") {
@@ -906,10 +929,7 @@ if (import.meta.main) {
           {
             siteDir,
             manifestPath: resolve(`${args["manifest"]}`),
-            secrets: parseStageSecrets(
-              stageSecretsTarget(project.location, stage),
-              process.env
-            ),
+            secrets: await readStageSecrets(worker, stage),
           },
           realDeps
         )
@@ -934,10 +954,7 @@ if (import.meta.main) {
             worker: stageWorker,
             artifactDir: resolve(`${args["artifactDir"]}`),
             vars: resolveTargetEnvVars(project.location, stage),
-            secrets: parseStageSecrets(
-              stageSecretsTarget(project.location, stage),
-              process.env
-            ),
+            secrets: await readStageSecrets(worker, stage),
           },
           realDeps
         )
