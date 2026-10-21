@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "EmDash content helpers and headless Sun UI components",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
   "files": [
     "dist"

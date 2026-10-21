@@ -92,3 +92,11 @@ tsconfig.tsbuildinfo
 /GOAL.md
 # blazediff visual-regression state (local only, never committed)
 .blazediff/
+
+.agents/skills/code-review/
+.agents/skills/codebase-design/
+.agents/skills/diagnosing-bugs/
+.agents/skills/tdd/
+.agents/skills/moon/
+.agents/skills/proto/
+.agents/skills/debug-task/

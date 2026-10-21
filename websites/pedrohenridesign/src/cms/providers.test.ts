@@ -184,4 +184,59 @@ describe("resolveEmDashProviders", () => {
       }
     }
   )
+
+  test("derives S3 public URL from endpoint and bucket when absent with valid core keys (staging)", () => {
+    const { storage } = resolveEmDashProviders({
+      isDev: false,
+      env: {
+        EMDASH_BUILD_FLAVOR: "standard",
+        TURSO_DATABASE_URL: "libsql://standard.turso.io",
+        S3_ENDPOINT: "https://files.vandal.services",
+        S3_BUCKET: "pedrohenridesign-staging",
+        S3_ACCESS_KEY_ID: "key",
+        S3_SECRET_ACCESS_KEY: "secret",
+        EMDASH_ENCRYPTION_KEY: "encryption-key",
+      },
+    })
+    expect(storage).toEqual({
+      entrypoint: "emdash/storage/s3",
+      config: {
+        publicUrl: "https://files.vandal.services/pedrohenridesign-staging",
+      },
+    })
+  })
+
+  test("does not derive a public URL from an endpoint without a bucket", () => {
+    const { storage } = resolveEmDashProviders({
+      isDev: false,
+      env: {
+        EMDASH_BUILD_FLAVOR: "standard",
+        TURSO_DATABASE_URL: "libsql://standard.turso.io",
+        S3_ENDPOINT: "https://files.vandal.services",
+      },
+    })
+    expect(storage).toEqual({ entrypoint: "emdash/storage/s3", config: {} })
+  })
+
+  test("derives S3 public URL from endpoint and bucket even when explicitly empty", () => {
+    const { storage } = resolveEmDashProviders({
+      isDev: false,
+      env: {
+        EMDASH_BUILD_FLAVOR: "standard",
+        TURSO_DATABASE_URL: "libsql://standard.turso.io",
+        S3_PUBLIC_URL: "",
+        S3_ENDPOINT: "https://files.vandal.services",
+        S3_BUCKET: "pedrohenridesign-staging",
+        S3_ACCESS_KEY_ID: "key",
+        S3_SECRET_ACCESS_KEY: "secret",
+        EMDASH_ENCRYPTION_KEY: "encryption-key",
+      },
+    })
+    expect(storage).toEqual({
+      entrypoint: "emdash/storage/s3",
+      config: {
+        publicUrl: "https://files.vandal.services/pedrohenridesign-staging",
+      },
+    })
+  })
 })

@@ -67,6 +67,92 @@ const page = createPublicPageContext({
   image: shareImage ? new URL(shareImage, url).toString() : undefined,
   content,
 })
+// Stara declarations are rendered per request so the bucket base follows runtime config.
+const staraFontCss = `
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-Black.woff2")}") format("woff2");
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-BlackItalic.woff2")}") format("woff2");
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-ExtraBold.woff2")}") format("woff2");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-ExtraBoldItalic.woff2")}") format("woff2");
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-Bold.woff2")}") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Stara Fallback";
+    src: local(Arial);
+    size-adjust: 91%;
+    ascent-override: 94%;
+    descent-override: 28%;
+    line-gap-override: 11%;
+  }
+
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-BoldItalic.woff2")}") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-SemiBold.woff2")}") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-SemiBoldItalic.woff2")}") format("woff2");
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-Medium.woff2")}") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Stara";
+    src: url("${fileUrl("fonts/Stara-MediumItalic.woff2")}") format("woff2");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+`
 ---
 
 <SunLayout
@@ -79,7 +165,7 @@ const page = createPublicPageContext({
   class="font-stara scroll-p-20.5"
 >
   <Fragment slot="close-head">
-    <link rel="stylesheet" href="/css/fonts.css" />
+    <style is:inline set:html={staraFontCss}></style>
     <EmDashHead page={page} />
   </Fragment>
   <EmDashBodyStart page={page} slot="open-body" />

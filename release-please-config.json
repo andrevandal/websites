@@ -3,31 +3,48 @@
     ".": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
-      "include-component-in-tag": true
+      "include-component-in-tag": false
     },
     "apps/images": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
+      "component": "images-app",
       "include-component-in-tag": true
     },
     "websites/bellypao": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
+      "component": "bellypao",
       "include-component-in-tag": true
     },
     "websites/brunabraz": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
+      "component": "brunabraz",
+      "include-component-in-tag": true
+    },
+    "websites/clinicamauricioaraujo": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "component": "clinicamauricioaraujo",
+      "include-component-in-tag": true
+    },
+    "websites/pedrohenridesign": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "component": "pedrohenridesign",
       "include-component-in-tag": true
     },
     "websites/transportugal": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
+      "component": "transportugal",
       "include-component-in-tag": true
     },
     "websites/vandallabs": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
+      "component": "vandallabs",
       "include-component-in-tag": true
     }
   },

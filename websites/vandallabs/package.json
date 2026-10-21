@@ -1,7 +1,8 @@
 {
-  "name": "@websites/vandallabs",
+  "name": "@vandal-websites/vandallabs",
   "version": "1.5.0",
   "private": true,
+  "license": "SEE LICENSE IN CONTENT-LICENSE.md",
   "type": "module",
   "dependencies": {
     "@iconify-json/heroicons": "catalog:icons",
@@ -10,9 +11,9 @@
     "@iconify-json/mdi": "catalog:icons",
     "@iconify-json/streamline-logos": "catalog:icons",
     "@iconify/json": "catalog:icons",
+    "@tailwindcss/typography": "catalog:tailwind",
     "@vandal-websites/robots-sitemap": "workspace:*",
     "@vandal-websites/sun-ui": "workspace:*",
-    "@tailwindcss/typography": "catalog:tailwind",
     "astro-iconset": "catalog:astro",
     "valibot": "catalog:utils"
   },

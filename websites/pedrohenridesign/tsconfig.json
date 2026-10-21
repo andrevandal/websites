@@ -12,7 +12,7 @@
       "@utils/*": ["./src/utils/*"],
       "@/*": ["./src/*"]
     },
-    "outDir": "../../.moon/cache/types/websites/pedrohenri",
+    "outDir": "../../.moon/cache/types/websites/pedrohenridesign",
     "plugins": [
       {
         "name": "@astrojs/ts-plugin"

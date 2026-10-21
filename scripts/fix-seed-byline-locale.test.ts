@@ -213,7 +213,7 @@ describe("local seed byline locale repair", () => {
   test("Pedro's committed seed has no bylines and needs no snapshot", async () => {
     const t = await setup()
     captureSeedBylineLocale({
-      seedPath: resolve(repoRoot, "websites/pedrohenri/seed/seed.json"),
+      seedPath: resolve(repoRoot, "websites/pedrohenridesign/seed/seed.json"),
       databasePath: t.db.databasePath,
     })
     expect(existsSync(t.marker)).toBe(false)

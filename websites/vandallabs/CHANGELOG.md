@@ -5,7 +5,7 @@
 
 ### Features
 
-* **pedrohenri:** add Pedro Henri Design website
+* **pedrohenridesign:** add Pedro Henri Design website
 * **websites:** default local images to the staging image service
 
 ## [1.4.1](https://github.com/andrevandal/websites/compare/vandallabs-v1.4.0...vandallabs-v1.4.1) (2026-10-13)
@@ -45,7 +45,7 @@
 ### Features
 
 * **repo:** extract typegen task to all cloudflare websites
-* **transportugal-website:** add Transportugal landing page
+* **transportugal:** add Transportugal landing page
 
 
 ### Bug Fixes
@@ -66,7 +66,7 @@
 
 * **vandallabs:** pass accessibility audits
 
-## [1.1.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.0.0...vandallabs-v1.1.0) (2026-07-08)
+## 1.1.0 (2026-07-08)
 
 
 ### Features

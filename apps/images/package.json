@@ -3,7 +3,7 @@
   "version": "1.3.0",
   "private": true,
   "description": "websites images service",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
   "type": "module",
   "scripts": {
@@ -25,5 +25,5 @@
     "@types/node": "catalog:types",
     "typescript": "catalog:typescript"
   },
-  "packageManager": "bun@1.3.14"
+  "packageManager": "bun@1.4.2"
 }

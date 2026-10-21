@@ -1,9 +1,8 @@
 ---
 import "@/styles/global.css"
-import { Font } from "astro:assets"
 import type { HTMLAttributes } from "astro/types"
 import { SunLayout } from "@vandal-websites/sun-ui/astro"
-import { imageUrl } from "@/utils/images"
+import { imageUrl, fileUrl } from "@/utils/images"
 import TheHeader from "@/components/TheHeader.astro"
 import TheFooter from "@/components/TheFooter.astro"
 
@@ -22,6 +21,104 @@ const bellyPatternUrl = imageUrl("images/belly-pattern.png", {
   quality: 90,
 })
 const styleAttr = `--belly-pattern: url("${bellyPatternUrl}")`
+
+const fontCss = `
+  @font-face {
+    font-family: "Fields";
+    src: url("${fileUrl("fonts/Fields-ExtraLight.woff2")}") format("woff2");
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fields";
+    src: url("${fileUrl("fonts/Fields-Light.woff2")}") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fields";
+    src: url("${fileUrl("fonts/Fields-Regular.woff2")}") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fields";
+    src: url("${fileUrl("fonts/Fields-Medium.woff2")}") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fields";
+    src: url("${fileUrl("fonts/Fields-SemiBold.woff2")}") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fields";
+    src: url("${fileUrl("fonts/Fields-Bold.woff2")}") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fields";
+    src: url("${fileUrl("fonts/Fields-ExtraBold.woff2")}") format("woff2");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Fields";
+    src: url("${fileUrl("fonts/Fields-Black.woff2")}") format("woff2");
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Quicksand";
+    src: url("${fileUrl("fonts/Quicksand-Light.woff2")}") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Quicksand";
+    src: url("${fileUrl("fonts/Quicksand-Regular.woff2")}") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Quicksand";
+    src: url("${fileUrl("fonts/Quicksand-Medium.woff2")}") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Quicksand";
+    src: url("${fileUrl("fonts/Quicksand-SemiBold.woff2")}") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Quicksand";
+    src: url("${fileUrl("fonts/Quicksand-Bold.woff2")}") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  :root {
+    --belly-font-fields: "Fields";
+    --belly-font-quicksand: "Quicksand";
+  }
+`
 ---
 
 <SunLayout
@@ -38,8 +135,21 @@ const styleAttr = `--belly-pattern: url("${bellyPatternUrl}")`
   style={styleAttr}
 >
   <Fragment slot="close-head">
-    <Font cssVariable="--belly-font-fields" preload />
-    <Font cssVariable="--belly-font-quicksand" preload />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={fileUrl("fonts/Fields-Regular.woff2")}
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={fileUrl("fonts/Quicksand-Regular.woff2")}
+      crossorigin
+    />
+    <style is:inline set:html={fontCss}></style>
   </Fragment>
   <TheHeader>
     <slot name="header" />

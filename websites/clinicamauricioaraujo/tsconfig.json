@@ -12,7 +12,7 @@
       "@utils/*": ["./src/utils/*"],
       "@/*": ["./src/*"]
     },
-    "outDir": "../../.moon/cache/types/websites/clinicamauricioaraujo.com.br"
+    "outDir": "../../.moon/cache/types/websites/clinicamauricioaraujo"
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist", "astro.config.js"],

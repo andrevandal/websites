@@ -23,6 +23,7 @@ tasks:
       - "@globs(typescript)"
       - "@globs(sources)"
       - "./astro.config.js"
+      - "$S3_PUBLIC_URL"
       - "/packages/sun-ui/src/**/*"
     dependsOn:
       - ^:build
@@ -35,6 +36,7 @@ tasks:
       - "@globs(typescript)"
       - "/packages/sun-ui/src/**/*"
       - "./astro.config.js"
+      - "$S3_PUBLIC_URL"
     outputs:
       - dist
     dependsOn:

@@ -178,7 +178,9 @@ const setup = async (
   } as unknown as RoutesOptions)
 
   const [plugin] = plugins
-  const resolved = plugin?.resolveId("virtual:@vandal-websites/robots-sitemap/config")
+  const resolved = plugin?.resolveId(
+    "virtual:@vandal-websites/robots-sitemap/config"
+  )
   expect(resolved).toBeString()
 
   const source = plugin?.load(resolved ?? "") ?? ""

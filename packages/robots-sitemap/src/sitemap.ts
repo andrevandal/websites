@@ -1,5 +1,8 @@
 import type { APIRoute } from "astro"
-import { canonicalHost, paths } from "virtual:@vandal-websites/robots-sitemap/config"
+import {
+  canonicalHost,
+  paths,
+} from "virtual:@vandal-websites/robots-sitemap/config"
 import { generateSitemapXml } from "./generate"
 
 const GET: APIRoute = () =>

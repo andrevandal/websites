@@ -8,7 +8,7 @@
 * **websites:** route image proxies by deployment stage
 * **websites:** route image proxies by deployment stage
 
-## [0.2.0](https://github.com/andrevandal/websites/compare/bellypao-v0.1.0...bellypao-v0.2.0) (2026-10-13)
+## 0.2.0 (2026-10-13)
 
 
 ### Features

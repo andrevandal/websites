@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "Request-time robots.txt and sitemap endpoints for the websites",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
   "files": [
     "dist"

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "description": "A shared UI components package",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "André Vandal <1340508+andrevandal@users.noreply.github.com>",
   "files": [
     "dist"
@@ -47,5 +47,8 @@
     "tsdown": "catalog:tools",
     "typescript": "catalog:typescript"
   },
-  "packageManager": "bun@1.3.6"
+  "packageManager": "bun@1.3.6",
+  "inlinedDependencies": {
+    "astro": "7.2.5"
+  }
 }

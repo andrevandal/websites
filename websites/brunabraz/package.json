@@ -1,7 +1,8 @@
 {
-  "name": "@websites/brunabraz",
+  "name": "@vandal-websites/brunabraz",
   "version": "1.5.0",
   "private": true,
+  "license": "SEE LICENSE IN CONTENT-LICENSE.md",
   "type": "module",
   "dependencies": {
     "@astrojs/react": "^7.0.0",
@@ -14,12 +15,12 @@
     "@iconify-json/mdi": "catalog:icons",
     "@iconify-json/streamline-logos": "catalog:icons",
     "@iconify/json": "catalog:icons",
+    "@tailwindcss/typography": "catalog:tailwind",
     "@vandal-websites/emdash-plugin-analytics": "workspace:*",
     "@vandal-websites/emdash-plugin-jmap": "workspace:*",
     "@vandal-websites/robots-sitemap": "workspace:*",
     "@vandal-websites/sun-ui": "workspace:*",
     "@vandal-websites/sun-ui-emdash": "workspace:*",
-    "@tailwindcss/typography": "catalog:tailwind",
     "astro-iconset": "catalog:astro",
     "emdash": "^1.2.0",
     "ofetch": "catalog:node",

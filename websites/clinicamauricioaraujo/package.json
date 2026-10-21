@@ -1,7 +1,8 @@
 {
-  "name": "@websites/clinicamauricioaraujo.com.br",
+  "name": "@vandal-websites/clinicamauricioaraujo",
   "version": "1.4.0",
   "private": true,
+  "license": "SEE LICENSE IN CONTENT-LICENSE.md",
   "type": "module",
   "dependencies": {
     "@astro-community/astro-embed-youtube": "catalog:astro",
@@ -9,10 +10,10 @@
     "@astrojs/cloudflare": "catalog:astro",
     "@astrojs/mdx": "catalog:astro",
     "@astrojs/ts-plugin": "catalog:astro",
-    "@vandal-websites/robots-sitemap": "workspace:*",
-    "@vandal-websites/sun-ui": "workspace:*",
     "@tailwindcss/typography": "catalog:tailwind",
     "@tailwindcss/vite": "catalog:tailwind",
+    "@vandal-websites/robots-sitemap": "workspace:*",
+    "@vandal-websites/sun-ui": "workspace:*",
     "astro": "catalog:astro",
     "astro-iconset": "catalog:astro",
     "tailwindcss": "catalog:tailwind",

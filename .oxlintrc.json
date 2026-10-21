@@ -128,7 +128,7 @@
       "files": [
         "**/*.test.ts",
         "**/*.test.tsx",
-        "scripts/ci/pedrohenri-browser.ts"
+        "scripts/ci/pedrohenridesign-browser.ts"
       ],
       "rules": { "eslint/no-await-in-loop": "off" }
     },

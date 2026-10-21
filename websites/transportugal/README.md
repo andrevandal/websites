@@ -62,11 +62,12 @@ both carousels hydrate when visible.
 
 ## Environment variables
 
-Configured in `.env.example`: `IMAGES_BASE_URL` and `S3_PUBLIC_URL`.
-Deployed values come from the GitHub environment secret (`IMAGES_BASE_URL`)
-and Infisical `/websites/transportugal` (`S3_PUBLIC_URL`), and are read at
-request time through `getSecret`. The canonical site URL is the `CANONICAL_SITE_URL`
-constant in `astro.config.js`.
+`IMAGES_BASE_URL` (GitHub environment secret, production only) enables image
+optimization via the external service; without it, asset URLs are served
+directly from the bucket. `S3_PUBLIC_URL` is set to
+`https://files.vandal.services/transportugal` by default in `astro.config.js`;
+you can override it with `process.env.S3_PUBLIC_URL` at build time if needed.
+Both are read at request time through `getSecret`.
 
 ## Icons
 
@@ -91,14 +92,12 @@ Figma file `gXJuYDqXXEc3O5iJuF5TWW` ("Transportugal"):
 - Mobile menu (open): node `8950:480`
 - Icon set: node `8941:419`
 
-Content (copy, prices, addresses) is taken verbatim from the Figma
-frames per the project's design spec
-(`docs/specs/2026-08-29-transportugal-website-design.md`).
+Content (copy, prices, addresses) is taken from the Figma frames.
 
 ## Deployment
 
 Cloudflare Workers, one persistent Worker `transportugal`, like
-`vandallabs`/`clinicamauricioaraujo.com.br` (production domain TBD, not yet
+`vandallabs`/`clinicamauricioaraujo` (production domain TBD, not yet
 provisioned in the Cloudflare dashboard). See `websites/vandallabs/README.md`
 for how pull requests get Workers Previews and how releases promote the staging
 build.

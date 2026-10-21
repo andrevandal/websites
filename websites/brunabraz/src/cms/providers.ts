@@ -3,6 +3,7 @@ import { local, s3 } from "emdash/astro"
 import { libsql, sqlite } from "emdash/db"
 // oxlint-disable-next-line import/no-nodejs-modules -- nodejs_compat provides node:url in the Worker
 import { fileURLToPath } from "node:url"
+import { s3PublicUrl } from "@vandal-websites/sun-ui/astro/runtime-env"
 
 type ProviderOptions = {
   isDev: boolean
@@ -63,7 +64,7 @@ const resolveEmDashProviders = ({ isDev, env }: ProviderOptions) => {
       ),
       config: {},
     },
-    storage: s3({ publicUrl: env.S3_PUBLIC_URL }),
+    storage: s3({ publicUrl: s3PublicUrl(key => env[key]) }),
   }
 }
 

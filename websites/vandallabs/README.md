@@ -15,11 +15,8 @@ Astro link-in-bio website for Vandal Labs.
 ```text
 websites/vandallabs/
 ├── public/
-│   ├── cover.png
 │   ├── favicon.ico
-│   ├── favicon.svg
-│   ├── og-image.png
-│   └── whatsapp-profile.png
+│   └── favicon.svg
 ├── src/
 │   ├── components/link-in-bio/
 │   │   ├── BackgroundGrid.astro
@@ -67,10 +64,12 @@ The dev server defaults to Astro's local port. If another server is already runn
 
 ## Environment variables
 
-Configured in `.env.example`: `IMAGES_BASE_URL` and `S3_PUBLIC_URL`.
-Deployed values come from the GitHub environment secret (`IMAGES_BASE_URL`)
-and Infisical `/websites/vandallabs` (`S3_PUBLIC_URL` and any runtime secret),
-and are read at request time through `getSecret`.
+`IMAGES_BASE_URL` (GitHub environment secret, production only) enables image
+optimization via the external service; without it, asset URLs are served
+directly from the bucket. `S3_PUBLIC_URL` is set to
+`https://files.vandal.services/vandallabs` by default in `astro.config.js`;
+you can override it with `process.env.S3_PUBLIC_URL` at build time if needed.
+Both are read at request time through `getSecret`.
 
 ## Icons
 
@@ -95,13 +94,13 @@ Pass a unique `id` per instance so SVG mask/filter ids do not collide in the DOM
 
 ## Social assets
 
-Static brand assets live in `public/`:
+The Open Graph image (`og-image.png`) is now resolved dynamically through
+`assetUrl` in `src/layouts/Layout.astro`, using the bucket default. Owner-facing
+social media copies use these public bucket URLs:
 
-- `og-image.png` - 1200x630 Open Graph / Twitter card image
-- `cover.png` - 1500x500 generic social cover/banner
-- `whatsapp-profile.png` - 500x500 WhatsApp Business profile image
-
-`src/layouts/Layout.astro` defaults `og:image` and `twitter:image` to `/og-image.png` and resolves it to an absolute URL.
+- `og-image.png` — `https://files.vandal.services/vandallabs/og-image.png` (1200x630 Open Graph / Twitter card)
+- `cover.png` — `https://files.vandal.services/vandallabs/cover.png` (1500x500 generic social cover)
+- `whatsapp-profile.png` — `https://files.vandal.services/vandallabs/whatsapp-profile.png` (500x500 WhatsApp Business profile)
 
 ## Deployment
 

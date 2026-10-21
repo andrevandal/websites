@@ -5,7 +5,7 @@
 
 ### Features
 
-* **pedrohenri:** add Pedro Henri Design website
+* **pedrohenridesign:** add Pedro Henri Design website
 * **websites:** default local images to the staging image service
 
 ## [0.3.1](https://github.com/andrevandal/websites/compare/transportugal-v0.3.0...transportugal-v0.3.1) (2026-10-13)
@@ -40,13 +40,13 @@
 * **websites:** remove dangling imageServiceBaseUrl wiring and stale image.service config
 * **websites:** stage-agnostic site identity and dead env var cleanup
 
-## [0.2.0](https://github.com/andrevandal/websites/compare/transportugal-v0.1.0...transportugal-v0.2.0) (2026-10-01)
+## 0.2.0 (2026-10-01)
 
 
 ### Features
 
 * **repo:** extract typegen task to all cloudflare websites
-* **transportugal-website:** add Transportugal landing page
+* **transportugal:** add Transportugal landing page
 * **transportugal:** add allowed-locations data module
 * **transportugal:** add brazil-cities generation script and generated data
 * **transportugal:** add CTA button states to route calculator

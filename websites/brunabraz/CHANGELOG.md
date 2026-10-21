@@ -5,7 +5,7 @@
 
 ### Features
 
-* **pedrohenri:** add Pedro Henri Design website
+* **pedrohenridesign:** add Pedro Henri Design website
 * **websites:** default local images to the staging image service
 
 ## [1.4.1](https://github.com/andrevandal/websites/compare/brunabraz-v1.4.0...brunabraz-v1.4.1) (2026-10-13)
@@ -86,7 +86,7 @@
 * **brunabraz:** wire shared navigation, typography, and cards into pages
 * **repo:** extract typegen task to all cloudflare websites
 * **sun-ui:** port SunCarousel to a Svelte island
-* **transportugal-website:** add Transportugal landing page
+* **transportugal:** add Transportugal landing page
 
 
 ### Bug Fixes

@@ -1,7 +1,8 @@
 ---
 import "@/styles/global.css"
-import { SunLayout } from "@vandal-websites/sun-ui/astro"
+import { SunLayout, assetUrl } from "@vandal-websites/sun-ui/astro"
 import { Font } from "astro:assets"
+import { getSecret, S3_PUBLIC_URL } from "astro:env/server"
 import type { Lang } from "@lib/i18n"
 
 type Props = {
@@ -12,7 +13,13 @@ type Props = {
   image?: string
 }
 
-const { lang, title, description, url, image = "/og-image.png" } = Astro.props
+const {
+  lang,
+  title,
+  description,
+  url,
+  image = assetUrl(getSecret, "og-image.png", S3_PUBLIC_URL),
+} = Astro.props
 const htmlLang = lang === "pt" ? "pt-BR" : "en"
 const links = [
   { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },

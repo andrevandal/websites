@@ -2,7 +2,7 @@
 import "../styles/global.css"
 
 import { Font } from "astro:assets"
-import { getSecret } from "astro:env/server"
+import { getSecret, S3_PUBLIC_URL } from "astro:env/server"
 import type { HTMLAttributes } from "astro/types"
 
 import {
@@ -36,7 +36,9 @@ const {
 <Layout
   title={title}
   description={description}
-  image={/^https?:/.test(image) ? image : assetUrl(getSecret, image)}
+  image={/^https?:/.test(image)
+    ? image
+    : assetUrl(getSecret, image, S3_PUBLIC_URL)}
   url={url}
   schema={schema}
   links={links}

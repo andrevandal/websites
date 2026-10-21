@@ -22,7 +22,7 @@ import {
 import { SunCarousel } from "@vandal-websites/sun-ui/svelte"
 import Eyebrown from "@components/Eyebrown.astro"
 import Heading from "@components/Heading.astro"
-import { getSecret } from "astro:env/server"
+import { getSecret, S3_PUBLIC_URL } from "astro:env/server"
 
 const meta = {
   title: "Transportugal - Transporte de cargas SP e Espírito Santo",
@@ -50,10 +50,10 @@ const fitWithinBox = (
   }
 }
 
-const heroUrl = assetUrl(getSecret, HERO_SRC)
-const heroMobileUrl = assetUrl(getSecret, HERO_SRC_MOBILE)
-const aboutUrl = assetUrl(getSecret, ABOUT_SRC)
-const partnersUrl = assetUrl(getSecret, PARTNERS_SRC)
+const heroUrl = assetUrl(getSecret, HERO_SRC, S3_PUBLIC_URL)
+const heroMobileUrl = assetUrl(getSecret, HERO_SRC_MOBILE, S3_PUBLIC_URL)
+const aboutUrl = assetUrl(getSecret, ABOUT_SRC, S3_PUBLIC_URL)
+const partnersUrl = assetUrl(getSecret, PARTNERS_SRC, S3_PUBLIC_URL)
 ---
 
 <BaseLayout {...meta}>
@@ -472,7 +472,7 @@ const partnersUrl = assetUrl(getSecret, PARTNERS_SRC)
               )
               return (
                 <SunPicture
-                  src={assetUrl(getSecret, logo.url)}
+                  src={assetUrl(getSecret, logo.url, S3_PUBLIC_URL)}
                   alt={`Logo de ${name}`}
                   width={renderSize.width}
                   height={renderSize.height}

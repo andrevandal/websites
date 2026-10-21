@@ -1,8 +1,11 @@
-import { defineConfig, fontProviders } from "astro/config"
+import { defineConfig, envField, fontProviders } from "astro/config"
 import { robotsSitemap } from "@vandal-websites/robots-sitemap"
 import cloudflare from "@astrojs/cloudflare"
 import tailwindcss from "@tailwindcss/vite"
 import icon from "astro-iconset"
+
+process.env.S3_PUBLIC_URL ||=
+  "https://files.vandal.services/clinicamauricioaraujo"
 
 const CANONICAL_SITE_URL = "https://clinicamauricioaraujo.com.br"
 
@@ -50,6 +53,16 @@ export default defineConfig({
 
   trailingSlash: "ignore",
   site: CANONICAL_SITE_URL,
+
+  env: {
+    schema: {
+      S3_PUBLIC_URL: envField.string({
+        context: "server",
+        access: "public",
+        default: process.env.S3_PUBLIC_URL,
+      }),
+    },
+  },
 
   vite: {
     plugins: [tailwindcss()],

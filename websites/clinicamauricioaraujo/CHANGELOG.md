@@ -5,7 +5,7 @@
 
 ### Features
 
-* **pedrohenri:** add Pedro Henri Design website
+* **pedrohenridesign:** add Pedro Henri Design website
 * **websites:** default local images to the staging image service
 
 ## [1.3.1](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.3.0...clinicamauricioaraujo-v1.3.1) (2026-10-13)
@@ -50,7 +50,7 @@
 * **clinicamauricioaraujo:** show rating badge in footer
 * **clinicamauricioaraujo:** show rating badge in hero
 * **repo:** extract typegen task to all cloudflare websites
-* **transportugal-website:** add Transportugal landing page
+* **transportugal:** add Transportugal landing page
 
 
 ### Bug Fixes
