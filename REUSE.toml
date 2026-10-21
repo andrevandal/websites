@@ -1,0 +1,425 @@
+version = 1
+
+[[annotations]]
+path = [
+  "websites/bellypao/CONTENT-LICENSE.md",
+  "websites/bellypao/public/**",
+  "websites/bellypao/src/data/**",
+  "websites/bellypao/src/icons/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 Belly Pão"]
+SPDX-License-Identifier = "LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/brunabraz/CONTENT-LICENSE.md",
+  "websites/brunabraz/public/**",
+  "websites/brunabraz/seed/**",
+  "websites/brunabraz/src/data/**",
+  "websites/brunabraz/src/icons/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2026 Bruna Braz",
+  "2026 Thaís Kikuti",
+  "2026 Mari Teshima",
+]
+SPDX-License-Identifier = "LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/clinicamauricioaraujo/CONTENT-LICENSE.md",
+  "websites/clinicamauricioaraujo/public/**",
+  "websites/clinicamauricioaraujo/src/data/**",
+  "websites/clinicamauricioaraujo/src/icons/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 Clínica Maurício Araujo"]
+SPDX-License-Identifier = "LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/pedrohenridesign/CONTENT-LICENSE.md",
+  "websites/pedrohenridesign/public/**",
+  "websites/pedrohenridesign/seed/**",
+  "websites/pedrohenridesign/src/icons/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 Pedro Henri Design"]
+SPDX-License-Identifier = "LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/transportugal/CONTENT-LICENSE.md",
+  "websites/transportugal/public/**",
+  "websites/transportugal/src/assets/**",
+  "websites/transportugal/src/data/**",
+  "websites/transportugal/src/icons/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 Transportugal Ltda."]
+SPDX-License-Identifier = "LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/vandallabs/CONTENT-LICENSE.md",
+  "websites/vandallabs/public/**",
+  "websites/vandallabs/src/icons/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 Vandal Labs Ltda."]
+SPDX-License-Identifier = "LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  ".agents/skills/**",
+  ".data/**",
+  ".github/**",
+  ".moon/**",
+  ".omp/**",
+  ".vscode/**",
+  "apps/**",
+  "docker/**",
+  "docs/**",
+  "packages/**",
+  "patches/**",
+  "scripts/**",
+  ".dockerignore",
+  ".env.example",
+  ".gitguardian.yml",
+  ".gitignore",
+  ".oxfmtrc.json",
+  ".oxlintrc.json",
+  ".prototools",
+  ".release-please-manifest.json",
+  "AGENTS.md",
+  "ARCHITECTURE.md",
+  "ATTRIBUTION.md",
+  "CHANGELOG.md",
+  "CLAUDE.md",
+  "CONTEXT.md",
+  "CONTRIBUTING.md",
+  "LICENSE",
+  "README.md",
+  "REUSE.toml",
+  "SECURITY.md",
+  "astro-actions-stub.ts",
+  "bun.lock",
+  "bunfig.toml",
+  "commitlint.config.ts",
+  "coverage.config.ts",
+  "eslint.config.ts",
+  "lefthook.yml",
+  "package.json",
+  "prettier.config.ts",
+  "release-please-config.json",
+  "skills-lock.json",
+  "svelte-loader.ts",
+  "svgo.config.ts",
+  "tsconfig.bundler.json",
+  "tsconfig.json",
+  "tsconfig.options.json",
+  "tsconfig.packages.json",
+  "websites/bellypao/CHANGELOG.md",
+  "websites/bellypao/README.md",
+  "websites/bellypao/astro.config.js",
+  "websites/bellypao/moon.yml",
+  "websites/bellypao/package.json",
+  "websites/bellypao/tsconfig.json",
+  "websites/bellypao/wrangler.json",
+  "websites/brunabraz/.env.example",
+  "websites/brunabraz/.gitignore",
+  "websites/brunabraz/CHANGELOG.md",
+  "websites/brunabraz/README.md",
+  "websites/brunabraz/astro.config.js",
+  "websites/brunabraz/emdash-env.d.ts",
+  "websites/brunabraz/moon.yml",
+  "websites/brunabraz/package.json",
+  "websites/brunabraz/tsconfig.json",
+  "websites/brunabraz/vite-aws-sdk-browser-field.js",
+  "websites/brunabraz/wrangler.json",
+  "websites/clinicamauricioaraujo/.env.example",
+  "websites/clinicamauricioaraujo/CHANGELOG.md",
+  "websites/clinicamauricioaraujo/README.md",
+  "websites/clinicamauricioaraujo/astro.config.js",
+  "websites/clinicamauricioaraujo/moon.yml",
+  "websites/clinicamauricioaraujo/package.json",
+  "websites/clinicamauricioaraujo/tsconfig.json",
+  "websites/clinicamauricioaraujo/wrangler.json",
+  "websites/pedrohenridesign/.env.example",
+  "websites/pedrohenridesign/.gitignore",
+  "websites/pedrohenridesign/CHANGELOG.md",
+  "websites/pedrohenridesign/README.md",
+  "websites/pedrohenridesign/astro.config.js",
+  "websites/pedrohenridesign/emdash-env.d.ts",
+  "websites/pedrohenridesign/moon.yml",
+  "websites/pedrohenridesign/package.json",
+  "websites/pedrohenridesign/tsconfig.json",
+  "websites/pedrohenridesign/vite-aws-sdk-browser-field.js",
+  "websites/pedrohenridesign/wrangler.json",
+  "websites/transportugal/.env.example",
+  "websites/transportugal/CHANGELOG.md",
+  "websites/transportugal/README.md",
+  "websites/transportugal/astro.config.js",
+  "websites/transportugal/bunfig.toml",
+  "websites/transportugal/moon.yml",
+  "websites/transportugal/package.json",
+  "websites/transportugal/tsconfig.json",
+  "websites/transportugal/wrangler.json",
+  "websites/vandallabs/.env.example",
+  "websites/vandallabs/CHANGELOG.md",
+  "websites/vandallabs/README.md",
+  "websites/vandallabs/astro.config.js",
+  "websites/vandallabs/moon.yml",
+  "websites/vandallabs/package.json",
+  "websites/vandallabs/tsconfig.json",
+  "websites/vandallabs/wrangler.json",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 André Vandal"]
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = ["websites/transportugal/src/styles/animate.css"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["Luca Bosin <https://github.com/Wombosvideo>"]
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [
+  "websites/bellypao/src/components/BaseButton.astro",
+  "websites/bellypao/src/components/Figure.astro",
+  "websites/bellypao/src/components/TheFooter.astro",
+  "websites/bellypao/src/components/TheHeader.astro",
+  "websites/bellypao/src/layouts/Layout.astro",
+  "websites/bellypao/src/pages/index.astro",
+  "websites/bellypao/src/static-integration.test.ts",
+  "websites/bellypao/src/styles/global.css",
+  "websites/bellypao/src/utils/images.test.ts",
+  "websites/bellypao/src/utils/images.ts",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 André Vandal", "2026 Belly Pão"]
+SPDX-License-Identifier = "MIT AND LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/brunabraz/src/cms/carousel.test.ts",
+  "websites/brunabraz/src/cms/carousel.ts",
+  "websites/brunabraz/src/cms/category.test.ts",
+  "websites/brunabraz/src/cms/category.ts",
+  "websites/brunabraz/src/cms/libsql-runtime.ts",
+  "websites/brunabraz/src/cms/nav.test.ts",
+  "websites/brunabraz/src/cms/nav.ts",
+  "websites/brunabraz/src/cms/pages.ts",
+  "websites/brunabraz/src/cms/post.test.ts",
+  "websites/brunabraz/src/cms/post.ts",
+  "websites/brunabraz/src/cms/posts.test.ts",
+  "websites/brunabraz/src/cms/posts.ts",
+  "websites/brunabraz/src/cms/providers.test.ts",
+  "websites/brunabraz/src/cms/providers.ts",
+  "websites/brunabraz/src/cms/robots.test.ts",
+  "websites/brunabraz/src/cms/robots.ts",
+  "websites/brunabraz/src/cms/sitemap.test.ts",
+  "websites/brunabraz/src/cms/sitemap.ts",
+  "websites/brunabraz/src/cms/text.test.ts",
+  "websites/brunabraz/src/cms/text.ts",
+  "websites/brunabraz/src/components/Button.astro",
+  "websites/brunabraz/src/components/CmsPage.astro",
+  "websites/brunabraz/src/components/FeatureCards.astro",
+  "websites/brunabraz/src/components/Heading.astro",
+  "websites/brunabraz/src/components/Hero.astro",
+  "websites/brunabraz/src/components/LogoHorizontal.astro",
+  "websites/brunabraz/src/components/Navigation.astro",
+  "websites/brunabraz/src/components/PricingCalculator.astro",
+  "websites/brunabraz/src/components/TheFooter.astro",
+  "websites/brunabraz/src/components/blocks/ClosingCta.astro",
+  "websites/brunabraz/src/components/blocks/Credentials.astro",
+  "websites/brunabraz/src/components/blocks/Emphasis.astro",
+  "websites/brunabraz/src/components/blocks/Faq.astro",
+  "websites/brunabraz/src/components/blocks/FeatureCards.astro",
+  "websites/brunabraz/src/components/blocks/Hero.astro",
+  "websites/brunabraz/src/components/blocks/HowItWorks.astro",
+  "websites/brunabraz/src/components/blocks/ImageCarousel.astro",
+  "websites/brunabraz/src/components/blocks/Method.astro",
+  "websites/brunabraz/src/components/blocks/NumberedList.astro",
+  "websites/brunabraz/src/components/blocks/PageBlocks.astro",
+  "websites/brunabraz/src/components/blocks/Pricing.astro",
+  "websites/brunabraz/src/components/blocks/Purpose.astro",
+  "websites/brunabraz/src/components/blocks/Results.astro",
+  "websites/brunabraz/src/components/blocks/StoryVideo.astro",
+  "websites/brunabraz/src/components/blocks/Testimonials.astro",
+  "websites/brunabraz/src/components/blocks/TextSplit.astro",
+  "websites/brunabraz/src/components/blocks/Timeline.astro",
+  "websites/brunabraz/src/components/blog/AuthorCard.astro",
+  "websites/brunabraz/src/components/blog/CategoryHeader.astro",
+  "websites/brunabraz/src/components/blog/DefaultBlock.astro",
+  "websites/brunabraz/src/components/blog/FeaturedCarousel.astro",
+  "websites/brunabraz/src/components/blog/PostBody.astro",
+  "websites/brunabraz/src/components/blog/PostCard.astro",
+  "websites/brunabraz/src/components/blog/PostGrid.astro",
+  "websites/brunabraz/src/components/blog/PostHeader.astro",
+  "websites/brunabraz/src/components/blog/PostImage.astro",
+  "websites/brunabraz/src/components/blog/TableOfContents.astro",
+  "websites/brunabraz/src/layouts/BlogLayout.astro",
+  "websites/brunabraz/src/layouts/Layout.astro",
+  "websites/brunabraz/src/live.config.ts",
+  "websites/brunabraz/src/pages/404.astro",
+  "websites/brunabraz/src/pages/[slug].astro",
+  "websites/brunabraz/src/pages/blog/[slug].astro",
+  "websites/brunabraz/src/pages/blog/categoria/[slug].astro",
+  "websites/brunabraz/src/pages/blog/index.astro",
+  "websites/brunabraz/src/pages/index.astro",
+  "websites/brunabraz/src/pages/parciais/posts.astro",
+  "websites/brunabraz/src/pages/robots.txt.ts",
+  "websites/brunabraz/src/pages/sitemap-[collection].xml.ts",
+  "websites/brunabraz/src/pages/sitemap.xml.ts",
+  "websites/brunabraz/src/styles/global.css",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+  "2026 André Vandal",
+  "2026 Bruna Braz",
+  "2026 Thaís Kikuti",
+  "2026 Mari Teshima",
+]
+SPDX-License-Identifier = "MIT AND LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/clinicamauricioaraujo/src/astro.d.ts",
+  "websites/clinicamauricioaraujo/src/components/BaseButton.astro",
+  "websites/clinicamauricioaraujo/src/components/BaseSection.astro",
+  "websites/clinicamauricioaraujo/src/components/Cover.astro",
+  "websites/clinicamauricioaraujo/src/components/Description.astro",
+  "websites/clinicamauricioaraujo/src/components/Eyebrow.astro",
+  "websites/clinicamauricioaraujo/src/components/GoogleRatingBadge.astro",
+  "websites/clinicamauricioaraujo/src/components/Icon.astro",
+  "websites/clinicamauricioaraujo/src/components/ImageCard.astro",
+  "websites/clinicamauricioaraujo/src/components/TeamCard.astro",
+  "websites/clinicamauricioaraujo/src/components/TextCard.astro",
+  "websites/clinicamauricioaraujo/src/components/TheFooter.astro",
+  "websites/clinicamauricioaraujo/src/components/TheHeader.astro",
+  "websites/clinicamauricioaraujo/src/components/TheHero.astro",
+  "websites/clinicamauricioaraujo/src/components/Title.astro",
+  "websites/clinicamauricioaraujo/src/components/VideoCard.astro",
+  "websites/clinicamauricioaraujo/src/components/ui/accordion/Accordion.astro",
+  "websites/clinicamauricioaraujo/src/components/ui/accordion/AccordionContent.astro",
+  "websites/clinicamauricioaraujo/src/components/ui/accordion/AccordionItem.astro",
+  "websites/clinicamauricioaraujo/src/components/ui/accordion/AccordionTrigger.astro",
+  "websites/clinicamauricioaraujo/src/components/ui/accordion/index.ts",
+  "websites/clinicamauricioaraujo/src/layouts/Base.astro",
+  "websites/clinicamauricioaraujo/src/pages/404.astro",
+  "websites/clinicamauricioaraujo/src/pages/500.astro",
+  "websites/clinicamauricioaraujo/src/pages/index.astro",
+  "websites/clinicamauricioaraujo/src/pages/politica-de-privacidade.astro",
+  "websites/clinicamauricioaraujo/src/pages/sobre.astro",
+  "websites/clinicamauricioaraujo/src/pages/termos-e-condicoes.astro",
+  "websites/clinicamauricioaraujo/src/pages/tratamentos.astro",
+  "websites/clinicamauricioaraujo/src/styles/global.css",
+  "websites/clinicamauricioaraujo/src/types.ts",
+  "websites/clinicamauricioaraujo/src/utils/cn.ts",
+  "websites/clinicamauricioaraujo/src/utils/image.test.ts",
+  "websites/clinicamauricioaraujo/src/utils/image.ts",
+  "websites/clinicamauricioaraujo/src/utils/index.ts",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 André Vandal", "2026 Clínica Maurício Araujo"]
+SPDX-License-Identifier = "MIT AND LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/pedrohenridesign/src/cms/blocks.ts",
+  "websites/pedrohenridesign/src/cms/libsql-runtime.ts",
+  "websites/pedrohenridesign/src/cms/providers.test.ts",
+  "websites/pedrohenridesign/src/cms/providers.ts",
+  "websites/pedrohenridesign/src/cms/queries.ts",
+  "websites/pedrohenridesign/src/cms/sitemap.test.ts",
+  "websites/pedrohenridesign/src/cms/sitemap.ts",
+  "websites/pedrohenridesign/src/components/BaseButton.astro",
+  "websites/pedrohenridesign/src/components/TheFeatures.astro",
+  "websites/pedrohenridesign/src/components/TheFooter.astro",
+  "websites/pedrohenridesign/src/components/TheHeader.astro",
+  "websites/pedrohenridesign/src/components/TheHomeCategoryListing.astro",
+  "websites/pedrohenridesign/src/components/TheHomeHero.astro",
+  "websites/pedrohenridesign/src/components/blocks/PTImage.astro",
+  "websites/pedrohenridesign/src/components/blocks/PostBlocks.astro",
+  "websites/pedrohenridesign/src/components/blocks/PostCards.astro",
+  "websites/pedrohenridesign/src/components/blocks/PostImage.astro",
+  "websites/pedrohenridesign/src/components/blocks/PostPortableText.astro",
+  "websites/pedrohenridesign/src/components/blocks/PostSplit.astro",
+  "websites/pedrohenridesign/src/components/blocks/PostText.astro",
+  "websites/pedrohenridesign/src/layouts/Layout.astro",
+  "websites/pedrohenridesign/src/live.config.ts",
+  "websites/pedrohenridesign/src/pages/404.astro",
+  "websites/pedrohenridesign/src/pages/categorias/[slug].astro",
+  "websites/pedrohenridesign/src/pages/index.astro",
+  "websites/pedrohenridesign/src/pages/posts/[slug].astro",
+  "websites/pedrohenridesign/src/pages/robots.txt.ts",
+  "websites/pedrohenridesign/src/pages/sitemap-index.xml.ts",
+  "websites/pedrohenridesign/src/styles/global.css",
+  "websites/pedrohenridesign/src/utils/images.ts",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 André Vandal", "2026 Pedro Henri Design"]
+SPDX-License-Identifier = "MIT AND LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/transportugal/src/actions/index.test.ts",
+  "websites/transportugal/src/actions/index.ts",
+  "websites/transportugal/src/components/Eyebrown.astro",
+  "websites/transportugal/src/components/Heading.astro",
+  "websites/transportugal/src/components/Logo.astro",
+  "websites/transportugal/src/components/MapBrazil.astro",
+  "websites/transportugal/src/components/Navigation.astro",
+  "websites/transportugal/src/components/RouteCalculator.svelte",
+  "websites/transportugal/src/components/TheFooter.astro",
+  "websites/transportugal/src/components/__tests__/RouteCalculator.utils.test.ts",
+  "websites/transportugal/src/components/ui/Button.astro",
+  "websites/transportugal/src/components/ui/Combobox.svelte",
+  "websites/transportugal/src/layouts/Base.astro",
+  "websites/transportugal/src/pages/index.astro",
+  "websites/transportugal/src/services/brazil-cities.test.ts",
+  "websites/transportugal/src/services/brazil-cities.ts",
+  "websites/transportugal/src/services/coverage.test.ts",
+  "websites/transportugal/src/services/coverage.ts",
+  "websites/transportugal/src/services/delivery-time.test.ts",
+  "websites/transportugal/src/services/delivery-time.ts",
+  "websites/transportugal/src/services/location-search.test.ts",
+  "websites/transportugal/src/services/location-search.ts",
+  "websites/transportugal/src/services/normalize.test.ts",
+  "websites/transportugal/src/services/normalize.ts",
+  "websites/transportugal/src/services/search-index.test.ts",
+  "websites/transportugal/src/services/search-index.ts",
+  "websites/transportugal/src/styles/global.css",
+  "websites/transportugal/src/utils/index.ts",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 André Vandal", "2026 Transportugal Ltda."]
+SPDX-License-Identifier = "MIT AND LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/vandallabs/src/components/link-in-bio/BackgroundGrid.astro",
+  "websites/vandallabs/src/components/link-in-bio/BrandMark.astro",
+  "websites/vandallabs/src/components/link-in-bio/Hero.astro",
+  "websites/vandallabs/src/components/link-in-bio/Modes.astro",
+  "websites/vandallabs/src/components/link-in-bio/Page.astro",
+  "websites/vandallabs/src/components/link-in-bio/SiteFooter.astro",
+  "websites/vandallabs/src/components/link-in-bio/SiteHeader.astro",
+  "websites/vandallabs/src/components/link-in-bio/WhatsAppCta.astro",
+  "websites/vandallabs/src/layouts/Layout.astro",
+  "websites/vandallabs/src/lib/i18n.test.ts",
+  "websites/vandallabs/src/lib/i18n.ts",
+  "websites/vandallabs/src/lib/whatsapp.test.ts",
+  "websites/vandallabs/src/lib/whatsapp.ts",
+  "websites/vandallabs/src/pages/en/index.astro",
+  "websites/vandallabs/src/pages/index.ts",
+  "websites/vandallabs/src/pages/pt/index.astro",
+  "websites/vandallabs/src/styles/global.css",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 André Vandal", "2026 Vandal Labs Ltda."]
+SPDX-License-Identifier = "MIT AND LicenseRef-Site-Content"

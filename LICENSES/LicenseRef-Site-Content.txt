@@ -1,0 +1,19 @@
+Site Content - no licence granted
+
+Copyright (c) 2026 the respective content holders identified in REUSE.toml
+and the site's CONTENT-LICENSE.md.
+
+All rights reserved, no licence granted.
+
+Website copy, data, brand identity, artwork, photographs, illustrations,
+fonts and other embedded owner material are not licensed under MIT. Their
+presence in a public repository or at a public asset URL does not grant
+permission to reuse, redistribute, adapt or commercially exploit them.
+Obtain permission from the relevant rights holder before such use.
+
+Reusable implementation code is separately available under MIT. A mixed
+source file may contain both MIT implementation and reserved site content;
+the MIT grant covers only its implementation, not the embedded material.
+Existing third-party notices and licences remain in force for their own
+material. This identifier records a rights boundary, not an SPDX licence
+or a claim that all embedded material has the same owner.
