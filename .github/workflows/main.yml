@@ -8,10 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  packages: write
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,6 +17,8 @@ jobs:
   check-all:
     name: Check all affected apps and packages
     runs-on: ubuntu-26.04
+    permissions:
+      contents: read
     outputs:
       affected_apps: ${{ steps.affecteds.outputs.apps_affected }}
       container_apps_affected: ${{ steps.affecteds.outputs.container_apps_affected }}
@@ -57,6 +56,10 @@ jobs:
       # invoking the strict config writer; missing credentials degrade to local
       # execution instead of breaking the PR.
       - name: Configure remote cache
+        if: >-
+          github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+          (github.event_name != 'pull_request' ||
+          github.event.pull_request.head.repo.full_name == github.repository)
         env:
           MOON_REMOTE_HOST: ${{ secrets.MOON_REMOTE_HOST }}
           MOON_REMOTE_API: ${{ secrets.MOON_REMOTE_API }}
@@ -101,17 +104,16 @@ jobs:
     # Fork PRs receive no Cloudflare credentials, so only same-repository PRs
     # get a Workers Preview.
     if: >-
-      needs.check-all.outputs.affected_apps != '[]' &&
+      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      (needs.check-all.outputs.affected_apps != '[]' &&
       github.head_ref != 'release-please--branches--main' &&
       (github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name == github.repository)
+      github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-26.04
     # id-token: Infisical OIDC login on main; previews fetch no secrets.
     permissions:
-      contents: write
-      issues: write
+      contents: read
       pull-requests: write
-      packages: write
       id-token: write
     environment: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
     strategy:
@@ -139,9 +141,9 @@ jobs:
           mode: ${{ github.ref == 'refs/heads/main' && 'staging' || 'preview' }}
           target: ${{ matrix.app }}
           pr: ${{ github.event.pull_request.number }}
-          access-team-domain: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenri' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_TEAM_DOMAIN || '' }}
-          access-client-id: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenri' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_CLIENT_ID || '' }}
-          access-client-secret: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenri' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_CLIENT_SECRET || '' }}
+          access-team-domain: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenridesign' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_TEAM_DOMAIN || '' }}
+          access-client-id: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenridesign' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_CLIENT_ID || '' }}
+          access-client-secret: ${{ github.ref != 'refs/heads/main' && (matrix.app == 'pedrohenridesign' || matrix.app == 'brunabraz') && secrets.CF_ACCESS_CLIENT_SECRET || '' }}
           infisical-identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
           infisical-project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
           infisical-domain: ${{ vars.INFISICAL_DOMAIN }}
@@ -155,7 +157,7 @@ jobs:
           # Selected EmDash previews sit behind Cloudflare Access. Lighthouse
           # audits a local proxy that adds the Service Auth token, so the token
           # never reaches the browser, other origins or the report.
-          ACCESS_PROTECTED: ${{ matrix.app == 'pedrohenri' || matrix.app == 'brunabraz' }}
+          ACCESS_PROTECTED: ${{ matrix.app == 'pedrohenridesign' || matrix.app == 'brunabraz' }}
           CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
@@ -208,9 +210,11 @@ jobs:
     name: Link staging (release PR)
     needs: check-all
     if: >-
-      needs.check-all.outputs.affected_apps != '[]' &&
+      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      (needs.check-all.outputs.affected_apps != '[]' &&
       github.event_name == 'pull_request' &&
-      github.head_ref == 'release-please--branches--main'
+      github.head_ref == 'release-please--branches--main') &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-26.04
     permissions:
       pull-requests: write
@@ -220,13 +224,13 @@ jobs:
         app: ${{ fromJson(needs.check-all.outputs.affected_apps) }}
     steps:
       - name: Comment staging URL on the PR
+        if: vars.CLOUDFLARE_WORKERS_SUBDOMAIN != ''
         uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: preview-url-${{ matrix.app }}
-          # shortcut: account workers.dev subdomain hardcoded, move to a repo var if it changes
           message: |
             ### Staging: `${{ matrix.app }}`
-            :rocket: https://${{ matrix.app }}-staging.account.workers.dev
+            :rocket: https://${{ matrix.app }}-staging.${{ vars.CLOUDFLARE_WORKERS_SUBDOMAIN }}.workers.dev
 
   container:
     name: Container (images)
@@ -234,7 +238,9 @@ jobs:
     # The images container gets staging (push to main) and production
     # (release.yml's manual dispatch) deploys only -- no PR preview build,
     # unlike the websites' `deploy` job above.
-    if: needs.check-all.outputs.container_apps_affected != '[]' && github.event_name != 'pull_request'
+    if: >-
+      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      (needs.check-all.outputs.container_apps_affected != '[]' && github.event_name != 'pull_request')
     permissions:
       contents: read
       packages: write

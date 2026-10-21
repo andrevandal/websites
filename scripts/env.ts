@@ -6,7 +6,10 @@ type Stage = "preview" | "staging" | "production"
 
 // EmDash previews are Access-protected with their own media; the image
 // service cannot fetch from them, so they serve originals.
-const EMDASH_SITES = new Set(["pedrohenri", "brunabraz"])
+const EMDASH_SITES: Record<string, true> = {
+  pedrohenridesign: true,
+  brunabraz: true,
+}
 
 const extractSiteIdFromLocation = (location: string[]): string => {
   const [directory, siteId] = location
@@ -29,7 +32,7 @@ const resolveTargetEnvVars = (
   const siteId = extractSiteIdFromLocation(siteLocation)
   return {
     IMAGES_BASE_URL:
-      stage === "preview" && EMDASH_SITES.has(siteId)
+      stage === "preview" && Object.hasOwn(EMDASH_SITES, siteId)
         ? ""
         : (env["IMAGES_BASE_URL"] ?? ""),
   }

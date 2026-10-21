@@ -24,7 +24,7 @@ describe("resolveTargetEnvVars", () => {
 
   test("EmDash previews serve originals", () => {
     expect(
-      resolveTargetEnvVars(["websites", "pedrohenri"], "preview", env)[
+      resolveTargetEnvVars(["websites", "pedrohenridesign"], "preview", env)[
         "IMAGES_BASE_URL"
       ]
     ).toBe("")

@@ -45,23 +45,26 @@ const withCloudflare = async (
   process.env.CLOUDFLARE_API_TOKEN = "test-token-never-log"
   const d1 = new Map([
     [
-      "pedrohenri-pr-42-cms-extra",
-      { uuid: "other-db", name: "pedrohenri-pr-42-cms-extra" },
+      "pedrohenridesign-pr-42-cms-extra",
+      { uuid: "other-db", name: "pedrohenridesign-pr-42-cms-extra" },
     ],
     [
-      "pedrohenri-pr-42-cms",
-      { uuid: "existing-db", name: "pedrohenri-pr-42-cms" },
+      "pedrohenridesign-pr-42-cms",
+      { uuid: "existing-db", name: "pedrohenridesign-pr-42-cms" },
     ],
     ["production-cms", { uuid: "production-db", name: "production-cms" }],
   ])
   const r2 = new Map([
-    ["pedrohenri-pr-42-media-extra", { name: "pedrohenri-pr-42-media-extra" }],
-    ["pedrohenri-pr-42-media", { name: "pedrohenri-pr-42-media" }],
+    [
+      "pedrohenridesign-pr-42-media-extra",
+      { name: "pedrohenridesign-pr-42-media-extra" },
+    ],
+    ["pedrohenridesign-pr-42-media", { name: "pedrohenridesign-pr-42-media" }],
     ["production-media", { name: "production-media" }],
   ])
   const objects = new Map<string, Map<string, string>>([
     [
-      "pedrohenri-pr-42-media",
+      "pedrohenridesign-pr-42-media",
       new Map(
         Array.from({ length: 2005 }, (_, i) => [
           `image-${String(i).padStart(4, "0")}.jpg`,
@@ -239,8 +242,10 @@ describe("Cloudflare preview resource REST helpers", () => {
     "D1 exact lookup follows %s, reuses UUID, creates and deletes only exact names",
     async pagination => {
       await withCloudflare({ pagination }, async state => {
-        expect(await findOrCreateD1Database("pedrohenri-pr-42-cms")).toEqual({
-          database: { uuid: "existing-db", name: "pedrohenri-pr-42-cms" },
+        expect(
+          await findOrCreateD1Database("pedrohenridesign-pr-42-cms")
+        ).toEqual({
+          database: { uuid: "existing-db", name: "pedrohenridesign-pr-42-cms" },
           created: false,
         })
         const created = await findOrCreateD1Database("brunabraz-pr-43-cms")
@@ -250,9 +255,13 @@ describe("Cloudflare preview resource REST helpers", () => {
           ...created,
           created: false,
         })
-        expect(await deleteD1DatabaseByName("pedrohenri-pr-42-cms")).toBe(true)
-        expect(await deleteD1DatabaseByName("pedrohenri-pr-42-cms")).toBe(false)
-        expect(state.d1.has("pedrohenri-pr-42-cms-extra")).toBe(true)
+        expect(await deleteD1DatabaseByName("pedrohenridesign-pr-42-cms")).toBe(
+          true
+        )
+        expect(await deleteD1DatabaseByName("pedrohenridesign-pr-42-cms")).toBe(
+          false
+        )
+        expect(state.d1.has("pedrohenridesign-pr-42-cms-extra")).toBe(true)
         expect(state.d1.has("production-cms")).toBe(true)
       })
     }
@@ -260,8 +269,10 @@ describe("Cloudflare preview resource REST helpers", () => {
 
   test("R2 cursor lookup preserves exact existing bucket, creates once and purges all media before deletion", async () => {
     await withCloudflare({}, async state => {
-      expect(await findOrCreateR2Bucket("pedrohenri-pr-42-media")).toEqual({
-        bucket: { name: "pedrohenri-pr-42-media" },
+      expect(
+        await findOrCreateR2Bucket("pedrohenridesign-pr-42-media")
+      ).toEqual({
+        bucket: { name: "pedrohenridesign-pr-42-media" },
         created: false,
       })
       const created = await findOrCreateR2Bucket("brunabraz-pr-43-media")
@@ -271,10 +282,14 @@ describe("Cloudflare preview resource REST helpers", () => {
         ...created,
         created: false,
       })
-      expect(await deleteR2BucketByName("pedrohenri-pr-42-media")).toBe(true)
-      expect(await deleteR2BucketByName("pedrohenri-pr-42-media")).toBe(false)
-      expect(state.objects.has("pedrohenri-pr-42-media")).toBe(false)
-      expect(state.r2.has("pedrohenri-pr-42-media-extra")).toBe(true)
+      expect(await deleteR2BucketByName("pedrohenridesign-pr-42-media")).toBe(
+        true
+      )
+      expect(await deleteR2BucketByName("pedrohenridesign-pr-42-media")).toBe(
+        false
+      )
+      expect(state.objects.has("pedrohenridesign-pr-42-media")).toBe(false)
+      expect(state.r2.has("pedrohenridesign-pr-42-media-extra")).toBe(true)
       expect(state.objects.get("production-media")!.get("keep.jpg")).toBe(
         "production bytes"
       )
@@ -293,9 +308,11 @@ describe("Cloudflare preview resource REST helpers", () => {
 
   test("user-owned token uses user verify after account-owner authentication rejection", async () => {
     await withCloudflare({ owner: "user" }, async state => {
-      expect(await deleteR2BucketByName("pedrohenri-pr-42-media")).toBe(true)
+      expect(await deleteR2BucketByName("pedrohenridesign-pr-42-media")).toBe(
+        true
+      )
       expect(state.paths).toContain("GET /user/tokens/verify")
-      expect(state.r2.has("pedrohenri-pr-42-media")).toBe(false)
+      expect(state.r2.has("pedrohenridesign-pr-42-media")).toBe(false)
     })
   })
 
@@ -304,10 +321,12 @@ describe("Cloudflare preview resource REST helpers", () => {
     async failure => {
       await withCloudflare({ failure }, async state => {
         await expect(
-          deleteR2BucketByName("pedrohenri-pr-42-media")
+          deleteR2BucketByName("pedrohenridesign-pr-42-media")
         ).rejects.toThrow()
-        expect(state.r2.has("pedrohenri-pr-42-media")).toBe(true)
-        expect(state.objects.get("pedrohenri-pr-42-media")!.size).toBe(2005)
+        expect(state.r2.has("pedrohenridesign-pr-42-media")).toBe(true)
+        expect(state.objects.get("pedrohenridesign-pr-42-media")!.size).toBe(
+          2005
+        )
         expect(state.paths.some(path => path.startsWith("DELETE "))).toBe(false)
         if (failure === "verify" || failure === "transport")
           expect(state.paths).not.toContain("GET /user/tokens/verify")
@@ -322,10 +341,10 @@ describe("Cloudflare preview resource REST helpers", () => {
       await withCloudflare({ failure }, async state => {
         if (failure === "delete") {
           await expect(
-            deleteD1DatabaseByName("pedrohenri-pr-42-cms")
+            deleteD1DatabaseByName("pedrohenridesign-pr-42-cms")
           ).rejects.toThrow("provider failure")
           await expect(
-            deleteR2BucketByName("pedrohenri-pr-42-media")
+            deleteR2BucketByName("pedrohenridesign-pr-42-media")
           ).rejects.toThrow("provider failure")
         } else {
           await expect(
@@ -337,8 +356,8 @@ describe("Cloudflare preview resource REST helpers", () => {
         }
         expect(state.d1.has("brunabraz-pr-43-cms")).toBe(false)
         expect(state.r2.has("brunabraz-pr-43-media")).toBe(false)
-        expect(state.d1.has("pedrohenri-pr-42-cms")).toBe(true)
-        expect(state.r2.has("pedrohenri-pr-42-media")).toBe(true)
+        expect(state.d1.has("pedrohenridesign-pr-42-cms")).toBe(true)
+        expect(state.r2.has("pedrohenridesign-pr-42-media")).toBe(true)
       })
     }
   )

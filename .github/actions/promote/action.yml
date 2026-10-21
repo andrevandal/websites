@@ -36,8 +36,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # Fails before waiting for Main CI when a production secret is absent.
     - name: Fetch production secrets from Infisical
+      if: inputs.target == 'brunabraz' || inputs.target == 'pedrohenridesign'
       uses: Infisical/secrets-action@v1.0.18
       with:
         method: oidc
@@ -102,7 +102,7 @@ runs:
     # Core migrations run before the new Version exists, so a Worker that only
     # checks (migrations.runtime: "check") never meets an unmigrated database.
     - name: Apply EmDash migrations (production)
-      if: inputs.target == 'pedrohenri' || inputs.target == 'brunabraz'
+      if: inputs.target == 'pedrohenridesign' || inputs.target == 'brunabraz'
       shell: bash
       run: >-
         bun scripts/deploy.ts migrate ${{ inputs.target }}

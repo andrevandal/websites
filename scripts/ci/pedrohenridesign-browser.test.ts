@@ -10,8 +10,8 @@ import {
   parseCliArgs,
   validateFixtures,
   validateOrigin,
-} from "./pedrohenri-browser"
-import type { FixtureConfig } from "./pedrohenri-browser"
+} from "./pedrohenridesign-browser"
+import type { FixtureConfig } from "./pedrohenridesign-browser"
 
 const SENTINEL = "DO_NOT_ECHO_ISSUE197_572314"
 const ORIGIN = "https://issue197-preview.example"
@@ -27,7 +27,7 @@ let directory: string
 let fixturePath: string
 let statePath: string
 const script = fileURLToPath(
-  new URL("./pedrohenri-browser.ts", import.meta.url)
+  new URL("./pedrohenridesign-browser.ts", import.meta.url)
 )
 
 beforeAll(async () => {

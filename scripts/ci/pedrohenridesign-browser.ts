@@ -135,7 +135,7 @@ const isTransformedImage = (input: string, base: string) => {
 
 const parseCliArgs = async (argv: string[]) => {
   const args = await yargs(hideBin(argv))
-    .scriptName("pedrohenri-browser")
+    .scriptName("pedrohenridesign-browser")
     .option("url", { type: "string", demandOption: true })
     .option("storage-state", { type: "string", demandOption: true })
     .option("fixtures", { type: "string", demandOption: true })

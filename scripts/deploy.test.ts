@@ -159,7 +159,7 @@ const target = {
 }
 
 describe("preview resources", () => {
-  test.each(["pedrohenri", "brunabraz"])(
+  test.each(["pedrohenridesign", "brunabraz"])(
     "%s binds isolated native resources only under previews and reuses edited state",
     async worker => {
       const state = createDeps()
@@ -211,7 +211,7 @@ describe("preview resources", () => {
   test("Worker and PR identities isolate resources", async () => {
     const state = createDeps()
     const ids = new Set<string>()
-    for (const worker of ["pedrohenri", "brunabraz"]) {
+    for (const worker of ["pedrohenridesign", "brunabraz"]) {
       for (const pr of [1, 2]) {
         await deployPreview({ ...target, worker, pr, vars: {} }, state.deps)
         ids.add(state.writtenConfig().previews.d1_databases[0].database_id)
@@ -222,8 +222,8 @@ describe("preview resources", () => {
     expect([...state.r2.keys()].sort()).toEqual([
       "brunabraz-pr-1-media",
       "brunabraz-pr-2-media",
-      "pedrohenri-pr-1-media",
-      "pedrohenri-pr-2-media",
+      "pedrohenridesign-pr-1-media",
+      "pedrohenridesign-pr-2-media",
     ])
   })
 
@@ -245,7 +245,7 @@ describe("preview resources", () => {
     expect(state.previews.has("transportugal:pr-42")).toBe(true)
   })
 
-  test.each(["pedrohenri", "brunabraz", "transportugal"])(
+  test.each(["pedrohenridesign", "brunabraz", "transportugal"])(
     "%s cleanup is exact and repeated cleanup reports absent resources",
     async worker => {
       const state = createDeps()
@@ -310,10 +310,13 @@ describe("preview resources", () => {
         },
       }
       await expect(
-        deployPreview({ ...target, worker: "pedrohenri", pr, vars: {} }, deps)
+        deployPreview(
+          { ...target, worker: "pedrohenridesign", pr, vars: {} },
+          deps
+        )
       ).rejects.toThrow("--pr")
       await expect(
-        cleanupPreview({ ...target, worker: "pedrohenri", pr }, deps)
+        cleanupPreview({ ...target, worker: "pedrohenridesign", pr }, deps)
       ).rejects.toThrow("--pr")
       expect(touched).toBe(false)
     }
@@ -321,9 +324,9 @@ describe("preview resources", () => {
 })
 
 describe("core migrations in previews", () => {
-  const pedro = { ...target, worker: "pedrohenri", pr: 42, vars: {} }
+  const pedro = { ...target, worker: "pedrohenridesign", pr: 42, vars: {} }
 
-  test("pedrohenri applies pending migrations to the PR database, pinned to the reported fingerprint, before wrangler preview", async () => {
+  test("pedrohenridesign applies pending migrations to the PR database, pinned to the reported fingerprint, before wrangler preview", async () => {
     const state = createDeps()
     state.migrationReport.pending = ["001_initial", "002_media_status"]
 
@@ -346,15 +349,15 @@ describe("core migrations in previews", () => {
         "--name",
         "pr-42",
         "--worker-name",
-        "pedrohenri",
+        "pedrohenridesign",
         "--json",
       ],
     ])
-    expect(databaseId).toBe(state.d1.get("pedrohenri-pr-42-cms")!.id)
-    expect(bucketName).toBe("pedrohenri-pr-42-media")
+    expect(databaseId).toBe(state.d1.get("pedrohenridesign-pr-42-cms")!.id)
+    expect(bucketName).toBe("pedrohenridesign-pr-42-media")
   })
 
-  test("brunabraz migrates its PR database like pedrohenri", async () => {
+  test("brunabraz migrates its PR database like pedrohenridesign", async () => {
     const state = createDeps()
     state.migrationReport.pending = ["001_initial"]
 
@@ -457,7 +460,7 @@ describe("migrateStage", () => {
 
     const applied = await migrateStage(
       {
-        siteDir: "/repo/websites/pedrohenri",
+        siteDir: "/repo/websites/pedrohenridesign",
         manifestPath,
         secrets: stageSecrets,
       },
@@ -500,7 +503,7 @@ describe("migrateStage", () => {
     await expect(
       migrateStage(
         {
-          siteDir: "/repo/websites/pedrohenri",
+          siteDir: "/repo/websites/pedrohenridesign",
           manifestPath,
           secrets: stageSecrets,
         },
@@ -517,7 +520,7 @@ describe("migrateStage", () => {
     await expect(
       migrateStage(
         {
-          siteDir: "/repo/websites/pedrohenri",
+          siteDir: "/repo/websites/pedrohenridesign",
           manifestPath,
           secrets: { TURSO_DATABASE_URL: stageSecrets.TURSO_DATABASE_URL },
         },
@@ -535,10 +538,10 @@ describe("setupPreview", () => {
     content: { pages: [{ slug: "inicio", seo: { title: "Inicio" } }] },
   })
   const preview = {
-    siteDir: "/repo/websites/pedrohenri",
-    url: "https://pr-42-pedrohenri.account.workers.dev",
+    siteDir: "/repo/websites/pedrohenridesign",
+    url: "https://pr-42-pedrohenridesign.account.workers.dev",
     databaseId: "db-42",
-    bucketName: "pedrohenri-pr-42-media",
+    bucketName: "pedrohenridesign-pr-42-media",
     accessClientId: "client-id",
     accessClientSecret: "client-secret",
   }
@@ -954,7 +957,7 @@ const configAt = async (args: string[]) =>
   JSON.parse(await readFile(args[args.indexOf("-c") + 1]!, "utf-8"))
 
 describe("versionUpload", () => {
-  test.each(["pedrohenri", "brunabraz"])(
+  test.each(["pedrohenridesign", "brunabraz"])(
     "%s stages share unchanged standard artifact without preview bindings",
     async worker => {
       const artifactDir = await createArtifact()
@@ -1050,8 +1053,12 @@ describe("versionUpload", () => {
   })
 
   test("staging uploads to <worker>-staging, production to <worker>", () => {
-    expect(stageWorkerName("pedrohenri", "staging")).toBe("pedrohenri-staging")
-    expect(stageWorkerName("pedrohenri", "production")).toBe("pedrohenri")
+    expect(stageWorkerName("pedrohenridesign", "staging")).toBe(
+      "pedrohenridesign-staging"
+    )
+    expect(stageWorkerName("pedrohenridesign", "production")).toBe(
+      "pedrohenridesign"
+    )
   })
 
   test("fails when wrangler prints no Worker Version ID", async () => {
@@ -1154,7 +1161,7 @@ describe("parseStageSecrets", () => {
   test("returns every key under the site path except the preview-only audience", () => {
     expect(
       parseStageSecrets(
-        "pedrohenri",
+        "pedrohenridesign",
         "production",
         dotenv({ ...completeSecrets, CF_ACCESS_AUDIENCE: "aud" })
       )
@@ -1174,7 +1181,7 @@ describe("parseStageSecrets", () => {
   test("rejects an empty key, naming it but never a value", () => {
     expect(() =>
       parseStageSecrets(
-        "pedrohenri",
+        "pedrohenridesign",
         "production",
         dotenv({ ...completeSecrets, S3_BUCKET: "", TURSO_AUTH_TOKEN: "" })
       )
@@ -1190,20 +1197,33 @@ describe("parseStageSecrets", () => {
     )
   })
 
-  test.each(["staging", "production"] as const)(
-    "requires the public asset base in %s",
-    stage => {
-      const { S3_PUBLIC_URL: _publicUrl, ...incomplete } = completeSecrets
-      expect(() =>
-        parseStageSecrets("bellypao", stage, dotenv(incomplete))
-      ).toThrow(
-        `Infisical ${stage} secrets are missing or empty: S3_PUBLIC_URL.`
+  test("CMS sites derive S3_PUBLIC_URL from endpoint and bucket when absent", () => {
+    const { S3_PUBLIC_URL: _publicUrl, ...missingPublicUrl } = completeSecrets
+    const result = parseStageSecrets(
+      "brunabraz",
+      "staging",
+      dotenv(missingPublicUrl)
+    )
+    expect(result).toEqual({
+      ...missingPublicUrl,
+      S3_PUBLIC_URL: `${missingPublicUrl.S3_ENDPOINT}/${missingPublicUrl.S3_BUCKET}`,
+    })
+  })
+
+  test("CMS sites reject explicitly empty S3_PUBLIC_URL to prevent stale-value inheritance", () => {
+    expect(() =>
+      parseStageSecrets(
+        "brunabraz",
+        "staging",
+        dotenv({ ...completeSecrets, S3_PUBLIC_URL: "" })
       )
-      expect(() => parseStageSecrets("bellypao", stage, "")).toThrow(
-        `Infisical ${stage} secrets are missing or empty: S3_PUBLIC_URL.`
-      )
-    }
-  )
+    ).toThrow("missing or empty: S3_PUBLIC_URL.")
+  })
+
+  test("non-CMS sites have no required keys", () => {
+    const result = parseStageSecrets("bellypao", "staging", "")
+    expect(result).toEqual({})
+  })
 })
 
 describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
@@ -1213,16 +1233,18 @@ describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
       name: "empty key",
       key: "S3_BUCKET",
       secrets: { ...completeSecrets, S3_BUCKET: "" },
+      valid: false,
     },
     {
-      name: "missing public URL",
-      key: "S3_PUBLIC_URL",
+      name: "missing public URL (derives from endpoint/bucket)",
       secrets: missingPublicUrl,
+      valid: true,
     },
     {
-      name: "empty public URL",
+      name: "empty public URL (prevents stale-value inheritance)",
       key: "S3_PUBLIC_URL",
       secrets: { ...completeSecrets, S3_PUBLIC_URL: "" },
+      valid: false,
     },
     { name: "complete secrets", secrets: completeSecrets, valid: true },
   ]
@@ -1251,7 +1273,7 @@ describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
             process.execPath,
             "scripts/deploy.ts",
             "check-secrets",
-            "pedrohenri",
+            "pedrohenridesign",
             "--stage",
             stage,
           ],
@@ -1275,16 +1297,24 @@ describe.each(["staging", "production"])("check-secrets CLI: %s", stage => {
             .split("\n")
             .filter(line => !line.startsWith("::add-mask::"))
             .join("\n") + stderr
+        const expectedSecrets =
+          secrets === missingPublicUrl
+            ? {
+                ...secrets,
+                S3_PUBLIC_URL: `${secrets.S3_ENDPOINT}/${secrets.S3_BUCKET}`,
+              }
+            : secrets
         expect(code).toBe(valid ? 0 : 1)
         expect(masks).toEqual(
           valid && githubActions
-            ? Object.values(completeSecrets).map(
+            ? Object.values(expectedSecrets).map(
                 value => `::add-mask::${value}`
               )
             : []
         )
-        for (const value of Object.values(completeSecrets))
-          expect(normalOutput).not.toContain(value)
+        for (const value of Object.values(expectedSecrets))
+          if (value) expect(normalOutput).not.toContain(value)
+
         if (!valid) {
           expect(normalOutput).toContain(
             `Infisical ${stage} secrets are missing or empty: ${missingSecretKey}.`
@@ -1303,8 +1333,8 @@ describe("versionUpload secrets", () => {
     const { calls, deps } = createVersionDeps()
     await versionUpload(
       {
-        siteDir: "/repo/websites/pedrohenri",
-        worker: "pedrohenri",
+        siteDir: "/repo/websites/pedrohenridesign",
+        worker: "pedrohenridesign",
         artifactDir,
         vars: {},
         secrets: completeSecrets,

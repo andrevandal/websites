@@ -11,6 +11,7 @@ import { hideBin } from "yargs/helpers"
 import { consola } from "consola"
 import { execa } from "execa"
 import { repoRoot, resolveTargetEnvVars } from "./env"
+import { s3PublicUrl } from "../packages/sun-ui/src/astro/runtime-env"
 import { queryTargets } from "./utils"
 import {
   deleteD1DatabaseByName,
@@ -101,7 +102,7 @@ const stageWorkerName = (worker: string, stage: "staging" | "production") =>
 const CUSTOM_DOMAINS: Record<string, string> = {
   vandallabs: "https://vandallabs.com.br",
   bellypao: "https://bellypao.com.br",
-  pedrohenri: "https://pedrohenridesign.com.br",
+  pedrohenridesign: "https://pedrohenridesign.com.br",
 }
 
 const UUID_PATTERN =
@@ -140,7 +141,10 @@ const resolvePreviewUrl = (stdout: string): string => {
 
 // Sites whose EmDash core migrations CI applies; their Worker runs
 // `migrations.runtime: "check"` and never migrates (or locks) itself.
-const CI_MIGRATED_SITES = new Set(["pedrohenri", "brunabraz"])
+const CI_MIGRATED_SITES: Record<string, true> = {
+  pedrohenridesign: true,
+  brunabraz: true,
+}
 
 const migrationStatusSchema = v.object({
   target: v.object({ fingerprint: v.string(), label: v.string() }),
@@ -230,10 +234,10 @@ const deployPreview = async (
   } = {}
   let databaseId: string | undefined
   let bucketName: string | undefined
-  if (worker === "pedrohenri" || worker === "brunabraz") {
+  if (worker === "pedrohenridesign" || worker === "brunabraz") {
     const databaseName = `${worker}-pr-${prNumber}-cms`
     const database = await deps.d1.findOrCreate(databaseName)
-    if (CI_MIGRATED_SITES.has(worker)) {
+    if (Object.hasOwn(CI_MIGRATED_SITES, worker)) {
       const accountId = process.env["CLOUDFLARE_ACCOUNT_ID"]
       if (!accountId) {
         throw new Error(
@@ -413,7 +417,7 @@ const cleanupPreview = async (
     { cwd: siteDir, reject: false }
   )
   const kvDeleted = await deps.kv.deleteByTitle(`${worker}-pr-${prNumber}`)
-  if (worker === "pedrohenri" || worker === "brunabraz") {
+  if (worker === "pedrohenridesign" || worker === "brunabraz") {
     const d1Deleted = await deps.d1.deleteByName(`${worker}-pr-${prNumber}-cms`)
     const r2Deleted = await deps.r2.deleteByName(
       `${worker}-pr-${prNumber}-media`
@@ -427,12 +431,12 @@ const cleanupPreview = async (
 // Preview Base holds this one; staging and production never receive it.
 const PREVIEW_ONLY_SECRET_KEYS = new Set(["CF_ACCESS_AUDIENCE"])
 
-// Every site serves its assets from the bucket's public base; CI-migrated
-// EmDash sites also need their database, bucket and encryption key.
+// EmDash sites CI migrates need their database, bucket and encryption key.
+// S3_PUBLIC_URL is derived from endpoint and bucket when absent, so it is
+// not required; the other sites read their asset base from build defaults.
 const requiredSecretKeys = (worker: string): string[] =>
-  CI_MIGRATED_SITES.has(worker)
+  Object.hasOwn(CI_MIGRATED_SITES, worker)
     ? [
-        "S3_PUBLIC_URL",
         "TURSO_DATABASE_URL",
         "TURSO_AUTH_TOKEN",
         "S3_ENDPOINT",
@@ -441,7 +445,7 @@ const requiredSecretKeys = (worker: string): string[] =>
         "S3_SECRET_ACCESS_KEY",
         "EMDASH_ENCRYPTION_KEY",
       ]
-    : ["S3_PUBLIC_URL"]
+    : []
 
 // The Infisical action exports `/websites/<target>` for the job's Stage here.
 const SITE_SECRETS_FILE =
@@ -449,8 +453,8 @@ const SITE_SECRETS_FILE =
 
 // Every key under the site's Infisical path is a runtime secret. A key left
 // empty would make `wrangler versions upload` keep the previous Version's
-// value, so production would inherit staging's: empty values are rejected.
-// Only names are reported.
+// value, so production would inherit staging's: empty values are rejected
+// (an explicitly empty S3_PUBLIC_URL included). Only names are reported.
 const parseStageSecrets = (
   worker: string,
   stage: "staging" | "production",
@@ -470,6 +474,11 @@ const parseStageSecrets = (
       `Infisical ${stage} secrets are missing or empty: ${missing.join(", ")}.`
     )
   }
+  // Endpoint and bucket are validated above, so a CMS site always derives one.
+  const publicUrl = s3PublicUrl(key => secrets[key])
+  if (Object.hasOwn(CI_MIGRATED_SITES, worker) && publicUrl)
+    secrets["S3_PUBLIC_URL"] = publicUrl
+
   return secrets
 }
 
@@ -882,7 +891,11 @@ if (import.meta.main) {
         `### Preview: \`${worker}\` pr-${pr}\n- Preview URL: ${url}\n\n`
       )
 
-      if (CI_MIGRATED_SITES.has(worker) && databaseId && bucketName) {
+      if (
+        Object.hasOwn(CI_MIGRATED_SITES, worker) &&
+        databaseId &&
+        bucketName
+      ) {
         const accessClientId = process.env["CF_ACCESS_CLIENT_ID"],
           accessClientSecret = process.env["CF_ACCESS_CLIENT_SECRET"]
         if (!accessClientId || !accessClientSecret) {

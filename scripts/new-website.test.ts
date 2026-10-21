@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, test } from "bun:test"
-import { cp, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises"
+import {
+  cp,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { execa } from "execa"
@@ -82,7 +90,9 @@ const releasedWebsites = async (root: string, slug: string) => {
   )
   const output = join(root, "github-output")
   await writeFile(output, "")
-  await execa("bash", ["-c", script], { env: { GITHUB_OUTPUT: output } })
+  await execa("bash", ["-e", "-o", "pipefail", "-c", script], {
+    env: { GITHUB_OUTPUT: output },
+  })
   const released = (await readFile(output, "utf8")).match(
     /^released=(?<json>.*)$/m
   )
@@ -133,9 +143,13 @@ describe("createWebsite", () => {
       name: WORKER,
     })
 
-    const { dependencies } = await readJson<{
+    const { name, license, dependencies } = await readJson<{
+      name: string
+      license: string
       dependencies: Record<string, string>
     }>(root, `${SITE}/package.json`)
+    expect(name).toBe(`@vandal-websites/${SLUG}`)
+    expect(license).toBe("SEE LICENSE IN CONTENT-LICENSE.md")
     expect(dependencies).toMatchObject({
       "@vandal-websites/robots-sitemap": "workspace:*",
       "@vandal-websites/sun-ui": "workspace:*",
@@ -147,9 +161,8 @@ describe("createWebsite", () => {
       tasks: Record<string, { inputs?: string[] }>
     }>(root, `${SITE}/moon.yml`)
     expect(moon.tasks).not.toHaveProperty("deploy")
-    expect(
-      moon.tasks["build"]?.inputs?.filter(input => input.startsWith("$"))
-    ).toEqual([])
+    for (const task of ["build", "check"])
+      expect(moon.tasks[task]?.inputs).toContain("$S3_PUBLIC_URL")
 
     const astroConfig = await read(root, `${SITE}/astro.config.js`)
     expect(astroConfig).toContain(
@@ -177,6 +190,55 @@ describe("createWebsite", () => {
       expect(content).not.toMatch(new RegExp(`${WORKER}-pr-(?!<N>)`))
       expect(content).not.toMatch(/\bSITE_URL\b/)
     }
+  })
+
+  test.each([undefined, "", "https://files.vandal.services/preview-bucket"])(
+    "configures the generated public bucket with S3_PUBLIC_URL=%s",
+    async publicUrl => {
+      const root = await repoCopy()
+      await createWebsite(root, { slug: SLUG })
+      await symlink(join(REPO_ROOT, "node_modules"), join(root, "node_modules"))
+
+      const { stdout } = await execa(
+        process.execPath,
+        [
+          "--eval",
+          `import config from ${JSON.stringify(join(root, SITE, "astro.config.js"))}
+console.log(JSON.stringify({ base: process.env.S3_PUBLIC_URL, field: config.env?.schema?.S3_PUBLIC_URL }))`,
+        ],
+        { env: { S3_PUBLIC_URL: publicUrl } }
+      )
+      const expectedBase = publicUrl || `https://files.vandal.services/${SLUG}`
+      expect(JSON.parse(stdout)).toEqual({
+        base: expectedBase,
+        field: {
+          type: "string",
+          context: "server",
+          access: "public",
+          default: expectedBase,
+        },
+      })
+    }
+  )
+
+  test("uses the typed bucket default in generated layout and asset instructions", async () => {
+    const root = await repoCopy()
+    await createWebsite(root, { slug: SLUG })
+
+    const layout = await read(root, `${SITE}/src/layouts/Layout.astro`)
+    const readme = await read(root, `${SITE}/README.md`)
+    for (const content of [layout, readme]) {
+      expect(content).toMatch(
+        /import\s*\{[^}]*\bS3_PUBLIC_URL\b[^}]*\}\s*from\s*["']astro:env\/server["']/
+      )
+    }
+    expect(layout).toMatch(
+      /image\s*=\s*assetUrl\(\s*getSecret\s*,\s*["']og-image\.png["']\s*,\s*S3_PUBLIC_URL\s*\)/
+    )
+    expect(readme).toMatch(
+      /assetUrl\(\s*getSecret\s*,\s*path\s*,\s*S3_PUBLIC_URL\s*\)/
+    )
+    expect(readme).not.toMatch(/assetUrl\(\s*getSecret\s*,\s*path\s*\)/)
   })
 
   test("registers the site everywhere deploys, releases, and docs enumerate websites", async () => {
@@ -210,7 +272,12 @@ describe("createWebsite", () => {
         root,
         "release-please-config.json"
       )
-    ).toHaveProperty(["packages", `websites/${SLUG}`])
+    ).toHaveProperty(["packages", `websites/${SLUG}`], {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      component: SLUG,
+      "include-component-in-tag": true,
+    })
     expect(
       await readJson<Record<string, string>>(
         root,

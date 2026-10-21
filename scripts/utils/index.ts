@@ -5,18 +5,13 @@ const queryTargetsSchema = v.object({
   projects: v.array(
     v.object({
       id: v.string(),
-      aliases: v.array(v.object({ alias: v.string() })),
+      source: v.string(),
     })
   ),
 })
 
 const queryTargets = async () => {
-  const { stdout } = await execa("moon", [
-    "query",
-    "projects",
-    "--alias",
-    "(websites|apps)/*",
-  ])
+  const { stdout } = await execa("moon", ["query", "projects"])
 
   const { projects } = v.parse(
     v.pipe(v.string(), v.parseJson(), queryTargetsSchema),
@@ -24,18 +19,15 @@ const queryTargets = async () => {
   )
 
   const targets = projects
-    .filter(project => project.id)
-    .map(project => ({ id: project.id, alias: project.aliases[0].alias }))
+    .filter(project => /^(?:websites|apps)\//.test(project.source))
+    .map(project => ({ id: project.id, source: project.source }))
 
   return targets.reduce(
-    (acc, { id, alias }) => {
-      const [normalizedId] = id.split(".")
+    (acc, { id, source }) => {
       const value = {
         id,
-        location: alias.slice(1).split("/"), // "@websites/clinicamauricioaraujo.com.br" -> ["websites", "clinicamauricioaraujo.com.br"]
+        location: source.split("/"),
       }
-
-      if (normalizedId) acc[`${normalizedId}`] = value
 
       acc[`${id}`] = value
 
@@ -75,10 +67,7 @@ const queryDevTargets = async () => {
 
   return targets.reduce(
     (acc, { id, source }) => {
-      const [normalizedId] = id.split(".")
       const value = { id, location: source.split("/") }
-
-      if (normalizedId) acc[`${normalizedId}`] = value
 
       acc[`${id}`] = value
 

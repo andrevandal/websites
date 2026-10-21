@@ -6,7 +6,7 @@ inputs:
     description: "preview (pull request) or staging (push to main)"
     required: true
   target:
-    description: "The website to deploy (ex: clinicamauricioaraujo.com.br)"
+    description: "The website to deploy (ex: clinicamauricioaraujo)"
     required: true
   pr:
     description: "Pull request number (required when mode=preview; names Preview pr-<N>)"
@@ -42,10 +42,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # Staging only; previews take S3_PUBLIC_URL from Preview Base. Exported
-    # to a file, never the env, so the build cannot read runtime secrets.
     - name: Fetch staging secrets from Infisical
-      if: inputs.mode == 'staging'
+      if: inputs.mode == 'staging' && (inputs.target == 'brunabraz' || inputs.target == 'pedrohenridesign')
       uses: Infisical/secrets-action@v1.0.18
       with:
         method: oidc
@@ -62,8 +60,8 @@ runs:
     - name: Build
       shell: bash
       env:
-        EMDASH_BUILD_FLAVOR: ${{ (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz') && (inputs.mode == 'preview' && 'preview' || 'standard') || '' }}
-        CF_ACCESS_TEAM_DOMAIN: ${{ inputs.mode == 'preview' && (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz') && inputs.access-team-domain || '' }}
+        EMDASH_BUILD_FLAVOR: ${{ (inputs.target == 'pedrohenridesign' || inputs.target == 'brunabraz') && (inputs.mode == 'preview' && 'preview' || 'standard') || '' }}
+        CF_ACCESS_TEAM_DOMAIN: ${{ inputs.mode == 'preview' && (inputs.target == 'pedrohenridesign' || inputs.target == 'brunabraz') && inputs.access-team-domain || '' }}
       run: moon run ${{ inputs.target }}:build
 
     - name: Validate staging secrets
@@ -101,7 +99,7 @@ runs:
     # Core migrations run before the new Version exists, so a Worker that only
     # checks (migrations.runtime: "check") never meets an unmigrated database.
     - name: Apply EmDash migrations (staging)
-      if: inputs.mode == 'staging' && (inputs.target == 'pedrohenri' || inputs.target == 'brunabraz')
+      if: inputs.mode == 'staging' && (inputs.target == 'pedrohenridesign' || inputs.target == 'brunabraz')
       shell: bash
       run: >-
         bun scripts/deploy.ts migrate ${{ inputs.target }}

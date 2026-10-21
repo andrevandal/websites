@@ -11,8 +11,8 @@ on:
             images,
             bellypao,
             brunabraz,
-            clinicamauricioaraujo.com.br,
-            pedrohenri,
+            clinicamauricioaraujo,
+            pedrohenridesign,
             transportugal,
             vandallabs,
           ]
@@ -30,8 +30,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
-  actions: read
 
 concurrency:
   group: deploy-manual-${{ inputs.target }}-${{ inputs.environment }}
@@ -39,7 +37,7 @@ concurrency:
 jobs:
   deploy-container:
     name: Deploy container
-    if: inputs.target == 'images'
+    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (inputs.target == 'images') }}
     permissions:
       contents: read
       packages: write
@@ -50,11 +48,10 @@ jobs:
 
   deploy-website:
     name: Promote website build to production
-    if: inputs.target != 'images'
+    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (inputs.target != 'images') }}
     environment: production
     permissions:
       contents: read
-      packages: write
       actions: read
       id-token: write
     runs-on: ubuntu-26.04

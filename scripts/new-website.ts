@@ -28,8 +28,7 @@ const validateSlug = (slug: string) => {
   }
 }
 
-// Cloudflare Worker names allow only lowercase letters, digits, and hyphens, so
-// a domain-style slug deploys as its first label (as clinicamauricioaraujo.com.br does).
+// Cloudflare Worker names use the first label of a domain-style slug.
 const workerNameForSlug = (slug: string): string => slug.split(".")[0]!
 
 const fontVariable = (font: string) =>
@@ -75,9 +74,10 @@ const renderPackageJson = (options: ResolvedOptions) => {
 
   return `${JSON.stringify(
     {
-      name: `@websites/${options.slug}`,
+      name: `@vandal-websites/${options.slug}`,
       version: "0.1.0",
       private: true,
+      license: "SEE LICENSE IN CONTENT-LICENSE.md",
       type: "module",
       dependencies,
       devDependencies,
@@ -112,6 +112,7 @@ tasks:
       - "@globs(typescript)"
       - "@globs(sources)"
       - "./astro.config.js"
+      - "$S3_PUBLIC_URL"
       - "/packages/sun-ui/src/**/*"
     dependsOn:
       - ^:build
@@ -124,6 +125,7 @@ tasks:
       - "@globs(typescript)"
       - "/packages/sun-ui/src/**/*"
       - "./astro.config.js"
+      - "$S3_PUBLIC_URL"
     outputs:
       - dist
     dependsOn:
@@ -167,11 +169,13 @@ workspace:
 
 const renderAstroConfig = (
   options: ResolvedOptions
-) => `import { defineConfig, fontProviders } from "astro/config"
+) => `import { defineConfig, envField, fontProviders } from "astro/config"
 import sunUIAstroIntegration from "@vandal-websites/sun-ui/astro-integration"
 import { robotsSitemap } from "@vandal-websites/robots-sitemap"
 import cloudflare from "@astrojs/cloudflare"
 import tailwindcss from "@tailwindcss/vite"
+
+process.env.S3_PUBLIC_URL ||= "https://files.vandal.services/${options.slug}"
 
 const CANONICAL_SITE_URL = "https://${options.slug}"
 
@@ -198,6 +202,15 @@ export default defineConfig({
   ],
   trailingSlash: "ignore",
   site: CANONICAL_SITE_URL,
+  env: {
+    schema: {
+      S3_PUBLIC_URL: envField.string({
+        context: "server",
+        access: "public",
+        default: process.env.S3_PUBLIC_URL,
+      }),
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },
@@ -273,7 +286,8 @@ const renderGlobalCss = (options: ResolvedOptions) => `@import "tailwindcss";
 const renderLayout = (options: ResolvedOptions) => `---
 import "@/styles/global.css"
 import { Font } from "astro:assets"
-import { SunLayout } from "@vandal-websites/sun-ui/astro"
+import { getSecret, S3_PUBLIC_URL } from "astro:env/server"
+import { assetUrl, SunLayout } from "@vandal-websites/sun-ui/astro"
 
 interface Props {
   title: string
@@ -281,7 +295,11 @@ interface Props {
   image?: string
 }
 
-const { title, description, image = "/og-image.png" } = Astro.props
+const {
+  title,
+  description,
+  image = assetUrl(getSecret, "og-image.png", S3_PUBLIC_URL),
+} = Astro.props
 ---
 
 <SunLayout
@@ -352,13 +370,16 @@ moon run ${options.slug}:build
 ## Configuration
 
 The site ID is the folder name and the canonical host is \`CANONICAL_SITE_URL\`
-in \`astro.config.js\`. Deploys attach the Worker variables at request time
-through \`getSecret\`, so one build serves every Stage:
+in \`astro.config.js\`. That config also declares the public server variable
+\`S3_PUBLIC_URL\` with the site's bucket default, preserving nonempty build-time
+overrides. This non-CMS site needs no Infisical export or mandatory runtime secret.
+Deploys attach Worker variables at request time through \`getSecret\`, so one build
+serves every Stage:
 
 | Variable | Source |
 | --- | --- |
-| \`IMAGES_BASE_URL\` | GitHub environment secret of the deploying job. |
-| \`S3_PUBLIC_URL\` and any other runtime secret | Infisical \`/websites/<site>\`. |
+| \`S3_PUBLIC_URL\` | Typed public default from \`astro.config.js\`; runtime S3 variables can override the asset base. |
+| \`IMAGES_BASE_URL\` | CI-injected public Worker variable. |
 
 Google Analytics IDs, if any, are committed in the layout.
 \`@vandal-websites/robots-sitemap\` serves \`/robots.txt\` (crawlable only on the
@@ -370,7 +391,15 @@ Start with semantic HTML and CSS. Use \`details\`, \`dialog\`, form controls, \`
 
 ## Assets
 
-Replace the scaffold favicon before release. Bitmaps live in the site's bucket, never in git: reference them with \`assetUrl(getSecret, path)\` from \`@vandal-websites/sun-ui/astro\`.
+Replace the scaffold favicon before release. Bitmaps live in the site's bucket,
+never in git. Use the typed default alongside request-time Worker variables:
+
+\`\`\`ts
+import { getSecret, S3_PUBLIC_URL } from "astro:env/server"
+import { assetUrl } from "@vandal-websites/sun-ui/astro"
+
+const url = assetUrl(getSecret, path, S3_PUBLIC_URL)
+\`\`\`
 
 ## Deployment
 
@@ -430,6 +459,7 @@ const updateReleaseConfig = (content: string, slug: string) => {
   config.packages[`websites/${slug}`] = {
     "changelog-path": "CHANGELOG.md",
     "release-type": "node",
+    component: slug,
     "include-component-in-tag": true,
   }
   config.packages = sortWebsiteEntries(config.packages)
