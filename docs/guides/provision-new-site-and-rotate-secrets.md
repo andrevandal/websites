@@ -1,157 +1,64 @@
-# Provision a Site Configuration and Rotate a Secret
+# Configure a website and rotate runtime secrets
 
-A website has no configuration file: its site ID is its `websites/`
-folder name and its canonical host is the Astro `site` (`CANONICAL_SITE_URL`
-in `astro.config.js`). Worker variables are attached per Stage at deploy:
+The website key is its directory name under `websites`, not its canonical domain. Current keys are `bellypao`, `brunabraz`, `clinicamauricioaraujo`, `pedrohenridesign`, `transportugal` and `vandallabs`. The Astro `site` setting defines the canonical customer URL.
 
-| Variable                       | Source                                                                                                                                         |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `IMAGES_BASE_URL`              | GitHub environment secret of the deploying job (`staging`, `production`; PR jobs run in `preview`). EmDash previews get `""`.                  |
-| `S3_PUBLIC_URL`, other secrets | Every key under Infisical `/websites/<site-id>` for staging and production. Previews never read Infisical; `S3_PUBLIC_URL` is on Preview Base. |
+## Add a site
 
-`S3_PUBLIC_URL` is the public base of the site's bucket, bucket included
-(`<endpoint>/<bucket>`). Code and seeds reference assets bucket-relative
-through `assetUrl(getSecret, path)` from `@vandal-websites/sun-ui/astro`; unset, it
-serves `/<path>` from `public/`. Never commit a bucket hostname. Static sites
-commit their Google Analytics IDs in the layout, production host only; EmDash
-sites configure them in the analytics plugin.
+`bun run website:new <site-id>` scaffolds an Astro website. Review its canonical URL, Moon tasks, Worker names, package scope, release mapping and content notice before submitting a PR. Use the new-website issue template to identify the content owner and permissions. The generator does not establish rights or provision infrastructure.
 
-## Add a Site
+The four non-CMS sites remain Astro server applications. Their Astro config sets a nonempty `S3_PUBLIC_URL` default and declares the public server-env schema; asset readers pass that typed default to `assetUrl`. Do not inject this default from Moon, CI, a generator recipe or a replacement config file. Runtime public-base overrides still win.
 
-1. `bun run website:new <site-id>` scaffolds the site.
-2. Add `S3_PUBLIC_URL` (and any runtime secret the site reads) under
-   `/websites/<site-id>` in the Infisical `staging` and `production`
-   environments:
+## Public assets
 
-   ```bash
-   infisical secrets set S3_PUBLIC_URL=<endpoint>/<bucket> --env=staging --path=/websites/<site-id>
-   ```
+Original assets use `https://files.vandal.services/<site-key>`. This is an allowed public service, not a private infrastructure endpoint. No asset upload or bucket migration is part of this guide. Public access does not grant reuse rights; see each site's `CONTENT-LICENSE.md`.
 
-The `CANONICAL_SITE_URL` constant is passed to
-`robotsSitemap()` from `@vandal-websites/robots-sitemap` in `astro.config.js`. That
-integration serves `/robots.txt` and `/sitemap-index.xml` at request time.
-Robots allows crawling only on the canonical host and disallows every other
-origin, including Workers Preview URLs. Sitemap entries always use the
-canonical host. EmDash sites serve their own `/sitemap.xml` and `/robots.txt`
-routes (`sitemapPath: "/sitemap.xml"`, `injectRobots: false`; see the root
-`README.md`).
+Vandal Labs owner-facing asset URLs remain available even when no page currently consumes them:
 
-A site whose sitemap must list CMS content, such as `pedrohenri`, serves
-`/robots.txt` and `/sitemap-index.xml` from its own `src/pages` routes with the
-same `generateRobotsTxt` and `generateSitemapXml` helpers instead of the
-integration; its `CANONICAL_SITE_URL` is the Astro `site`.
+- Cover: `https://files.vandal.services/vandallabs/cover.png`
+- Social image: `https://files.vandal.services/vandallabs/og-image.png`
+- WhatsApp profile: `https://files.vandal.services/vandallabs/whatsapp-profile.png`
 
-## Provision and Rotate a Secret
+Seeds contain committed public media URLs. CMS runtime URL resolution uses a nonempty `S3_PUBLIC_URL` first; otherwise both `S3_ENDPOINT` and `S3_BUCKET` are required. Joining endpoint and bucket normalizes their boundary slash. Supplying only one is not a public base. Local CMS development uses local uploads instead.
 
-Each site is one Worker; staging and production are Versions of it. Secrets
-live in Infisical `/websites/<site-id>`, one value per environment. Every
-upload passes every key of that path to `wrangler versions upload
---secrets-file`, so set and rotate values in Infisical, never with `wrangler
-secret put` (the next upload overwrites them). A rotated value reaches staging
-on the next push to `main` and production on the next release-please merge or
-`deploy-manual.yml` promotion. A key removed from Infisical stays on the Worker
-until `wrangler secret delete`.
+## Configuration owners
 
-Pull request Previews (`pr-<N>`) do not use Worker secrets or Infisical.
-Every site needs `S3_PUBLIC_URL` (the staging bucket's public base; production
-for sites without one) on Preview Base, and EmDash previews also need
-`CF_ACCESS_AUDIENCE`, matching the operator's Access application:
+| Configuration                                      | Owner and stage                                                                            |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Non-CMS public asset default                       | Site Astro config; no mandatory asset secret                                               |
+| Standard CMS runtime secrets                       | Infisical website path, separately in `staging` and `production`                           |
+| `IMAGES_BASE_URL`                                  | GitHub environment secret injected by deployment; selected CMS previews use an empty value |
+| `CF_ACCESS_TEAM_DOMAIN`                            | GitHub secret used only for selected preview builds                                        |
+| `CF_ACCESS_AUDIENCE`                               | Cloudflare Preview Base secret, never standard runtime                                     |
+| Cloudflare, release and optional cache credentials | GitHub CI secrets                                                                          |
 
-```bash
-bunx wrangler preview base-config secret put S3_PUBLIC_URL --worker-name <worker>
-bunx wrangler preview base-config secret put CF_ACCESS_AUDIENCE --worker-name pedrohenri
-```
+CI reads Infisical only for `brunabraz` and `pedrohenridesign`, from `/websites/<site-key>`. The production environment slug is **`production`**, not an abbreviation. OIDC subjects are scoped to `repo:andrevandal/websites:environment:staging` or `repo:andrevandal/websites:environment:production`. Repository variables select the Infisical identity/project and optional domain. Fork checks receive none of these credentials.
 
-Never copy Turso/S3 credentials to Preview Base. Confirm a secret name exists
-without exposing its value with
-`bunx wrangler secret list --name <worker> --format pretty`. Changing the
-GitHub `CF_ACCESS_TEAM_DOMAIN` requires rebuilding selected previews. Keep an
-old credential active until every affected Stage has received the replacement.
+## Standard CMS runtime inventory
 
-## Selected EmDash Deployment Flavors
+The seven mandatory keys for each standard CMS stage are:
 
-`pedrohenri` and `brunabraz` PR previews build with
-`EMDASH_BUILD_FLAVOR=preview`, native D1/R2 and Access. Staging and production
-share the standard Turso/S3 artifact without rebuilding, with default passkeys
-and the JMAP email plugin (`@vandal-websites/emdash-plugin-jmap`). Local development
-remains SQLite/local without
-Access or deployed credentials, even with preview build variables present.
+- `TURSO_DATABASE_URL`
+- `TURSO_AUTH_TOKEN`
+- `S3_ENDPOINT`
+- `S3_BUCKET`
+- `S3_ACCESS_KEY_ID`
+- `S3_SECRET_ACCESS_KEY`
+- `EMDASH_ENCRYPTION_KEY`
 
-For Worker `<worker>` and positive PR number `<N>`, preview bindings are
-`SESSION`: KV `<worker>-pr-<N>`, `DB`: D1 `<worker>-pr-<N>-cms`, and
-`MEDIA`: R2 `<worker>-pr-<N>-media`. Redeploys reuse exact names and preserve CMS
-edits; PR cleanup deletes only that Preview and its resources, purging seeded
-and uploaded media before R2 bucket deletion. Cleanup derives in-memory S3
-credentials from the current Cloudflare API token; no separate stored R2
-cleanup credentials are required. Other sites retain KV-only preview provisioning.
+`S3_PUBLIC_URL` is optional and derives from the validated S3 endpoint/bucket when absent. An explicitly empty supplied value is rejected, including an empty optional public URL, so uploads cannot inherit a stale value. Validation reports key names, not values. `CF_ACCESS_AUDIENCE` is filtered out of standard stage uploads.
 
-Isolated native R2 preview media continues to use the Worker media route.
-Standard staging and production media is served directly from `S3_PUBLIC_URL`,
-without a Worker media route.
+Non-CMS targets have no mandatory keys and skip Infisical export. The deploy tool accepts their empty-file fallback. For a credential-free CLI check, point `SITE_SECRETS_FILE` at an empty temporary file and run `bun scripts/deploy.ts check-secrets bellypao --stage staging`.
 
-Bindings do not seed content or create admins. Before first access, the operator
-must cover every preview hostname and all `/_emdash/*` routes with the intended
-Access policy. The first trusted Access-authorized identity becomes the first
-Admin through native Access. Complete supported protected setup with the site's
-existing seed, choose **include sample content** when desired, and continue the
-native budgeted seed progress until it finishes. Seeds contain no users. There
-is no public bypass or automated bootstrap. Access policies, hostname/path
-coverage and audience matching remain operator-owned; the
-[Access guide](./cloudflare-access-for-previews.md) walks through them,
-including the Lighthouse service token. Standard staging and
-production retain passkeys: protect an empty site's setup until a trusted admin
-finishes it; an unprotected setup can be claimed by anyone reaching it.
+## Rotate without competing sources
 
-### GitHub deploy/build inventory
+Change CMS runtime values in the owning Infisical environment, not by hand-editing standard Worker secrets: the next version upload supplies that environment's file. A staging upload follows the eligible main push; production promotion uses the `production` environment and the saved staging artifact. Keep old credentials valid until every affected stage has received the replacement.
 
-| Name                                                                   | Location and purpose                                                                                                                                                          |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`                                                 | GitHub secret; existing Workers Scripts Edit and Workers KV Storage Edit, plus D1 Write and Workers R2 Storage Write on the target account for selected previews and cleanup. |
-| `CLOUDFLARE_ACCOUNT_ID`                                                | GitHub secret; account identifier, not authentication.                                                                                                                        |
-| `CF_ACCESS_TEAM_DOMAIN`                                                | GitHub secret; selected preview build only. Hostname or full HTTP(S) team URL, normalized to hostname. Missing/invalid value fails that build; never a runtime Worker secret. |
-| `GITHUB_TOKEN`                                                         | Built-in workflow token; existing workflow permissions support PR comments and artifacts.                                                                                     |
-| `RELEASE_PLEASE_TOKEN`                                                 | Optional GitHub secret; fine-grained PAT (contents + pull requests write) so release-please PRs run Main CI without manual approval. Falls back to `GITHUB_TOKEN`.            |
-| `MOON_REMOTE_HOST`                                                     | Optional GitHub remote-cache secret; not required to deploy.                                                                                                                  |
-| `BAZEL_REMOTE_BASIC_AUTH_USERNAME`, `BAZEL_REMOTE_BASIC_AUTH_PASSWORD` | Optional GitHub remote-cache authentication secrets; not site runtime credentials.                                                                                            |
+Deleting a key from the store does not necessarily delete a deployed Worker binding. During an owner-controlled cutover inspect actual Worker versions and bindings for obsolete `S3_PUBLIC_URL`, `S3_ENDPOINT` and `S3_BUCKET` overrides; reconcile unintended old values without removing intentional overrides. Do not repeat completed Infisical cleanup or bucket work.
 
-### Standard runtime inventory
+JMAP credentials live in encrypted plugin settings, not environment variables. The stage encryption key must remain available to read them; losing it requires re-entering the plugin credential. Choose the configured plugin under EmDash Settings -> Email.
 
-For `pedrohenri` and `brunabraz`, the eight required standard runtime secrets are
-`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `S3_ENDPOINT`, `S3_BUCKET`,
-`S3_PUBLIC_URL`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` and
-`EMDASH_ENCRYPTION_KEY`. They are plain secrets under each site's
-`/websites/<site>` path of the Infisical environments `staging` (the `main`
-push) and `production` (the merged release-please PR), so each Stage has its
-own database and bucket. `CF_ACCESS_AUDIENCE` remains preview-only.
+## Preview data boundary
 
-`S3_PUBLIC_URL` is required Infisical-backed runtime configuration even though
-it is public, not a credential. Its value is `S3_ENDPOINT + '/' + S3_BUCKET`:
-the publicly reachable endpoint/bucket URL. Never put it in plaintext `vars`
-or commit its hostname.
+Selected CMS PR previews use `EMDASH_BUILD_FLAVOR=preview`, native D1/R2 and Access, without Infisical or Turso/S3 credentials. Their session, database and media resources are named by Worker and PR number; redeploys reuse exact names, while cleanup removes only that PR's resources. Preview media stays on the Worker media route. Non-CMS previews do not require an S3 public-base secret because they retain their committed defaults.
 
-One-time Infisical setup:
-
-1. Create a project and the `staging` and `production` environments.
-2. Add `S3_PUBLIC_URL` under every `/websites/<site-id>` and the eight keys
-   under `/websites/pedrohenri` and `/websites/brunabraz`, in each environment.
-3. Create a machine identity with OIDC auth bound to this repository
-   (subjects `repo:andrevandal/websites:environment:staging` and
-   `...:production`; audience defaults to the Infisical domain) and give it
-   read access to every `/websites/<site-id>` path in both environments.
-4. Set the repository variables `INFISICAL_IDENTITY_ID`,
-   `INFISICAL_PROJECT_SLUG` and, for EU or self-hosted instances,
-   `INFISICAL_DOMAIN`. They are not secrets.
-
-The Infisical action writes the Stage's keys to `.site-secrets.env`.
-`bun scripts/deploy.ts check-secrets <site> --stage <stage>` fails when that
-file lacks `S3_PUBLIC_URL` or holds an empty value, naming keys only: an empty
-key would be inherited from the previous Version. `CF_ACCESS_AUDIENCE` is never
-uploaded to staging or production. Local development reads `S3_PUBLIC_URL`
-from the site's `.env`. Seeds keep absolute production media URLs.
-
-The JMAP plugin (`jmap-email`) keeps its server URL, authentication mode,
-credential and sender in admin settings under Plugins -> JMAP, not in
-environment variables. Configure it in the admin and select it under
-Settings -> Email. The credential is encrypted with `EMDASH_ENCRYPTION_KEY`
-(one per Stage, generated with `bunx emdash secrets generate`; losing it
-makes the stored credential unreadable, so re-enter it in the admin).
+Access policies, preview hostname/path coverage and audience matching are operator-owned. Use [the Access guide](cloudflare-access-for-previews.md); never copy production database or storage credentials into Preview Base. Local CMS development stays SQLite/local even when preview build inputs exist. See [the local guide](emdash-local-development.md) and [CI behavior](../ci-pipeline.md).

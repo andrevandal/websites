@@ -10,9 +10,9 @@ Keep `@vandal-websites/sun-ui` headless: structural CSS only, with no shared col
 
 EmDash-aware code belongs in the separate `@vandal-websites/sun-ui-emdash` package, which builds on sun-ui and declares `emdash` as a peer dependency. Base sun-ui never imports `emdash`; static sites use base sun-ui, not the EmDash layer.
 
-Promote components and helpers used by two or more sites into the appropriate shared package. Record single-site candidates in a TODO list rather than promoting them prematurely.
+Promote components and helpers used by two or more sites into the appropriate shared package. Keep single-site candidates local rather than promoting them prematurely.
 
-Serve public CMS media directly from the public bucket URL configured by `S3_PUBLIC_URL`, not through the site Worker. Previews keep isolated storage and the Worker media route.
+Serve public CMS media directly from the configured public bucket base, using `S3_PUBLIC_URL` when supplied or deriving it from `S3_ENDPOINT` and `S3_BUCKET`. Previews keep isolated storage and the Worker media route.
 
 ## Alternatives rejected
 

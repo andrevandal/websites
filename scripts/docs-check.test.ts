@@ -5,7 +5,6 @@ import {
   checkAdrH1,
   checkAdrNoStatus,
   checkAdrWordCount,
-  checkEpicInvariants,
   checkLinks,
   checkPaths,
   checkSmartPunctuation,
@@ -111,31 +110,14 @@ describe("ADR word count", () => {
     const findings = checkAdrWordCount("docs/adr/2026-09-20-test.md", text)
     expect(findings).toHaveLength(expected)
   })
-})
 
-describe("epic invariants", () => {
-  test.each([
-    {
-      name: "valid in excluded file (docs/agents/)",
-      file: "docs/agents/test.md",
-      text: "See #123 INV-5 for details",
-      expected: 0,
-    },
-    {
-      name: "full form rejected in tracked file",
-      file: "README.md",
-      text: "See #123 INV-5 for details",
-      expected: 1,
-    },
-    {
-      name: "bare INV-N only in tracked file",
-      file: "README.md",
-      text: "The rule is important with INV-5",
-      expected: 1,
-    },
-  ])("$name", ({ file, text, expected }) => {
-    const findings = checkEpicInvariants(file, text)
-    expect(findings).toHaveLength(expected)
+  test("applies the cap to the retained remote-cache decision", () => {
+    expect(
+      checkAdrWordCount(
+        "docs/adr/2026-08-21-self-hosted-moon-remote-cache.md",
+        `# Decision\n${"word ".repeat(601)}`
+      )
+    ).toHaveLength(1)
   })
 })
 

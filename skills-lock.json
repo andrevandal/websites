@@ -3,27 +3,52 @@
   "skills": {
     "code-review": {
       "source": "mattpocock/skills",
+      "ref": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
       "sourceType": "github",
       "skillPath": "skills/engineering/code-review/SKILL.md",
-      "computedHash": "1d5e7242a98674635be79ab310cdda0e555d36a9903d2526ebf4263d0b7997ca"
+      "computedHash": "caa9a086baaf9e0f7cd71f64edfa83da6821c05e826b083221f3d02e3d6a1905"
     },
     "codebase-design": {
       "source": "mattpocock/skills",
+      "ref": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
       "sourceType": "github",
       "skillPath": "skills/engineering/codebase-design/SKILL.md",
-      "computedHash": "e6394592ecf4b5aa5bc93f95a20d0a56314788bde2e1221f87296d3becb734a2"
+      "computedHash": "5a17552cc1482f1a40124bf4e6c9dbd90ac0dbb47e71c07d47369f9e5f2ae3b5"
+    },
+    "debug-task": {
+      "source": "moonrepo/moon",
+      "ref": "7c3b6f3a834ab8effe482521033d53c19f923a14",
+      "sourceType": "github",
+      "skillPath": "skills/debug-task/SKILL.md",
+      "computedHash": "74f2fd3e55a7788c6f69cca3d3457113651d7b295afe6f36c839017edb6ab3a7"
     },
     "diagnosing-bugs": {
       "source": "mattpocock/skills",
+      "ref": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
       "sourceType": "github",
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
-      "computedHash": "c86c725ad271ba57d7e9ffd86122b898438314ef9c20ec1dbe03f3e8f149c3b2"
+      "computedHash": "37b5e9c624513551da790b52864dc8c84bff996a6d03a380cc6facdcc0a88354"
+    },
+    "moon": {
+      "source": "hyperb1iss/moonrepo-skill",
+      "ref": "574052bd06a265d472461513c9365264334082b4",
+      "sourceType": "github",
+      "skillPath": "skills/moon/SKILL.md",
+      "computedHash": "b09592c8023529035c8c116d0af3dae32af87e818f69879ee916b8bdabc28f36"
+    },
+    "proto": {
+      "source": "hyperb1iss/moonrepo-skill",
+      "ref": "574052bd06a265d472461513c9365264334082b4",
+      "sourceType": "github",
+      "skillPath": "skills/proto/SKILL.md",
+      "computedHash": "71ac82a46f0fee0ede59310c37ea4cb5c00bdee0ac8cef56361c9fcc5e898d50"
     },
     "tdd": {
       "source": "mattpocock/skills",
+      "ref": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
       "sourceType": "github",
       "skillPath": "skills/engineering/tdd/SKILL.md",
-      "computedHash": "614ac2e45fb0ec02f6ce422d26bd9aa4e33aa4867323f5a3a5c0c20b96f78ff4"
+      "computedHash": "e753a5da75292bbe59d302d89566bc2c53d0e73944da2f0e944a7578883c07d0"
     }
   }
 }

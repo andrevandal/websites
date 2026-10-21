@@ -5,23 +5,24 @@ metadata:
   credits:
     skill: show-me
     author: Dex Horthy
-    organisation: Humanlayer
-    url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
+    organisation: HumanLayer
+    url: "https://github.com/humanlayer/skills/blob/653b6411c1f70c275a18e37673b042ff99f67ceb/plugins/show-me/skills/show-me/SKILL.md"
 ---
 
 ## In this repository
 
 - **Title** is a Conventional Commit with a project scope where one applies
-  (`feat(web): ...`, `fix(sun-ui): ...`); release-please reads the history, so
-  never mention a version or a changelog entry.
-- **Body** fills the sections of `.github/pull_request_template.md`; that file
-  owns the format. It carries `Closes #<task>` and links the epic.
-- **Evidence** is pasted `bun run check` output and, for a UI change
-  (`websites/`, `packages/sun-ui`), a screenshot. Paste the command
-  and its outcome, not a claim.
-- **Merge danger** names one-way doors explicitly: public API contracts.
-- **Board**: after opening the PR, set the task's Status to Gate with the
-  recipe in `docs/agents/issue-tracker.md`.
+  (`feat(bellypao): ...`, `fix(sun-ui): ...`); release-please reads the history,
+  so never mention a version or a changelog entry.
+- **Body** fills Summary, Verification and, when relevant, Screenshots in
+  `.github/pull_request_template.md`; that file owns the format. Link a related
+  issue with `Closes #<issue>` when appropriate.
+- **Verification** lists actual commands and their outcomes, including a
+  failing-before/passing-after regression test when available. State checks
+  not run rather than inventing evidence.
+- **Screenshots** show visible changes at relevant viewport sizes.
+- **Risk** belongs in Summary: name destructive changes, public API contracts
+  and other hard-to-reverse decisions, including their blast radius.
 
 ## Sections
 
@@ -64,9 +65,9 @@ submitForm
 
 ```text
 src/
-├── commands/       # parses user actions
-├── sessions/       # owns session state
-└── transport/      # sends API requests
+|- commands/
+|- sessions/
++- transport/
 ```
 
 - Show component interaction, control flow, or data flow with Mermaid:
@@ -98,13 +99,13 @@ For a file-layout change:
 
 ```diff
  src/
- ├── commands/
-+│   └── show-me.ts       # expands the slash command
- ├── sessions/
--└── transport.ts
-+└── transport/
-+    ├── client.ts
-+    └── stream.ts
+   commands/
++    show-me.ts
+   sessions/
+-  transport.ts
++  transport/
++    client.ts
++    stream.ts
 ```
 
 For a call-tree or call-stack change:
@@ -146,16 +147,18 @@ Place each visual next to the short text it supports. Keep only the calls, files
 
 You may use one of these, you may use several, it is unlikely you will use all of them. Use your judgement and don't overwhelm the user.
 
-### Evidence
+### Verification
 
-Concrete evidence that the change works. Show a before and after.
+Concrete evidence that the change works. Show before and after test output
+when available, with the command and real outcome. State what was not checked
+and why. Never present pseudocode or a suggested command as executed proof.
 
-Screenshots are S-tier - when the environment is set up for it and the change is visual.
+### Screenshots
 
-Execution-based evidence is A-tier. Test results, console output. Paste the exact test that failed before and passes after, with its real output.
+For visual changes, include desktop/mobile screenshots near a short explanation
+of the visible behavior. Omit this section when there is no visual change.
 
-### Merge Danger
-
-Describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
-
-The blast radius is the potential impact or scope of the changes introduced by this PR. Consider all possibilities. Examples are layout shift, breakages for consumers, mobile responsiveness, etc.
+Describe risk in Summary rather than adding a competing template section.
+One-way doors include destructive actions and hard-to-reverse decisions;
+two-way doors are cheap to roll back. Name the affected consumers, layouts,
+mobile behavior or public contracts without overstating the evidence.

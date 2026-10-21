@@ -1,247 +1,80 @@
-# websites
+# Websites
 
-Client websites and a shared image service. TypeScript monorepo managed with moonrepo and bun.
+Six client websites, five shared packages and an image service, maintained with Bun and Moon. Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## What's in here
+## Install
 
-### Apps
+Install the versions pinned in `.prototools`: Bun **1.4.2**, Node **26.11.1** and Moon **2.6.1**. From the repository root:
 
-- **`apps/images`** — Image optimization/transform service (Hono on Bun).
-  Built and pushed to GHCR as a container, deployed via Coolify.
+```sh
+bun install --frozen-lockfile
+```
+
+Installation synchronizes Moon projects. Local checks and standard builds do not require deployment credentials or optional registry skills. Only the current tip is promised to build; historical tags label earlier repository states, not a supported build matrix.
+
+## Repository map
 
 ### Websites
 
-- **`websites/brunabraz`** - Astro site, deployed to Cloudflare Workers.
-- **`websites/clinicamauricioaraujo.com.br`** - Astro site, deployed to Cloudflare Workers.
-- **`websites/transportugal`** - Astro site, deployed to Cloudflare Workers.
-- **`websites/vandallabs`** - Astro site, deployed to Cloudflare Workers.
+- **`websites/bellypao`** - Belly Pão bakery website.
+- **`websites/brunabraz`** - Bruna Braz editorial website with EmDash.
+- **`websites/clinicamauricioaraujo`** - Clínica Maurício Araujo website.
+- **`websites/pedrohenridesign`** - Pedro Henri Design portfolio with EmDash.
+- **`websites/transportugal`** - Transportugal logistics website.
+- **`websites/vandallabs`** - Vandal Labs website.
 
-### Packages
+### Shared packages and tools
 
-- **`packages/sun-ui`** — Shared UI components (used by the Astro websites).
-- **`packages/robots-sitemap`** - Astro integration every website registers
-  as `robotsSitemap({ canonicalHost: CANONICAL_SITE_URL })`. It injects
-  `/robots.txt` and `/sitemap-index.xml` as request-time endpoints for static
-  sites. Robots allows crawling only when the request origin is the canonical
-  host (`CANONICAL_SITE_URL`, the Astro `site`), so Workers Preview origins
-  are disallowed. Both endpoints always name canonical URLs. CMS sites own
-  their `/sitemap.xml` and `/robots.txt` routes, and pass
-  `sitemapPath: "/sitemap.xml"` and `injectRobots: false` to suppress the
-  shared injected routes.
+| Path                                                                 | Purpose                                             |
+| -------------------------------------------------------------------- | --------------------------------------------------- |
+| [apps/images](apps/images)                                           | Hono and Bun.Image image service                    |
+| [packages/sun-ui](packages/sun-ui)                                   | Headless Astro/Svelte UI and runtime asset helpers  |
+| [packages/sun-ui-emdash](packages/sun-ui-emdash)                     | EmDash-aware UI and content helpers                 |
+| [packages/robots-sitemap](packages/robots-sitemap)                   | Host-aware robots and sitemap integration           |
+| [packages/emdash-plugin-analytics](packages/emdash-plugin-analytics) | EmDash analytics plugin                             |
+| [packages/emdash-plugin-jmap](packages/emdash-plugin-jmap)           | EmDash JMAP email plugin                            |
+| [scripts](scripts)                                                   | Development, validation and deployment tools        |
+| [docs/guides](docs/guides)                                           | Local CMS, runtime configuration and preview guides |
 
-## Deploy environments
+The website keys are `bellypao`, `brunabraz`, `clinicamauricioaraujo`, `pedrohenridesign`, `transportugal` and `vandallabs`. Bruna Braz and Pedro Henri Design use EmDash; the other four do not use a CMS. "Static site" here means non-CMS content, not Astro static output.
 
-CI (`.github/workflows/main.yml`) runs `moon ci` on every push/PR — only the
-projects a change actually affects are linted, typechecked, and tested — then
+## Develop and verify
 
-- `main` branch → each affected website is built once. The build is saved as
-  artifact `website-dist-<site>-<sha>` (with its content digest) and uploaded
-  as a **staging Version** of the site's one persistent Worker, under Version
-  Preview alias `staging` (`https://staging-<worker>.<subdomain>.workers.dev`).
-  Staging is never deployed to live traffic.
-- same-repository pull requests → a **Workers Preview** named `pr-<N>`,
-  scoped to each affected site's one persistent Worker (`wrangler preview`).
-  Closing the PR deletes the Preview and its `<worker>-pr-<N>` KV namespace.
-  Fork pull requests get checks but no Preview (no Cloudflare credentials).
-- `apps/images` deploys via a reusable workflow (`container.yml`) that builds
-  a Docker image, pushes it to GHCR, and triggers a Coolify webhook
-  (staging on push to `main`, production via `release.yml`'s dispatch —
-  pull requests never trigger a container build, unlike the websites below).
-- On a website release, `release.yml` waits for that commit's Main CI and
-  downloads its saved build. It checks the digest, uploads the identical bytes
-  as a new Version with production config, and runs
-  `wrangler versions deploy <id>@100%`. Production never rebuilds.
-
-## Setup
-
-This project uses moonrepo to manage multiple packages and proto to manage tool versions.
-
-For MCP setup, see: https://moonrepo.dev/docs/guides/mcp#setup
-
-### Architecture overview
-
-```mermaid
-graph TB
-    subgraph Workspace["Monorepo Workspace"]
-        Apps["apps/*"]
-        Websites["websites/*"]
-        Packages["packages/*"]
-    end
-
-    Moon["moon<br/>(moonrepo)"]
-    Bun["bun<br/>(package manager)"]
-    Release["release-please<br/>(versioning)"]
-
-    Moon -->|"orchestrates tasks<br/>(build, test, lint)"| Workspace
-    Moon -->|"reads .moon/tasks/all.yml<br/>.moon/toolchains.yml"| Config1[".moon/"]
-
-    Bun -->|"manages dependencies<br/>via workspaces"| Workspace
-    Bun -->|"reads"| Config2["package.json<br/>.npmrc"]
-
-    Release -->|"manages versions<br/>& changelogs"| Workspace
-    Release -->|"reads/updates"| Config3["release-please-config.json<br/>.release-please-manifest.json"]
-
-    style Moon fill:#1E40AF
-    style Bun fill:#D97706
-    style Release fill:#15803D
-    style Workspace fill:#f5f5f5
-```
-
-> [!NOTE]
-> We avoid using scripts in package.json as much as possible, delegating tasks to moonrepo instead. Except for workspace-wide commands in the root project. This enforces the devs to rely on moonrepo for task orchestration and learn its capabilities.
-
-## Prerequisites
-
-### AWS
-
-Make sure you have the AWS CLI installed and configured with the necessary credentials. We recommend using the tool: [granted](https://github.com/fwdcloudsec/granted)
-
-## Common commands
-
-- `bun moon sync projects` or `bun sync` - Sync all project dependencies and configurations. Specially typescript references.
-- `bun run deploy <preview|cleanup|version-upload|version-deploy|digest> ...` - The website deploy commands CI runs; `bun run deploy --help` lists their options.
-
-### Bootstrap a website
+Run commands from the repository root. For a non-CMS site:
 
 ```sh
-bun run website:new acme-consulting.com.br --title "Acme Consulting"
-bun install
-moon run acme-consulting.com.br:check
-moon run acme-consulting.com.br:typecheck
-moon run acme-consulting.com.br:build
+moon run bellypao:dev
+moon run bellypao:build
 ```
 
-The generator writes the site (canonical host `https://<slug>`) and every
-registration the deploy and release tooling enumerates: `CUSTOM_DOMAINS`, the Preview cleanup
-matrix, the manual-deploy choice, the release workflow, release-please, and the
-website list above. It does not provision the Cloudflare Custom Domain; bind it
-in the dashboard before the site's first release.
-
-## Package Management
-
-### Adding Dependencies to Workspaces
-
-To add dependencies to a workspace project (apps/_, packages/_, or websites/\_), use the `--cwd` flag with catalog references:
+For the CMS sites, stop any existing dev server, seed local data, then start one site:
 
 ```sh
-bun add typescript@catalog:typescript --cwd packages/your-package
-bun add -d vitest@catalog:testing --cwd apps/your-app
+env -u CI moon run brunabraz:seed pedrohenridesign:seed
+env -u CI moon run brunabraz:dev
 ```
 
-This references versions defined in the root `package.json` catalogs, ensuring consistency across the monorepo.
+The seed tasks use local SQLite and filesystem uploads, not production storage. See [local EmDash development](docs/guides/emdash-local-development.md) for sign-in, reseeding and limitations.
 
-### Managing the Root Catalog
-
-The root `package.json` defines version catalogs organized by category (tools, testing, typescript, node, styles, types, vite, and more). To add a new dependency to the catalog:
-
-1. Add it to the appropriate catalog in `package.json`:
-
-```json
-{
-  "workspaces": {
-    "catalogs": {
-      "tools": {
-        "new-tool": "^1.0.0"
-      }
-    }
-  }
-}
+```sh
+bun run check
+moon run :build
+bun run docs
+bun test scripts
 ```
 
-2. Reference it in workspace projects using `catalog:category` syntax
+`check` includes formatting, lint, type checks, tests, coverage and documentation checks. Moon builds workspace dependencies for project tasks. Use `moon run <key>:typecheck` or `moon run <key>:test` for a targeted check. Start the image service with `moon run images:dev` and build it with `moon run images:build`.
 
-**Remarks:**
+## Public assets and runtime configuration
 
-- Catalog versions are centrally managed - updating the root catalog updates all references
-- Use catalogs for shared dependencies across multiple projects
-- Use direct versions (e.g., `bun add package@^1.0.0`) for project-specific dependencies
-- The root `package.json` should only contain devDependencies needed for workspace-wide tooling
+Original site assets are served from `https://files.vandal.services/<site-key>`. The four non-CMS sites default `S3_PUBLIC_URL` in their Astro config and expose that default through the typed server environment. They need no static-site asset secret. An explicit runtime public base can override the default.
 
-## How to Add New Packages
+The CMS sites use runtime storage configuration: a nonempty `S3_PUBLIC_URL` wins; otherwise both `S3_ENDPOINT` and `S3_BUCKET` are needed to derive the public base. Local development uses filesystem media. Selected CMS previews use isolated D1/R2 data and Worker media routes rather than production buckets.
 
-### Configure releases
+[Vandal Labs asset usage](docs/guides/provision-new-site-and-rotate-secrets.md#public-assets) includes the public cover and profile URLs. Runtime configuration, CI secrets and preview-only secrets have separate owners; see [ARCHITECTURE.md](ARCHITECTURE.md) and [the CI pipeline](docs/ci-pipeline.md). External-writing jobs are disabled unless the repository is `andrevandal/websites` and `ENABLE_DEPLOY` is exactly `true`.
 
-Our releases/changelogs are managed via release-please. To add a new package to the release process, follow these steps:
+## Licence and content
 
-1. Update `release-please-config.json`
+Reusable implementation is [MIT licensed](LICENSE), copyright 2026 André Vandal. Website copy, data, identity, art and embedded owner material are **not** MIT licensed: each website has a `CONTENT-LICENSE.md` with all rights reserved and no licence granted. Mixed source files have both obligations; extract reusable implementation without copying reserved material. Public bucket access does not grant reuse rights.
 
-Add the new package path to the packages section:
-
-```json
-{
-  "packages": {
-    ".": {}, // your root package
-    "packages/new-package": {
-      "release-type": "node" // or whatever type
-    }
-  }
-}
-```
-
-2. Update `.release-please-manifest.json`
-
-Add an entry for the new package with its current version github:
-
-```json
-{
-  ".": "1.0.0",
-  "packages/new-package": "0.1.0"
-}
-```
-
-This change should be made directly on the default branch or on a separate user-created branch/PR which is then merged into the default branch.
-
-For extra information, check the official documentation:
-
-- https://github.com/googleapis/release-please
-- https://github.com/googleapis/release-please-action
-
-### Publishing Packages
-
-Publishing happens automatically after release-please creates a release and tags it. The process:
-
-1. Release-please creates a PR with version bumps and changelog updates
-2. When merged to main, the release workflow runs
-3. If a release is created, the workflow executes `scripts/release.ts`
-4. The release script runs `moon run :publish --query "projectSource~packages/*"` to publish all packages
-
-The publish task must be defined in your package's `moon.yml` file. Example:
-
-```yaml
-tasks:
-  publish:
-    command: "bun publish --access public --no-git-checks"
-    options:
-      runInCI: true
-```
-
-### Stuck Tags
-
-See: `.docs/unstuck-tags.md`
-
-## Add new workflow actions
-
-If you want to add new workflows, but do not want them to run on release-please PRs, you can use the following condition in your workflow file:
-
-```yaml
-jobs:
-  your-job:
-    runs-on: ubuntu-latest
-    # Skip if PR has any autorelease label
-    if: |
-      !contains(github.event.pull_request.labels.*.name, 'autorelease: pending') &&
-      !contains(github.event.pull_request.labels.*.name, 'autorelease: tagged')
-```
-
-And for push ignores, you can use:
-
-```yaml
-jobs:
-  your-job:
-    runs-on: ubuntu-latest
-    # Skip if commit message indicates a release-please release
-    if: |
-      !startsWith(github.event.head_commit.message, 'chore: release') &&
-      !startsWith(github.event.head_commit.message, 'chore(main): release') &&
-      !contains(github.event.head_commit.message, 'release-please')
-```
+[REUSE.toml](REUSE.toml) records file-level annotations; [site-content terms](LICENSES/LicenseRef-Site-Content.txt) explain the boundary. Existing third-party notices remain in force; see [ATTRIBUTION.md](ATTRIBUTION.md). REUSE lint checks annotation coverage, not ownership. Report vulnerabilities through [SECURITY.md](SECURITY.md).

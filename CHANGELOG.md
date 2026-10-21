@@ -6,18 +6,18 @@
 ### Features
 
 * **emdash-plugin-jmap:** add JMAP email transport plugin
-* **pedrohenri:** require EMDASH_ENCRYPTION_KEY as a Stage secret
-* **pedrohenri:** send email through a JMAP plugin
-* **pedrohenri:** send email through the JMAP plugin
+* **pedrohenridesign:** require EMDASH_ENCRYPTION_KEY as a Stage secret
+* **pedrohenridesign:** send email through a JMAP plugin
+* **pedrohenridesign:** send email through the JMAP plugin
 
 ## [1.7.0](https://github.com/andrevandal/websites/compare/v1.6.0...v1.7.0) (2026-10-18)
 
 
 ### Features
 
-* **ci:** fetch pedrohenri runtime secrets from Infisical over OIDC
-* **ci:** fetch pedrohenri runtime secrets from Infisical over OIDC
-* **pedrohenri:** add Pedro Henri Design website
+* **ci:** fetch pedrohenridesign runtime secrets from Infisical over OIDC
+* **ci:** fetch pedrohenridesign runtime secrets from Infisical over OIDC
+* **pedrohenridesign:** add Pedro Henri Design website
 
 
 ### Bug Fixes
@@ -170,11 +170,11 @@
 * **sun-ui:** open combobox list on interaction, gate empty state on query
 * **sun-ui:** port carousel autoscroll/drag/keyboard logic to a Svelte island
 * **sun-ui:** port SunCarousel to a Svelte island
-* **transportugal-website:** add Transportugal landing page
-* **transportugal-website:** build landing page from Figma design
-* **transportugal-website:** raise hero image quality
-* **transportugal-website:** scaffold new Astro site infra
-* **transportugal-website:** serve photos from files.vandal.services
+* **transportugal:** add Transportugal landing page
+* **transportugal:** build landing page from Figma design
+* **transportugal:** raise hero image quality
+* **transportugal:** scaffold new Astro site infra
+* **transportugal:** serve photos from files.vandal.services
 * **transportugal:** add allowed-locations data module
 * **transportugal:** add brazil-cities generation script and generated data
 * **transportugal:** add CTA button states to route calculator
@@ -247,7 +247,7 @@
 * **brunabraz:** use distinct positioning illustrations
 * **brunabraz:** use literal Figma/home-page copy in 02-Contexto, 04-Posicionamento, 05-Método
 * **brunabraz:** wrap SunVideo in data-animate div since component drops rest props
-* **ci:** add transportugal-website to release-please manifest
+* **ci:** add transportugal to release-please manifest
 * **ci:** free runner disk space before docker build to prevent OOM
 * **ci:** never crash ci-report-summary on malformed report, correct overclaims
 * **clinicamauricioaraujo:** correct rating to real 5,0 score and link badge to Google listing
@@ -282,14 +282,14 @@
 * **sun-ui:** track .svelte sources in check/build task inputs
 * **sun-ui:** unwrap astro-slot wrapper so carousel logic sees real slide elements
 * **sun-ui:** use Tailwind v4 arbitrary-property syntax for aspect ratio
-* **transportugal-website:** correct heading tracking and divider element
-* **transportugal-website:** fix hero image covering content
-* **transportugal-website:** match mobile frame typography and alignment
-* **transportugal-website:** reorder footer sections on mobile
-* **transportugal-website:** restore icon colors, adopt container layout
-* **transportugal-website:** section-by-section pixel comparison fixes
-* **transportugal-website:** svgo-optimize icons with currentColor fills
-* **transportugal-website:** use brunabraz's actual container breakpoints
+* **transportugal:** correct heading tracking and divider element
+* **transportugal:** fix hero image covering content
+* **transportugal:** match mobile frame typography and alignment
+* **transportugal:** reorder footer sections on mobile
+* **transportugal:** restore icon colors, adopt container layout
+* **transportugal:** section-by-section pixel comparison fixes
+* **transportugal:** svgo-optimize icons with currentColor fills
+* **transportugal:** use brunabraz's actual container breakpoints
 * **transportugal:** add local bunfig.toml for test preload resolution
 * **transportugal:** clarify route calculator timing
 * **transportugal:** correct ES base color and add SP/ES pin markers

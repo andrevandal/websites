@@ -15,15 +15,12 @@ habit any skill can do. This skill is for changing the model, not consuming it.
 
 This skill owns the *process*, never the artifacts' shape:
 
-- **`CONTEXT.md` layout and entry format** - `docs/agents/domain.md`.
+- **Glossary** - root `CONTEXT.md` defines terms without implementation details. Follow its existing entry format.
 - **ADR format, file naming, and the "does this earn an ADR" test** - `docs/adr/FORMAT.md`.
-- **Precedence** - What the system does goes in a spec. A transversal choice,
-  as the ordered test in `docs/adr/FORMAT.md`
-  defines it, goes in an ADR; any other choice is a Constraint in its spec. A
-  term lives in `CONTEXT.md`.
+- **Behavior and contribution scope** - describe observable behavior and acceptance criteria in the relevant issue or PR, not the glossary.
 
-Read the owning doc before you write either file. Create both lazily: only when
-there is something real to record.
+Read the existing glossary and ADR format before writing. Record only terms
+and decisions that have actually resolved.
 
 ## During the session
 
@@ -50,8 +47,8 @@ cancellation is possible. Which is right?"
 
 ### Write it down inline
 
-When a term resolves, add it to `CONTEXT.md` right there - don't batch. When a
-decision resolves, run the ordered test in `docs/adr/FORMAT.md` step by step: a
-name goes to `CONTEXT.md`; with no rejected alternative it is behaviour in the
-owning spec; if it is transversal (including code no spec owns yet), offer an
-ADR; otherwise make it a Constraint in the owning spec.
+When a term resolves, add it to root `CONTEXT.md` right there - don't batch.
+When a decision resolves, apply the test in `docs/adr/FORMAT.md`. Offer an ADR
+for a cross-cutting choice with a genuine rejected alternative; otherwise
+record the behavior in the relevant issue or PR. A glossary entry remains a
+definition, not an implementation plan.

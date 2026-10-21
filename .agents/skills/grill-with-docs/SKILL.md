@@ -6,4 +6,4 @@ disable-model-invocation: true
 
 Run two skills together: `grilling` (`.agents/skills/grilling/SKILL.md`) and `domain-glossary` (`.agents/skills/domain-glossary/SKILL.md`). Read both, then interview.
 
-Once domain-glossary is complete, offer to use the `to-spec` skill (`.agents/skills/to-spec/SKILL.md`) to synthesize the discussion into an epic body and publish it.
+Record resolved terms in root `CONTEXT.md` and architectural decisions under `docs/adr/`, using `docs/adr/FORMAT.md`. When the interview is complete, summarize the agreed change and its verification criteria in the relevant bug, feature or new-website issue. Do not publish an issue or start implementation without the user's agreement.

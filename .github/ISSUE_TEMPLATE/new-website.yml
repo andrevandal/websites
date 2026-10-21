@@ -1,0 +1,31 @@
+name: New website
+description: Request a website and describe its content rights.
+title: "feat: add website "
+body:
+  - type: input
+    id: key
+    attributes:
+      label: Website key
+      description: Lowercase machine identifier, separate from the canonical domain.
+    validations:
+      required: true
+  - type: input
+    id: domain
+    attributes:
+      label: Canonical domain
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Purpose and content needs
+      description: Describe routes, languages and whether editorial CMS access is needed.
+    validations:
+      required: true
+  - type: textarea
+    id: rights
+    attributes:
+      label: Content rights and attribution
+      description: Identify owners and permissions for copy, identity, artwork, fonts and data. Do not attach private material or credentials.
+    validations:
+      required: true

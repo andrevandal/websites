@@ -132,7 +132,18 @@ const run = async (): Promise<number> => {
 
   // Read skills-lock.json
   const lockPath = "skills-lock.json"
-  let lock: { skills?: Record<string, { computedHash?: string }> } = {}
+  let lock: {
+    skills?: Record<
+      string,
+      {
+        source?: unknown
+        sourceType?: unknown
+        ref?: unknown
+        skillPath?: unknown
+        computedHash?: unknown
+      }
+    >
+  } = {}
 
   try {
     const lockText = await readFile(lockPath, "utf-8")
@@ -177,12 +188,49 @@ const run = async (): Promise<number> => {
     findings.push(...checkSkillFrontmatter(skillName, skillText))
   }
 
-  // Check lock entries have directories
-  for (const lockName of lockedSkills) {
-    const lockedSkillPath = join(skillsDir, lockName)
-    if (!existsSync(lockedSkillPath)) {
+  for (const [lockName, entry] of Object.entries(lock.skills || {})) {
+    if (!entry || typeof entry !== "object") {
       findings.push(
-        finding(lockPath, `Locked skill "${lockName}" directory not found`)
+        finding(lockPath, `Locked skill "${lockName}" must be an object`)
+      )
+      continue
+    }
+    for (const field of ["source", "skillPath"] as const) {
+      const value = entry[field]
+      if (typeof value !== "string" || !value.trim()) {
+        findings.push(
+          finding(
+            lockPath,
+            `Locked skill "${lockName}" must have a non-empty ${field}`
+          )
+        )
+      }
+    }
+    if (entry.sourceType !== "github") {
+      findings.push(
+        finding(
+          lockPath,
+          `Locked skill "${lockName}" sourceType must be github`
+        )
+      )
+    }
+    if (typeof entry.ref !== "string" || !/^[a-f0-9]{40}$/i.test(entry.ref)) {
+      findings.push(
+        finding(
+          lockPath,
+          `Locked skill "${lockName}" ref must be a full 40-hex commit`
+        )
+      )
+    }
+    if (
+      typeof entry.computedHash !== "string" ||
+      !/^[a-f0-9]{64}$/i.test(entry.computedHash)
+    ) {
+      findings.push(
+        finding(
+          lockPath,
+          `Locked skill "${lockName}" computedHash must be a SHA-256 hash`
+        )
       )
     }
   }
@@ -217,8 +265,8 @@ const run = async (): Promise<number> => {
 
   // Verify locked skills hashes
   for (const [lockName, entry] of Object.entries(lock.skills || {})) {
-    const lockHash = entry.computedHash
-    if (!lockHash) continue
+    const lockHash = entry?.computedHash
+    if (typeof lockHash !== "string") continue
 
     const skillPath = join(skillsDir, lockName)
     if (!existsSync(skillPath)) continue

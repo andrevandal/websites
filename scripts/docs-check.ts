@@ -31,11 +31,6 @@ const isCalendarDate = (value: string): boolean =>
 
 const ADR_WORD_CAP = 600
 
-// Over the cap before the cap existed; issue #85 trims or retires each one and deletes this list.
-const ADR_WORD_CAP_ALLOWLIST: Record<string, true> = {
-  "docs/adr/2026-08-21-self-hosted-moon-remote-cache.md": true,
-}
-
 const ADR_FILENAME = /^(?<date>\d{4}-\d{2}-\d{2})-[a-z0-9-]+\.md$/
 
 const checkAdrFilename = (file: string): Finding[] => {
@@ -109,7 +104,7 @@ const checkAdrWordCount = (file: string, text: string): Finding[] => {
   const findings: Finding[] = []
   const words = text.trim().split(/\s+/).length
 
-  if (words > ADR_WORD_CAP && !ADR_WORD_CAP_ALLOWLIST[file]) {
+  if (words > ADR_WORD_CAP) {
     findings.push(
       finding(
         file,
@@ -117,65 +112,6 @@ const checkAdrWordCount = (file: string, text: string): Finding[] => {
         `ADR exceeds word cap of ${ADR_WORD_CAP}: ${words} words`
       )
     )
-  }
-
-  return findings
-}
-
-// ---------------------------------------------------------------- epic invariants
-
-const EPIC_INV_FULL = /#\d+\s+INV-\d+/g
-const EPIC_INV_BARE = /(?<![\w-#])INV-\d+(?![\w-])/g
-
-const EPIC_INV_EXCLUSIONS = [
-  "docs/agents/",
-  ".github/ISSUE_TEMPLATE/",
-  ".github/pull_request_template.md",
-  ".agents/skills/",
-]
-
-const isEpicInvExcluded = (file: string): boolean =>
-  EPIC_INV_EXCLUSIONS.some(excl => file.includes(excl))
-
-const checkEpicInvariants = (file: string, text: string): Finding[] => {
-  if (isEpicInvExcluded(file)) return []
-
-  const findings: Finding[] = []
-  const lines = text.split("\n")
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-
-    const fullMatches = [...line.matchAll(EPIC_INV_FULL)]
-    const fullRanges = fullMatches.map(
-      match => [match.index, match.index + match[0].length] as const
-    )
-    for (const match of fullMatches) {
-      findings.push(
-        finding(
-          file,
-          i + 1,
-          `Epic invariant citation "${match[0]}" found in tracked file; invariants live only in issue/PR bodies`
-        )
-      )
-    }
-
-    const bareMatches = line.matchAll(EPIC_INV_BARE)
-    for (const match of bareMatches) {
-      if (
-        fullRanges.some(
-          ([start, end]) => match.index >= start && match.index < end
-        )
-      )
-        continue
-      findings.push(
-        finding(
-          file,
-          i + 1,
-          `Bare epic invariant "${match[0]}" found; cite as #<epic> INV-N only in issues/PRs`
-        )
-      )
-    }
   }
 
   return findings
@@ -298,7 +234,6 @@ const SMART_CHARS: Record<string, string> = {
 }
 
 const PUNCTUATION_DIRS = [
-  "docs/agents/",
   "docs/adr/",
   ".github/ISSUE_TEMPLATE/",
   ".github/pull_request_template.md",
@@ -337,11 +272,6 @@ const checkSmartPunctuation = (file: string, text: string): Finding[] => {
 
 // ---------------------------------------------------------------- run
 
-// retired by epic #78
-const LEGACY_PATHS = [
-  "docs/specs/",
-  "docs/plans/",
-]
 // Files that spell out the banned patterns on purpose.
 const SELF_FILES = ["scripts/docs-check.ts", "scripts/docs-check.test.ts"]
 
@@ -355,7 +285,7 @@ const lockedSkillDirs = (): string[] => {
 
 const run = async (): Promise<number> => {
   const findings: Finding[] = []
-  const skipped = [...LEGACY_PATHS, ...lockedSkillDirs(), "CHANGELOG.md"]
+  const skipped = [...lockedSkillDirs(), "CHANGELOG.md"]
 
   const files = git(["ls-files", "--cached", "--others", "--exclude-standard"])
     .split("\n")
@@ -382,10 +312,8 @@ const run = async (): Promise<number> => {
   for (const file of textFiles) {
     // oxlint-disable-next-line eslint/no-await-in-loop -- sequential file read preserves check order
     const text = await readFile(file, "utf-8")
-    if (!SELF_FILES.includes(file)) {
-      findings.push(...checkEpicInvariants(file, text))
+    if (!SELF_FILES.includes(file))
       findings.push(...checkAdrCitations(file, text))
-    }
 
     if (file.endsWith(".md")) {
       findings.push(...checkLinks(file, text))
@@ -417,7 +345,6 @@ export {
   checkAdrH1,
   checkAdrNoStatus,
   checkAdrWordCount,
-  checkEpicInvariants,
   checkLinks,
   checkPaths,
   checkSmartPunctuation,

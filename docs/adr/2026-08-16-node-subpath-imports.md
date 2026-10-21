@@ -10,7 +10,7 @@ required, so bundler, test runner, and plain script execution all resolve
 the same way automatically.
 
 Decision: internal app-own-code imports use a Node-standard subpath
-import (`#/*` → `./src/*`), declared in `package.json`'s `imports` field -
+import (`#/*` maps to `./src/*`), declared in `package.json`'s `imports` field -
 this is the real source of truth, resolved natively by Bun/Node and by
 Vite (confirmed by an isolated build test with no bundler plugin
 present). Workspace package imports (`@vandal-websites/sun-ui`, etc.) are
@@ -36,7 +36,7 @@ Consequences:
 
 Do:
 
-- Keep exactly one subpath root (`#/*` → `./src/*`), not a growing list of
+- Keep exactly one subpath root (`#/*` maps to `./src/*`), not a growing list of
   narrow aliases (`#utils/*`, `#configs`, ...) - one alias is enough for
   one app's internal code.
 - Whatever `tsc`'s `moduleResolution` mode, verify with an isolated test

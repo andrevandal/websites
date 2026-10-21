@@ -1,3 +1,5 @@
 # Credits
 
-"The shape of the change" section is [Dex Horthy](https://github.com/dexhorthy)'s [`show-me`](https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md) skill, reproduced almost word for word, aimed at a diff instead of a live conversation. `pr` does not depend on `show-me` as a skill (it isn't part of this repo, and a hard dependency would break standalone installs), so the content is copied in rather than pointed at; this file is the attribution a dependency would otherwise have carried.
+The Summary visualization guidance is adapted from [Dex Horthy](https://github.com/dexhorthy)'s [show-me](https://github.com/humanlayer/skills/blob/653b6411c1f70c275a18e37673b042ff99f67ceb/plugins/show-me/skills/show-me/SKILL.md) skill for HumanLayer. It is carried locally rather than requiring a separate installed skill.
+
+`pr` also derives from Matt Pocock's [pr skill](https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/in-progress/pr/SKILL.md). This repository adapts it to the local PR template and execution evidence. Both upstreams are MIT; their original copyright and complete permission notices are preserved in root [ATTRIBUTION.md](../../../ATTRIBUTION.md).

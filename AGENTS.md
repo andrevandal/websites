@@ -1,137 +1,61 @@
 # Agent guidance
 
-## Project structure
+## Setup
 
-websites is a bun + moon monorepo of client websites and a shared image
-service. Tool versions live in `.prototools`.
+Use Bun 1.4.2, Node 26.11.1 and Moon 2.6.1, pinned in `.prototools`.
 
-- `apps/images` - Hono + Bun.Image image service; sharp only for animated GIF output.
-- `packages/sun-ui*` - headless UI kit; `-emdash` adds EmDash.
-- `websites/*` - client Astro sites on Cloudflare. Scaffold one with
-  `bun run website:new`.
+```sh
+bun install --frozen-lockfile
+moon run bellypao:dev
+```
 
-## Commands
+For CMS work, stop the dev server before seeding:
 
-- `bun install` - dependencies; postinstall syncs moon projects.
-- `bun run check` - format, lint, typecheck, test, coverage, docs. The single gate.
-- `bun run lint:fix` / `bun run format:fix` - apply fixes repo-wide.
-- `moon run <project>:<task>` - one project; tasks are `lint`, `format`,
-  `typecheck`, `test`, `build`.
-- `bun run docs` - docs, skills, and `AGENTS.md` checks.
-- `bun test scripts` - tests for root `scripts/`, which no moon project owns.
-- `bun run dev <target>` - dev server for an app or website.
-
-CI details: [`docs/ci-pipeline.md`](docs/ci-pipeline.md).
+```sh
+env -u CI moon run brunabraz:seed pedrohenridesign:seed
+env -u CI moon run brunabraz:dev
+```
 
 ## Testing
 
-Verify at the narrowest scope that covers the change, before yielding: the
-file (`bun test <path>`), then the project (`moon run <project>:test`), then
-`bun run check`. The pre-push hook and CI run the same gate.
+- `bun run check` runs format, lint, typecheck, tests, coverage and docs.
+- `moon run :build` builds all applications and packages.
+- `moon run <key>:test` or `moon run <key>:typecheck` targets a project.
+- `bun test scripts` tests root tools.
+- `bun run docs` checks documentation, skills and this file with strict agents-md-lint.
+- Run package tests through Moon after their dependencies have built.
+- Standard builds and checks need no runtime secrets or optional registry skills.
 
-`coverage.config.ts` sets per-project coverage thresholds. Its allowlist only
-shrinks; each entry cites the issue that removes it.
+## Project Structure
 
-## Images
+- `websites` contains six Astro server applications; Bruna Braz and Pedro Henri Design use EmDash.
+- `apps/images` is the Hono and Bun.Image service.
+- `packages/sun-ui` owns headless UI and runtime asset helpers.
+- `packages/sun-ui-emdash` adds CMS integration without coupling base sun-ui to EmDash.
+- `packages/robots-sitemap` owns shared indexing behavior.
+- `packages/emdash-plugin-analytics` and `packages/emdash-plugin-jmap` are CMS plugins.
+- [ARCHITECTURE.md](ARCHITECTURE.md) records boundaries; [CONTEXT.md](CONTEXT.md) defines terms.
 
-Start a website locally from its example file:
+## Code Style
 
-```sh
-cp websites/<site>/.env.example websites/<site>/.env
-```
+- Use arrow functions, `type` rather than `interface`, and one grouped export per file.
+- Use `#/*` for a project's own imports and workspace package imports across projects.
+- Keep shared package source aliases out of root tsconfig; use Moon project references.
+- Use Tailwind v4 CSS configuration; keep customer presentation in its website.
+- Fix every caller when an API changes; remove obsolete paths rather than adding shims.
+- Keep lint suppressions narrow with a reason. Use straight quotes and plain hyphens in docs.
+- `bun run format:fix` and `bun run lint:fix` apply repository-wide changes; review their scope.
 
-It points `IMAGES_BASE_URL` at the staging image service, so pages render the
-same markup (`srcset`, `sizes`, placeholders) as deployed Stages. Do not leave
-it empty.
+## Git Workflow
 
-The image service (`apps/images`) serves 1x, 1.5x, 2x, 2.5x and 3x from one
-bucket original and never upscales. Originals should be at least 3x the widest
-CSS width they render at. Do not re-export or resize images to fit; the
-service returns the exact size.
-
-After adding or resizing images on any website page, run
-`bun scripts/audit-images.ts <url...> -v <viewport widths>` against the dev
-server or a preview and report what it flags. It is a local tool, not part of
-CI.
-
-## Code style
-
-- Arrow functions only, `type` over `interface`; oxlint enforces both.
-- One grouped `export { ... }` per file.
-- `#/*` subpath imports for a project's own code, `workspace:*` across
-  projects, never a relative path that climbs out of a project.
-- Keep root `tsconfig` free of `compilerOptions.paths` aliases to
-  `packages/*/src`; they collide with moon's project references (TS6305).
-- oxlint + oxfmt cover TS, JS, JSON, Markdown, and the script blocks of
-  `.astro`/`.svelte`; eslint + prettier add Astro and Svelte rules. Zero lint
-  warnings; a disable needs a `-- reason`.
-- Tailwind v4 is configured in CSS `@theme` blocks, never a JS config.
-- Plain punctuation in docs: hyphens and straight quotes. `bun run docs`
-  enforces it in agent-facing files.
-
-## Branches & commits
-
-1. One worktree per epic, branch `<type>/<issue#>-<slug>`
-   ([`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md)).
-2. Conventional Commits; commitlint runs at commit-msg. Scope with the project
-   (`feat(images): ...`); a repo-wide change needs none.
-3. PR titles are Conventional Commits too. The `pr` skill writes the body; it
-   says `Closes #<task>`.
-4. release-please owns versions, `CHANGELOG.md`, and tags.
+Use focused branches and Conventional Commit subjects, scoped by project when useful. PR titles follow the same convention. Use the PR template's Summary, Verification and relevant Screenshots sections. Release-please owns versions, changelogs and tags; do not hand-bump versions for unrelated work. Document durable cross-project decisions using [the ADR format](docs/adr/FORMAT.md).
 
 ## Boundaries
 
-- Ask before any git write that rewrites or deletes history. The agent
-  hooks in `scripts/agent-guardrails/` are a tripwire for force-push,
-  `reset --hard`, `clean -f`, and `branch -D`, not a boundary; the rule is
-  the policy. The pre-push hook rejects non-fast-forward pushes and branch
-  deletions.
-- Fix the root cause of a lint, type, or test failure; keep suppressions
-  narrow and explained.
-- Migrate every caller when a shape changes; leave no shim, alias, or
-  deprecated path.
-- Ask before changing root configs (`.moon/`, `tsconfig*.json`,
-  `lefthook.yml`, root `package.json` scripts) or `.github/`.
-- Keep secrets out of git; `.env.example` lists every key, with secret values
-  omitted and non-secret local defaults (`IMAGES_BASE_URL`) filled in.
+- Always preserve site content rights and third-party notices; reusable implementation is MIT, not customer copy or artwork.
+- Ask before deploying, publishing, changing infrastructure or rewriting shared history.
+- Never commit secrets or put them in issues. Follow [SECURITY.md](SECURITY.md) for private reports.
+- Keep non-CMS asset defaults in Astro config only. CMS storage uses runtime configuration; previews keep isolated data.
+- Preserve the canonical-repository and `ENABLE_DEPLOY` guards on external-writing jobs.
 
-## Planning and decisions
-
-Work is planned on GitHub: an epic issue is the spec, its tasks are
-sub-issues, and Project #1 is the board. Conventions:
-[`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md).
-
-Epics close; durable knowledge moves before they do. Decisions go to
-[`docs/adr/`](docs/adr/FORMAT.md), terms to `CONTEXT.md`
-([`docs/agents/domain.md`](docs/agents/domain.md)), rules to tests.
-`docs/specs/` and `docs/plans/` are legacy, retired by issue #78; read
-them for history and add nothing new there.
-
-## Skills
-
-Committed under `.agents/skills/`; the index is
-[`.agents/skills/README.md`](.agents/skills/README.md). Use a skill by reading
-its `SKILL.md`. The delivery flow is `grill-with-docs` -> `to-spec` ->
-`to-tickets` -> `tdd` -> `code-review` -> `pr`. Refresh vendored skills with
-`bun run skills:update`.
-When sources disagree, an ADR wins over `AGENTS.md` and the format owners
-in `docs/agents/domain.md`, those win over an epic's Constraints, and all of
-them win over a skill. A skill that contradicts an ADR is a bug in the skill.
-
-## Working style
-
-- Read the relevant code before changing or diagnosing it; when a cause is
-  unclear, say so instead of guessing.
-- Build the simplest working solution: no speculative features, no
-  abstraction for a single use, no error handling for impossible cases.
-- Prefer editing to rewriting; test before calling work done.
-- In reviews, state the bug, show the fix, stop; no out-of-scope
-  suggestions.
-- Plain punctuation everywhere: hyphens and straight quotes, no decorative
-  Unicode; code output is copy-paste safe.
-
-## Documentation lookups
-
-Verify EmDash APIs, hooks, and config through the `emdash-docs` MCP server,
-not training data. To run, sign in to, seed, or reset an EmDash site locally,
-follow [`docs/guides/emdash-local-development.md`](docs/guides/emdash-local-development.md).
+Local skills are indexed in [.agents/skills/README.md](.agents/skills/README.md). Registry skills are optional and installed with `bun run skills:install`; source/ref updates are deliberate lock changes. For local CMS operation, use [the development guide](docs/guides/emdash-local-development.md).
