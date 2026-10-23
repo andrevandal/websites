@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      all:
+        description: Treat every application as affected (e.g. upload staging Versions for all websites)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -85,12 +90,16 @@ jobs:
 
       - name: Get affected apps
         id: affecteds
+        env:
+          ALL: ${{ inputs.all }}
         run: |
           # "images" deploys via the reusable container workflow
           # (.github/workflows/container.yml — Docker/GHCR/Coolify), not this
           # generic Cloudflare deploy job — always excluded from `apps`, and
           # listed separately in `container_apps_affected` for the matrix.
-          affected="$(moon query projects "projectLayer=application" --affected --downstream deep | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; ""))')"
+          scope="--affected --downstream deep"
+          [ "$ALL" = "true" ] && scope=
+          affected="$(moon query projects "projectLayer=application" $scope | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; ""))')"
           apps=$(echo "$affected" | jq -c 'map(select(. != "images"))')
           container_apps=$(echo "$affected" | jq -c 'map(select(. == "images"))')
           echo "apps_affected=$apps" >> $GITHUB_OUTPUT
