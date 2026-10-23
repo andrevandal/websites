@@ -42,11 +42,11 @@ const run = () => {
     return 0
   }
 
-  const username = process.env["BAZEL_REMOTE_BASIC_AUTH_USERNAME"] || ""
-  const password = process.env["BAZEL_REMOTE_BASIC_AUTH_PASSWORD"] || ""
+  const username = process.env["MOON_REMOTE_HOST_USERNAME"] || ""
+  const password = process.env["MOON_REMOTE_HOST_PASSWORD"] || ""
   if (username === "" || password === "") {
     console.error(
-      "MOON_REMOTE_HOST is set, but BAZEL_REMOTE_BASIC_AUTH_USERNAME and BAZEL_REMOTE_BASIC_AUTH_PASSWORD must both be set"
+      "MOON_REMOTE_HOST is set, but MOON_REMOTE_HOST_USERNAME and MOON_REMOTE_HOST_PASSWORD must both be set"
     )
     return 1
   }
@@ -59,7 +59,7 @@ const run = () => {
     return 1
   }
 
-  const api = process.env["MOON_REMOTE_API"] || "http"
+  const api = host.startsWith("grpc") ? "grpc" : "http"
   const credential = Buffer.from(`${username}:${password}`).toString("base64")
   const next = `${current.trimEnd()}\n${renderRemoteBlock(host, api, credential)}`
   writeFileSync(workspaceFile, next)

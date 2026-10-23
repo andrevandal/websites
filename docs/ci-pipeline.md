@@ -20,7 +20,7 @@ Fork PR checks run read-only without Infisical, Cloudflare or remote-cache crede
 
 ## Optional remote cache
 
-A trusted check job configures Moon's remote cache only when all required values are available: `MOON_REMOTE_HOST`, `BAZEL_REMOTE_BASIC_AUTH_USERNAME` and `BAZEL_REMOTE_BASIC_AUTH_PASSWORD`. `MOON_REMOTE_API` optionally selects the protocol. Missing credentials leave local execution/cache working. The remote block is generated in the ephemeral checkout, never committed. Fork checks receive none of these credentials.
+A trusted check job configures Moon's remote cache only when all required values are available: `MOON_REMOTE_HOST`, `MOON_REMOTE_HOST_USERNAME` and `MOON_REMOTE_HOST_PASSWORD`. The protocol follows the host scheme: `grpc(s)://` selects gRPC, anything else HTTP. Missing credentials leave local execution/cache working. The remote block is generated in the ephemeral checkout, never committed. Fork checks receive none of these credentials.
 
 Remote cache credentials belong to CI tooling, not applications. Docker delivery uses the existing BuildKit secret interface; the image Dockerfile does not consume application secrets. Keep task inputs complete so cached outputs remain valid across branches.
 
