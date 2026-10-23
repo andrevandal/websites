@@ -162,8 +162,8 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ env.BUILD_CACHE_SCOPE }}
           secrets: |
             moon_remote_host=${{ secrets.MOON_REMOTE_HOST }}
-            moon_remote_user=${{ secrets.BAZEL_REMOTE_BASIC_AUTH_USERNAME }}
-            moon_remote_pass=${{ secrets.BAZEL_REMOTE_BASIC_AUTH_PASSWORD }}
+            moon_remote_user=${{ secrets.MOON_REMOTE_HOST_USERNAME }}
+            moon_remote_pass=${{ secrets.MOON_REMOTE_HOST_PASSWORD }}
 
   deploy:
     runs-on: ubuntu-26.04

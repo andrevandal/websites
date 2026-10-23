@@ -6,7 +6,7 @@ CI checks and image builds repeat workspace compilation. A shared cache can reus
 
 ## Decision
 
-Use bazel-remote over HTTP with Basic authentication. Keep the remote block out of committed Moon configuration. CI writes an ephemeral remote block only when MOON_REMOTE_HOST, BAZEL_REMOTE_BASIC_AUTH_USERNAME and BAZEL_REMOTE_BASIC_AUTH_PASSWORD are all present. Missing credentials leave the local cache in use rather than failing checks.
+Use bazel-remote over HTTP with Basic authentication. Keep the remote block out of committed Moon configuration. CI writes an ephemeral remote block only when MOON_REMOTE_HOST, MOON_REMOTE_HOST_USERNAME and MOON_REMOTE_HOST_PASSWORD are all present. Missing credentials leave the local cache in use rather than failing checks.
 
 The cache credential belongs to the build tool, not application runtime. Deliver it into Docker builds only with a BuildKit secret mount, never a build argument, environment layer or copied credential file. Fork checks receive no cache credentials.
 

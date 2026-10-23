@@ -62,13 +62,12 @@ jobs:
           github.event.pull_request.head.repo.full_name == github.repository)
         env:
           MOON_REMOTE_HOST: ${{ secrets.MOON_REMOTE_HOST }}
-          MOON_REMOTE_API: ${{ secrets.MOON_REMOTE_API }}
-          BAZEL_REMOTE_BASIC_AUTH_USERNAME: ${{ secrets.BAZEL_REMOTE_BASIC_AUTH_USERNAME }}
-          BAZEL_REMOTE_BASIC_AUTH_PASSWORD: ${{ secrets.BAZEL_REMOTE_BASIC_AUTH_PASSWORD }}
+          MOON_REMOTE_HOST_USERNAME: ${{ secrets.MOON_REMOTE_HOST_USERNAME }}
+          MOON_REMOTE_HOST_PASSWORD: ${{ secrets.MOON_REMOTE_HOST_PASSWORD }}
         run: |
           if [ -z "$MOON_REMOTE_HOST" ] || \
-             [ -z "$BAZEL_REMOTE_BASIC_AUTH_USERNAME" ] || \
-             [ -z "$BAZEL_REMOTE_BASIC_AUTH_PASSWORD" ]; then
+             [ -z "$MOON_REMOTE_HOST_USERNAME" ] || \
+             [ -z "$MOON_REMOTE_HOST_PASSWORD" ]; then
             echo "Remote cache credentials unavailable - continuing without remote cache"
             exit 0
           fi
