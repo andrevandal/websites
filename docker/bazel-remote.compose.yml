@@ -14,7 +14,7 @@
 # `.htpasswd` is a Coolify-managed file mount on the VPS, not committed
 # here — created directly on the host, not derived from this repo.
 #
-# GitHub Actions secrets (BAZEL_REMOTE_BASIC_AUTH_USERNAME/PASSWORD) and
+# GitHub Actions secrets (MOON_REMOTE_HOST_USERNAME/PASSWORD) and
 # the MOON_REMOTE_HOST secret matching this htpasswd entry
 # are set directly in CI.
 services:

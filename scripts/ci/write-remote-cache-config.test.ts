@@ -29,9 +29,8 @@ const runScript = (file: string, env: Record<string, string>) => {
       env: {
         ...process.env,
         MOON_REMOTE_HOST: "",
-        MOON_REMOTE_API: "",
-        BAZEL_REMOTE_BASIC_AUTH_USERNAME: "",
-        BAZEL_REMOTE_BASIC_AUTH_PASSWORD: "",
+        MOON_REMOTE_HOST_USERNAME: "",
+        MOON_REMOTE_HOST_PASSWORD: "",
         REMOTE_CACHE_WORKSPACE_FILE: file,
         ...env,
       },
@@ -56,8 +55,8 @@ test("writes a complete remote block with a Basic Auth header", () => {
   const file = makeWorkspace()
   const result = runScript(file, {
     MOON_REMOTE_HOST: "https://cache.example.dev",
-    BAZEL_REMOTE_BASIC_AUTH_USERNAME: "ci-user",
-    BAZEL_REMOTE_BASIC_AUTH_PASSWORD: PASSWORD,
+    MOON_REMOTE_HOST_USERNAME: "ci-user",
+    MOON_REMOTE_HOST_PASSWORD: PASSWORD,
   })
   expect(result.exitCode).toBe(0)
   expect(result.contents).toContain(BASE_WORKSPACE.trimEnd())
@@ -69,13 +68,12 @@ test("writes a complete remote block with a Basic Auth header", () => {
   )
 })
 
-test("MOON_REMOTE_API overrides the api field", () => {
+test("a grpc:// host selects the grpc api", () => {
   const file = makeWorkspace()
   const result = runScript(file, {
     MOON_REMOTE_HOST: "grpc://cache.example.dev:9092",
-    MOON_REMOTE_API: "grpc",
-    BAZEL_REMOTE_BASIC_AUTH_USERNAME: "ci-user",
-    BAZEL_REMOTE_BASIC_AUTH_PASSWORD: PASSWORD,
+    MOON_REMOTE_HOST_USERNAME: "ci-user",
+    MOON_REMOTE_HOST_PASSWORD: PASSWORD,
   })
   expect(result.exitCode).toBe(0)
   expect(result.contents).toContain("  api: grpc")
@@ -85,8 +83,8 @@ test("never prints the password or the encoded credential", () => {
   const file = makeWorkspace()
   const result = runScript(file, {
     MOON_REMOTE_HOST: "https://cache.example.dev",
-    BAZEL_REMOTE_BASIC_AUTH_USERNAME: "ci-user",
-    BAZEL_REMOTE_BASIC_AUTH_PASSWORD: PASSWORD,
+    MOON_REMOTE_HOST_USERNAME: "ci-user",
+    MOON_REMOTE_HOST_PASSWORD: PASSWORD,
   })
   expect(result.output).not.toContain(PASSWORD)
   expect(result.output).not.toContain("Y2ktdXNlcjpzM2NyM3QtUGFzc3cwcmQ=")
@@ -96,8 +94,8 @@ test("prints the sha256 of the file it wrote", () => {
   const file = makeWorkspace()
   const result = runScript(file, {
     MOON_REMOTE_HOST: "https://cache.example.dev",
-    BAZEL_REMOTE_BASIC_AUTH_USERNAME: "ci-user",
-    BAZEL_REMOTE_BASIC_AUTH_PASSWORD: PASSWORD,
+    MOON_REMOTE_HOST_USERNAME: "ci-user",
+    MOON_REMOTE_HOST_PASSWORD: PASSWORD,
   })
   const printed = /workspace\.yml sha256=(?<digest>[0-9a-f]{64})/.exec(
     result.output
@@ -113,10 +111,10 @@ test("fails when the host is set but a credential is missing", () => {
   const file = makeWorkspace()
   const result = runScript(file, {
     MOON_REMOTE_HOST: "https://cache.example.dev",
-    BAZEL_REMOTE_BASIC_AUTH_USERNAME: "ci-user",
+    MOON_REMOTE_HOST_USERNAME: "ci-user",
   })
   expect(result.exitCode).toBe(1)
-  expect(result.output).toContain("BAZEL_REMOTE_BASIC_AUTH_PASSWORD")
+  expect(result.output).toContain("MOON_REMOTE_HOST_PASSWORD")
   expect(result.contents).toBe(BASE_WORKSPACE)
 })
 
@@ -125,8 +123,8 @@ test("refuses to write a second remote block", () => {
   const file = makeWorkspace(existing)
   const result = runScript(file, {
     MOON_REMOTE_HOST: "https://cache.example.dev",
-    BAZEL_REMOTE_BASIC_AUTH_USERNAME: "ci-user",
-    BAZEL_REMOTE_BASIC_AUTH_PASSWORD: PASSWORD,
+    MOON_REMOTE_HOST_USERNAME: "ci-user",
+    MOON_REMOTE_HOST_PASSWORD: PASSWORD,
   })
   expect(result.exitCode).toBe(1)
   expect(result.output).toContain("already declares a remote")
