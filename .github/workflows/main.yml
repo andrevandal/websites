@@ -46,6 +46,7 @@ jobs:
             *.ts *.md *.json *.yml \
             .gitguardian.yml .oxfmtrc.json .oxlintrc.json \
             .release-please-manifest.json
+          moon run sun-ui:build robots-sitemap:build
           bun run test:scripts
           bun run docs
           bun scripts/coverage-allowlist-guard.ts

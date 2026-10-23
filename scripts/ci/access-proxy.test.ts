@@ -122,17 +122,22 @@ describe("Access audit proxy", () => {
   })
 
   test("rejects raw authority-selecting targets before either origin receives a request", async () => {
-    const { proxy, second, received, external } = fixture()
+    const { proxy, upstream, second, received, external } = fixture()
     for (const target of [
       `//127.0.0.1:${second.port}/capture`,
       `/\\127.0.0.1:${second.port}/capture`,
       `\\\\127.0.0.1:${second.port}/capture`,
-      `http://127.0.0.1:${second.port}/capture`,
     ]) {
       const raw = await rawHttpRequest(proxy.port!, target)
       expect(raw).toStartWith("HTTP/1.1 400")
     }
     expect(received).toEqual([])
+    expect(external).toEqual([])
+
+    // Bun rewrites an absolute-form target onto the Host authority, so the proxy
+    // cannot reject it; it must still be pinned to the configured upstream.
+    await rawHttpRequest(proxy.port!, `http://127.0.0.1:${second.port}/capture`)
+    expect(received.map(r => r.url)).toEqual([`${upstream.url.origin}/capture`])
     expect(external).toEqual([])
   })
 
