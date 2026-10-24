@@ -293,7 +293,7 @@ const deployPreview = async (
       "--name",
       `pr-${prNumber}`,
       "--worker-name",
-      worker,
+      stageWorkerName(worker, "staging"),
       "--json",
     ],
     { cwd: siteDir }
@@ -411,7 +411,7 @@ const cleanupPreview = async (
       "--name",
       `pr-${prNumber}`,
       "--worker-name",
-      worker,
+      stageWorkerName(worker, "staging"),
       "--skip-confirmation",
     ],
     { cwd: siteDir, reject: false }

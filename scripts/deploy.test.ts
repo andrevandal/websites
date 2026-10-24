@@ -242,7 +242,7 @@ describe("preview resources", () => {
     })
     expect(state.d1.size).toBe(0)
     expect(state.r2.size).toBe(0)
-    expect(state.previews.has("transportugal:pr-42")).toBe(true)
+    expect(state.previews.has("transportugal-staging:pr-42")).toBe(true)
   })
 
   test.each(["pedrohenridesign", "brunabraz", "transportugal"])(
@@ -273,7 +273,7 @@ describe("preview resources", () => {
         kvDeleted: false,
         ...(selected ? { d1Deleted: false, r2Deleted: false } : {}),
       })
-      expect(state.previews.has(`${worker}:pr-41`)).toBe(true)
+      expect(state.previews.has(`${worker}-staging:pr-41`)).toBe(true)
       expect(state.kv.has(`${worker}-pr-41`)).toBe(true)
       expect(state.kv.has(worker)).toBe(true)
       expect(state.d1.get(`${worker}-cms`)!.rows).toEqual(["production"])
@@ -349,7 +349,7 @@ describe("core migrations in previews", () => {
         "--name",
         "pr-42",
         "--worker-name",
-        "pedrohenridesign",
+        "pedrohenridesign-staging",
         "--json",
       ],
     ])

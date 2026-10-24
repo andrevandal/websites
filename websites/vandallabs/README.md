@@ -128,7 +128,7 @@ bun scripts/deploy.ts version-deploy vandallabs --stage production --version-id 
 
 | Stage      | Deployed as                                                     | KV namespace         |
 | ---------- | --------------------------------------------------------------- | -------------------- |
-| PR preview | Workers Preview `pr-<N>` of `vandallabs`                        | `vandallabs-pr-<N>`  |
+| PR preview | Workers Preview `pr-<N>` of `vandallabs-staging`                | `vandallabs-pr-<N>`  |
 | Staging    | Version of `vandallabs-staging` at 100% traffic                 | `vandallabs-staging` |
 | Production | A production-configured Version of `vandallabs` at 100% traffic | `vandallabs`         |
 
