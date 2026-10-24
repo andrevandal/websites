@@ -31,7 +31,7 @@ describe("resolveEmDashProviders", () => {
         },
       })
       expect(providers.storage).toEqual({
-        entrypoint: "emdash/storage/s3",
+        entrypoint: "@vandal-websites/sun-ui-emdash/storage/s3-fetch",
         config: {},
       })
       expect(providers).not.toHaveProperty("auth")
@@ -50,7 +50,7 @@ describe("resolveEmDashProviders", () => {
       },
     })
     expect(storage).toEqual({
-      entrypoint: "emdash/storage/s3",
+      entrypoint: "@vandal-websites/sun-ui-emdash/storage/s3-fetch",
       config: { publicUrl: "https://assets.example.com/site" },
     })
   })
@@ -199,7 +199,7 @@ describe("resolveEmDashProviders", () => {
       },
     })
     expect(storage).toEqual({
-      entrypoint: "emdash/storage/s3",
+      entrypoint: "@vandal-websites/sun-ui-emdash/storage/s3-fetch",
       config: {
         publicUrl: "https://files.vandal.services/brunabraz-staging",
       },
@@ -215,7 +215,10 @@ describe("resolveEmDashProviders", () => {
         S3_ENDPOINT: "https://files.vandal.services",
       },
     })
-    expect(storage).toEqual({ entrypoint: "emdash/storage/s3", config: {} })
+    expect(storage).toEqual({
+      entrypoint: "@vandal-websites/sun-ui-emdash/storage/s3-fetch",
+      config: {},
+    })
   })
 
   test("derives S3 public URL from endpoint and bucket even when explicitly empty", () => {
@@ -233,7 +236,7 @@ describe("resolveEmDashProviders", () => {
       },
     })
     expect(storage).toEqual({
-      entrypoint: "emdash/storage/s3",
+      entrypoint: "@vandal-websites/sun-ui-emdash/storage/s3-fetch",
       config: {
         publicUrl: "https://files.vandal.services/brunabraz-staging",
       },

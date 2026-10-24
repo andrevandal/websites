@@ -6,8 +6,6 @@
   "type": "module",
   "dependencies": {
     "@astrojs/react": "^7.0.0",
-    "@aws-sdk/client-s3": "catalog:server",
-    "@aws-sdk/s3-request-presigner": "^3.948.0",
     "@emdash-cms/cloudflare": "^1.2.0",
     "@iconify-json/heroicons": "catalog:icons",
     "@iconify-json/heroicons-outline": "catalog:icons",

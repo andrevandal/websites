@@ -148,7 +148,7 @@ required scopes are in the
 [provisioning guide](../../docs/guides/provision-new-site-and-rotate-secrets.md).
 
 `nodejs_compat_populate_process_env` in `wrangler.json` exposes the secrets on
-`process.env`, where `src/cms/libsql-runtime.ts` and EmDash's S3 adapter read
+`process.env`, where `src/cms/libsql-runtime.ts` and the sun-ui-emdash S3 adapter read
 them. The Worker runs `migrations.runtime: "check"`: it never migrates and
 answers 503 while migrations are pending. CI applies the core migrations first
 (`bun scripts/deploy.ts migrate brunabraz` runs `emdash migrate` against the
