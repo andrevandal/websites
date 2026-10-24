@@ -32,7 +32,7 @@ Staging and production use separate runtime configuration. Infisical owns applic
 
 A staging build produces the artifact later promoted to production. Promotion validates its digest and uploads that artifact with production configuration instead of rebuilding. This proves code-artifact continuity, not equality of stage data or credentials. The production Infisical environment slug is `production`.
 
-Fork checks run read-only without deployment or remote-cache credentials. Every release, publishing, deployment and preview-writing job additionally requires the canonical repository and `ENABLE_DEPLOY=true`; reusable workflows enforce the same boundary. Preview Access provisioning and production permissions remain owner responsibilities.
+Fork checks run read-only without deployment or remote-cache credentials. Every release, publishing, deployment and preview-writing job additionally requires a non-fork repository; reusable workflows enforce the same boundary. Preview Access provisioning and production permissions remain owner responsibilities.
 
 ## Rights boundary
 

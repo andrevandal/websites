@@ -56,6 +56,6 @@ Use focused branches and Conventional Commit subjects, scoped by project when us
 - Ask before deploying, publishing, changing infrastructure or rewriting shared history.
 - Never commit secrets or put them in issues. Follow [SECURITY.md](SECURITY.md) for private reports.
 - Keep non-CMS asset defaults in Astro config only. CMS storage uses runtime configuration; previews keep isolated data.
-- Preserve the canonical-repository and `ENABLE_DEPLOY` guards on external-writing jobs.
+- Preserve the non-fork guard on external-writing jobs.
 
 Local skills are indexed in [.agents/skills/README.md](.agents/skills/README.md). Registry skills are optional and installed with `bun run skills:install`; source/ref updates are deliberate lock changes. For local CMS operation, use [the development guide](docs/guides/emdash-local-development.md).
