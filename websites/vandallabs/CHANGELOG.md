@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.5.0...vandallabs-v1.6.0) (2026-10-24)
+
+
+### Features
+
+* **assets:** serve site assets from bucket URLs without static-site secrets ([d891465](https://github.com/andrevandal/websites/commit/d8914651eb840dbb2d573958d6e7a4471a78d835))
+* migrate the static sites to EmDash ([9507678](https://github.com/andrevandal/websites/commit/9507678014a0f370908be1c42ee970de03ea341b))
+
+
+### Bug Fixes
+
+* **deploy:** create missing Worker on first version upload ([5ca9258](https://github.com/andrevandal/websites/commit/5ca9258336f82a349c9893b7d72eab28027c61e3))
+  * **deploy:** attach PR previews to the staging Worker ([72dc665](https://github.com/andrevandal/websites/commit/72dc665465fe109e1c9a975fe449e4f57bab67a1))
+
 ## [1.5.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.4.1...vandallabs-v1.5.0) (2026-10-18)
 
 

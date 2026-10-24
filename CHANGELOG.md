@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.9.0](https://github.com/andrevandal/websites/compare/v1.8.0...v1.9.0) (2026-10-24)
+
+
+### Features
+
+* **assets:** serve site assets from bucket URLs without static-site secrets ([d891465](https://github.com/andrevandal/websites/commit/d8914651eb840dbb2d573958d6e7a4471a78d835))
+* **brunabraz:** share EmDash seed tasks and fill the viewport ([e8ef489](https://github.com/andrevandal/websites/commit/e8ef489d5041160db5ab246e1a6d6651303a7909))
+* migrate the static sites to EmDash ([9507678](https://github.com/andrevandal/websites/commit/9507678014a0f370908be1c42ee970de03ea341b))
+
+
+### Bug Fixes
+
+* **deploy:** create missing Worker on first version upload ([5ca9258](https://github.com/andrevandal/websites/commit/5ca9258336f82a349c9893b7d72eab28027c61e3))
+  * **deploy:** attach PR previews to the staging Worker ([72dc665](https://github.com/andrevandal/websites/commit/72dc665465fe109e1c9a975fe449e4f57bab67a1))
+
 ## [1.8.0](https://github.com/andrevandal/websites/compare/v1.7.0...v1.8.0) (2026-10-18)
 
 
@@ -493,5 +508,3 @@
 * **websites:** coerce ENABLE_PARTYTOWN env string to boolean
 * **websites:** correct ENABLE_PARTYTOWN boolean coercion
 * **websites:** invalidate build cache on public env var change
-
-
