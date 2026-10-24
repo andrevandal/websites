@@ -142,9 +142,10 @@ from the isolated Worker media route without an external image-service hop.
 | `S3_SECRET_ACCESS_KEY`  | Media bucket credentials                                             |
 | `EMDASH_ENCRYPTION_KEY` | Encrypts plugin secret settings (JMAP credential); one key per Stage |
 
-PR Previews read only `CF_ACCESS_AUDIENCE` from Preview Base; do not copy the
-Infisical secrets there. Provisioning locations, GitHub credentials and
-required scopes are in the
+PR Previews run on the `brunabraz-staging` Worker and read only
+`CF_ACCESS_AUDIENCE`, `S3_ENDPOINT` and `S3_BUCKET` from its Preview Base. Do
+not copy any other Infisical secrets there. Provisioning locations, GitHub
+credentials and required scopes are in the
 [provisioning guide](../../docs/guides/provision-new-site-and-rotate-secrets.md).
 
 `nodejs_compat_populate_process_env` in `wrangler.json` exposes the secrets on
@@ -209,11 +210,18 @@ uploaded media before deleting the R2 bucket. Other sites' previews remain
 KV-only.
 
 `CF_ACCESS_TEAM_DOMAIN` is a GitHub secret used only for selected preview
-builds: a hostname or full HTTP(S) team URL, normalized to hostname.
-Missing or invalid input fails the preview build. Set `CF_ACCESS_AUDIENCE`
-only on this Worker's Preview Base config, matching the Access application;
-missing runtime audience fails authentication. Audience is not a build input,
-and team domain is not a Worker runtime secret.
+builds: a hostname or full HTTP(S) team URL, normalized to hostname. Missing or
+invalid input fails the preview build. It is not a Worker runtime secret.
+
+Set these on the `brunabraz-staging` Preview Base with
+`wrangler preview base-config secret put <key> --worker-name brunabraz-staging`:
+
+- `CF_ACCESS_AUDIENCE` matches the Access application. A missing runtime
+  audience fails authentication. It is not a build input.
+- `S3_ENDPOINT` and `S3_BUCKET` are the staging public bucket base, so
+  code-owned assets such as the logo resolve. Never add Turso/S3 credentials
+  or `S3_PUBLIC_URL`. Previews serve CMS media from R2, so these do not affect
+  media.
 
 Before first access, the operator must protect every preview hostname and all
 `/_emdash/*` routes with the intended Access policy. The first trusted

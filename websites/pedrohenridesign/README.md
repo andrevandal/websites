@@ -286,9 +286,10 @@ Version carries its own Stage values. A key left out would be inherited from
 the previous Version (production would get staging's database), which is why
 it is checked. A value set by hand with `wrangler secret put` is overwritten by
 the next upload, and a key removed from Infisical stays on the Worker until you
-delete it with `wrangler secret delete`. `CF_ACCESS_AUDIENCE` lives on
-Preview Base, not in Infisical. Pedro's Preview Base also needs staging
-`S3_ENDPOINT` and `S3_BUCKET` for public code-owned branding assets only.
+delete it with `wrangler secret delete`. `CF_ACCESS_AUDIENCE` lives on the
+`pedrohenridesign-staging` Preview Base, not in Infisical. That Preview Base
+also needs staging `S3_ENDPOINT` and `S3_BUCKET` for public code-owned branding
+assets only.
 
 Each PR binds `SESSION` to `pedrohenridesign-pr-<N>`, `DB` to D1 database
 `pedrohenridesign-pr-<N>-cms`, and `MEDIA` to R2 bucket `pedrohenridesign-pr-<N>-media`.
@@ -299,10 +300,12 @@ KV-only.
 
 The GitHub secret `CF_ACCESS_TEAM_DOMAIN` is a preview-only build input
 (hostname or full HTTP(S) team URL, normalized to hostname); missing or invalid
-input fails the selected preview build. Set `CF_ACCESS_AUDIENCE` on this
-Worker's Preview Base config, matching the Access application. Missing runtime
-audience fails authentication. Add staging `S3_ENDPOINT` and `S3_BUCKET`
-for public branding assets, but never Turso/S3 credentials or `S3_PUBLIC_URL`.
+input fails the selected preview build. Set `CF_ACCESS_AUDIENCE` on the
+`pedrohenridesign-staging` Preview Base config with
+`wrangler preview base-config secret put <key> --worker-name pedrohenridesign-staging`;
+it matches the Access application and a missing runtime audience fails
+authentication. Add staging `S3_ENDPOINT` and `S3_BUCKET` the same way for
+public branding assets, but never Turso/S3 credentials or `S3_PUBLIC_URL`.
 Neither audience nor team domain belongs in plaintext stage vars.
 
 Before first access, the operator must protect every preview hostname and all
