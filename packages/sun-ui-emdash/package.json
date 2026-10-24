@@ -12,10 +12,13 @@
   "exports": {
     ".": "./dist/index.mjs",
     "./astro": "./dist/astro/index.mjs",
+    "./storage": "./dist/storage/index.mjs",
+    "./storage/s3-fetch": "./dist/storage/s3-fetch.mjs",
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@vandal-websites/sun-ui": "workspace:*"
+    "@vandal-websites/sun-ui": "workspace:*",
+    "aws4fetch": "^1.0.20"
   },
   "devDependencies": {
     "@types/bun": "catalog:types",

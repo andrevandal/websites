@@ -9,8 +9,6 @@
     "@astrojs/cloudflare": "catalog:astro",
     "@astrojs/react": "^7.0.0",
     "@astrojs/ts-plugin": "catalog:astro",
-    "@aws-sdk/client-s3": "catalog:server",
-    "@aws-sdk/s3-request-presigner": "^3.948.0",
     "@emdash-cms/cloudflare": "^1.2.0",
     "@tailwindcss/typography": "catalog:tailwind",
     "@tailwindcss/vite": "catalog:tailwind",

@@ -14,9 +14,10 @@ Cover every route of each preview hostname, including all `/_emdash/*` routes. P
 
 - `CF_ACCESS_TEAM_DOMAIN`: GitHub secret used only by the selected preview build. A hostname or full team URL is normalized by the existing integration. A missing/invalid value fails that build.
 - `CF_ACCESS_AUDIENCE`: per-site Preview Base secret matching the Access application's AUD. It is not a GitHub secret or an Infisical standard-stage value.
+- `S3_ENDPOINT` and `S3_BUCKET`: per-site Preview Base secrets giving the public bucket base (no credentials, never `S3_PUBLIC_URL`). Without them, code-owned assets such as the logo render as root-relative paths and 404 on previews.
 - `CF_ACCESS_CLIENT_ID` and `CF_ACCESS_CLIENT_SECRET`: GitHub service-token secrets for preview setup and Lighthouse access, not CMS user sign-in credentials.
 
-Apply Preview Base changes before creating a new preview; existing previews do not automatically inherit changed secrets. After changing the team domain, rebuild the preview. Never copy Turso/S3 credentials into preview configuration. Selected previews use PR-owned D1/R2 and keep media on the Worker route; standard stages use separate runtime data and public bucket bases.
+Preview Base belongs to the Worker the preview is created on, `<site>-staging`, not the production Worker named in `wrangler.json`. Set values with `wrangler preview base-config secret put <key> --worker-name <site>-staging` and check with `... secret list --worker-name <site>-staging`. Apply Preview Base changes before creating a new preview; existing previews do not automatically inherit changed secrets. After changing the team domain, rebuild the preview. Never copy Turso/S3 credentials into preview configuration. Selected previews use PR-owned D1/R2 and keep media on the Worker route; standard stages use separate runtime data and public bucket bases.
 
 ## Service-token policy and audits
 

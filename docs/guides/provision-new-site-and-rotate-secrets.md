@@ -22,14 +22,14 @@ Seeds contain committed public media URLs. CMS runtime URL resolution uses a non
 
 ## Configuration owners
 
-| Configuration                                      | Owner and stage                                                                            |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Non-CMS public asset default                       | Site Astro config; no mandatory asset secret                                               |
-| Standard CMS runtime secrets                       | Infisical website path, separately in `staging` and `production`                           |
-| `IMAGES_BASE_URL`                                  | GitHub environment secret injected by deployment; selected CMS previews use an empty value |
-| `CF_ACCESS_TEAM_DOMAIN`                            | GitHub secret used only for selected preview builds                                        |
-| `CF_ACCESS_AUDIENCE`                               | Cloudflare Preview Base secret, never standard runtime                                     |
-| Cloudflare, release and optional cache credentials | GitHub CI secrets                                                                          |
+| Configuration                                               | Owner and stage                                                                            |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Non-CMS public asset default                                | Site Astro config; no mandatory asset secret                                               |
+| Standard CMS runtime secrets                                | Infisical website path, separately in `staging` and `production`                           |
+| `IMAGES_BASE_URL`                                           | GitHub environment secret injected by deployment; selected CMS previews use an empty value |
+| `CF_ACCESS_TEAM_DOMAIN`                                     | GitHub secret used only for selected preview builds                                        |
+| `CF_ACCESS_AUDIENCE`, `S3_ENDPOINT`, `S3_BUCKET` (previews) | Cloudflare Preview Base on `<site>-staging`, never standard runtime                        |
+| Cloudflare, release and optional cache credentials          | GitHub CI secrets                                                                          |
 
 CI reads Infisical only for `brunabraz` and `pedrohenridesign`, from `/websites/<site-key>`. The production environment slug is **`production`**, not an abbreviation. OIDC subjects are scoped to `repo:andrevandal/websites:environment:staging` or `repo:andrevandal/websites:environment:production`. Repository variables select the Infisical identity/project and optional domain. Fork checks receive none of these credentials.
 

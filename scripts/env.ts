@@ -22,8 +22,8 @@ const extractSiteIdFromLocation = (location: string[]): string => {
 }
 
 // Non-secret Worker vars. IMAGES_BASE_URL comes from the GitHub environment
-// secret of the deploying job. Previews read S3_PUBLIC_URL from Preview Base,
-// so it is never set here (a var would override it).
+// secret of the deploying job. Previews derive the asset base from S3_ENDPOINT
+// and S3_BUCKET in Preview Base, so S3_PUBLIC_URL is never set here.
 const resolveTargetEnvVars = (
   siteLocation: string[],
   stage: Stage,

@@ -26,7 +26,6 @@ tasks:
       - "./astro.config.js"
       - "./emdash-env.d.ts"
       - "./wrangler.json"
-      - "./vite-aws-sdk-browser-field.js"
       - "$EMDASH_BUILD_FLAVOR"
       - "$CF_ACCESS_TEAM_DOMAIN"
       - "$S3_PUBLIC_URL"
@@ -45,7 +44,6 @@ tasks:
       - "./astro.config.js"
       - "./emdash-env.d.ts"
       - "./wrangler.json"
-      - "./vite-aws-sdk-browser-field.js"
       - "$EMDASH_BUILD_FLAVOR"
       - "$CF_ACCESS_TEAM_DOMAIN"
       - "$S3_PUBLIC_URL"
@@ -73,6 +71,8 @@ tasks:
       - "bunfig.toml"
       - "/bunfig.toml"
       - "/packages/sun-ui/src/**/*"
+    dependsOn:
+      - ^:build
 
   typecheck:
     inputs:
