@@ -10,7 +10,7 @@ permissions:
 jobs:
   validate:
     name: Conventional Commit
-    if: github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true'
+    if: github.event.repository.fork == false
     permissions:
       pull-requests: write
       statuses: write

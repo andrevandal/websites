@@ -12,7 +12,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
-    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' }}
+    if: ${{ github.event.repository.fork == false }}
     permissions:
       contents: write
       issues: write
@@ -98,7 +98,7 @@ jobs:
 
   deploy-images-production:
     needs: release
-    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (needs.release.outputs.images_release_created == 'true') }}
+    if: ${{ github.event.repository.fork == false && (needs.release.outputs.images_release_created == 'true') }}
     permissions:
       actions: write
     runs-on: ubuntu-26.04
@@ -116,7 +116,7 @@ jobs:
   # commit with production config, then promotes that new Version.
   deploy-websites-production:
     needs: release
-    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (needs.release.outputs.websites_released != '[]') }}
+    if: ${{ github.event.repository.fork == false && (needs.release.outputs.websites_released != '[]') }}
     runs-on: ubuntu-26.04
     # Runtime secrets come from Infisical over OIDC (id-token).
     environment: production

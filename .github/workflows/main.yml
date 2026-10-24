@@ -63,7 +63,7 @@ jobs:
       # execution instead of breaking the PR.
       - name: Configure remote cache
         if: >-
-          github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+          github.event.repository.fork == false &&
           (github.event_name != 'pull_request' ||
           github.event.pull_request.head.repo.full_name == github.repository)
         env:
@@ -113,7 +113,7 @@ jobs:
     # Fork PRs receive no Cloudflare credentials, so only same-repository PRs
     # get a Workers Preview.
     if: >-
-      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      github.event.repository.fork == false &&
       (needs.check-all.outputs.affected_apps != '[]' &&
       github.head_ref != 'release-please--branches--main' &&
       (github.event_name != 'pull_request' ||
@@ -219,7 +219,7 @@ jobs:
     name: Link staging (release PR)
     needs: check-all
     if: >-
-      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      github.event.repository.fork == false &&
       (needs.check-all.outputs.affected_apps != '[]' &&
       github.event_name == 'pull_request' &&
       github.head_ref == 'release-please--branches--main') &&
@@ -248,7 +248,7 @@ jobs:
     # (release.yml's manual dispatch) deploys only -- no PR preview build,
     # unlike the websites' `deploy` job above.
     if: >-
-      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      github.event.repository.fork == false &&
       (needs.check-all.outputs.container_apps_affected != '[]' && github.event_name != 'pull_request')
     permissions:
       contents: read

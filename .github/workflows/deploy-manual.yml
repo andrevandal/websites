@@ -18,13 +18,13 @@ on:
           ]
         required: true
       environment:
-        description: Target environment (websites accept only production; their staging comes from Main CI)
+        description: Target environment (websites to staging build the selected ref without CI; to production promote a Main CI build)
         type: choice
         options: [staging, production]
         default: staging
         required: true
       artifact-sha:
-        description: Websites only - commit SHA whose Main CI build (artifact website-dist-<target>-<sha>) to promote
+        description: Websites to production only - commit SHA whose Main CI build (artifact website-dist-<target>-<sha>) to promote
         type: string
         required: false
 
@@ -37,7 +37,7 @@ concurrency:
 jobs:
   deploy-container:
     name: Deploy container
-    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (inputs.target == 'images') }}
+    if: ${{ github.event.repository.fork == false && (inputs.target == 'images') }}
     permissions:
       contents: read
       packages: write
@@ -46,9 +46,39 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
 
+  deploy-website-staging:
+    name: Build and deploy website to staging
+    if: ${{ github.event.repository.fork == false && inputs.target != 'images' && inputs.environment == 'staging' }}
+    environment: staging
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-26.04
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Init
+        uses: ./.github/actions/init
+
+      - name: Deploy
+        uses: ./.github/actions/deploy
+        with:
+          mode: staging
+          target: ${{ inputs.target }}
+          infisical-identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          infisical-project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          infisical-domain: ${{ vars.INFISICAL_DOMAIN }}
+          images-base-url: ${{ secrets.IMAGES_BASE_URL }}
+
   deploy-website:
     name: Promote website build to production
-    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (inputs.target != 'images') }}
+    if: ${{ github.event.repository.fork == false && inputs.target != 'images' && inputs.environment == 'production' }}
     environment: production
     permissions:
       contents: read
@@ -61,13 +91,8 @@ jobs:
     steps:
       - name: Validate inputs
         env:
-          ENVIRONMENT: ${{ inputs.environment }}
           ARTIFACT_SHA: ${{ inputs.artifact-sha }}
         run: |
-          if [ "$ENVIRONMENT" != "production" ]; then
-            echo "::error::Websites deploy manually only to production; staging Versions come from Main CI on main."
-            exit 1
-          fi
           if [ -z "$ARTIFACT_SHA" ]; then
             echo "::error::artifact-sha is required: the commit whose Main CI build to promote."
             exit 1
