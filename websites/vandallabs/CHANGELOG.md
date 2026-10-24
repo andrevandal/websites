@@ -11,8 +11,8 @@
 
 ### Bug Fixes
 
-* **deploy:** attach PR previews to the staging Worker ([72dc665](https://github.com/andrevandal/websites/commit/72dc665465fe109e1c9a975fe449e4f57bab67a1))
 * **deploy:** create missing Worker on first version upload ([5ca9258](https://github.com/andrevandal/websites/commit/5ca9258336f82a349c9893b7d72eab28027c61e3))
+  * **deploy:** attach PR previews to the staging Worker ([72dc665](https://github.com/andrevandal/websites/commit/72dc665465fe109e1c9a975fe449e4f57bab67a1))
 
 ## [1.5.0](https://github.com/andrevandal/websites/compare/vandallabs-v1.4.1...vandallabs-v1.5.0) (2026-10-18)
 
