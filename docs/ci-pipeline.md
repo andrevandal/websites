@@ -11,10 +11,10 @@ Local equivalents are `bun run check` and `moon run :build`. Standard builds and
 Every deployment, image publication, preview creation/cleanup, release creation and release-comment job requires:
 
 ```text
-github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true'
+github.event.repository.fork == false
 ```
 
-This is conjoined with existing event, affected-project, success and same-repository PR conditions. Reusable image workflows enforce the guard themselves. An unset or differently cased value disables external-writing jobs. The owner enables operations separately from merging changes; repository code does not grant deployment approval.
+This is conjoined with existing event, affected-project, success and same-repository PR conditions. Reusable image workflows enforce the guard themselves. Repository code does not grant deployment approval; GitHub environment protection rules and secrets remain the owner's gate.
 
 Fork PR checks run read-only without Infisical, Cloudflare or remote-cache credentials and never receive previews or deployments. The `pull_request_target` title workflow only validates metadata and never checks out or executes PR code; its explicitly scoped metadata permissions do not authorize running a fork's application code.
 
@@ -32,7 +32,7 @@ Only `brunabraz` and `pedrohenridesign` fetch runtime secret files from Infisica
 
 Production promotion waits for successful Main CI at the requested commit, downloads the saved staging artifact and verifies its digest. It applies production CMS migrations when applicable, uploads a production-configured version and routes production traffic to it. It never rebuilds the website. Infisical's production environment slug is `production`; stage-specific runtime values are not baked into the artifact.
 
-The manual workflow accepts websites only for production and requires the staging artifact's commit SHA. Image deployment uses the reusable container workflow instead.
+The manual workflow deploys a website to staging by building the dispatched ref directly, without running Main CI checks. For production it promotes a Main CI staging artifact and requires that artifact's commit SHA. Image deployment uses the reusable container workflow instead.
 
 ## Selected EmDash preview deployment
 

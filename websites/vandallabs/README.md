@@ -140,7 +140,7 @@ never deploys the staging Version itself and never rebuilds.
 A Preview gets its own `SESSION` namespace because Workers Previews do not
 provision KV. Staging has its own namespace (`vandallabs-staging`).
 
-Manual website deploys (`deploy-manual.yml`) only promote an existing Main CI
-build (`artifact-sha`) to production. Previews are created only from
+Manual website deploys (`deploy-manual.yml`) either build the dispatched ref to
+staging without CI, or promote an existing Main CI build (`artifact-sha`) to production. Previews are created only from
 same-repository pull request CI and deleted, with their namespace, when the PR
 closes.

@@ -71,7 +71,7 @@ Original site assets are served from `https://files.vandal.services/<site-key>`.
 
 The CMS sites use runtime storage configuration: a nonempty `S3_PUBLIC_URL` wins; otherwise both `S3_ENDPOINT` and `S3_BUCKET` are needed to derive the public base. Local development uses filesystem media. Selected CMS previews use isolated D1/R2 data and Worker media routes rather than production buckets.
 
-[Vandal Labs asset usage](docs/guides/provision-new-site-and-rotate-secrets.md#public-assets) includes the public cover and profile URLs. Runtime configuration, CI secrets and preview-only secrets have separate owners; see [ARCHITECTURE.md](ARCHITECTURE.md) and [the CI pipeline](docs/ci-pipeline.md). External-writing jobs are disabled unless the repository is `andrevandal/websites` and `ENABLE_DEPLOY` is exactly `true`.
+[Vandal Labs asset usage](docs/guides/provision-new-site-and-rotate-secrets.md#public-assets) includes the public cover and profile URLs. Runtime configuration, CI secrets and preview-only secrets have separate owners; see [ARCHITECTURE.md](ARCHITECTURE.md) and [the CI pipeline](docs/ci-pipeline.md). External-writing jobs are disabled in forks (`github.event.repository.fork == false`).
 
 ## Licence and content
 

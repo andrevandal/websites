@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      all:
+        description: Treat every application as affected (e.g. upload staging Versions for all websites)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -58,7 +63,7 @@ jobs:
       # execution instead of breaking the PR.
       - name: Configure remote cache
         if: >-
-          github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+          github.event.repository.fork == false &&
           (github.event_name != 'pull_request' ||
           github.event.pull_request.head.repo.full_name == github.repository)
         env:
@@ -85,12 +90,16 @@ jobs:
 
       - name: Get affected apps
         id: affecteds
+        env:
+          ALL: ${{ inputs.all }}
         run: |
           # "images" deploys via the reusable container workflow
           # (.github/workflows/container.yml — Docker/GHCR/Coolify), not this
           # generic Cloudflare deploy job — always excluded from `apps`, and
           # listed separately in `container_apps_affected` for the matrix.
-          affected="$(moon query projects "projectLayer=application" --affected --downstream deep | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; ""))')"
+          scope="--affected --downstream deep"
+          [ "$ALL" = "true" ] && scope=
+          affected="$(moon query projects "projectLayer=application" $scope | jq -r '.projects | map(.source) | map(sub("^apps/|^websites/"; ""))')"
           apps=$(echo "$affected" | jq -c 'map(select(. != "images"))')
           container_apps=$(echo "$affected" | jq -c 'map(select(. == "images"))')
           echo "apps_affected=$apps" >> $GITHUB_OUTPUT
@@ -104,7 +113,7 @@ jobs:
     # Fork PRs receive no Cloudflare credentials, so only same-repository PRs
     # get a Workers Preview.
     if: >-
-      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      github.event.repository.fork == false &&
       (needs.check-all.outputs.affected_apps != '[]' &&
       github.head_ref != 'release-please--branches--main' &&
       (github.event_name != 'pull_request' ||
@@ -210,7 +219,7 @@ jobs:
     name: Link staging (release PR)
     needs: check-all
     if: >-
-      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      github.event.repository.fork == false &&
       (needs.check-all.outputs.affected_apps != '[]' &&
       github.event_name == 'pull_request' &&
       github.head_ref == 'release-please--branches--main') &&
@@ -239,7 +248,7 @@ jobs:
     # (release.yml's manual dispatch) deploys only -- no PR preview build,
     # unlike the websites' `deploy` job above.
     if: >-
-      github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' &&
+      github.event.repository.fork == false &&
       (needs.check-all.outputs.container_apps_affected != '[]' && github.event_name != 'pull_request')
     permissions:
       contents: read

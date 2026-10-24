@@ -15,7 +15,7 @@ jobs:
     name: Delete Preview and PR resources pr-${{ github.event.pull_request.number }}
     # Matches main.yml: fork PRs never get a Preview or Cloudflare credentials.
     # Every target removes SESSION KV; Pedro and Bruna also remove D1 and nonempty R2.
-    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (github.event.pull_request.head.repo.full_name == github.repository) }}
+    if: ${{ github.event.repository.fork == false && (github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-26.04
     strategy:
       fail-fast: false

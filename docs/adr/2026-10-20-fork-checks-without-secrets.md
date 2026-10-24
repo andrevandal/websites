@@ -8,7 +8,7 @@ Public contributions need useful validation without granting untrusted pull-requ
 
 Run fork checks with read-only permissions and no Infisical, Cloudflare or remote-cache credentials. Cache configuration falls back to local operation when credentials are absent. Fork pull requests do not create previews or deploy.
 
-Every deployment, publishing, preview creation or cleanup, release creation and release-comment job requires both the canonical repository and ENABLE_DEPLOY set to true, in addition to its existing conditions. Reusable workflows enforce the guard themselves. An unset switch disables external mutations.
+Every deployment, publishing, preview creation or cleanup, release creation and release-comment job requires a non-fork repository, in addition to its existing conditions. Reusable workflows enforce the guard themselves.
 
 The pull-request-title workflow may inspect metadata through its target event, but never checks out or executes pull-request code.
 

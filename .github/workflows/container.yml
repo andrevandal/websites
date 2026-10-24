@@ -63,7 +63,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-26.04
     needs: verify
-    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (always() && (needs.verify.result == 'success' || needs.verify.result == 'skipped')) }}
+    if: ${{ github.event.repository.fork == false && (always() && (needs.verify.result == 'success' || needs.verify.result == 'skipped')) }}
     permissions:
       contents: read
       packages: write
@@ -168,7 +168,7 @@ jobs:
   deploy:
     runs-on: ubuntu-26.04
     needs: build-and-push
-    if: ${{ github.repository == 'andrevandal/websites' && vars.ENABLE_DEPLOY == 'true' && (needs.build-and-push.outputs.environment != 'preview') }}
+    if: ${{ github.event.repository.fork == false && (needs.build-and-push.outputs.environment != 'preview') }}
     permissions: {}
     environment:
       name: ${{ needs.build-and-push.outputs.environment }}

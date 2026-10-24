@@ -22,4 +22,4 @@ Submit reusable implementation under [MIT](LICENSE), retaining existing notices.
 
 Only submit content you own or have permission to contribute. Identify its rights holder, permission and any required attribution in the PR. Do not replace content notices or third-party terms with MIT. Update REUSE annotations when adding files; coverage lint does not establish ownership.
 
-Fork PR checks are read-only without runtime, deployment or remote-cache secrets. Forks do not receive previews or deploy. Deployment, release and publishing jobs require the canonical repository plus `ENABLE_DEPLOY=true`; changing that operational switch is the owner's responsibility.
+Fork PR checks are read-only without runtime, deployment or remote-cache secrets. Forks do not receive previews or deploy. Deployment, release and publishing jobs require the canonical repository; environment protection and secrets are the owner's responsibility.

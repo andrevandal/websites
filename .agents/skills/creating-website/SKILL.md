@@ -74,7 +74,7 @@ Use `runtimeEnv(getSecret, "IMAGES_BASE_URL")` and `buildImageUrl` for transform
 with raw bucket URLs when the image service is unset. Keep the adapter's
 passthrough image-service setting. PRs use isolated preview resources, staging
 uses `<key>-staging`, and production promotes the same build with production
-configuration. Preserve the repository and `ENABLE_DEPLOY` guards.
+configuration. Preserve the non-fork guard.
 
 ## Port an existing site
 
