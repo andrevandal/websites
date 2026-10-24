@@ -126,12 +126,6 @@ bun scripts/deploy.ts version-upload vandallabs --stage production --artifact-di
 bun scripts/deploy.ts version-deploy vandallabs --stage production --version-id <uuid>
 ```
 
-| Stage      | Deployed as                                                     | KV namespace         |
-| ---------- | --------------------------------------------------------------- | -------------------- |
-| PR preview | Workers Preview `pr-<N>` of `vandallabs`                        | `vandallabs-pr-<N>`  |
-| Staging    | Version of `vandallabs-staging` at 100% traffic                 | `vandallabs-staging` |
-| Production | A production-configured Version of `vandallabs` at 100% traffic | `vandallabs`         |
-
 Staging is its own Worker, `vandallabs-staging`
 (`vandallabs-staging.<subdomain>.workers.dev`); main CI uploads the build there
 and deploys it at 100%. A release re-uploads the identical staging build with

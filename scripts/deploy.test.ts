@@ -242,7 +242,7 @@ describe("preview resources", () => {
     })
     expect(state.d1.size).toBe(0)
     expect(state.r2.size).toBe(0)
-    expect(state.previews.has("transportugal:pr-42")).toBe(true)
+    expect(state.previews.has("transportugal-staging:pr-42")).toBe(true)
   })
 
   test.each(["pedrohenridesign", "brunabraz", "transportugal"])(
@@ -273,7 +273,7 @@ describe("preview resources", () => {
         kvDeleted: false,
         ...(selected ? { d1Deleted: false, r2Deleted: false } : {}),
       })
-      expect(state.previews.has(`${worker}:pr-41`)).toBe(true)
+      expect(state.previews.has(`${worker}-staging:pr-41`)).toBe(true)
       expect(state.kv.has(`${worker}-pr-41`)).toBe(true)
       expect(state.kv.has(worker)).toBe(true)
       expect(state.d1.get(`${worker}-cms`)!.rows).toEqual(["production"])
@@ -349,7 +349,7 @@ describe("core migrations in previews", () => {
         "--name",
         "pr-42",
         "--worker-name",
-        "pedrohenridesign",
+        "pedrohenridesign-staging",
         "--json",
       ],
     ])
@@ -1077,6 +1077,60 @@ describe("versionUpload", () => {
     ).rejects.toThrow(
       "Could not determine Worker Version ID from wrangler output."
     )
+  })
+
+  test("creates a missing Worker with deploy, then continues with its Version", async () => {
+    const { deps } = createVersionDeps()
+    const calls: string[][] = []
+    deps.exec = async args => {
+      calls.push(args)
+      return args[1] === "versions"
+        ? {
+            stdout: "",
+            stderr:
+              "You cannot upload a new version of a Worker that does not yet exist.",
+            exitCode: 1,
+          }
+        : { stdout: `Current Version ID: ${VERSION_ID}\n`, exitCode: 0 }
+    }
+
+    const result = await versionUpload(
+      {
+        siteDir: "/repo/websites/bellypao",
+        worker: "bellypao-staging",
+        artifactDir: await createArtifact(),
+        vars: {},
+      },
+      deps
+    )
+
+    expect(result).toEqual({ versionId: VERSION_ID })
+    expect(calls.map(c => c.slice(0, 2))).toEqual([
+      ["wrangler", "versions"],
+      ["wrangler", "deploy"],
+    ])
+  })
+
+  test("does not deploy when the upload fails for another reason", async () => {
+    const { deps } = createVersionDeps()
+    const calls: string[][] = []
+    deps.exec = async args => {
+      calls.push(args)
+      return { stdout: "", stderr: "Authentication error", exitCode: 1 }
+    }
+
+    await expect(
+      versionUpload(
+        {
+          siteDir: "/repo/websites/bellypao",
+          worker: "bellypao-staging",
+          artifactDir: await createArtifact(),
+          vars: {},
+        },
+        deps
+      )
+    ).rejects.toThrow("wrangler failed")
+    expect(calls).toHaveLength(1)
   })
 })
 

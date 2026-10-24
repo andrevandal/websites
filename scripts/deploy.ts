@@ -49,7 +49,7 @@ type DeployDeps = {
   exec: (
     args: string[],
     options: { cwd: string; reject?: boolean; env?: Record<string, string> }
-  ) => Promise<{ stdout: string; exitCode: number }>
+  ) => Promise<{ stdout: string; stderr?: string; exitCode: number }>
   kv: {
     findOrCreate: (title: string) => Promise<{ id: string; created: boolean }>
     deleteByTitle: (title: string) => Promise<boolean>
@@ -293,7 +293,7 @@ const deployPreview = async (
       "--name",
       `pr-${prNumber}`,
       "--worker-name",
-      worker,
+      stageWorkerName(worker, "staging"),
       "--json",
     ],
     { cwd: siteDir }
@@ -411,7 +411,7 @@ const cleanupPreview = async (
       "--name",
       `pr-${prNumber}`,
       "--worker-name",
-      worker,
+      stageWorkerName(worker, "staging"),
       "--skip-confirmation",
     ],
     { cwd: siteDir, reject: false }
@@ -542,21 +542,33 @@ const versionUpload = async (
     await deps.files.write(secretsPath, JSON.stringify(secrets))
   }
 
-  const { stdout } = await deps.exec(
-    [
-      "wrangler",
-      "versions",
-      "upload",
-      "--name",
-      worker,
-      "-c",
-      configPath,
-      ...(secretsPath ? ["--secrets-file", secretsPath] : []),
-    ],
-    { cwd: uploadDir }
+  const wranglerArgs = [
+    "--name",
+    worker,
+    "-c",
+    configPath,
+    ...(secretsPath ? ["--secrets-file", secretsPath] : []),
+  ]
+  let upload = await deps.exec(
+    ["wrangler", "versions", "upload", ...wranglerArgs],
+    { cwd: uploadDir, reject: false }
   )
-  const versionId = stdout.match(
-    new RegExp(`Worker Version ID:\\s*(?<id>${UUID_PATTERN.source})`, "i")
+  // `versions upload` cannot create a Worker; the first `deploy` must. Later
+  // runs find the Worker and take the normal Version path.
+  if (upload.exitCode !== 0 && upload.stderr?.includes("does not yet exist")) {
+    upload = await deps.exec(["wrangler", "deploy", ...wranglerArgs], {
+      cwd: uploadDir,
+      reject: false,
+    })
+  }
+  if (upload.exitCode !== 0)
+    throw new Error(`wrangler failed for ${worker} (exit ${upload.exitCode}).`)
+
+  const versionId = upload.stdout.match(
+    new RegExp(
+      `(?:Worker|Current) Version ID:\\s*(?<id>${UUID_PATTERN.source})`,
+      "i"
+    )
   )?.groups?.["id"]
 
   if (!versionId) {
@@ -686,8 +698,12 @@ const realDeps: SetupDeps = {
     const proc = execa("bunx", args, { cwd, reject, env })
     proc.stdout?.pipe(process.stdout)
     proc.stderr?.pipe(process.stderr)
-    const { stdout, exitCode } = await proc
-    return { stdout: String(stdout), exitCode: exitCode ?? 1 }
+    const { stdout, stderr, exitCode } = await proc
+    return {
+      stdout: String(stdout),
+      stderr: String(stderr ?? ""),
+      exitCode: exitCode ?? 1,
+    }
   },
   kv: {
     findOrCreate: async title => {
