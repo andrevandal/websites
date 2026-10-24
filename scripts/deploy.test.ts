@@ -1160,6 +1160,56 @@ describe("versionDeploy", () => {
     ])
   })
 
+  const versionDeployWith = (
+    results: { exitCode: number; stdout: string }[]
+  ) => {
+    const calls: string[][] = []
+    const { deps } = createVersionDeps()
+    deps.exec = async args => {
+      calls.push(args)
+      return results[Math.min(calls.length, results.length) - 1]!
+    }
+    const run = () =>
+      versionDeploy(
+        {
+          siteDir: "/repo/websites/transportugal",
+          worker: "transportugal",
+          versionId: VERSION_ID,
+          retryDelayMs: 0,
+        },
+        deps
+      )
+    return { calls, run }
+  }
+  const notVisible = {
+    exitCode: 1,
+    stdout: "The requested Worker version could not be found [code: 100146]",
+  }
+
+  test("retries while the new Version is not yet visible", async () => {
+    const { calls, run } = versionDeployWith([
+      notVisible,
+      notVisible,
+      { exitCode: 0, stdout: "" },
+    ])
+    await run()
+    expect(calls).toHaveLength(3)
+  })
+
+  test("gives up after five attempts and reports the output", async () => {
+    const { calls, run } = versionDeployWith([notVisible])
+    await expect(run()).rejects.toThrow("100146")
+    expect(calls).toHaveLength(5)
+  })
+
+  test("does not retry other wrangler failures", async () => {
+    const { calls, run } = versionDeployWith([
+      { exitCode: 1, stdout: "Authentication error [code: 10000]" },
+    ])
+    await expect(run()).rejects.toThrow("10000")
+    expect(calls).toHaveLength(1)
+  })
+
   test("rejects anything but a Version UUID before calling wrangler", async () => {
     const { calls, deps } = createVersionDeps()
 
