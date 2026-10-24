@@ -79,6 +79,8 @@ tasks:
       - "/bunfig.toml"
       - "/happydom.ts"
       - "/packages/sun-ui/src/**/*"
+    dependsOn:
+      - ^:build
 
   typecheck:
     inputs:

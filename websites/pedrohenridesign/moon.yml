@@ -71,6 +71,8 @@ tasks:
       - "bunfig.toml"
       - "/bunfig.toml"
       - "/packages/sun-ui/src/**/*"
+    dependsOn:
+      - ^:build
 
   typecheck:
     inputs:

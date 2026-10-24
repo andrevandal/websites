@@ -229,7 +229,7 @@ canonical host. Robots allows crawling only on that host.
 
 Standard staging/production builds read Turso and S3 settings from `process.env`
 (`nodejs_compat_populate_process_env` in `wrangler.json`), through
-`src/cms/libsql-runtime.ts` and EmDash's S3 adapter. The Worker runs
+`src/cms/libsql-runtime.ts` and the sun-ui-emdash S3 adapter. The Worker runs
 `migrations.runtime: "check"`: it never migrates, so a stopped isolate cannot
 leave a migration lock behind, and it answers 503 while migrations are pending.
 CI applies the core migrations first: `bun scripts/deploy.ts migrate pedrohenridesign`

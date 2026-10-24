@@ -89,10 +89,19 @@ const XML_ENTITIES: Record<string, string> = {
   quot: '"',
   apos: "'",
 }
+// Single pass, so "&amp;lt;" decodes to "&lt;" and not "<".
 const unescapeXml = (value: string) =>
   value.replace(
-    /&(?<name>amp|lt|gt|quot|apos);/g,
-    (_, name: string) => XML_ENTITIES[name]!
+    /&(?:#x(?<hex>[\dA-Fa-f]+)|#(?<dec>\d+)|(?<name>amp|lt|gt|quot|apos));/g,
+    (...args) => {
+      const { hex, dec, name } = args.at(-1) as Record<
+        string,
+        string | undefined
+      >
+      return name
+        ? XML_ENTITIES[name]!
+        : String.fromCodePoint(hex ? Number.parseInt(hex, 16) : Number(dec))
+    }
   )
 
 const xmlTag = (xml: string, tag: string) => {
@@ -161,26 +170,24 @@ class S3FetchStorage implements Storage {
       const get = (range?: string) =>
         this.client.fetch(url, range ? { headers: { Range: range } } : {})
 
-      let res: Response | undefined
-      if (options.range) {
-        res = await get(formatRange(options.range))
-        const served =
-          res.status === 206
-            ? CONTENT_RANGE.exec(res.headers.get("Content-Range") ?? "")?.groups
-            : undefined
-        if (served) {
-          const offset = Number(served.start)
-          return {
-            ...this.describe(res, key),
-            size: Number(served.total),
-            range: { offset, length: Number(served.end) - offset + 1 },
-          }
+      let res = await get(options.range && formatRange(options.range))
+      const served =
+        res.status === 206
+          ? CONTENT_RANGE.exec(res.headers.get("Content-Range") ?? "")?.groups
+          : undefined
+      if (served) {
+        const offset = Number(served.start)
+        return {
+          ...this.describe(res, key),
+          size: Number(served.total),
+          range: { offset, length: Number(served.end) - offset + 1 },
         }
+      }
+      if (res.status === 206 || res.status === 416) {
         // Unsatisfiable or unparsable range: serve the whole file instead.
         await res.body?.cancel()
-        res = undefined
+        res = await get()
       }
-      res ??= await get()
       if (res.status === 404)
         throw new EmDashStorageError(`File not found: ${key}`, "NOT_FOUND")
       if (!res.ok) throw new Error(`GET ${res.status}`)
