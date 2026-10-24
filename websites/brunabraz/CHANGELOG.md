@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.5.0...brunabraz-v1.6.0) (2026-10-24)
+
+
+### Features
+
+* **assets:** serve site assets from bucket URLs without static-site secrets ([d891465](https://github.com/andrevandal/websites/commit/d8914651eb840dbb2d573958d6e7a4471a78d835))
+* **brunabraz:** share EmDash seed tasks and fill the viewport ([e8ef489](https://github.com/andrevandal/websites/commit/e8ef489d5041160db5ab246e1a6d6651303a7909))
+* migrate the static sites to EmDash ([9507678](https://github.com/andrevandal/websites/commit/9507678014a0f370908be1c42ee970de03ea341b))
+
 ## [1.5.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.4.1...brunabraz-v1.5.0) (2026-10-18)
 
 
