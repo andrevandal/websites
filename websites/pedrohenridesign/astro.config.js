@@ -9,8 +9,8 @@ import emdash from "emdash/astro"
 import { jmapEmailPlugin } from "@vandal-websites/emdash-plugin-jmap"
 import { analyticsPlugin } from "@vandal-websites/emdash-plugin-analytics"
 import { mkdirSync } from "node:fs"
-import { loadEnv } from "vite"
-import { awsSdkBrowserField } from "./vite-aws-sdk-browser-field.js"
+import { builtinModules } from "node:module"
+import { esmExternalRequirePlugin, loadEnv } from "vite"
 import { resolveEmDashProviders } from "./src/cms/providers.ts"
 
 const CANONICAL_SITE_URL = "https://pedrohenridesign.com.br"
@@ -69,7 +69,21 @@ export default defineConfig({
   i18n: { defaultLocale: "pt-BR", locales: ["pt-BR"] },
 
   vite: {
-    plugins: [tailwindcss(), !isDev && awsSdkBrowserField],
+    plugins: [tailwindcss()],
+    // CJS deps (postcss via emdash > sanitize-html) call require("path"), which
+    // Rolldown leaves as a throwing __require in workerd. Rewrite externals to
+    // imports. See cloudflare/workers-sdk#11948.
+    build: {
+      rolldownOptions: {
+        plugins: isDev
+          ? []
+          : [
+              esmExternalRequirePlugin({
+                external: [/^node:/, ...builtinModules],
+              }),
+            ],
+      },
+    },
     // Pre-bundle deps that were being discovered mid-request in the "ssr"
     // (workerd) environment. Late discovery triggers a Vite optimizer
     // reload while a request is in flight; the Cloudflare runner can then

@@ -1,8 +1,9 @@
 import { access, d1, r2 } from "@emdash-cms/cloudflare"
-import { local, s3 } from "emdash/astro"
+import { local } from "emdash/astro"
 import { libsql, sqlite } from "emdash/db"
 // oxlint-disable-next-line import/no-nodejs-modules -- nodejs_compat provides node:url in the Worker
 import { fileURLToPath } from "node:url"
+import { s3Fetch } from "@vandal-websites/sun-ui-emdash/storage"
 import { s3PublicUrl } from "@vandal-websites/sun-ui/astro/runtime-env"
 
 type ProviderOptions = {
@@ -64,7 +65,7 @@ const resolveEmDashProviders = ({ isDev, env }: ProviderOptions) => {
       ),
       config: {},
     },
-    storage: s3({ publicUrl: s3PublicUrl(key => env[key]) }),
+    storage: s3Fetch({ publicUrl: s3PublicUrl(key => env[key]) }),
   }
 }
 
