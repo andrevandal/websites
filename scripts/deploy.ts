@@ -580,25 +580,51 @@ const versionUpload = async (
   return { versionId }
 }
 
+// Cloudflare error 100146: a Version uploaded seconds ago is not visible to the
+// deploy API yet. Seen on both CMS sites' first staging deploy after a merge.
+const VERSION_NOT_VISIBLE = "100146"
+const VERSION_DEPLOY_ATTEMPTS = 5
+
 const versionDeploy = async (
-  { siteDir, worker, versionId }: VersionTarget & { versionId: string },
+  {
+    siteDir,
+    worker,
+    versionId,
+    retryDelayMs = 2000,
+  }: VersionTarget & { versionId: string; retryDelayMs?: number },
   deps: DeployDeps
 ): Promise<void> => {
   if (!new RegExp(`^${UUID_PATTERN.source}$`, "i").test(versionId))
     throw new Error(`Not a Worker Version ID: "${versionId}".`)
 
-  await deps.exec(
-    [
-      "wrangler",
-      "versions",
-      "deploy",
-      `${versionId}@100%`,
-      "--name",
-      worker,
-      "--yes",
-    ],
-    { cwd: siteDir }
-  )
+  for (let attempt = 1; ; attempt += 1) {
+    // oxlint-disable-next-line no-await-in-loop -- each retry waits for Cloudflare to see the Version
+    const { exitCode, stdout, stderr } = await deps.exec(
+      [
+        "wrangler",
+        "versions",
+        "deploy",
+        `${versionId}@100%`,
+        "--name",
+        worker,
+        "--yes",
+      ],
+      { cwd: siteDir, reject: false }
+    )
+    if (exitCode === 0) return
+
+    const output = `${stdout}\n${stderr ?? ""}`
+    if (
+      !output.includes(VERSION_NOT_VISIBLE) ||
+      attempt >= VERSION_DEPLOY_ATTEMPTS
+    ) {
+      throw new Error(
+        `wrangler versions deploy failed (exit ${exitCode}): ${output.slice(-500)}`
+      )
+    }
+    // oxlint-disable-next-line no-await-in-loop -- back off before asking again
+    await Bun.sleep(retryDelayMs * attempt)
+  }
 }
 
 type EmdashManifest = {
