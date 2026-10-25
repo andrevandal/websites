@@ -1022,7 +1022,7 @@ if (import.meta.main) {
         consola.success(
           dryRun
             ? `Dry run: ${result.keys.length} media keys would be registered; no writes or seed application.`
-            : `Registered: ${result.registered}; already registered: ${result.alreadyRegistered}; media reused/skipped: ${result.media.skipped}; uploaded: ${result.media.created}; content created: ${result.content.created}; skipped: ${result.content.skipped}.`
+            : `Registered: ${result.registered}; already registered: ${result.alreadyRegistered}; media reused/skipped: ${result.media.skipped}; uploaded: ${result.media.created}; content created: ${result.content.created}; skipped: ${result.content.skipped}; settings resolved: ${result.extensions.settings.length}; SEO panels seeded: ${result.extensions.entries.length}; bylines updated: ${result.extensions.bylines.length}.`
         )
       } catch (error) {
         let message =

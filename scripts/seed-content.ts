@@ -4,7 +4,10 @@ import type { Database, DownloadResult, Storage } from "emdash"
 import { createDialect } from "emdash/db/libsql"
 import { applySeed } from "emdash/seed"
 import type { SeedApplyResult, SeedFile } from "emdash/seed"
-import { Kysely } from "kysely"
+import { CompiledQuery, Kysely } from "kysely"
+import { seedBylineLocaleCandidates } from "./fix-seed-byline-locale"
+import { applySeedExtensions } from "./seed-extensions"
+import type { Seed, SeedDb, SeedExtensionsResult } from "./seed-extensions"
 
 type SeedContentDeps = {
   read: (path: string) => Promise<string>
@@ -21,6 +24,7 @@ type SeedContentResult = {
   alreadyRegistered: number
   media: SeedApplyResult["media"]
   content: SeedApplyResult["content"]
+  extensions: SeedExtensionsResult
 }
 
 // Same public dialect and Kysely construction as EmDash's libSQL migration executor.
@@ -95,7 +99,7 @@ const seedContent = async (
     throw new Error(`Missing stage secrets: ${missing.join(", ")}`)
   const seed = JSON.parse(
     await deps.read(join(siteDir, "seed/seed.json"))
-  ) as SeedFile
+  ) as SeedFile & Seed
   const references = [...collectMedia(seed).values()]
   const keyed = references.map(media => ({
     media,
@@ -182,6 +186,7 @@ const seedContent = async (
     alreadyRegistered: 0,
     media: { created: 0, skipped: 0 },
     content: { created: 0, skipped: 0, updated: 0 },
+    extensions: { settings: [], entries: [], bylines: [], failed: [] },
   }
   if (dryRun) return result
 
@@ -194,7 +199,7 @@ const seedContent = async (
       const existingRows = result.keys.length
         ? await db
             .selectFrom("media")
-            .select(["storage_key", "content_hash", "status"])
+            .select(["id", "storage_key", "content_hash", "status"])
             .where("storage_key", "in", result.keys)
             .execute()
         : []
@@ -238,6 +243,19 @@ const seedContent = async (
       // Match the CLI's explicit seed ownership before applying content.
       if (seed.collections?.length)
         await new OptionsRepository(db).set("emdash:seed_complete", true)
+      const repairLocale =
+        seed.defaultLocale &&
+        seed.defaultLocale !== "en" &&
+        seed.bylines?.length
+          ? seed.defaultLocale
+          : undefined
+      const existingBylineIds = repairLocale
+        ? new Set(
+            (await db.selectFrom("_emdash_bylines").select("id").execute()).map(
+              row => row.id
+            )
+          )
+        : new Set<string>()
       // The CLI is single-use. EmDash has no logger/error hook and swallows media failures.
       const originalLog = console.log
       const originalWarn = console.warn
@@ -269,6 +287,65 @@ const seedContent = async (
         if (failedMedia) {
           throw new Error(
             "seed-content could not reuse media; no database changes were saved"
+          )
+        }
+        if (repairLocale) {
+          const bylines = await db
+            .selectFrom("_emdash_bylines")
+            .select(["id", "slug", "locale", "translation_group", "user_id"])
+            .execute()
+          const candidates = seedBylineLocaleCandidates({
+            bylines,
+            existingIds: existingBylineIds,
+            slugs: new Set(seed.bylines!.map(byline => byline.slug)),
+            locale: repairLocale,
+          })
+          if (candidates.length) {
+            await db
+              .updateTable("_emdash_bylines")
+              .set({ locale: repairLocale })
+              .where(
+                "id",
+                "in",
+                candidates.map(row => row.id)
+              )
+              .execute()
+          }
+        }
+        const extensionDb: SeedDb = {
+          get: async <T>(statement: string, params: unknown[]) =>
+            (await db.executeQuery<T>(CompiledQuery.raw(statement, params)))
+              .rows[0],
+          all: async <T>(statement: string, params: unknown[]) =>
+            (await db.executeQuery<T>(CompiledQuery.raw(statement, params)))
+              .rows,
+          run: async (statement, params) => ({
+            changes: Number(
+              (await db.executeQuery(CompiledQuery.raw(statement, params)))
+                .numAffectedRows ?? 0
+            ),
+          }),
+        }
+        result.extensions = await applySeedExtensions({
+          seed,
+          db: extensionDb,
+          reuseMedia: async url => {
+            const key = bucketKey(url, secrets["S3_ENDPOINT"]!, sourceBucket)
+            const row = key && rows.get(key)
+            if (!row)
+              throw new Error(`No registered media for extension URL: ${url}`)
+            return {
+              id: existingByKey.get(row.storage_key)?.id ?? row.id,
+              storageKey: row.storage_key,
+            }
+          },
+          putMedia: async (key, body, contentType) => {
+            await guardedStorage.upload({ key, body, contentType })
+          },
+        })
+        if (attemptedUpload || result.extensions.failed.length) {
+          throw new Error(
+            "seed-content extensions failed; no database changes were saved"
           )
         }
         result.media = applied.media

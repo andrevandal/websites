@@ -605,6 +605,7 @@ describe("seedExtensions byline definition version", () => {
       const result = await applySeedExtensions({
         seed,
         db,
+        reuseMedia: async () => undefined,
         putMedia: async (key, body, mimeType) => {
           uploads.push({ key, body, mimeType })
         },
@@ -614,6 +615,65 @@ describe("seedExtensions byline definition version", () => {
       expect(uploads[0]).toMatchObject({ body: png, mimeType: "image/png" })
       expect(t.sql("SELECT storage_key FROM media")).toEqual([
         { storage_key: uploads[0].key },
+      ])
+    } finally {
+      sqlite.close()
+    }
+  })
+
+  test("reuses registered media before fetching settings, SEO or avatars", async () => {
+    const origin = serve()
+    const seed = {
+      settings: { seo: { defaultOgImage: media(origin.missing) } },
+      content: {
+        pages: [{ ...entry("home"), seo: { image: media(origin.missing) } }],
+      },
+      bylines: [{ ...author, avatarMedia: media(origin.missing) }],
+    }
+    const t = await fixture(seed)
+    t.exec(
+      "INSERT INTO media (id, filename, mime_type, size, storage_key, status) VALUES ('canonical', 'social.png', 'image/png', ?, 'images/social.png', 'ready')",
+      png.length
+    )
+    const sqlite = new Database(t.databasePath)
+    const db: SeedDb = {
+      get: async <T>(sql: string, params: unknown[]) =>
+        (sqlite.query(sql).get(...(params as SQLQueryBindings[])) ??
+          undefined) as T | undefined,
+      all: async <T>(sql: string, params: unknown[]) =>
+        sqlite.query(sql).all(...(params as SQLQueryBindings[])) as T[],
+      run: async (sql, params) => ({
+        changes: sqlite.query(sql).run(...(params as SQLQueryBindings[]))
+          .changes,
+      }),
+    }
+    const reused: string[] = []
+    try {
+      const result = await applySeedExtensions({
+        seed,
+        db,
+        reuseMedia: async url => {
+          reused.push(url)
+          return { id: "canonical", storageKey: "images/social.png" }
+        },
+        putMedia: async () => {
+          throw new Error("Unexpected upload")
+        },
+      })
+      expect(result).toEqual({
+        settings: ["seo"],
+        entries: ["pages/home"],
+        bylines: ["author"],
+        failed: [],
+      })
+      expect(reused).toEqual([origin.missing])
+      expect(origin.downloads()).toBe(0)
+      expect(t.sql("SELECT id FROM media")).toEqual([{ id: "canonical" }])
+      expect(t.sql("SELECT seo_image FROM _emdash_seo")).toEqual([
+        { seo_image: "/_emdash/api/media/file/images/social.png" },
+      ])
+      expect(t.sql("SELECT avatar_media_id FROM _emdash_bylines")).toEqual([
+        { avatar_media_id: "canonical" },
       ])
     } finally {
       sqlite.close()

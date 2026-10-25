@@ -22,6 +22,9 @@
  *   each set when the byline has no value for it. Byline field definitions
  *   use EmDash's dirty/clean version marking for cache invalidation.
  *
+ * `reuseMedia` may resolve a URL to an existing row before any download.
+ * `seed-content` uses it with a throwing upload guard for canonical media.
+ *
  * A failed download leaves that setting, entry or avatar untouched, so the
  * next seed run retries it. Run it after each seed apply, from the site
  * directory (the `seed` task does this):
@@ -124,10 +127,12 @@ const applySeedExtensions = async ({
   seed,
   db,
   putMedia,
+  reuseMedia,
 }: {
   seed: Seed
   db: SeedDb
   putMedia: PutMedia
+  reuseMedia?: (url: string) => Promise<StoredMedia | undefined>
 }): Promise<SeedExtensionsResult> => {
   const result: SeedExtensionsResult = {
     settings: [],
@@ -141,6 +146,8 @@ const applySeedExtensions = async ({
     filename,
     alt,
   }: SeedMedia["$media"]): Promise<StoredMedia> => {
+    const existing = await reuseMedia?.(url)
+    if (existing) return existing
     const response = await fetch(url).catch(() => undefined)
     if (!response?.ok) throw new Error(url)
     const mimeType =
@@ -388,5 +395,11 @@ if (import.meta.main) {
   for (const url of failed) console.warn(`Media download failed: ${url}`)
 }
 
-export { applySeedExtensions, seedExtensions }
-export type { PutMedia, Seed, SeedDb }
+export {
+  applySeedExtensions,
+  seedExtensions,
+  type PutMedia,
+  type Seed,
+  type SeedDb,
+  type SeedExtensionsResult,
+}

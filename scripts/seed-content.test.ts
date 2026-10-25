@@ -207,6 +207,229 @@ describe("seed-content", () => {
     expect(f.uploads()).toBe(0)
   })
 
+  test.each([false, true])(
+    "resolves canonical media extensions and preserves them on rerun (preRegistered=%s)",
+    async preRegistered => {
+      const extended = {
+        ...seed,
+        defaultLocale: "pt-BR",
+        settings: {
+          title: "Canonical media",
+          seo: { defaultOgImage: media() },
+        },
+        bylineFields: [
+          { slug: "role", label: "Role", type: "string" },
+          {
+            slug: "website",
+            label: "Website",
+            type: "url",
+            translatable: false,
+          },
+        ],
+        bylines: [
+          {
+            id: "author",
+            slug: "author",
+            displayName: "Author",
+            avatarMedia: media(),
+            customFields: { role: "Designer", website: "https://example.com/" },
+          },
+        ],
+        content: {
+          pages: [
+            {
+              ...seed.content!.pages![0],
+              seo: { title: "Home SEO", image: media() },
+            },
+          ],
+        },
+      }
+      const f = await fixture(extended)
+      if (preRegistered) {
+        const db = await createSeedDatabase({
+          url: `file:${f.local.databasePath}`,
+        })
+        try {
+          await sql`INSERT INTO media (id, filename, mime_type, size, storage_key, content_hash, status) VALUES ('existing-canonical', 'existing.png', 'image/png', ${png.length}, ${key}, ${await computeContentHash(png)}, 'ready')`.execute(
+            db
+          )
+        } finally {
+          await db.destroy()
+        }
+      }
+      const fetched = mockMediaFetch()
+      const result = await seedContent(f.options, f.deps)
+      expect(result.registered).toBe(preRegistered ? 0 : 1)
+      expect(result.alreadyRegistered).toBe(preRegistered ? 1 : 0)
+      expect(result.extensions).toEqual({
+        settings: ["seo"],
+        entries: ["pages/home"],
+        bylines: ["author"],
+        failed: [],
+      })
+      expect(fetched.filter(request => request === url)).toHaveLength(1)
+      expect(f.uploads()).toBe(0)
+      const [row] = await f.query()
+      if (preRegistered) expect(row!.id).toBe("existing-canonical")
+      const db = await createSeedDatabase({
+        url: `file:${f.local.databasePath}`,
+      })
+      try {
+        const setting = await db
+          .selectFrom("options")
+          .select("value")
+          .where("name", "=", "site:seo")
+          .executeTakeFirstOrThrow()
+        expect(JSON.parse(setting.value)).toEqual({
+          defaultOgImage: { mediaId: row!.id, alt: "Home card" },
+        })
+        expect(
+          (await sql`SELECT seo_title, seo_image FROM _emdash_seo`.execute(db))
+            .rows
+        ).toEqual([
+          {
+            seo_title: "Home SEO",
+            seo_image: `/_emdash/api/media/file/${key}`,
+          },
+        ])
+        expect(
+          (
+            await sql`SELECT locale, avatar_media_id FROM _emdash_bylines WHERE slug = 'author'`.execute(
+              db
+            )
+          ).rows
+        ).toEqual([{ locale: "pt-BR", avatar_media_id: row!.id }])
+        expect(
+          (await sql`SELECT value FROM _emdash_byline_field_values`.execute(db))
+            .rows
+        ).toEqual([{ value: '"Designer"' }])
+        expect(
+          (
+            await sql`SELECT value FROM _emdash_byline_field_group_values`.execute(
+              db
+            )
+          ).rows
+        ).toEqual([{ value: '"https://example.com/"' }])
+        const snapshot = async () => [
+          await db
+            .selectFrom("options")
+            .selectAll()
+            .where("name", "=", "site:seo")
+            .execute(),
+          (await sql`SELECT * FROM _emdash_seo`.execute(db)).rows,
+          (await sql`SELECT * FROM _emdash_bylines`.execute(db)).rows,
+          (
+            await sql`SELECT * FROM _emdash_byline_fields ORDER BY slug`.execute(
+              db
+            )
+          ).rows,
+          (await sql`SELECT * FROM _emdash_byline_field_values`.execute(db))
+            .rows,
+          (
+            await sql`SELECT * FROM _emdash_byline_field_group_values`.execute(
+              db
+            )
+          ).rows,
+        ]
+        const before = await snapshot()
+        const rerun = await seedContent(f.options, f.deps)
+        expect(rerun.registered).toBe(0)
+        expect(rerun.extensions).toEqual({
+          settings: [],
+          entries: [],
+          bylines: [],
+          failed: [],
+        })
+        expect(await snapshot()).toEqual(before)
+        expect(await f.query()).toEqual([row!])
+        expect(f.uploads()).toBe(0)
+      } finally {
+        await db.destroy()
+      }
+    }
+  )
+
+  test("an extension failure rolls back canonical rows, settings and content", async () => {
+    const f = await fixture({
+      ...seed,
+      defaultLocale: "pt-BR",
+      bylineFields: [{ slug: "role", label: "Role", type: "string" }],
+      bylines: [
+        {
+          id: "author",
+          slug: "author",
+          displayName: "Author",
+          avatarMedia: media(),
+          customFields: { role: "Designer" },
+        },
+      ],
+      settings: { title: "Canonical media", seo: { defaultOgImage: media() } },
+      content: {
+        pages: [
+          {
+            ...seed.content!.pages![0],
+            seo: { title: "Home SEO", image: media() },
+          },
+        ],
+      },
+    })
+    mockMediaFetch()
+    const db = await createSeedDatabase({ url: `file:${f.local.databasePath}` })
+    try {
+      await sql`CREATE TRIGGER fail_seo BEFORE INSERT ON _emdash_seo BEGIN SELECT RAISE(ABORT, 'extension failure'); END`.execute(
+        db
+      )
+      await expect(seedContent(f.options, f.deps)).rejects.toThrow("extensions")
+      expect(await f.query()).toEqual([])
+      expect((await sql`SELECT * FROM ec_pages`.execute(db)).rows).toEqual([])
+      expect(
+        (await sql`SELECT * FROM _emdash_bylines`.execute(db)).rows
+      ).toEqual([])
+      expect(
+        (await sql`SELECT * FROM _emdash_byline_fields`.execute(db)).rows
+      ).toEqual([])
+      expect(
+        await db
+          .selectFrom("options")
+          .selectAll()
+          .where("name", "=", "site:seo")
+          .execute()
+      ).toEqual([])
+      expect(f.uploads()).toBe(0)
+    } finally {
+      await db.destroy()
+    }
+  })
+
+  test("extension seeding does not relabel a pre-existing English byline", async () => {
+    const f = await fixture({
+      ...seed,
+      defaultLocale: "pt-BR",
+      bylines: [
+        {
+          id: "author",
+          slug: "author",
+          displayName: "Author",
+          avatarMedia: media(),
+        },
+      ],
+    })
+    mockMediaFetch()
+    const db = await createSeedDatabase({ url: `file:${f.local.databasePath}` })
+    try {
+      await sql`INSERT INTO _emdash_bylines (id, slug, display_name, locale, translation_group) VALUES ('existing-author', 'author', 'Editor', 'en', 'existing-author')`.execute(
+        db
+      )
+      const before = (await sql`SELECT * FROM _emdash_bylines`.execute(db)).rows
+      await seedContent(f.options, f.deps)
+      expect(
+        (await sql`SELECT * FROM _emdash_bylines`.execute(db)).rows
+      ).toEqual(before)
+    } finally {
+      await db.destroy()
+    }
+  })
+
   test("dry run reads all distinct nested references and writes nothing", async () => {
     const nested = {
       ...seed,

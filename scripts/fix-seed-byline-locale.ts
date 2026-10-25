@@ -37,6 +37,13 @@ type PendingMarker = {
 }
 
 type SeedData = { defaultLocale?: string; bylines?: { slug: string }[] }
+type BylineLocaleRow = {
+  id: string
+  slug: string
+  locale: string
+  translation_group: string | null
+  user_id: string | null
+}
 
 const INVALID_MARKER = "Invalid pending byline locale repair snapshot."
 const MARKER_MISMATCH = "Pending byline locale repair does not match seed."
@@ -53,6 +60,40 @@ const readSeed = (seedPath: string): SeedData =>
 const seedSlugs = (seed: SeedData): string[] => [
   ...new Set((seed.bylines ?? []).map(byline => byline.slug)),
 ]
+
+// Shared by local seeding and seed-content. Only rows created by that seed
+// run qualify, and a target-locale identity must remain unambiguous.
+const seedBylineLocaleCandidates = ({
+  bylines,
+  existingIds,
+  slugs,
+  locale,
+}: {
+  bylines: BylineLocaleRow[]
+  existingIds: ReadonlySet<string>
+  slugs: ReadonlySet<string>
+  locale: string
+}): BylineLocaleRow[] => {
+  const targetRows = bylines.filter(row => row.locale === locale)
+  const candidates: BylineLocaleRow[] = []
+  for (const row of bylines) {
+    if (row.locale !== "en" || existingIds.has(row.id) || !slugs.has(row.slug))
+      continue
+    if (
+      targetRows.some(
+        target =>
+          target.slug === row.slug ||
+          (row.translation_group !== null &&
+            target.translation_group === row.translation_group) ||
+          (row.user_id !== null && target.user_id === row.user_id)
+      )
+    )
+      continue
+    candidates.push(row)
+    targetRows.push(row)
+  }
+  return candidates
+}
 
 // Returns undefined when no marker exists; throws on a malformed one.
 const readMarker = (path: string): PendingMarker | undefined => {
@@ -148,30 +189,20 @@ const fixSeedBylineLocale = ({ seedPath, databasePath }: Paths) => {
   const db = new Database(databasePath)
   let updated = 0
   try {
-    const candidates = db
-      .query(
-        `SELECT id, slug, translation_group, user_id FROM _emdash_bylines
-         WHERE locale = 'en' AND slug IN (SELECT value FROM json_each(?))`
-      )
-      .all(JSON.stringify(marker.slugs)) as {
-      id: string
-      slug: string
-      translation_group: string | null
-      user_id: string | null
-    }[]
-    const conflict = db.query(
-      `SELECT 1 FROM _emdash_bylines WHERE locale = ?1 AND
-         (slug = ?2 OR (?3 IS NOT NULL AND translation_group = ?3) OR (?4 IS NOT NULL AND user_id = ?4))`
-    )
     const move = db.query("UPDATE _emdash_bylines SET locale = ? WHERE id = ?")
     db.transaction(() => {
-      for (const row of candidates) {
-        if (existingIds.has(row.id)) continue
-        if (conflict.get(locale, row.slug, row.translation_group, row.user_id))
-          continue
-
+      const bylines = db
+        .query(
+          "SELECT id, slug, locale, translation_group, user_id FROM _emdash_bylines"
+        )
+        .all() as BylineLocaleRow[]
+      for (const row of seedBylineLocaleCandidates({
+        bylines,
+        existingIds,
+        slugs: new Set(marker.slugs),
+        locale,
+      }))
         updated += move.run(locale, row.id).changes
-      }
     })()
   } finally {
     db.close()
@@ -199,5 +230,9 @@ if (import.meta.main) {
   }
 }
 
-export { captureSeedBylineLocale, fixSeedBylineLocale }
-export type { Paths }
+export {
+  captureSeedBylineLocale,
+  fixSeedBylineLocale,
+  seedBylineLocaleCandidates,
+  type Paths,
+}

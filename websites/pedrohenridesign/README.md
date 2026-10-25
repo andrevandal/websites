@@ -85,7 +85,7 @@ an existing database. Images are `$media` references with absolute URLs to
 the original production bucket; local and preview seeding downloads them into
 isolated media storage, so the repository holds no images or database.
 
-For staging/production, complete the wizard with content OFF, then run `bun scripts/deploy.ts seed-content pedrohenridesign --stage <stage>` with that stage's secrets to reuse canonical media keys; see the [first-time setup guide](../../docs/guides/provision-new-site-and-rotate-secrets.md#first-time-cms-content-on-staging-and-production).
+For staging/production, complete the wizard with content OFF, then run `bun scripts/deploy.ts seed-content pedrohenridesign --stage <stage>` with that stage's secrets to reuse canonical media keys and apply the settings, SEO and byline extensions; see the [first-time setup guide](../../docs/guides/provision-new-site-and-rotate-secrets.md#first-time-cms-content-on-staging-and-production).
 
 Seeds cannot set publish dates, so each entry is published when the seed is
 applied and the lists sort newest first by that time. Posts are therefore listed

@@ -60,23 +60,18 @@ Kept in code on purpose: pricing values and rules (`src/data/pricing.ts`, it
 has tests), the WhatsApp number (`src/data/whatsapp.ts`), decorative artwork,
 and each block's layout.
 
-### One-time admin setup for the blog byline
+### Blog byline setup
 
-Seeds cannot upload a byline photo or create byline custom fields. After the
-first seed, in the admin:
-
-1. Open the `bruna-braz` byline and upload her photo.
-2. Create two byline custom fields: `role` (string) and `cta_label` (string).
-3. Set `role` to "Professora de inglês e escritora deste blog" and
-   `cta_label` to "Conheça minhas aulas".
-
-The Author card on a post hides the role line when `role` is empty, and
-hides its button when `cta_label` or the byline's `websiteUrl` is empty.
+The seed extensions set the `bruna-braz` avatar and its `headline` and
+`cta_label` custom fields. Resolved avatars and existing custom values are
+preserved, so later admin edits are not replaced by a rerun. The Author card
+hides the headline when it is empty, and hides its button when `cta_label`
+or the byline's `websiteUrl` is empty.
 
 `seed/seed.json` holds the schema (block types, collections, menus)
 and the site's current content. EmDash applies its schema to an empty
 database on the first request; content is applied by `moon run
-brunabraz:seed` locally. For staging/production, complete the wizard with content OFF, then run `bun scripts/deploy.ts seed-content brunabraz --stage <stage>` with that stage's secrets; see the [first-time setup guide](../../docs/guides/provision-new-site-and-rotate-secrets.md#first-time-cms-content-on-staging-and-production).
+brunabraz:seed` locally. For staging/production, complete the wizard with content OFF, then run `bun scripts/deploy.ts seed-content brunabraz --stage <stage>` with that stage's secrets to reuse canonical media and apply the settings, SEO and byline extensions; see the [first-time setup guide](../../docs/guides/provision-new-site-and-rotate-secrets.md#first-time-cms-content-on-staging-and-production).
 
 ## Local development
 
