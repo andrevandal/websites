@@ -49,6 +49,28 @@ The seven mandatory keys for each standard CMS stage are:
 
 Non-CMS targets have no mandatory keys and skip Infisical export. The deploy tool accepts their empty-file fallback. For a credential-free CLI check, point `SITE_SECRETS_FILE` at an empty temporary file and run `bun scripts/deploy.ts check-secrets bellypao --stage staging`.
 
+## First-time CMS content on staging and production
+
+For each standard CMS stage, deploy and apply core migrations first. Protect the setup route, then complete the admin wizard with sample content OFF. Do not let the wizard import content: its media downloader would upload duplicate objects under generated keys.
+
+An operator then exports that stage's Infisical `/websites/<site-key>` secrets to the same dotenv file used by the deploy commands. Set `SITE_SECRETS_FILE` to its path; the default is `.site-secrets.env` in the repository root. Keep the file private and out of Git. From the repository root:
+
+```sh
+moon run sun-ui-emdash:build
+SITE_SECRETS_FILE=/private/staging.env bun scripts/deploy.ts seed-content brunabraz --stage staging --dry-run
+SITE_SECRETS_FILE=/private/staging.env bun scripts/deploy.ts seed-content brunabraz --stage staging
+SITE_SECRETS_FILE=/private/production.env bun scripts/deploy.ts seed-content pedrohenridesign --stage production --dry-run
+SITE_SECRETS_FILE=/private/production.env bun scripts/deploy.ts seed-content pedrohenridesign --stage production
+```
+
+Use either CMS site key with either stage, always with that stage's credentials. `--stage` labels the operation and validates the exported secrets; it does not fetch Infisical secrets or derive the database or bucket name. `S3_BUCKET` chooses the stage bucket, normally `<site-key>-staging` for staging and `<site-key>` for production.
+
+The command checks every distinct `$media` URL anywhere in `seed/seed.json`, including settings, SEO and byline extension metadata. Each URL must have the same origin as `S3_ENDPOINT` and start with `/<site-key>/`; the remaining percent-decoded path is the canonical object key. It reads that key from the selected stage bucket and computes EmDash's exact content hash. Invalid URLs or missing objects stop the run before database writes, including in dry-run mode. Dry-run lists candidate keys without opening the database or applying the seed.
+
+The write run registers ready media rows on those existing keys, preserving filename and alt text. It leaves already registered rows alone; an existing row must be ready and match the object's hash. It then applies the core EmDash seed with content enabled and conflicts skipped. EmDash still downloads public seed URLs to check hashes, but reuses matching media rows instead of uploading. An upload guard rejects any attempt to create a duplicate object. Registration and seed application share a database transaction: failed downloads or attempted uploads roll back both, so a corrected retry can succeed. The summary reports registered, already registered, reused/skipped media and content counts. Reruns add no media rows for registered keys and skip existing content.
+
+This deliberately uses media-library rows, not external media or `--skip-media`. The accepted trade-off is that deleting one of these items from the EmDash media library can delete the canonical bucket object that other pages or code use. Do not delete canonical library items casually. Core `applySeed` does not apply the repository's entry SEO or byline custom-field extensions; their metadata is still scanned for media registration.
+
 ## Rotate without competing sources
 
 Change CMS runtime values in the owning Infisical environment, not by hand-editing standard Worker secrets: the next version upload supplies that environment's file. A staging upload follows the eligible main push; production promotion uses the `production` environment and the saved staging artifact. Keep old credentials valid until every affected stage has received the replacement.

@@ -76,7 +76,7 @@ hides its button when `cta_label` or the byline's `websiteUrl` is empty.
 `seed/seed.json` holds the schema (block types, collections, menus)
 and the site's current content. EmDash applies its schema to an empty
 database on the first request; content is applied by `moon run
-brunabraz:seed` locally, or by choosing sample content in the setup wizard.
+brunabraz:seed` locally. For staging/production, complete the wizard with content OFF, then run `bun scripts/deploy.ts seed-content brunabraz --stage <stage>` with that stage's secrets; see the [first-time setup guide](../../docs/guides/provision-new-site-and-rotate-secrets.md#first-time-cms-content-on-staging-and-production).
 
 ## Local development
 

@@ -80,11 +80,12 @@ server start and is tracked; commit it with any schema change.
 
 `seed/seed.json` is the schema (collections, fields, block types, relation)
 plus the site's content. It is read at build time, applied to an empty
-database on the first request (schema) and by the setup wizard (content), and
-never reapplied to an existing database. Images are `$media` references with
-absolute URLs to the original files in the production bucket; applying the
-seed downloads each one into the media bucket, so the repository holds no
-images and no database.
+database on the first request (schema), and never automatically reapplied to
+an existing database. Images are `$media` references with absolute URLs to
+the original production bucket; local and preview seeding downloads them into
+isolated media storage, so the repository holds no images or database.
+
+For staging/production, complete the wizard with content OFF, then run `bun scripts/deploy.ts seed-content pedrohenridesign --stage <stage>` with that stage's secrets to reuse canonical media keys; see the [first-time setup guide](../../docs/guides/provision-new-site-and-rotate-secrets.md#first-time-cms-content-on-staging-and-production).
 
 Seeds cannot set publish dates, so each entry is published when the seed is
 applied and the lists sort newest first by that time. Posts are therefore listed
