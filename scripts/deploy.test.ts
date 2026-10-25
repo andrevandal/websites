@@ -1471,3 +1471,46 @@ describe("versionUpload secrets", () => {
     expect(calls[0]).not.toContain("--secrets-file")
   })
 })
+
+describe("seed-content CLI", () => {
+  test.each(["brunabraz", "pedrohenridesign"])(
+    "%s requires the selected stage's Infisical secrets before reading objects",
+    async siteTarget => {
+      const child = Bun.spawn(
+        [
+          process.execPath,
+          "scripts/deploy.ts",
+          "seed-content",
+          siteTarget,
+          "--stage",
+          "staging",
+          "--dry-run",
+        ],
+        {
+          cwd: join(import.meta.dir, ".."),
+          env: {
+            ...process.env,
+            SITE_SECRETS_FILE: join(
+              tmpdir(),
+              `absent-secrets-${Bun.randomUUIDv7()}`
+            ),
+            NO_COLOR: "1",
+          },
+          stdout: "pipe",
+          stderr: "pipe",
+        }
+      )
+      const [stdout, stderr, code] = await Promise.all([
+        new Response(child.stdout).text(),
+        new Response(child.stderr).text(),
+        child.exited,
+      ])
+      expect(code).toBe(1)
+      expect(stdout + stderr).toContain(
+        "Infisical staging secrets are missing or empty:"
+      )
+      expect(stdout + stderr).not.toContain("Unknown")
+    },
+    30_000
+  )
+})

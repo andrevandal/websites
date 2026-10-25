@@ -25,6 +25,8 @@ import {
 } from "./utils/cloudflare"
 import { applySeedExtensions } from "./seed-extensions"
 import type { PutMedia, Seed, SeedDb } from "./seed-extensions"
+import { createSeedDatabase, seedContent } from "./seed-content"
+import type { SeedContentDeps } from "./seed-content"
 
 type KvBinding = { binding: string; id?: string }
 type D1Binding = { binding: string; database_name: string; database_id: string }
@@ -719,7 +721,7 @@ const nodeFiles: DeployDeps["files"] = {
   tempDir: () => mkdtemp(join(tmpdir(), "website-upload-")),
 }
 
-const realDeps: SetupDeps = {
+const realDeps: SetupDeps & Omit<SeedContentDeps, "read"> = {
   exec: async (args, { cwd, reject = true, env }) => {
     const proc = execa("bunx", args, { cwd, reject, env })
     proc.stdout?.pipe(process.stdout)
@@ -753,6 +755,13 @@ const realDeps: SetupDeps = {
     deleteByName: deleteR2BucketByName,
   },
   files: nodeFiles,
+  createStorage: async config => {
+    // Cleanup-only jobs do not build the storage package's dist entrypoint.
+    const { createStorage } =
+      await import("@vandal-websites/sun-ui-emdash/storage/s3-fetch")
+    return createStorage(config)
+  },
+  openDatabase: createSeedDatabase,
   fetch,
   seedDb: databaseId => ({
     get: async <T>(sql: string, params: unknown[]) =>
@@ -848,6 +857,23 @@ if (import.meta.main) {
               type: "string",
               describe: "EmDash build manifest (.emdash/migrations.json)",
               demandOption: true,
+            })
+      )
+      .command(
+        "seed-content <target>",
+        "Register existing bucket media and apply seed content without uploads",
+        builder =>
+          builder
+            .positional("target", targetPositional)
+            .option("stage", {
+              choices: ["staging", "production"] as const,
+              demandOption: true,
+            })
+            .option("dry-run", {
+              type: "boolean",
+              default: false,
+              describe:
+                "Read and hash existing objects without writing or applying the seed",
             })
       )
       .command(
@@ -976,6 +1002,35 @@ if (import.meta.main) {
           console.log(`::add-mask::${value}`)
       }
       consola.success(`${stage} secrets for "${worker}" are valid.`)
+    }
+
+    if (command === "seed-content") {
+      const stage = args["stage"] as "staging" | "production",
+        dryRun = args["dryRun"] as boolean,
+        secrets = await readStageSecrets(worker, stage)
+      try {
+        const result = await seedContent(
+          {
+            siteDir,
+            sourceBucket: project.location.at(-1)!,
+            secrets,
+            dryRun,
+          },
+          { ...realDeps, read: realDeps.files.read }
+        )
+        for (const key of result.keys) consola.info(key)
+        consola.success(
+          dryRun
+            ? `Dry run: ${result.keys.length} media keys would be registered; no writes or seed application.`
+            : `Registered: ${result.registered}; already registered: ${result.alreadyRegistered}; media reused/skipped: ${result.media.skipped}; uploaded: ${result.media.created}; content created: ${result.content.created}; skipped: ${result.content.skipped}.`
+        )
+      } catch (error) {
+        let message =
+          error instanceof Error ? error.message : "seed-content failed"
+        for (const value of Object.values(secrets))
+          message = message.replaceAll(value, "[redacted]")
+        throw new Error(message, { cause: error })
+      }
     }
 
     if (command === "migrate") {
