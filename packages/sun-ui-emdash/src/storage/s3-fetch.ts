@@ -109,6 +109,21 @@ const xmlTag = (xml: string, tag: string) => {
   return match ? unescapeXml(match.groups!.value!) : undefined
 }
 
+const httpError = (operation: string, res: Response) => {
+  const requestId = res.headers.get("x-amz-request-id")
+  return new Error(
+    `${operation} ${res.status}${requestId ? ` (request ${requestId})` : ""}`
+  )
+}
+
+// EmDash logs only the stack of a failed storage call, so the message and the
+// cause go to the Worker log here.
+const storageError = (message: string, code: string, cause: unknown) => {
+  const detail = cause instanceof Error ? cause.message : String(cause)
+  console.error(`[s3-fetch] ${code}: ${message}: ${detail}`)
+  return new EmDashStorageError(message, code, cause)
+}
+
 class S3FetchStorage implements Storage {
   private readonly client: AwsClient
   private readonly base: string
@@ -150,10 +165,10 @@ class S3FetchStorage implements Storage {
           ...(cacheControl ? { "Cache-Control": cacheControl } : {}),
         },
       })
-      if (!res.ok) throw new Error(`PUT ${res.status}`)
+      if (!res.ok) throw httpError(`PUT ${key}`, res)
       return { key, url: this.getPublicUrl(key), size: bytes.byteLength }
     } catch (error) {
-      throw new EmDashStorageError(
+      throw storageError(
         `Failed to upload file: ${key}`,
         "UPLOAD_FAILED",
         error
@@ -190,14 +205,14 @@ class S3FetchStorage implements Storage {
       }
       if (res.status === 404)
         throw new EmDashStorageError(`File not found: ${key}`, "NOT_FOUND")
-      if (!res.ok) throw new Error(`GET ${res.status}`)
+      if (!res.ok) throw httpError(`GET ${key}`, res)
       return {
         ...this.describe(res, key),
         size: Number(res.headers.get("Content-Length")) || 0,
       }
     } catch (error) {
       if (error instanceof EmDashStorageError) throw error
-      throw new EmDashStorageError(
+      throw storageError(
         `Failed to download file: ${key}`,
         "DOWNLOAD_FAILED",
         error
@@ -222,9 +237,9 @@ class S3FetchStorage implements Storage {
       const res = await this.client.fetch(this.objectUrl(key), {
         method: "DELETE",
       })
-      if (!res.ok && res.status !== 404) throw new Error(`DELETE ${res.status}`)
+      if (!res.ok && res.status !== 404) throw httpError(`DELETE ${key}`, res)
     } catch (error) {
-      throw new EmDashStorageError(
+      throw storageError(
         `Failed to delete file: ${key}`,
         "DELETE_FAILED",
         error
@@ -239,9 +254,9 @@ class S3FetchStorage implements Storage {
       })
       if (res.ok) return true
       if (res.status === 404) return false
-      throw new Error(`HEAD ${res.status}`)
+      throw httpError(`HEAD ${key}`, res)
     } catch (error) {
-      throw new EmDashStorageError(
+      throw storageError(
         `Failed to check file existence: ${key}`,
         "HEAD_FAILED",
         error
@@ -260,7 +275,7 @@ class S3FetchStorage implements Storage {
       const res = await this.client.fetch(
         `${this.base}/${this.bucket}?${query}`
       )
-      if (!res.ok) throw new Error(`LIST ${res.status}`)
+      if (!res.ok) throw httpError("LIST", res)
       const xml = await res.text()
       const files = []
       for (const { groups } of xml.matchAll(
@@ -276,7 +291,7 @@ class S3FetchStorage implements Storage {
       }
       return { files, nextCursor: xmlTag(xml, "NextContinuationToken") }
     } catch (error) {
-      throw new EmDashStorageError("Failed to list files", "LIST_FAILED", error)
+      throw storageError("Failed to list files", "LIST_FAILED", error)
     }
   }
 
@@ -301,7 +316,7 @@ class S3FetchStorage implements Storage {
         expiresAt: new Date(Date.now() + expiresIn * 1000).toISOString(),
       }
     } catch (error) {
-      throw new EmDashStorageError(
+      throw storageError(
         `Failed to generate signed URL for: ${key}`,
         "SIGNED_URL_FAILED",
         error
