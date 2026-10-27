@@ -171,7 +171,7 @@
                   value={quantityTexts[i]}
                   oninput={e =>
                     (quantityTexts[i] = clampField(e.currentTarget))}
-                  class="h-[52px] w-[60px] bg-transparent p-2 text-center text-sm font-bold text-water-50 focus:ring-0 focus:outline-hidden"
+                  class="h-[40px] w-[60px] bg-transparent p-2 text-center text-sm font-bold text-water-50 focus:ring-0 focus:outline-hidden"
                 />
                 <button
                   type="button"
