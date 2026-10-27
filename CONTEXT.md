@@ -1,6 +1,6 @@
 # Domain terms
 
-- **Website key**: stable machine identifier matching a directory under `websites`: bellypao, brunabraz, clinicamauricioaraujo, pedrohenridesign, transportugal or vandallabs. It is not a canonical customer domain or a person's name.
+- **Website key**: stable machine identifier matching a directory under `websites`: bellypao, brunabraz, clinicamauricioaraujo, gruice, pedrohenridesign, transportugal or vandallabs. It is not a canonical customer domain or a person's name.
 - **Canonical host**: the public customer domain used for indexing, sitemap URLs and host-aware robots behavior.
 - **Non-CMS site**: a site whose content lives in repository files. Also called a static site here, although its Astro output is a server application.
 - **CMS site**: Bruna Braz or Pedro Henri Design, using EmDash for collections, editorial content and media.

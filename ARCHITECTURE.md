@@ -2,7 +2,7 @@
 
 ## Applications and packages
 
-All six websites are Astro server applications deployed to Cloudflare Workers. `brunabraz` and `pedrohenridesign` use EmDash; `bellypao`, `clinicamauricioaraujo`, `transportugal` and `vandallabs` use repository-managed content. Canonical customer domains are independent of project keys and Worker names.
+All seven websites are Astro server applications deployed to Cloudflare Workers. `brunabraz` and `pedrohenridesign` use EmDash; `bellypao`, `clinicamauricioaraujo`, `gruice`, `transportugal` and `vandallabs` use repository-managed content. Canonical customer domains are independent of project keys and Worker names.
 
 The five workspace packages are private implementation boundaries:
 

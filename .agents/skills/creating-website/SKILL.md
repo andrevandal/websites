@@ -14,8 +14,8 @@ and the contribution guide before changing registrations.
 Use `grill-with-docs` to resolve the goal, routes, locales, canonical customer
 domain, design source, content rights and interactions requiring client state.
 Use a stable directory/Worker key, not the customer domain. Current keys are
-`bellypao`, `brunabraz`, `clinicamauricioaraujo`, `pedrohenridesign`,
-`transportugal` and `vandallabs`. Human names and canonical domains do not change
+`bellypao`, `brunabraz`, `clinicamauricioaraujo`, `gruice`,
+`pedrohenridesign`, `transportugal` and `vandallabs`. Human names and canonical domains do not change
 when a key changes. Submit a new-website issue using the repository template.
 
 ## Scaffold and register

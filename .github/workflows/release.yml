@@ -93,7 +93,8 @@ jobs:
             --argjson vl "$([ "${{ steps.release.outputs['websites/vandallabs--release_created'] }}" = "true" ] && echo true || echo false)" \
             --argjson site_bellypao "$([ "${{ steps.release.outputs['websites/bellypao--release_created'] }}" = "true" ] && echo true || echo false)" \
             --argjson site_pedrohenridesign "$([ "${{ steps.release.outputs['websites/pedrohenridesign--release_created'] }}" = "true" ] && echo true || echo false)" \
-            '[if $br then "brunabraz" else empty end, if $cl then "clinicamauricioaraujo" else empty end, if $tp then "transportugal" else empty end, if $vl then "vandallabs" else empty end, if $site_bellypao then "bellypao" else empty end, if $site_pedrohenridesign then "pedrohenridesign" else empty end]')
+            --argjson site_gruice "$([ "${{ steps.release.outputs['websites/gruice--release_created'] }}" = "true" ] && echo true || echo false)" \
+            '[if $br then "brunabraz" else empty end, if $cl then "clinicamauricioaraujo" else empty end, if $tp then "transportugal" else empty end, if $vl then "vandallabs" else empty end, if $site_bellypao then "bellypao" else empty end, if $site_pedrohenridesign then "pedrohenridesign" else empty end, if $site_gruice then "gruice" else empty end]')
           echo "released=$json" >> "$GITHUB_OUTPUT"
 
   deploy-images-production:

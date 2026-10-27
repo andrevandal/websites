@@ -19,6 +19,7 @@ Installation synchronizes Moon projects. Local checks and standard builds do not
 - **`websites/bellypao`** - Belly Pão bakery website.
 - **`websites/brunabraz`** - Bruna Braz editorial website with EmDash.
 - **`websites/clinicamauricioaraujo`** - Clínica Maurício Araujo website.
+- **`websites/gruice`** - Gru Ice ice factory website.
 - **`websites/pedrohenridesign`** - Pedro Henri Design portfolio with EmDash.
 - **`websites/transportugal`** - Transportugal logistics website.
 - **`websites/vandallabs`** - Vandal Labs website.
@@ -36,7 +37,7 @@ Installation synchronizes Moon projects. Local checks and standard builds do not
 | [scripts](scripts)                                                   | Development, validation and deployment tools        |
 | [docs/guides](docs/guides)                                           | Local CMS, runtime configuration and preview guides |
 
-The website keys are `bellypao`, `brunabraz`, `clinicamauricioaraujo`, `pedrohenridesign`, `transportugal` and `vandallabs`. Bruna Braz and Pedro Henri Design use EmDash; the other four do not use a CMS. "Static site" here means non-CMS content, not Astro static output.
+The website keys are `bellypao`, `brunabraz`, `clinicamauricioaraujo`, `gruice`, `pedrohenridesign`, `transportugal` and `vandallabs`. Bruna Braz and Pedro Henri Design use EmDash; the other five do not use a CMS. "Static site" here means non-CMS content, not Astro static output.
 
 ## Develop and verify
 
