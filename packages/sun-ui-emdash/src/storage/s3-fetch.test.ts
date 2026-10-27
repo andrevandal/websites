@@ -296,17 +296,20 @@ describe("upload", () => {
 })
 
 describe("exists", () => {
-  test("maps 200, 404 and other statuses", async () => {
+  test("maps 206, 416, 404 and other statuses", async () => {
     respondWith(
-      new Response(""),
+      new Response("a", { status: 206 }),
+      new Response("", { status: 416 }),
       new Response("", { status: 404 }),
       new Response("", { status: 403 })
     )
     const storage = createStorage(config)
     expect(await storage.exists("a")).toBe(true)
+    expect(await storage.exists("a")).toBe(true)
     expect(await storage.exists("a")).toBe(false)
-    expect(await codeOf(storage.exists("a"))).toBe("HEAD_FAILED")
-    expect(requests[0]!.method).toBe("HEAD")
+    expect(await codeOf(storage.exists("a"))).toBe("EXISTS_FAILED")
+    expect(requests[0]!.method).toBe("GET")
+    expect(requests[0]!.headers.get("Range")).toBe("bytes=0-0")
   })
 })
 
