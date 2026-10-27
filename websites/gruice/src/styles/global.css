@@ -1,0 +1,132 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@source "../../../../packages/sun-ui/src";
+
+@theme {
+  --font-*: initial;
+  --font-sans:
+    var(--gruice-font-clash-variable), ui-sans-serif, system-ui, sans-serif;
+  --font-clash: var(--gruice-font-clash), ui-sans-serif, system-ui, sans-serif;
+
+  --color-true-gray-50: #e8eaef;
+  --color-true-gray-100: #c3cad9;
+  --color-true-gray-200: #9ea9bf;
+  --color-true-gray-300: #7a87a5;
+  --color-true-gray-400: #5e6e93;
+  --color-true-gray-500: #435583;
+  --color-true-gray-600: #3d4e7a;
+  --color-true-gray-700: #35446f;
+  --color-true-gray-800: #2e3b62;
+  --color-true-gray-900: #242b49;
+
+  --color-true-blue-50: #f6fdfe;
+  --color-true-blue-100: #badefa;
+  --color-true-blue-200: #8ecaf8;
+  --color-true-blue-300: #61b5f5;
+  --color-true-blue-400: #3ca5f4;
+  --color-true-blue-500: #0d96f2;
+  --color-true-blue-600: #0888e4;
+  --color-true-blue-700: #0076d1;
+  --color-true-blue-800: #0065bf;
+  --color-true-blue-900: #0048a0;
+
+  --color-water-50: #f6fdfe;
+  --color-water-100: #c8f3fc;
+  --color-water-200: #a4edfc;
+  --color-water-300: #82e6fb;
+  --color-water-400: #70e0f8;
+  --color-water-500: #6adaf5;
+  --color-water-600: #63c8e1;
+  --color-water-700: #59b2c5;
+  --color-water-800: #519eac;
+  --color-water-900: #417980;
+
+  --color-disco-ball-50: #dff7fe;
+  --color-disco-ball-100: #aeeafd;
+  --color-disco-ball-200: #73dbfd;
+  --color-disco-ball-300: #1ccdfe;
+  --color-disco-ball-400: #00c2ff;
+  --color-disco-ball-500: #00b6ff;
+  --color-disco-ball-600: #00a7f3;
+  --color-disco-ball-700: #0094e0;
+  --color-disco-ball-800: #0083cc;
+  --color-disco-ball-900: #0062ac;
+}
+
+/* Replaces the old CSS-module button effect: a soft halo that fades in on hover. */
+@utility ice-halo {
+  position: relative;
+  z-index: 10;
+  background-color: var(--color-disco-ball-100);
+  transition: all 300ms linear;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 10px;
+    background-color: var(--color-disco-ball-100);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 300ms linear;
+  }
+
+  &:hover::before {
+    opacity: 0.6;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  body {
+    background-color: var(--color-water-50);
+    letter-spacing: 0.5px;
+  }
+
+  ::selection {
+    background: #2e3b62;
+    color: #6adaf5;
+  }
+
+  button:not(:disabled),
+  label[for] {
+    cursor: pointer;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  @media (min-width: 1024px) {
+    * {
+      scrollbar-width: auto;
+      scrollbar-color: #1c56b8 #ffffff10;
+    }
+
+    *::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: #ffffff10;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background-color: #1c56b8;
+      border-radius: 12px;
+      border: 0px none #fff;
+    }
+  }
+}

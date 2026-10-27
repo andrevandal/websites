@@ -29,6 +29,12 @@
       "component": "clinicamauricioaraujo",
       "include-component-in-tag": true
     },
+    "websites/gruice": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "component": "gruice",
+      "include-component-in-tag": true
+    },
     "websites/pedrohenridesign": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",

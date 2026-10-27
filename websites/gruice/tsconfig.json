@@ -1,0 +1,32 @@
+{
+  "extends": ["astro/tsconfigs/strict", "../../tsconfig.bundler.json"],
+  "compilerOptions": {
+    "paths": {
+      "#/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@utils": ["./src/utils"],
+      "@utils/*": ["./src/utils/*"],
+      "@/*": ["./src/*"]
+    },
+    "outDir": "../../.moon/cache/types/websites/gruice",
+    "plugins": [
+      {
+        "name": "@astrojs/ts-plugin"
+      }
+    ]
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "astro.config.js"],
+  "references": [
+    {
+      "path": "../../packages/robots-sitemap"
+    },
+    {
+      "path": "../../packages/sun-ui"
+    }
+  ]
+}

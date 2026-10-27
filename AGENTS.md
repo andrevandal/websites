@@ -28,7 +28,7 @@ env -u CI moon run brunabraz:dev
 
 ## Project Structure
 
-- `websites` contains six Astro server applications; Bruna Braz and Pedro Henri Design use EmDash.
+- `websites` contains seven Astro server applications; Bruna Braz and Pedro Henri Design use EmDash.
 - `apps/images` is the Hono and Bun.Image service.
 - `packages/sun-ui` owns headless UI and runtime asset helpers.
 - `packages/sun-ui-emdash` adds CMS integration without coupling base sun-ui to EmDash.

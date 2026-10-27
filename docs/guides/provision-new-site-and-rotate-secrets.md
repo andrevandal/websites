@@ -1,6 +1,6 @@
 # Configure a website and rotate runtime secrets
 
-The website key is its directory name under `websites`, not its canonical domain. Current keys are `bellypao`, `brunabraz`, `clinicamauricioaraujo`, `pedrohenridesign`, `transportugal` and `vandallabs`. The Astro `site` setting defines the canonical customer URL.
+The website key is its directory name under `websites`, not its canonical domain. Current keys are `bellypao`, `brunabraz`, `clinicamauricioaraujo`, `gruice`, `pedrohenridesign`, `transportugal` and `vandallabs`. The Astro `site` setting defines the canonical customer URL.
 
 ## Add a site
 

@@ -1,0 +1,105 @@
+---
+import { fileUrl } from "#/utils/images"
+---
+
+<section
+  class="flex flex-col items-center gap-6 lg:flex-row lg:justify-between"
+>
+  <div
+    class="text-true-gray-500 flex flex-1 flex-col items-center gap-2 text-center lg:items-start lg:text-left"
+  >
+    <div>
+      <h2
+        class="text-true-gray-800 text-[32px] leading-10 font-bold lg:text-[40px] lg:leading-[48px] xl:text-5xl xl:leading-[56px]"
+      >
+        Gelo Puro e Saudável:
+      </h2>
+      <p
+        class="text-true-gray-800 text-[32px] leading-10 font-medium lg:text-[40px] lg:leading-[48px] xl:text-5xl xl:leading-[56px]"
+      >
+        Água Filtrada e Segura a Cada Gota!
+      </p>
+    </div>
+    <p class="text-base lg:text-2xl">
+      Na <strong>GRU ICE</strong>, garantimos a qualidade e segurança do gelo
+      que você consome. Nossa água passa por um rigoroso processo de filtragem,
+      assegurando o melhor produto para você e todos que importam.
+    </p>
+    <button
+      type="button"
+      commandfor="quality-dialog"
+      command="show-modal"
+      class="text-true-blue-700 hover:text-true-blue-500 text-base font-semibold underline duration-300 lg:text-2xl"
+    >
+      Ler mais
+    </button>
+  </div>
+  <div class="flex-1">
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      width="452"
+      height="309"
+      class="m-auto"
+    >
+      <source
+        src={fileUrl("videos/mobile_sessao-gelo-saudavel.mp4")}
+        type="video/mp4"
+      />
+    </video>
+  </div>
+</section>
+
+<dialog
+  id="quality-dialog"
+  closedby="any"
+  aria-labelledby="quality-dialog-title"
+  class="backdrop:bg-true-gray-400/50 m-auto max-h-[1005px] w-auto max-w-[343px] overflow-y-hidden rounded-lg bg-white p-4 shadow-lg lg:max-h-[677px] lg:max-w-[600px]"
+>
+  <div class="flex w-full justify-end gap-4">
+    <button
+      type="button"
+      commandfor="quality-dialog"
+      command="close"
+      aria-label="Fechar"
+      class="border-true-gray-500 hover:border-true-blue-700 hover:text-true-blue-700 rounded-lg border p-1 duration-300"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+      >
+        <path
+          fill="currentColor"
+          d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"
+        ></path>
+      </svg>
+    </button>
+  </div>
+  <h3
+    id="quality-dialog-title"
+    class="text-true-blue-700 text-2xl leading-8 font-semibold lg:text-[32px]"
+  >
+    Nosso controle de qualidade
+  </h3>
+  <div class="mt-4 h-[300px] overflow-y-scroll leading-6">
+    A água utilizada é fornecida pela companhia de saneamento da cidade e passa
+    por uma tripla filtragem. Após essa etapa, a água é enviada para a máquinas
+    de gelo, que fazem o resfriamento. Após o congelamento, os cubos são
+    empacotados e condicionados em câmeras frias com temperatura ideal para
+    manter as características do produto intactas.<br /><br />
+    A empresa atende ainda às normas da Vigilância Sanitária e da Anvisa (Agência
+    Nacional de Vigilância Sanitária), agência reguladora vinculada ao Ministério
+    da Saúde. O controle da potabilidade da água, é feito por laboratórios capacitados,
+    ocorre mensalmente, e são devidamente registrados, a fim de garantir sua qualidade.<br
+    /><br />
+    A distribuição é feita com veículo isotermico, garantindo uma temperatura adequada
+    para não perder a sua qualidade e integridade.<br /><br />
+    A Gru Ice adota o Método PEPS "Primeiro que entra, Primeiro que sai", ou seja,
+    a primeira unidade a entrar no estoque é a primeira a ser vendida, garantindo
+    que o produto chegue preservado aos consumidores e revendedores
+  </div>
+</dialog>

@@ -1,0 +1,210 @@
+---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import BaseButton from "#/components/BaseButton.astro"
+import Logo from "#/components/Logo.astro"
+import WhatsAppIcon from "#/components/WhatsAppIcon.astro"
+import { WA_DEFAULT_MESSAGE, WA_NUMBER } from "#/data/contact"
+import { fileUrl } from "#/utils/images"
+
+const links = [
+  { name: "Produtos", href: "#produtos", alt: "Link para os produtos" },
+  { name: "Calculadora", href: "#calculadora", alt: "Link para a calculadora" },
+  {
+    name: "Seja revendedor",
+    href: "#revendedor",
+    alt: "Link para se tornar um revendedor",
+  },
+]
+const whatsappUrl = waLink(WA_NUMBER, WA_DEFAULT_MESSAGE)
+const noiseStyle = `--gruice-noise: url("${fileUrl("images/mobile/noise.png")}")`
+---
+
+<section class="fixed inset-x-0 top-2 z-50" id="site-nav">
+  <input type="checkbox" id="menu-opened" class="sr-only" data-header-toggle />
+  <nav
+    class="mx-auto flex w-11/12 max-w-[1124px] items-center justify-between rounded-lg bg-white px-4 py-2 shadow-lg"
+    aria-label="Global"
+  >
+    <div class="flex lg:flex-1">
+      <a href="/" class="-m-1.5 p-1.5">
+        <span class="sr-only">Gru Ice</span>
+        <Logo idPrefix="nav-" />
+      </a>
+    </div>
+    <div class="flex lg:hidden">
+      <label
+        for="menu-opened"
+        class="menu-toggle -m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+      >
+        <span class="sr-only">Open main menu</span>
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path>
+        </svg>
+      </label>
+    </div>
+    <div class="hidden lg:flex lg:gap-x-12">
+      {
+        links.map(link => (
+          <a
+            href={link.href}
+            title={link.alt}
+            class="text-true-gray-800 before:bg-disco-ball-300 relative font-medium before:absolute before:bottom-0 before:h-[2px] before:w-full before:origin-center before:scale-x-0 before:duration-300 before:content-[''] hover:before:scale-x-100"
+          >
+            {link.name}
+          </a>
+        ))
+      }
+    </div>
+    <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="bg-true-blue-800 hover:bg-true-blue-500 flex items-center justify-center gap-2 rounded-lg px-4 py-2 font-medium text-white duration-300"
+      >
+        Compre agora!
+        <WhatsAppIcon variant="outline" />
+      </a>
+    </div>
+  </nav>
+  <div class="mobile-menu hidden" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 z-50 bg-gray-500/90">
+      <div class="h-min rounded-b-lg bg-white px-4 py-6 shadow-lg">
+        <div class="flex items-center justify-between">
+          <a href="/" class="-m-1.5 px-2">
+            <span class="sr-only">Gru Ice</span>
+            <Logo idPrefix="menu-" class="h-10 w-32" />
+          </a>
+          <label
+            for="menu-opened"
+            class="menu-toggle -m-2.5 rounded-md p-2.5 text-gray-700"
+          >
+            <span class="sr-only">Close menu</span>
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </label>
+        </div>
+        <div>
+          <div class="flex flex-col gap-2 py-6" data-header-menu>
+            {
+              links.map(link => (
+                <a
+                  href={link.href}
+                  title={link.alt}
+                  class="py-2 leading-6 font-medium text-gray-900"
+                >
+                  {link.name}
+                </a>
+              ))
+            }
+          </div>
+          <div>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex w-full items-center justify-center gap-2 rounded-lg bg-[#0048A0] px-6 py-3 text-white"
+            >
+              Compre agora!
+              <WhatsAppIcon variant="outline" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<header
+  id="header"
+  class="bg-true-gray-800 relative z-0 before:absolute before:inset-0 before:z-0 before:bg-(image:--gruice-noise) before:opacity-5"
+  style={noiseStyle}
+>
+  <section
+    class="z-10 mx-auto flex w-11/12 max-w-[1124px] flex-col items-center gap-8 px-4 py-20 lg:flex-row lg:px-0 lg:pt-32"
+  >
+    <article
+      class="text-water-50 z-10 flex flex-col items-center space-y-2 p-1 pt-6 text-center lg:flex-1 lg:items-start lg:text-left"
+    >
+      <h1
+        class="text-[32px] leading-9 font-bold lg:w-[452px] lg:text-[40px] lg:leading-[48px] xl:w-[561px] xl:text-5xl xl:leading-[56px]"
+      >
+        Congele momentos especiais com gelo Gru Ice!
+      </h1>
+      <p class="pb-8 text-2xl leading-7 lg:w-[452px]">
+        O frescor perfeito para celebrar a vida e reunir quem você ama, em
+        Guarulhos e região.
+      </p>
+      <BaseButton href={whatsappUrl}>
+        Quero o melhor gelo agora!
+        <WhatsAppIcon />
+      </BaseButton>
+    </article>
+    <article class="z-30 flex justify-end lg:flex-1 xl:block">
+      <SunPicture
+        src={fileUrl("images/mobile/primeira-dobra.png")}
+        alt="Imagem de pessoas tomando seus drinks com gelo"
+        width={343}
+        height={343}
+        breakpoints={[
+          { minWidth: 640, width: 672 },
+          { minWidth: 1024, width: 540 },
+        ]}
+        quality={90}
+        format="auto"
+        loading="eager"
+        fetchpriority="high"
+        placeholder={false}
+        wrapperClass="w-full"
+        class="w-full self-end xl:m-auto"
+      />
+    </article>
+  </section>
+</header>
+
+<script>
+  import { useHeader } from "@vandal-websites/sun-ui"
+
+  useHeader("#site-nav")
+</script>
+
+<style>
+  @reference "../styles/global.css";
+
+  /* Mobile only: the checkbox must not lock scroll or show the sheet on desktop. */
+  @media (width < 64rem) {
+    #menu-opened:checked ~ .mobile-menu {
+      display: block;
+    }
+
+    :global(html:has(#menu-opened:checked)) {
+      overflow: hidden;
+    }
+  }
+
+  #menu-opened:focus-visible ~ nav .menu-toggle,
+  #menu-opened:focus-visible ~ .mobile-menu .menu-toggle {
+    @apply outline-true-blue-700 outline-2 outline-offset-2;
+  }
+</style>

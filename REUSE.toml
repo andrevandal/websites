@@ -40,6 +40,36 @@ SPDX-License-Identifier = "LicenseRef-Site-Content"
 
 [[annotations]]
 path = [
+  "websites/gruice/CONTENT-LICENSE.md",
+  "websites/gruice/public/**",
+  "websites/gruice/src/data/**",
+  "websites/gruice/src/icons/atacado.svg",
+  "websites/gruice/src/icons/delivery.svg",
+  "websites/gruice/src/icons/varejo.svg",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 Gru Ice"]
+SPDX-License-Identifier = "LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/gruice/src/icons/email.svg",
+  "websites/gruice/src/icons/location.svg",
+  "websites/gruice/src/icons/whatsapp-outline.svg",
+  "websites/gruice/src/icons/whatsapp-round.svg",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["Google LLC"]
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["websites/gruice/src/icons/instagram.svg"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["Phosphor Icons"]
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [
   "websites/pedrohenridesign/CONTENT-LICENSE.md",
   "websites/pedrohenridesign/public/**",
   "websites/pedrohenridesign/seed/**",
@@ -146,6 +176,12 @@ path = [
   "websites/clinicamauricioaraujo/package.json",
   "websites/clinicamauricioaraujo/tsconfig.json",
   "websites/clinicamauricioaraujo/wrangler.json",
+  "websites/gruice/README.md",
+  "websites/gruice/astro.config.js",
+  "websites/gruice/moon.yml",
+  "websites/gruice/package.json",
+  "websites/gruice/tsconfig.json",
+  "websites/gruice/wrangler.json",
   "websites/pedrohenridesign/.env.example",
   "websites/pedrohenridesign/.gitignore",
   "websites/pedrohenridesign/CHANGELOG.md",
@@ -324,6 +360,32 @@ path = [
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = ["2026 André Vandal", "2026 Clínica Maurício Araujo"]
+SPDX-License-Identifier = "MIT AND LicenseRef-Site-Content"
+
+[[annotations]]
+path = [
+  "websites/gruice/src/components/CalculatorSection.astro",
+  "websites/gruice/src/components/IceCalculator.svelte",
+  "websites/gruice/src/components/Logo.astro",
+  "websites/gruice/src/components/ProductSelector.astro",
+  "websites/gruice/src/components/Products.astro",
+  "websites/gruice/src/components/QualityVideo.astro",
+  "websites/gruice/src/components/Reseller.astro",
+  "websites/gruice/src/components/Satisfaction.astro",
+  "websites/gruice/src/components/Solutions.astro",
+  "websites/gruice/src/components/TheFooter.astro",
+  "websites/gruice/src/components/TheHeader.astro",
+  "websites/gruice/src/components/WhatsAppIcon.astro",
+  "websites/gruice/src/layouts/Layout.astro",
+  "websites/gruice/src/pages/index.astro",
+  "websites/gruice/src/styles/global.css",
+  "websites/gruice/src/utils/ice-calculator.test.ts",
+  "websites/gruice/src/utils/ice-calculator.ts",
+  "websites/gruice/src/utils/images.ts",
+  "websites/gruice/src/components/BaseButton.astro",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 André Vandal", "2026 Gru Ice"]
 SPDX-License-Identifier = "MIT AND LicenseRef-Site-Content"
 
 [[annotations]]

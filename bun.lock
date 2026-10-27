@@ -261,6 +261,29 @@
         "wrangler": "catalog:tools",
       },
     },
+    "websites/gruice": {
+      "name": "@vandal-websites/gruice",
+      "version": "0.1.0",
+      "dependencies": {
+        "@astrojs/check": "catalog:astro",
+        "@astrojs/cloudflare": "catalog:astro",
+        "@astrojs/ts-plugin": "catalog:astro",
+        "@tailwindcss/typography": "catalog:tailwind",
+        "@tailwindcss/vite": "catalog:tailwind",
+        "@vandal-websites/robots-sitemap": "workspace:*",
+        "@vandal-websites/sun-ui": "workspace:*",
+        "astro": "catalog:astro",
+        "astro-iconset": "catalog:astro",
+        "tailwindcss": "catalog:tailwind",
+        "typescript": "catalog:typescript",
+      },
+      "devDependencies": {
+        "@astrojs/svelte": "catalog:svelte",
+        "svelte": "catalog:svelte",
+        "vite": "catalog:vite",
+        "wrangler": "catalog:tools",
+      },
+    },
     "websites/pedrohenridesign": {
       "name": "@vandal-websites/pedrohenridesign",
       "version": "0.3.0",
@@ -1598,6 +1621,8 @@
     "@vandal-websites/emdash-plugin-analytics": ["@vandal-websites/emdash-plugin-analytics@workspace:packages/emdash-plugin-analytics"],
 
     "@vandal-websites/emdash-plugin-jmap": ["@vandal-websites/emdash-plugin-jmap@workspace:packages/emdash-plugin-jmap"],
+
+    "@vandal-websites/gruice": ["@vandal-websites/gruice@workspace:websites/gruice"],
 
     "@vandal-websites/images-app": ["@vandal-websites/images-app@workspace:apps/images"],
 

@@ -1,0 +1,47 @@
+---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+// Relative path: Astro writes a hydrated component's specifier into `component-url`, and `#/` breaks it in dev.
+import IceCalculator from "./IceCalculator.svelte"
+import { fileUrl } from "#/utils/images"
+---
+
+<section id="calculadora">
+  <div class="bg-true-gray-800 lg:h-[880px]">
+    <div
+      class="text-water-50 mx-auto flex h-full w-11/12 max-w-[1124px] flex-col items-center gap-8 py-20 text-center lg:flex-row lg:items-start lg:gap-12"
+    >
+      <div
+        class="flex h-full flex-1 flex-col items-center justify-around gap-2"
+      >
+        <h2
+          class="text-[32px] leading-[40px] font-bold lg:text-[40px] lg:leading-[48px] xl:text-5xl xl:leading-[56px]"
+        >
+          Quanto de gelo sua galera precisa?
+        </h2>
+        <SunPicture
+          src={fileUrl("images/mobile/sessao_calculadora.png")}
+          alt="Imagem de pessoas tomando seus drinks com gelo"
+          width={343}
+          height={343}
+          breakpoints={[
+            { minWidth: 640, width: 672 },
+            { minWidth: 1024, width: 540 },
+          ]}
+          quality={90}
+          format="auto"
+          loading="lazy"
+          wrapperClass="w-full min-[1025px]:max-w-[500px]"
+          class="w-full self-end xl:m-auto"
+        />
+        <p class="w-full text-sm">
+          Somente para ser usado como referência. Fatores com as condições
+          climáticas e forma de armazenagem podem alterar a quantidade de gelo
+          necessário
+        </p>
+      </div>
+      <div class="h-full flex-1">
+        <IceCalculator client:visible />
+      </div>
+    </div>
+  </div>
+</section>

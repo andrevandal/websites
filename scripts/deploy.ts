@@ -105,6 +105,7 @@ const CUSTOM_DOMAINS: Record<string, string> = {
   vandallabs: "https://vandallabs.com.br",
   bellypao: "https://bellypao.com.br",
   pedrohenridesign: "https://pedrohenridesign.com.br",
+  gruice: "https://gruice.com.br",
 }
 
 const UUID_PATTERN =
