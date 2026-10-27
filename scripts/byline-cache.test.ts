@@ -31,7 +31,7 @@ const run = async (
   })
   dbs.push(db)
   const { Database } = await import("bun:sqlite")
-  const sqlite = new Database(db.databasePath, { readonly: true })
+  const sqlite = new Database(db.databasePath, { readwrite: true })
   const bylineId = (
     sqlite.query("SELECT id FROM _emdash_bylines WHERE slug = 'ana'").get() as {
       id: string

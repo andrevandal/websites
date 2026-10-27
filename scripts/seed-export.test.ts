@@ -32,7 +32,7 @@ test("exporting an edited database, then importing, preserves the edit", async (
   )
   const imported = await createEmDashTestDb(exported)
   databases.push(imported)
-  const second = new Database(imported.databasePath, { readonly: true })
+  const second = new Database(imported.databasePath, { readwrite: true })
   try {
     expect(
       second

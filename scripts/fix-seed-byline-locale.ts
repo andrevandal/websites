@@ -97,7 +97,8 @@ const readExistingIds = (databasePath: string): string[] => {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return []
     throw error
   }
-  const db = new Database(databasePath, { readonly: true })
+  // Not readonly: macOS system SQLite cannot open a WAL database read-only when -shm is missing, which the EmDash CLI leaves behind.
+  const db = new Database(databasePath, { readwrite: true })
   try {
     const table = db
       .query(
