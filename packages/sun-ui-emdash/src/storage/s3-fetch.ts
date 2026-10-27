@@ -129,7 +129,6 @@ class S3FetchStorage implements Storage {
   private readonly base: string
   private readonly bucket: string
   private readonly publicUrl: string | undefined
-  private readonly accessKeyId: string
 
   constructor(config: S3StorageConfig) {
     this.client = new AwsClient({
@@ -143,7 +142,6 @@ class S3FetchStorage implements Storage {
     this.base = config.endpoint.replace(/\/+$/, "")
     this.bucket = config.bucket
     this.publicUrl = config.publicUrl
-    this.accessKeyId = config.accessKeyId!
   }
 
   private objectUrl(key: string) {
@@ -249,50 +247,24 @@ class S3FetchStorage implements Storage {
     }
   }
 
+  // A ranged GET, not HEAD: a CDN in front of the endpoint can turn HEAD into
+  // GET at the origin, which breaks the signature (SignatureDoesNotMatch).
   async exists(key: string): Promise<boolean> {
     try {
       const res = await this.client.fetch(this.objectUrl(key), {
-        method: "HEAD",
+        headers: { Range: "bytes=0-0" },
       })
-      if (res.ok) return true
+      await res.body?.cancel()
+      // 416: the object exists but is empty, so byte 0 is out of range.
+      if (res.ok || res.status === 416) return true
       if (res.status === 404) return false
-      await this.traceDenied(key, res)
-      throw httpError(`HEAD ${key}`, res)
+      throw httpError(`GET ${key}`, res)
     } catch (error) {
       throw storageError(
         `Failed to check file existence: ${key}`,
-        "HEAD_FAILED",
+        "EXISTS_FAILED",
         error
       )
-    }
-  }
-
-  // HEAD has no body, so a ranged GET on the same key recovers the S3 error
-  // code. The log never holds the secret, and the access key id is masked.
-  private async traceDenied(key: string, head: Response) {
-    try {
-      const probe = await this.client.fetch(this.objectUrl(key), {
-        headers: { Range: "bytes=0-0" },
-      })
-      const body = probe.ok ? "" : (await probe.text()).slice(0, 500)
-      const id = this.accessKeyId
-      console.error(
-        `[s3-fetch] HEAD_TRACE ${JSON.stringify({
-          key,
-          bucket: this.bucket,
-          host: new URL(this.base).host,
-          accessKeyId: `${id.slice(0, 4)}...${id.slice(-2)} (${id.length})`,
-          headStatus: head.status,
-          headServer: head.headers.get("server"),
-          headRequestId: head.headers.get("x-amz-request-id"),
-          getStatus: probe.status,
-          getRequestId: probe.headers.get("x-amz-request-id"),
-          getBody: body,
-        })}`
-      )
-      if (probe.ok) await probe.body?.cancel()
-    } catch (error) {
-      console.error(`[s3-fetch] HEAD_TRACE failed: ${String(error)}`)
     }
   }
 
