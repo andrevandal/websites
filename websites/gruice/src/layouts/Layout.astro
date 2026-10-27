@@ -1,0 +1,58 @@
+---
+import "#/styles/global.css"
+import { SunLayout } from "@vandal-websites/sun-ui/astro"
+import { fileUrl } from "#/utils/images"
+
+type Props = {
+  title: string
+  description: string
+}
+
+const { title, description } = Astro.props
+const { url } = Astro
+const image = fileUrl("images/mobile/primeira-dobra.png")
+
+const fontCss = `
+  @font-face {
+    font-family: "Clash Display";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("${fileUrl("fonts/ClashDisplay-Regular.woff2")}") format("woff2");
+  }
+  @font-face {
+    font-family: "Clash Display Variable";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("${fileUrl("fonts/ClashDisplay-Variable.woff2")}") format("woff2");
+  }
+  :root {
+    --gruice-font-clash-variable: "Clash Display Variable";
+    --gruice-font-clash: "Clash Display";
+  }
+`
+---
+
+<SunLayout
+  title={title}
+  description={description}
+  url={url}
+  image={new URL(image, Astro.site ?? url).toString()}
+  gtag={{
+    // Only the canonical (production) host reports to Analytics.
+    gtagId: url.host === Astro.site?.host ? "G-MV1B5QJVWB" : undefined,
+  }}
+>
+  <Fragment slot="close-head">
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={fileUrl("fonts/ClashDisplay-Variable.woff2")}
+      crossorigin
+    />
+    <style is:inline set:html={fontCss}></style>
+  </Fragment>
+  <slot />
+</SunLayout>

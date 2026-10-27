@@ -1,0 +1,78 @@
+---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import WhatsAppIcon from "#/components/WhatsAppIcon.astro"
+import { WA_DEFAULT_MESSAGE, WA_NUMBER } from "#/data/contact"
+import { faq } from "#/data/faq"
+import { fileUrl } from "#/utils/images"
+---
+
+<section
+  id="revendedor"
+  class="mx-auto mb-[160px] flex max-w-[1124px] flex-col items-center gap-4 lg:flex-row-reverse lg:items-start lg:justify-between lg:pt-24"
+>
+  <div
+    class="flex w-full flex-1 flex-col items-center gap-2 px-6 pt-24 lg:items-start lg:px-0 lg:pt-0"
+  >
+    <div class="w-full flex-1 divide-y divide-gray-900/10 pb-8">
+      <h2
+        class="text-true-gray-800 text-center text-[32px] leading-[40px] font-bold lg:text-left lg:text-[40px] lg:leading-[48px] xl:text-5xl xl:leading-[56px]"
+      >
+        Seja um revendedor!
+      </h2>
+      <div class="mt-10 h-[440px] space-y-6 divide-y divide-gray-900/10">
+        {
+          faq.map((item, i) => (
+            <details name="faq" class="group pt-6" open={i === 0}>
+              <summary class="text-true-gray-800 flex w-full list-none items-start justify-between text-left [&::-webkit-details-marker]:hidden">
+                <span class="text-base leading-7 font-semibold">
+                  {item.question}
+                </span>
+                <span class="ml-6 flex h-7 items-center duration-300 group-open:rotate-90">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M9.29 6.71a.996.996 0 0 0 0 1.41L13.17 12l-3.88 3.88a.996.996 0 1 0 1.41 1.41l4.59-4.59a.996.996 0 0 0 0-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z"
+                    />
+                  </svg>
+                </span>
+              </summary>
+              <div class="mt-2 pr-12">
+                <p class="text-base leading-7 text-gray-600">{item.answer}</p>
+              </div>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+    <a
+      href={waLink(WA_NUMBER, WA_DEFAULT_MESSAGE)}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="bg-true-blue-900 text-water-50 hover:bg-true-blue-500 flex items-center gap-2 rounded-lg px-4 py-3 duration-300"
+    >
+      Quero ser parceiro Gru Ice!
+      <WhatsAppIcon />
+    </a>
+  </div>
+  <div class="flex-1">
+    <SunPicture
+      src={fileUrl("images/mobile/sessao-revendas.png")}
+      alt=""
+      width={343}
+      height={343}
+      breakpoints={[{ minWidth: 1024, width: 500 }]}
+      quality={90}
+      format="auto"
+      loading="lazy"
+      wrapperClass="w-[343px] max-w-full lg:w-11/12"
+      class="w-full"
+    />
+  </div>
+</section>

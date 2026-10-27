@@ -1,0 +1,168 @@
+---
+import { SunPicture } from "@vandal-websites/sun-ui/astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import WhatsAppIcon from "#/components/WhatsAppIcon.astro"
+import { WA_DEFAULT_MESSAGE, WA_NUMBER } from "#/data/contact"
+import { products } from "#/data/products"
+import { fileUrl } from "#/utils/images"
+
+const whatsappUrl = waLink(WA_NUMBER, WA_DEFAULT_MESSAGE)
+const buttonClass =
+  "ice-halo flex h-[52px] w-[52px] items-center justify-center gap-2 rounded-lg text-base font-medium whitespace-nowrap text-true-gray-800 md:text-lg"
+const last = products.length - 1
+---
+
+<div role="radiogroup" aria-label="Nossos produtos">
+  {
+    products.map((product, i) => (
+      <>
+        <input
+          type="radio"
+          name="product"
+          id={`product-${i}`}
+          class="sr-only"
+          aria-label={product.name}
+          checked={i === 0}
+        />
+        <div class="product-panel hidden flex-col gap-2 lg:flex-row lg:gap-6">
+          <div class="flex flex-1 flex-col gap-2">
+            <SunPicture
+              src={fileUrl(product.image)}
+              alt={product.alt}
+              width={452}
+              height={301}
+              quality={90}
+              format="auto"
+              loading="lazy"
+              wrapperClass="w-full max-w-[452px] rounded-lg lg:max-w-none"
+              class="w-full rounded-lg"
+            />
+            <div class="flex items-center gap-2">
+              {products.map((thumb, j) => (
+                <label
+                  for={`product-${j}`}
+                  aria-hidden="true"
+                  class:list={[
+                    "block w-[107px] rounded-lg",
+                    j === i && "thumb-current",
+                  ]}
+                >
+                  <SunPicture
+                    src={fileUrl(thumb.image)}
+                    alt={thumb.alt}
+                    width={107}
+                    height={74}
+                    quality={90}
+                    format="auto"
+                    loading="lazy"
+                    wrapperClass="w-full rounded-lg"
+                    class:list={[
+                      "w-full rounded-lg",
+                      j === i && "border-water-100 border-4",
+                    ]}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+          <article class="flex flex-1 flex-col gap-1 lg:gap-2">
+            <div class="my-1 flex items-center justify-between">
+              {i > 0 ? (
+                <label
+                  for={`product-${i - 1}`}
+                  aria-hidden="true"
+                  class={buttonClass}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M14.71 6.71a.996.996 0 0 0-1.41 0L8.71 11.3a.996.996 0 0 0 0 1.41l4.59 4.59a.996.996 0 1 0 1.41-1.41L10.83 12l3.88-3.88c.39-.39.38-1.03 0-1.41z"
+                    />
+                  </svg>
+                </label>
+              ) : (
+                <span aria-hidden="true" class={buttonClass}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M14.71 6.71a.996.996 0 0 0-1.41 0L8.71 11.3a.996.996 0 0 0 0 1.41l4.59 4.59a.996.996 0 1 0 1.41-1.41L10.83 12l3.88-3.88c.39-.39.38-1.03 0-1.41z"
+                    />
+                  </svg>
+                </span>
+              )}
+              <h3 class="text-true-gray-800 text-2xl font-semibold lg:text-[32px]">
+                {product.name}
+              </h3>
+              {i < last ? (
+                <label
+                  for={`product-${i + 1}`}
+                  aria-hidden="true"
+                  class={buttonClass}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M9.29 6.71a.996.996 0 0 0 0 1.41L13.17 12l-3.88 3.88a.996.996 0 1 0 1.41 1.41l4.59-4.59a.996.996 0 0 0 0-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z"
+                    />
+                  </svg>
+                </label>
+              ) : (
+                <span aria-hidden="true" class={buttonClass}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M9.29 6.71a.996.996 0 0 0 0 1.41L13.17 12l-3.88 3.88a.996.996 0 1 0 1.41 1.41l4.59-4.59a.996.996 0 0 0 0-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z"
+                    />
+                  </svg>
+                </span>
+              )}
+            </div>
+            <p class="text-true-gray-800 text-center lg:text-left">
+              {product.description}
+            </p>
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="border-true-blue-900 bg-true-blue-900/10 text-true-blue-900 m-auto mt-4 inline-flex w-[180px] items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium lg:mx-0"
+            >
+              Peça já o seu!
+              <WhatsAppIcon variant="outline" size={20} />
+            </a>
+          </article>
+        </div>
+      </>
+    ))
+  }
+</div>
+
+<style>
+  input:checked + .product-panel {
+    display: flex;
+  }
+
+  input:focus-visible + .product-panel .thumb-current {
+    outline: 2px solid var(--color-true-blue-700);
+    outline-offset: 2px;
+  }
+</style>

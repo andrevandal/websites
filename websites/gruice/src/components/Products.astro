@@ -1,0 +1,21 @@
+---
+import ProductSelector from "#/components/ProductSelector.astro"
+import QualityVideo from "#/components/QualityVideo.astro"
+---
+
+<section
+  id="produtos"
+  class="mx-auto flex w-11/12 max-w-[1124px] flex-col items-center gap-2 py-28"
+>
+  <h2 class="text-true-gray-800 text-[32px] font-bold lg:text-[40px]">
+    Nossos produtos
+  </h2>
+  <div class="flex flex-col justify-center gap-28 py-6">
+    <div class="flex-1">
+      <ProductSelector />
+    </div>
+    <div class="flex-1">
+      <QualityVideo />
+    </div>
+  </div>
+</section>

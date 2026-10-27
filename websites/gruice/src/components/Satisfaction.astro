@@ -1,0 +1,62 @@
+---
+import { SunIcon, SunPicture } from "@vandal-websites/sun-ui/astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import { WA_DEFAULT_MESSAGE, WA_NUMBER } from "#/data/contact"
+import { fileUrl } from "#/utils/images"
+
+const whatsappUrl = waLink(WA_NUMBER, WA_DEFAULT_MESSAGE)
+---
+
+<section
+  class="text-true-gray-500 mx-auto flex max-w-[1124px] flex-col items-center gap-2 px-4 lg:flex-row lg:px-0"
+>
+  <div class="flex flex-1 flex-col items-center gap-4 lg:items-start">
+    <h2
+      class="text-true-gray-800 text-center text-[32px] leading-[40px] lg:text-left lg:text-[40px] lg:leading-[48px] xl:text-5xl xl:leading-[56px]"
+    >
+      A escolha certa para quem busca <strong>qualidade, satisfação</strong> e <strong
+        >responsabilidade!</strong
+      >
+    </h2>
+    <p class="text-center lg:text-left">
+      Na Gru Ice, oferecemos gelo de qualidade em Guarulhos e região, com foco
+      na excelência, sustentabilidade e atendimento excepcional, desde a
+      filtragem da água até a entrega rápida.
+    </p>
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="bg-true-blue-800 text-water-50 hover:bg-true-blue-500 hidden items-center gap-2 rounded-lg px-6 py-[14px] font-medium duration-300 lg:inline-flex"
+    >
+      Entre em contato!
+      <SunIcon name="whatsapp-round" class="h-5 w-5" width={20} height={20} />
+    </a>
+  </div>
+  <div class="flex flex-1 flex-col items-center gap-4">
+    <SunPicture
+      src={fileUrl("images/mobile/sessao_porque-nos.png")}
+      alt="Imagem de pessoas tomando seus drinks com gelo"
+      width={343}
+      height={343}
+      breakpoints={[
+        { minWidth: 640, width: 672 },
+        { minWidth: 1024, width: 540 },
+      ]}
+      quality={90}
+      format="auto"
+      loading="lazy"
+      wrapperClass="w-full min-[1025px]:max-w-[500px]"
+      class="w-full self-end xl:m-auto"
+    />
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="bg-true-blue-800 text-water-50 inline-flex items-center gap-2 rounded-lg px-6 py-[14px] font-medium lg:hidden"
+    >
+      Entre em contato!
+      <SunIcon name="whatsapp-round" class="h-5 w-5" width={20} height={20} />
+    </a>
+  </div>
+</section>

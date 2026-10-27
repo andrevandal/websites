@@ -1,0 +1,19 @@
+---
+import type { HTMLAttributes } from "astro/types"
+
+type Props = HTMLAttributes<"a"> & { href: string }
+
+const { class: className, ...rest } = Astro.props
+---
+
+<a
+  class:list={[
+    "ice-halo text-true-gray-800 flex items-center justify-center gap-2 rounded-md px-8 py-3 text-base font-medium whitespace-nowrap md:px-10 md:py-4 md:text-lg",
+    className,
+  ]}
+  target="_blank"
+  rel="noopener noreferrer"
+  {...rest}
+>
+  <slot />
+</a>

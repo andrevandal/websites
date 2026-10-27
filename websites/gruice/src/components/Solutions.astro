@@ -1,0 +1,44 @@
+---
+import { SunIcon } from "@vandal-websites/sun-ui/astro"
+import { waLink } from "@vandal-websites/sun-ui"
+import BaseButton from "#/components/BaseButton.astro"
+import WhatsAppIcon from "#/components/WhatsAppIcon.astro"
+import { WA_DEFAULT_MESSAGE, WA_NUMBER } from "#/data/contact"
+import { solutions } from "#/data/solutions"
+---
+
+<section
+  class="text-true-gray-500 mx-auto flex max-w-[1124px] flex-col items-center gap-6 px-4 py-32 text-center lg:px-0"
+>
+  <h2
+    class="text-true-gray-800 text-[32px] leading-[40px] font-bold lg:text-[40px] lg:leading-[48px] xl:text-5xl xl:leading-[56px]"
+  >
+    Soluções para atender a todos
+  </h2>
+  <ul
+    class="flex flex-col divide-y divide-gray-200 lg:flex-row lg:divide-x lg:divide-y-0"
+  >
+    {
+      solutions.map(solution => (
+        <li class="my-4 flex flex-1 flex-col items-center gap-4 p-4">
+          <SunIcon
+            name={solution.icon}
+            class="size-16"
+            width={64}
+            height={64}
+          />
+          <div>
+            <h3 class="text-true-gray-800 text-[24px] font-medium">
+              {solution.name}
+            </h3>
+            <p class="leading-6">{solution.description}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+  <BaseButton href={waLink(WA_NUMBER, WA_DEFAULT_MESSAGE)}>
+    Solicite agora via WhatsApp!
+    <WhatsAppIcon />
+  </BaseButton>
+</section>
