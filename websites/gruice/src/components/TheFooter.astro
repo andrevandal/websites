@@ -3,6 +3,7 @@ import { SunIcon } from "@vandal-websites/sun-ui/astro"
 import { waLink } from "@vandal-websites/sun-ui"
 import {
   ADDRESS,
+  ADDRESS_URL,
   EMAIL,
   INSTAGRAM_URL,
   PHONE_LABEL,
@@ -37,7 +38,12 @@ const socials = [
       class="flex flex-1 flex-col items-center gap-3 text-center lg:items-start lg:text-left"
     >
       <span class="font-semibold">Matriz</span>
-      <span class="flex items-center gap-2 lg:items-start">
+      <a
+        href={ADDRESS_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex items-center gap-2 lg:items-start"
+      >
         <SunIcon
           name="location"
           class="text-disco-ball-300 h-6 w-6"
@@ -45,7 +51,7 @@ const socials = [
           height={24}
         />
         {ADDRESS}
-      </span>
+      </a>
       <span class="font-semibold">Atendimento</span>
       <address class="not-italic">
         <a
