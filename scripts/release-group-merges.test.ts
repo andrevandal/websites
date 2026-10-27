@@ -1,11 +1,12 @@
 import { afterAll, describe, expect, test } from "bun:test"
 import { execFileSync } from "node:child_process"
-import { mkdtempSync, rmSync } from "node:fs"
+import { mkdtempSync, realpathSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { childrenByMerge, groupMergeEntries } from "./release-group-merges.ts"
 
-const dir = mkdtempSync(join(tmpdir(), "release-group-"))
+// realpath: macOS tmpdir is a symlink, and git reports the resolved path.
+const dir = realpathSync(mkdtempSync(join(tmpdir(), "release-group-")))
 // Pin git to the temp repo through an explicit env. Git hooks (lefthook runs
 // this suite pre-push) export GIT_DIR and friends; unpinned, the commits below
 // landed on the real branch.
