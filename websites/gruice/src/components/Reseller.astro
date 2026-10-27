@@ -14,17 +14,17 @@ import { fileUrl } from "#/utils/images"
   <div
     class="flex w-full flex-1 flex-col items-center gap-2 px-6 pt-24 lg:items-start lg:px-0 lg:pt-0"
   >
-    <div class="w-full flex-1 divide-y divide-gray-900/10 pb-8">
+    <div class="w-full flex-1 pb-8">
       <h2
         class="text-true-gray-800 text-center text-[32px] leading-[40px] font-bold lg:text-left lg:text-[40px] lg:leading-[48px] xl:text-5xl xl:leading-[56px]"
       >
         Seja um revendedor!
       </h2>
-      <div class="mt-10 h-[440px] space-y-6 divide-y divide-gray-900/10">
+      <div class="mt-4 divide-y divide-gray-900/10">
         {
           faq.map((item, i) => (
-            <details name="faq" class="group pt-6" open={i === 0}>
-              <summary class="text-true-gray-800 flex w-full list-none items-start justify-between text-left [&::-webkit-details-marker]:hidden">
+            <details name="faq" class="group py-5" open={i === 0}>
+              <summary class="text-true-gray-800 hover:text-true-blue-700 flex w-full cursor-pointer list-none items-start justify-between text-left duration-300 [&::-webkit-details-marker]:hidden">
                 <span class="text-base leading-7 font-semibold">
                   {item.question}
                 </span>
