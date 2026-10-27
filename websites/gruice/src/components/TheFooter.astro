@@ -11,6 +11,7 @@ import {
 } from "#/data/contact"
 import { fileUrl } from "#/utils/images"
 
+const year = new Date().getFullYear()
 const whatsappUrl = waLink(WA_NUMBER, WA_DEFAULT_MESSAGE)
 const socialClass =
   "flex items-center justify-center rounded-lg border border-true-gray-100 p-3"
@@ -109,7 +110,7 @@ const socials = [
           class="h-12 w-[155px] saturate-0 duration-300 group-hover:saturate-100"
         />
       </a>
-      <span>2023 © GRU ICE. Todos os direitos reservados</span>
+      <span>{year} © GRU ICE. Todos os direitos reservados</span>
     </section>
   </section>
   <section class="bg-true-gray-900">
@@ -117,7 +118,7 @@ const socials = [
       class="mx-auto flex max-w-[1124px] flex-col items-center gap-2 p-4 text-center lg:flex-row-reverse lg:justify-between lg:px-0"
     >
       <a
-        href="http://pedrohenri.design"
+        href="https://pedrohenridesign.com.br"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -135,7 +136,7 @@ const socials = [
       </a>
       <span
         >Desenvolvido com 💙 por <a
-          href="http://pedrohenri.design"
+          href="https://pedrohenridesign.com.br"
           target="_blank"
           rel="noopener noreferrer"
           class="font-semibold">Pedro Henri</a
