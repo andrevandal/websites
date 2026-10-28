@@ -18,16 +18,22 @@ const MEDIA_ROUTE = "/_emdash/api/media/file/"
 const text = (value: unknown): string | undefined =>
   typeof value === "string" && value !== "" ? value : undefined
 
+// An internal media URL may be absolute (stored from another origin) and may
+// carry the admin's `?_emdash_media=` cache-buster; only the path holds the key.
+const internalKey = (url: string | undefined): string | undefined => {
+  if (!url) return undefined
+  const { pathname } = new URL(url, "http://internal.invalid")
+  return pathname.startsWith(MEDIA_ROUTE)
+    ? decodeURIComponent(pathname.slice(MEDIA_ROUTE.length))
+    : undefined
+}
+
 // Public storage bypasses the Worker; local and isolated preview media do not.
 const mediaUrl = (
   { url, storageKey, id }: MediaRef,
   { url: page, locals }: MediaContext
 ): string => {
-  const key =
-    storageKey ??
-    (url?.startsWith(MEDIA_ROUTE)
-      ? decodeURIComponent(url.slice(MEDIA_ROUTE.length))
-      : undefined)
+  const key = storageKey ?? internalKey(url)
   const raw = key
     ? (locals.emdash?.getPublicMediaUrl?.(key) ??
       `${MEDIA_ROUTE}${encodeURIComponent(key)}`)

@@ -54,6 +54,7 @@ tasks:
       - build
 
   test:
+    command: "bun test --isolate --pass-with-no-tests"
     inputs:
       - "@globs(tests)"
       - "@globs(typescript)"
