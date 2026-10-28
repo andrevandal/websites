@@ -9,7 +9,7 @@ type Props = { value: PortableTextBlock[] }
 const { value } = Astro.props
 ---
 
-<div class="prose prose-blog max-w-none">
+<div class="prose prose-blog max-w-none min-w-0 break-words">
   <PortableText
     value={value}
     components={{
