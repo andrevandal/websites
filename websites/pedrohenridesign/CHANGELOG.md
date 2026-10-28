@@ -7,7 +7,6 @@
 
 * **assets:** serve site assets from bucket URLs without static-site secrets ([d891465](https://github.com/andrevandal/websites/commit/d8914651eb840dbb2d573958d6e7a4471a78d835))
 * **ci:** reuse canonical bucket media in seed-content ([85b8117](https://github.com/andrevandal/websites/commit/85b81178592649fe2a9d095dbcc7fb93a5d88b7b))
-* **ci:** reuse canonical bucket media in seed-content ([4389b86](https://github.com/andrevandal/websites/commit/4389b866b830489e8caac91361879d2a70cc464e))
 * migrate the static sites to EmDash ([9507678](https://github.com/andrevandal/websites/commit/9507678014a0f370908be1c42ee970de03ea341b))
 
 

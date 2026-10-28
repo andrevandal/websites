@@ -11,8 +11,8 @@
 
 ### Bug Fixes
 
-* **clinicamauricioaraujo:** pass test task without test files ([d01a958](https://github.com/andrevandal/websites/commit/d01a958755dd49a894a4b52a39dd5b548a7fccb1))
 * **sun-ui-emdash:** resolve absolute internal media URLs through public storage ([8d70bf2](https://github.com/andrevandal/websites/commit/8d70bf2acb958d72c3673e323946ae4b9b95d6e5))
+  * **clinicamauricioaraujo:** pass test task without test files ([d01a958](https://github.com/andrevandal/websites/commit/d01a958755dd49a894a4b52a39dd5b548a7fccb1))
 
 ## [1.4.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.3.1...clinicamauricioaraujo-v1.4.0) (2026-10-18)
 
