@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.5.0...brunabraz-v1.6.0) (2026-10-28)
+
+
+### Features
+
+* **assets:** serve site assets from bucket URLs without static-site secrets ([d891465](https://github.com/andrevandal/websites/commit/d8914651eb840dbb2d573958d6e7a4471a78d835))
+* **brunabraz:** share EmDash seed tasks and fill the viewport ([e8ef489](https://github.com/andrevandal/websites/commit/e8ef489d5041160db5ab246e1a6d6651303a7909))
+* **ci:** reuse canonical bucket media in seed-content ([85b8117](https://github.com/andrevandal/websites/commit/85b81178592649fe2a9d095dbcc7fb93a5d88b7b))
+* **ci:** reuse canonical bucket media in seed-content ([4389b86](https://github.com/andrevandal/websites/commit/4389b866b830489e8caac91361879d2a70cc464e))
+* migrate the static sites to EmDash ([9507678](https://github.com/andrevandal/websites/commit/9507678014a0f370908be1c42ee970de03ea341b))
+
+
+### Bug Fixes
+
+* **sun-ui-emdash:** keep 200 on ranged GET, decode numeric entities, cover upload/exists/signing ([369f93d](https://github.com/andrevandal/websites/commit/369f93dbfc0f1d0ea996934d2fae9a4cd5aff867))
+
 ## [1.5.0](https://github.com/andrevandal/websites/compare/brunabraz-v1.4.1...brunabraz-v1.5.0) (2026-10-18)
 
 

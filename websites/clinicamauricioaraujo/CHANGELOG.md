@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.5.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.4.0...clinicamauricioaraujo-v1.5.0) (2026-10-28)
+
+
+### Features
+
+* **assets:** serve site assets from bucket URLs without static-site secrets ([d891465](https://github.com/andrevandal/websites/commit/d8914651eb840dbb2d573958d6e7a4471a78d835))
+* migrate the static sites to EmDash ([9507678](https://github.com/andrevandal/websites/commit/9507678014a0f370908be1c42ee970de03ea341b))
+
+
+### Bug Fixes
+
+* **clinicamauricioaraujo:** pass test task without test files ([d01a958](https://github.com/andrevandal/websites/commit/d01a958755dd49a894a4b52a39dd5b548a7fccb1))
+* **sun-ui-emdash:** resolve absolute internal media URLs through public storage ([8d70bf2](https://github.com/andrevandal/websites/commit/8d70bf2acb958d72c3673e323946ae4b9b95d6e5))
+
 ## [1.4.0](https://github.com/andrevandal/websites/compare/clinicamauricioaraujo-v1.3.1...clinicamauricioaraujo-v1.4.0) (2026-10-18)
 
 
