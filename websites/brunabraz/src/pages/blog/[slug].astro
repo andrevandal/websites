@@ -43,7 +43,7 @@ const seo = getSeoMeta(post, {
     readingMinutes={minutes}
   />
   <div
-    class="container grid gap-8 py-14 lg:grid-cols-[699px_389px] lg:items-start lg:gap-x-[128px] lg:py-20"
+    class="container grid grid-cols-[minmax(0,1fr)] gap-8 py-14 lg:grid-cols-[699px_389px] lg:items-start lg:gap-x-[128px] lg:py-20"
   >
     <PostBody value={annotatedBody} />
     <TableOfContents entries={toc} />
