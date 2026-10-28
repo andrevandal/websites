@@ -37,6 +37,17 @@ describe("mediaUrl", () => {
     ).toBe("https://assets.example.com/images/a.png")
   })
 
+  test("resolves an absolute internal URL with the admin cache-buster query", () => {
+    expect(
+      mediaUrl(
+        {
+          url: "https://other.example.com/_emdash/api/media/file/a.jpg?_emdash_media=sha1%3Aabc",
+        },
+        page(key => `https://assets.example.com/${key}`)
+      )
+    ).toBe("https://assets.example.com/a.jpg")
+  })
+
   test("preserves external and site-relative URLs", () => {
     expect(mediaUrl({ url: "https://assets.example.com/a.png" }, page())).toBe(
       "https://assets.example.com/a.png"
